@@ -1,70 +1,105 @@
-# Getting Started with Create React App
+# 📚 SCAC Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+> **SCAC (Study Cafe Access Control) Frontend**
 
-## Available Scripts
+스터디카페 키오스크 시스템 Frontend 프로젝트입니다.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 🛠 Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- React
+- JavaScript
+- React Router
+- Axios
+- Zustand
+- CSS
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 📂 Project Structure
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```text
+src
+├── api                     # API 통신
+│   ├── authApi.js
+│   ├── axios.js
+│   ├── paymentApi.js
+│   └── reservationApi.js
+│
+├── assets                  # 정적 리소스
+│   ├── fonts
+│   ├── icons
+│   │   ├── admin
+│   │   ├── common
+│   │   ├── payment
+│   │   ├── reservation
+│   │   └── user
+│   ├── images
+│   └── logo
+│
+├── components              # 공통 컴포넌트
+│
+├── constants               # 상수 관리
+│
+├── hooks                   # Custom Hooks
+│
+├── layouts                 # 레이아웃 컴포넌트
+│
+├── pages                   # 페이지
+│   ├── Admin
+│   ├── Error
+│   ├── Login
+│   ├── Main
+│   ├── MyPage
+│   ├── Payment
+│   ├── Reservation
+│   └── Signup
+│
+├── routes                  # Router 설정
+│
+├── store                   # Zustand Store
+│   ├── userStore.js
+│   ├── reservationStore.js
+│   └── paymentStore.js
+│
+├── styles                  # 전역 스타일
+│   ├── common.css
+│   ├── global.css
+│   ├── reset.css
+│   └── variables.css
+│
+├── utils                   # 공통 함수
+│   ├── date.js
+│   └── formatter.js
+│
+├── App.js
+└── index.js
+```
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 📌 Directory Description
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+| Directory | Description |
+|------------|-------------|
+| api | Axios 및 API 요청 관리 |
+| assets | 이미지, 아이콘, 폰트 등 정적 리소스 |
+| components | 재사용 가능한 공통 컴포넌트 |
+| constants | 프로젝트에서 사용하는 상수 |
+| hooks | Custom Hook |
+| layouts | 공통 레이아웃 |
+| pages | 화면(Page) 컴포넌트 |
+| routes | React Router 관리 |
+| store | Zustand 전역 상태 관리 |
+| styles | 전역 CSS |
+| utils | 공통 함수 |
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## 👥 Team
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- Frontend
+- Backend
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
