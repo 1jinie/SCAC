@@ -6,7 +6,7 @@ import { useUserStore } from '../../store/userStore';
 function MyPage() {
   const navigate = useNavigate();
 
-  const user = useAuthStore((state) => state.user);
+  const memberId = useAuthStore((state) => state.memberId);
   const logout = useAuthStore((state) => state.logout);
 
   const {
@@ -76,7 +76,7 @@ function MyPage() {
       password: newPassword,
     };
 
-    const result = await modifyUserProfile(user.memberId, updateData);
+    const result = await modifyUserProfile(memberId, updateData);
 
     if (result.success) {
       setSuccessMessage('비밀번호가 성공적으로 변경되었습니다!');
