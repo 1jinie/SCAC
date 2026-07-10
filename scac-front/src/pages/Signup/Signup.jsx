@@ -2,14 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 
-// Component: PascalCase 규칙 준수
 function SignUpPage() {
   // 전역 스토어에서 회원가입 액션 가져오기
   const signUp = useAuthStore((state) => state.signUp);
   const navigate = useNavigate();
 
   // 입력 필드 제어용 로컬 상태 (useState)
-  const [userName, setUserName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -21,7 +19,7 @@ function SignUpPage() {
     setErrorMessage('');
 
     // 빈 값 체크
-    if (!userName || !phoneNumber || !password || !confirmPassword) {
+    if (!phoneNumber || !password || !confirmPassword) {
       setErrorMessage('모든 항목을 입력해 주세요.');
       return;
     }
@@ -32,9 +30,7 @@ function SignUpPage() {
       return;
     }
 
-    // 스토어가 기대하는 camelCase 구조의 객체로 묶기
     const userData = {
-      name: userName,
       phoneNumber: phoneNumber,
       password: password,
     };
@@ -46,7 +42,7 @@ function SignUpPage() {
       alert(
         '회원가입이 성공적으로 완료되었습니다! 로그인 페이지로 이동합니다.',
       );
-      navigate('/login'); // 가입 성공 시 로그인 페이지로 안내
+      navigate('/'); // 가입 성공 시 메인 페이지로 복귀
     } else {
       setErrorMessage(
         '회원가입에 실패했습니다. 이미 등록된 번호인지 확인해 주세요.',
@@ -55,24 +51,11 @@ function SignUpPage() {
   };
 
   return (
-    // id, class: snake_case 규칙 준수
     <div className="signup_container">
       <div className="signup_box">
         <h2 className="signup_title">스터디카페 회원가입</h2>
 
         <form id="signup_form" onSubmit={handleSignUpSubmit}>
-          <div className="input_group">
-            <label htmlFor="reg_name">이름</label>
-            <input
-              id="reg_name"
-              className="input_field"
-              type="text"
-              placeholder="이름을 입력하세요"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-            />
-          </div>
-
           <div className="input_group">
             <label htmlFor="reg_phone">전화번호</label>
             <input

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 
-// Component: PascalCase 규칙 준수
 function LoginPage() {
   // 전역 스토어에서 로그인 액션 함수 가져오기
   const login = useAuthStore((state) => state.login);
@@ -13,9 +12,7 @@ function LoginPage() {
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  /**
-   * 로그인 폼 제출(Submit) 핸들러
-   */
+  /* 로그인 폼 제출(Submit) 핸들러 */
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
@@ -30,19 +27,15 @@ function LoginPage() {
     const result = await login(phoneNumber, password);
 
     if (result.success) {
-      // 권한(Role)에 따른 페이지 라우팅 분기 처리
-      if (result.role === 'ADMIN') {
-        navigate('/admin'); // 관리자 페이지로 이동
-      } else {
-        navigate('/seat'); // 좌석 배치도 페이지로 이동
-      }
+      if (result.role === 'ADMIN') navigate('/admin');
+      else navigate('/loginhome');
     } else {
-      setErrorMessage('로그인 정보가 올바르지 않습니다. 다시 시도해 주세요.');
+      setErrorMessage('존재하지 않는 회원입니다.');
+      navigate('/');
     }
   };
 
   return (
-    // id, class: snake_case 규칙 준수
     <div className="login_container">
       <div className="login_box">
         <h2 className="login_title">스터디카페 로그인</h2>
@@ -56,7 +49,6 @@ function LoginPage() {
               type="text"
               placeholder="01012345678 (숫자만 입력)"
               value={phoneNumber}
-              // Prettier 규칙 준수를 위해 인자가 1개라도 일관된 포맷팅 유지
               onChange={(e) => setPhoneNumber(e.target.value)}
             />
           </div>
