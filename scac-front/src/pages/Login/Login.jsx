@@ -28,7 +28,7 @@ function LoginPage() {
 
     if (result.success) {
       if (result.role === 'ADMIN') navigate('/admin');
-      else navigate('/seat');
+      else navigate('/loginhome');
     } else {
       setErrorMessage('존재하지 않는 회원입니다.');
       navigate('/');
