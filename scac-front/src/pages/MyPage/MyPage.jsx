@@ -175,6 +175,17 @@ function MyPage() {
 
         <hr className="divider" />
 
+        {/* 이용권 구매 버튼 */}
+        <div className="no_ticket">
+          <button
+            type="button"
+            className="btn_buy_ticket"
+            onClick={() => navigate('/ticket/buy')}
+          >
+            이용권 구매하러 가기
+          </button>
+        </div>
+
         {/* 하단 제어 버튼 */}
         <div className="mypage_footer">
           <button
