@@ -9,7 +9,6 @@ function SignUpPage() {
   const navigate = useNavigate();
 
   // 입력 필드 제어용 로컬 상태 (useState)
-  const [userName, setUserName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -21,7 +20,7 @@ function SignUpPage() {
     setErrorMessage('');
 
     // 빈 값 체크
-    if (!userName || !phoneNumber || !password || !confirmPassword) {
+    if (!phoneNumber || !password || !confirmPassword) {
       setErrorMessage('모든 항목을 입력해 주세요.');
       return;
     }
@@ -34,7 +33,6 @@ function SignUpPage() {
 
     // 스토어가 기대하는 camelCase 구조의 객체로 묶기
     const userData = {
-      name: userName,
       phoneNumber: phoneNumber,
       password: password,
     };
@@ -61,18 +59,6 @@ function SignUpPage() {
         <h2 className="signup_title">스터디카페 회원가입</h2>
 
         <form id="signup_form" onSubmit={handleSignUpSubmit}>
-          <div className="input_group">
-            <label htmlFor="reg_name">이름</label>
-            <input
-              id="reg_name"
-              className="input_field"
-              type="text"
-              placeholder="이름을 입력하세요"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-            />
-          </div>
-
           <div className="input_group">
             <label htmlFor="reg_phone">전화번호</label>
             <input

@@ -30,14 +30,10 @@ function LoginPage() {
     const result = await login(phoneNumber, password);
 
     if (result.success) {
-      // 권한(Role)에 따른 페이지 라우팅 분기 처리
-      if (result.role === 'ADMIN') {
-        navigate('/admin'); // 관리자 페이지로 이동
-      } else {
-        navigate('/seat'); // 좌석 배치도 페이지로 이동
-      }
+      if (result.role === 'ADMIN') navigate('/admin');
+      else navigate('/seat');
     } else {
-      setErrorMessage('로그인 정보가 올바르지 않습니다. 다시 시도해 주세요.');
+      setErrorMessage('존재하지 않는 회원입니다.');
     }
   };
 

@@ -50,7 +50,7 @@ export const useAuthStore = create((set) => ({
   /* 회원가입 처리 액션 */
   signUp: async (userData) => {
     try {
-      // 수영님이 만들어 둔 authApi의 postSignUp 함수를 호출하여 서버에 전송
+      // authApi의 postSignUp 함수를 호출하여 서버에 전송
       await postSignUp(userData);
 
       // 회원가입 성공 시 화면(Component)에 성공 신호를 리턴
