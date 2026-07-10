@@ -34,6 +34,7 @@ function LoginPage() {
       else navigate('/seat');
     } else {
       setErrorMessage('존재하지 않는 회원입니다.');
+      navigate('/');
     }
   };
 
