@@ -98,6 +98,7 @@
 
 .seat.unavailable {
   background-color: #a0a0a0;
+  cursor: not-allowed;
 }
 
 /* Front card layer */
@@ -137,11 +138,13 @@
 .seat.unavailable .seat_inner {
   background-color: #d6d6d6;
   border-color: #c2c2c2;
-  background-image: linear-gradient(135deg,
-      transparent 48%,
-      #333333 48%,
-      #333333 52%,
-      transparent 52%);
+  background-image: linear-gradient(
+    135deg,
+    transparent 48%,
+    #333333 48%,
+    #333333 52%,
+    transparent 52%
+  );
 }
 
 /* Pressed effect on click */
@@ -150,9 +153,7 @@
 }
 
 /* Rooms */
-.seat.unavailable.r1,
-.seat.unavailable.r2,
-.seat.unavailable.r3 {
+.seat.room {
   width: 100%;
   height: 100%;
   border: 6px solid #1a1a1a;
@@ -160,26 +161,60 @@
   border-radius: 0;
   box-shadow: none;
   background-color: #d6d6d6;
-  cursor: not-allowed;
   position: relative;
 }
 
 /* Diagonal line in rooms */
 .seat.unavailable.r1,
 .seat.unavailable.r2 {
-  background-image: linear-gradient(to bottom right,
-      transparent 49.3%,
-      #1a1a1a 49.3%,
-      #1a1a1a 50.7%,
-      transparent 50.7%);
+  background-image: linear-gradient(
+    to bottom right,
+    transparent 49.3%,
+    #1a1a1a 49.3%,
+    #1a1a1a 50.7%,
+    transparent 50.7%
+  );
 }
 
 .seat.unavailable.r3 {
-  background-image: linear-gradient(to bottom right,
-      transparent 49.5%,
-      #1a1a1a 49.5%,
-      #1a1a1a 50.5%,
-      transparent 50.5%);
+  background-image: linear-gradient(
+    to bottom right,
+    transparent 49.5%,
+    #1a1a1a 49.5%,
+    #1a1a1a 50.5%,
+    transparent 50.5%
+  );
+}
+
+.seat.room.available {
+  background-color: #d6d6d6;
+}
+
+.seat.room.using {
+  background-color: #7ec2b2;
+}
+
+.seat.room.selected {
+  background-color: #ff9255;
+}
+
+.seat.room {
+  background-image: none !important;
+}
+
+.seat.room .seat_inner {
+  background-image: none !important;
+}
+
+.room_name {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: #333;
 }
 
 /* Door Symbol at top of rooms */
@@ -261,11 +296,13 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: linear-gradient(135deg,
-      transparent 47%,
-      #333333 47%,
-      #333333 53%,
-      transparent 53%);
+  background-image: linear-gradient(
+    135deg,
+    transparent 47%,
+    #333333 47%,
+    #333333 53%,
+    transparent 53%
+  );
 }
 
 .legend_text {

@@ -1,9 +1,22 @@
-function SeatItem({ seat, isSelected, onClick }) {
-  const effectiveStatus = seat.type === 'room' ? 'unavailable' : seat.status;
+function SeatItem({ seat, isSelected, onClick, mode }) {
+  let effectiveStatus = seat.status;
+
+  if (mode === 'seat' && seat.type === 'room') {
+    effectiveStatus = 'unavailable';
+  }
+
+  if (mode === 'room' && seat.type === 'seat') {
+    effectiveStatus = 'unavailable';
+  }
+
   const classNames = ['seat', effectiveStatus, seat.name];
 
   if (isSelected) {
     classNames.push('selected');
+  }
+
+  if (seat.type === 'room') {
+    classNames.push('room');
   }
 
   // Determine grid span dynamically
@@ -12,9 +25,7 @@ function SeatItem({ seat, isSelected, onClick }) {
 
   if (seat.type === 'room') {
     gridRow = `${seat.y} / span 5`;
-    gridColumn = seat.id === 103
-      ? `${seat.x} / span 4`
-      : `${seat.x} / span 3`;
+    gridColumn = seat.id === 103 ? `${seat.x} / span 4` : `${seat.x} / span 3`;
   }
 
   // s6~s25 좌석들은 x좌표에 비례한 추가 margin으로 간격 확보
@@ -36,7 +47,10 @@ function SeatItem({ seat, isSelected, onClick }) {
       }}
     >
       {seat.id > 100 ? (
-        <div className="room_door" />
+        <>
+          <div className="room_door" />
+          <div className="room_name">{seat.name}</div>
+        </>
       ) : (
         <div className="seat_inner">{label}</div>
       )}
