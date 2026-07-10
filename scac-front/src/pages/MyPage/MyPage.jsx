@@ -49,7 +49,7 @@ function MyPage() {
 
     // 필수 입력 검증
     if (!currentPassword || !newPassword || !passwordConfirm) {
-      setLocalError('현재 입실 비밀번호가 일치하지 않습니다.');
+      setLocalError('모든 항목을 입력해 주세요.');
       return;
     }
 
