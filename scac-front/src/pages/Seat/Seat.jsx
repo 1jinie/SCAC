@@ -35,19 +35,14 @@ function Seat() {
 
       <div className="seat_grid_wrapper">
         <div className="seat_grid">
-          {seats.map((seat) => {
-            const displaySeat = seat.type === 'room'
-              ? { ...seat, status: 'unavailable' }
-              : seat;
-            return (
-              <SeatItem
-                key={seat.id}
-                seat={displaySeat}
-                isSelected={selectedSeat === seat.id}
-                onClick={() => handleSeatClick(seat)}
-              />
-            );
-          })}
+          {seats.map((seat) => (
+            <SeatItem
+              key={seat.id}
+              seat={seat}
+              isSelected={selectedSeat === seat.id}
+              onClick={() => handleSeatClick(seat)}
+            />
+          ))}
         </div>
       </div>
 

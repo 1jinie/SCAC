@@ -1,5 +1,6 @@
 function SeatItem({ seat, isSelected, onClick }) {
-  const classNames = ['seat', seat.status, seat.name];
+  const effectiveStatus = seat.type === 'room' ? 'unavailable' : seat.status;
+  const classNames = ['seat', effectiveStatus, seat.name];
 
   if (isSelected) {
     classNames.push('selected');
@@ -8,14 +9,12 @@ function SeatItem({ seat, isSelected, onClick }) {
   // Determine grid span dynamically
   let gridRow = seat.y;
   let gridColumn = seat.x;
-  const isRoom = seat.name.startsWith('r');
 
-  if (seat.name === 'r1' || seat.name === 'r2') {
+  if (seat.type === 'room') {
     gridRow = `${seat.y} / span 5`;
-    gridColumn = `${seat.x} / span 3`;
-  } else if (seat.name === 'r3') {
-    gridRow = `${seat.y} / span 5`;
-    gridColumn = `${seat.x} / span 4`;
+    gridColumn = seat.id === 103
+      ? `${seat.x} / span 4`
+      : `${seat.x} / span 3`;
   }
 
   // s6~s25 좌석들은 x좌표에 비례한 추가 margin으로 간격 확보
@@ -24,7 +23,7 @@ function SeatItem({ seat, isSelected, onClick }) {
   const extraMarginLeft = isSmallSeat ? (seat.x - 1) * 40 : 0;
 
   // Show empty label for unavailable seats as shown in the mockup
-  const label = seat.status === 'unavailable' ? '' : seat.name;
+  const label = effectiveStatus === 'unavailable' ? '' : seat.name;
 
   return (
     <div
@@ -36,7 +35,7 @@ function SeatItem({ seat, isSelected, onClick }) {
         ...(extraMarginLeft > 0 ? { marginLeft: `${extraMarginLeft}px` } : {}),
       }}
     >
-      {isRoom ? (
+      {seat.id > 100 ? (
         <div className="room_door" />
       ) : (
         <div className="seat_inner">{label}</div>
