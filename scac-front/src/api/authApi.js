@@ -37,7 +37,6 @@ export const postSignUp = async (userData) => {
   try {
     const response = await axios.post('/api/auth/signup', {
       // userData 객체 내부에 camelCase로 저장된 값을 DB 규격인 snake_case로 풀어서 전송
-      user_name: userData.name,
       phone_number: userData.phoneNumber,
       password: userData.password,
     });
