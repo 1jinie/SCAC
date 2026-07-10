@@ -4,7 +4,6 @@ import { postLogin, postLogout } from '../api/authApi';
 export const useAuthStore = create((set) => ({
   // --- 상태 (State) ---
   isLoggedIn: false, // 로그인 여부 (기본값: 로그아웃 상태)
-  userName: '', // 로그인한 회원 이름
   userRole: 'GUEST', // 권한 (GUEST ➔ USER ➔ ADMIN)
   memberId: null, // DB 연동을 위한 회원 고유 ID
 
@@ -18,7 +17,6 @@ export const useAuthStore = create((set) => ({
       // 서버 응답 데이터(snake_case)를 스토어 상태(camelCase)로 매핑하여 저장
       set({
         isLoggedIn: true,
-        userName: data.user_name,
         userRole: data.user_role, // 'USER' 또는 'ADMIN'
         memberId: data.member_id,
       });
@@ -40,7 +38,6 @@ export const useAuthStore = create((set) => ({
       // 에러가 나더라도 클라이언트 상태는 안전하게 리셋
       set({
         isLoggedIn: false,
-        userName: '',
         userRole: 'GUEST',
         memberId: null,
       });
