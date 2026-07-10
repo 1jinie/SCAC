@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 
-// Component: PascalCase 규칙 준수
 function SignUpPage() {
   // 전역 스토어에서 회원가입 액션 가져오기
   const signUp = useAuthStore((state) => state.signUp);
@@ -31,7 +30,6 @@ function SignUpPage() {
       return;
     }
 
-    // 스토어가 기대하는 camelCase 구조의 객체로 묶기
     const userData = {
       phoneNumber: phoneNumber,
       password: password,
@@ -53,7 +51,6 @@ function SignUpPage() {
   };
 
   return (
-    // id, class: snake_case 규칙 준수
     <div className="signup_container">
       <div className="signup_box">
         <h2 className="signup_title">스터디카페 회원가입</h2>

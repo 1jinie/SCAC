@@ -14,7 +14,6 @@ export const useAuthStore = create((set) => ({
       // authApi의 postLogin 호출
       const data = await postLogin(phoneNumber, password);
 
-      // 서버 응답 데이터(snake_case)를 스토어 상태(camelCase)로 매핑하여 저장
       set({
         isLoggedIn: true,
         userRole: data.user_role, // 'USER' 또는 'ADMIN'
