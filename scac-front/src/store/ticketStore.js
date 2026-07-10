@@ -1,9 +1,15 @@
 import { create } from 'zustand';
 
 export const useTicketStore = create((set) => ({
-  selectedTicket: null,
+  //선택한 티켓 아아디
+  selectedTicketId: null,
 
-  selectTicket: (ticket) => set({ selectedTicket: ticket }),
+  //선택한 티켓 타입('SEAT', 'STUDY_ROOM')
+  purchaseType: null,
 
-  clearSelectedTicket: () => set({ selectedTicket: null }),
+  selectTicket: (ticketId) => set({ selectedTicketId: ticketId }),
+
+  setPurchaseType: (purchaseType) => set({ purchaseType: purchaseType }),
+
+  resetStore: () => set({ selectedTicketId: null, purchaseType: null }),
 }));
