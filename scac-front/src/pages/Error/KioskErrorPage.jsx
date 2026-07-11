@@ -8,10 +8,12 @@ export default function KioskErrorPage() {
   console.error(error);
   return (
     <div>
-      에!러!가!났!다
-      <br />
-      오!타!일!까!문!법!에!러!일!까
-      <br />
+      <h1>Error !</h1>
+      <p>
+        에!러!가!났!다
+        <br />
+        오!타!일!까!문!법!에!러!일!까
+      </p>
       <section>
         <h3>{error.status || '에러코드가.. 없다! (Runtime Error)'}</h3>
         {/* 네트워크/서버 에러: status+statusText, 런타임에러: message */}

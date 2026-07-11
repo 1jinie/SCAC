@@ -12,7 +12,7 @@ export default function HeaderTime() {
     return () => clearInterval(updateTimer);
   }, []);
   return (
-    <div className="header_clock">
+    <div className="time_text">
       <span>{formatClock(time)}</span>
     </div>
   );

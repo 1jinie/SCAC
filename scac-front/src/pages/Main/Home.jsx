@@ -8,9 +8,7 @@ function HomePage() {
     <div className="kiosk_container">
       {/* 상단 헤더 / 로고 영역 */}
       <header className="kiosk_header">
-        <span className="time_text">오전 11:41</span>
         <div className="logo_box">
-          <div className="logo_icon">📚☕</div>
           <h1 className="logo_title">STUDY CAFE</h1>
         </div>
       </header>
@@ -28,7 +26,7 @@ function HomePage() {
           <button
             type="button"
             className="menu_btn btn_orange"
-            onClick={() => navigate('/seat')} // 입실 경로 설정
+            onClick={() => navigate('seat')} // 입실 경로 설정
           >
             <span className="btn_icon">🚪➡️</span>
             <span className="btn_label">입실</span>
@@ -56,7 +54,7 @@ function HomePage() {
           <button
             type="button"
             className="menu_btn btn_gray"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('ticket')}
           >
             <span className="btn_icon">💳</span>
             <span className="btn_label">이용권 결제</span>
@@ -64,7 +62,7 @@ function HomePage() {
           <button
             type="button"
             className="menu_btn btn_gray"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('studyroom_reservation')}
           >
             <span className="btn_icon">📅</span>
             <span className="btn_label">스터디룸 예약</span>

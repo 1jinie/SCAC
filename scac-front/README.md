@@ -1,8 +1,6 @@
 # 📚 SCAC Frontend
 
-> **SCAC (Study Cafe Access Control) Frontend**
-
-스터디카페 키오스크 시스템 Frontend 프로젝트입니다.
+> React 기반 스터디카페 키오스크 Frontend 프로젝트
 
 주요 기능
 
@@ -17,12 +15,12 @@
 ## 🛠 Tech Stack
 
 - React
-- JavaScript
+- JavaScript (ES6+)
 - React Router
 - Axios
 - Zustand
 - React Hook Form
-- CSS
+- CSS3
 
 ---
 
@@ -45,12 +43,19 @@ src
 │   ├── authApi.js
 │   ├── axios.js
 │   ├── paymentApi.js
-│   └── reservationApi.js
+│   ├── reservationApi.js
+│   └── userApi.js
 │
 │
 ├── components              # 공통 컴포넌트
+│   ├── button
+│   │   ├── CancelButton.jsx
+│   │   └── SelectButton.jsx
+│   └── HeaderTime.jsx
 │
 ├── constants               # 상수 관리
+│
+├── data                    # 임시 데이터 관리
 │
 ├── hooks                   # 커스텀 훅
 │
@@ -63,33 +68,55 @@ src
 │   ├── Main
 │   ├── MyPage
 │   ├── Payment
+│   │   ├── components
+│   │   └── Payment.jsx
 │   ├── Reservation
-│   └── Signup
+│   ├── Seat
+│   ├── Signup
+│   └── Ticket
+│       ├── components
+│       └── TicketPage.jsx
 │
 ├── routes                  # Router 설정
 │
 ├── store                   # Zustand Store
-│   ├── userStore.js
+│   ├── authStore.js
+│   ├── paymentStore.js
 │   ├── reservationStore.js
-│   └── paymentStore.js
+│   ├── ticketStore.js
+│   └── userStore.js
 │
-├── styles                  # 전역 스타일
+├── styles                  # 공통 및 페이지 스타일
 │   ├── common.css
 │   ├── global.css
 │   ├── reset.css
-│   └── variables.css
+│   ├── variables.css
+│   ├── Login.css
+│   ├── Mypage.css
+│   ├── reservation.css
+│   ├── seat.css
+│   └── SignUp.css
 │
 ├── utils                   # 공통 함수
 │   ├── date.js
 │   └── formatter.js
 │
 ├── App.js
-└── index.js
+├── App.css
+├── index.js
+└── index.css
+
+.prettierrc            # Prettier 설정
+.gitignore             # Git 제외 파일
+package.json           # 프로젝트 정보 및 의존성
+README.md              # 프로젝트 문서
 ```
 
 > 📌 공통으로 사용하는 컴포넌트는 `components`에 작성합니다.
 >
 > 📌 특정 페이지에서만 사용하는 컴포넌트는 해당 페이지의 `components` 폴더에 작성합니다.
+>
+> 📌 스타일은 현재 `styles` 폴더에서 통합 관리하고 있으며, 필요 시 페이지 단위로 분리할 수 있습니다.
 
 ---
 
@@ -98,7 +125,7 @@ src
 | Directory  | Description                         |
 | ---------- | ----------------------------------- |
 | api        | Axios 및 API 요청 관리              |
-| assets     | 이미지, 아이콘, 폰트 등 정적 리소스 |
+| public     | 이미지, 아이콘, 폰트 등 정적 리소스 |
 | components | 재사용 가능한 공통 컴포넌트         |
 | constants  | 프로젝트에서 사용하는 상수          |
 | hooks      | Custom Hook                         |
@@ -129,8 +156,6 @@ src
 | HTML id      | snake_case    | `login_form`                                |
 | HTML class   | snake_case    | `payment_container`                         |
 
----
-
 ### 2. Code Style
 
 | 항목          | 규칙               |
@@ -139,8 +164,6 @@ src
 | 세미콜론      | 사용 (`;`)         |
 | 문자열        | Single Quote (`'`) |
 | JSX Attribute | Double Quote (`"`) |
-
----
 
 ### 3. Event Function
 
@@ -153,8 +176,6 @@ const handleSeatSelect = () => {};
 
 const handlePayment = () => {};
 ```
-
----
 
 ### 4. Boolean Variable
 
@@ -187,7 +208,15 @@ const isPaymentComplete = false;
 
 ### 🌿 Branch Convention
 
-feature/기능
+#### 예시
+
+```text
+feature/login
+feature/payment
+feature/ticket
+fix/payment-error
+docs/readme
+```
 
 ### ✍ Commit Convention
 
@@ -200,16 +229,25 @@ feature/기능
 | docs     | 문서 수정               |
 | chore    | 환경설정 및 기타 변경   |
 
+#### 예시
+
+```text
+feat: 로그인 기능 추가
+fix: 결제 오류 수정
+docs: README 수정
+style: 버튼 CSS 수정
+```
+
 ---
 
 ## 🚀 Getting Started
 
 ```bash
+cd scac-front
+
 npm install
 
 npm start
-
-npm run build
 ```
 
 ---
@@ -223,3 +261,8 @@ npm run build
 | 이지현 | 결제, 이용권, 관리자  |
 
 ---
+
+## 📝 Documentation Version
+
+- README v1.1
+- Last Updated : 2026.07.11
