@@ -114,6 +114,7 @@ SCAC
 | ---------------- | ----------------- |
 | Requirements     | 요구사항 명세서   |
 | Meeting          | 회의록            |
+| Work Log         | 작업일지          |
 | ERD              | 데이터베이스 설계 |
 | API              | API 명세          |
 | Sequence Diagram | 시퀀스 다이어그램 |
