@@ -144,11 +144,11 @@ Backend Project is under development.
 
 ## 👥 Team
 
-| Name   | Role                      |
-| ------ | ------------------------- |
-| 김수영 | 회원 / 인증 / 권한        |
-| 장원진 | 좌석 / 예약 / 입실 / 퇴실 |
-| 이지현 | 결제 / 이용권 / 관리자    |
+| Name   | Role                                        |
+| ------ | ------------------------------------------- |
+| 김수영 | 회원 · 인증 · 권한 · DB 설계 및 관리        |
+| 장원진 | 좌석 · 예약 · 입실/퇴실 · Git 저장소 관리   |
+| 이지현 | 결제 · 이용권 · 관리자 · 프로젝트 문서 관리 |
 
 ---
 
@@ -173,3 +173,14 @@ Figma를 기반으로 32인치 세로형 키오스크(1080×1920)에 최적화�
 | Frontend      | 🟡 In Progress |
 | Backend       | 🟡 In Progress |
 | Documentation | 🟡 In Progress |
+
+---
+
+## 📝 Documentation Version
+
+- **README v1.1**
+- Last Updated : 2026.07.11
+
+### History
+
+- README v1.1 (2026.07.11)
