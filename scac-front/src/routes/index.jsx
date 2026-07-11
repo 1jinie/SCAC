@@ -8,7 +8,7 @@ import Seat from '../pages/Seat/Seat';
 import Reservation from '../pages/Reservation/Reservation';
 import PaymentMethodPage from '../pages/Payment/PaymentMethodPage';
 import PaymentProcess from '../pages/Payment/PaymentProcess';
-// import LoginPage from '../pages/Login/Login';
+import LoginPage from '../pages/Login/Login';
 
 const router = createBrowserRouter([
   {
@@ -18,7 +18,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: 'seat', element: <Seat /> },
-      // { path: 'login', element: <LoginPage /> },
+      { path: 'login', element: <LoginPage /> },
       // { path: 'signup', element: <Signup /> },
       { path: 'studyroom_reservation', element: <Reservation /> },
       {
