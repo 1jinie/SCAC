@@ -1,0 +1,20 @@
+/* body, html, button, img 등 전역 태그 스타일 */
+
+body {
+  font-family: 'Pretendard', sans-serif;
+  background-color: #f6f7fb;
+  color: #333;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+img {
+  display: block;
+}
