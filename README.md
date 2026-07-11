@@ -154,7 +154,7 @@ Backend Project is under development.
 
 ## 📅 Development Period
 
-2026.07 ~ Present
+2026.07.03 ~ Present
 
 ---
 
@@ -183,4 +183,5 @@ Figma를 기반으로 32인치 세로형 키오스크(1080×1920)에 최적화�
 
 ### History
 
+- README v1.0 (2026.07.11)
 - README v1.1 (2026.07.11)

@@ -269,4 +269,5 @@ npm start
 
 ### History
 
+- README v1.0 (2026.07.03)
 - README v1.1 (2026.07.11)
