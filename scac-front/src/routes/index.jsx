@@ -9,6 +9,7 @@ import Reservation from '../pages/Reservation/Reservation';
 import PaymentMethodPage from '../pages/Payment/PaymentMethodPage';
 import PaymentProcess from '../pages/Payment/PaymentProcess';
 import LoginPage from '../pages/Login/Login';
+import SignUpPage from '../pages/Signup/Signup';
 
 const router = createBrowserRouter([
   {
@@ -19,7 +20,7 @@ const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: 'seat', element: <Seat /> },
       { path: 'login', element: <LoginPage /> },
-      // { path: 'signup', element: <Signup /> },
+      { path: 'signup', element: <SignUpPage /> },
       { path: 'studyroom_reservation', element: <Reservation /> },
       {
         path: 'ticket',
