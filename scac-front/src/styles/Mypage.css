@@ -1,0 +1,160 @@
+/* 마이페이지 전체 컨테이너 (키오스크 규격 유지) */
+.mypage_container {
+  width: 100vw;
+  max-width: 480px;
+  height: 100vh;
+  margin: 0 auto;
+  background-color: var(--color-white);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 24px;
+  color: var(--color-text);
+  position: relative;
+}
+
+/* 상단 탑바 (홈 아이콘 및 시간) */
+.mypage_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.btn_home {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--color-text);
+  padding: 0;
+}
+
+.header_time {
+  font-size: 13px;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+/* 내 정보 타이틀 및 프로필 섹션 */
+.profile_section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.profile_title {
+  font-size: 22px;
+  font-weight: bold;
+  margin: 0 0 20px 0;
+  color: var(--color-text);
+}
+
+/* 원형 유저 아이콘 컨테이너 */
+.profile_icon_circle {
+  width: 90px;
+  height: 90px;
+  border: 1px solid var(--color-reserv-stroke);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  background-color: var(--color-white);
+  margin-bottom: 14px;
+  color: var(--color-text-light);
+}
+
+.user_phone_number {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--color-text);
+  letter-spacing: 0.5px;
+}
+
+/* 🎫 현재 이용중인 이용권 대형 카드 박스 */
+.ticket_card_box {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-important);
+  border-radius: var(--radius-card); /* 32px 큰 라운드 처리 */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* 상단 민트 헤더의 모서리를 둥글게 깎아내기 위함 */
+  box-shadow: var(--shadow-md);
+  margin-bottom: auto; /* 하단 로그아웃 버튼과 자연스럽게 거리를 벌림 */
+}
+
+/* 이용권 카드 상단 민트색 헤더 타이틀 띠 */
+.ticket_card_header {
+  background-color: var(--color-important); /* 중요 안내 민트색 매핑 */
+  color: var(--color-white);
+  padding: 14px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+/* 이용 시간 진행률 바 (오렌지 프로그레스 바) */
+.ticket_progress_container {
+  width: 100%;
+  height: 8px;
+  background-color: var(--color-reserv-time-disavailable); /* 회색 잔여 배경 */
+  position: relative;
+}
+
+.ticket_progress_bar {
+  height: 100%;
+  background-color: var(--color-highlight); /* 오렌지 강조 컬러 */
+  width: 75%; /* 시안 흐름에 맞춰 임시 지정 (실제 데이터 연동 시 style={{width: `${진행률}%`}} 처리) */
+}
+
+/* 카드 내부 상세 정보 텍스트 영역 */
+.ticket_card_body {
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ticket_name {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--color-text);
+}
+
+.ticket_time_left {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--color-text);
+}
+
+/* 🚪 하단 로그아웃 버튼 구역 */
+.mypage_footer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 30px;
+}
+
+.btn_logout {
+  width: 160px;
+  height: 44px;
+  background-color: var(--color-highlight); /* 피그마 주 사용 오렌지 버튼 */
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-button); /* 16px 버튼 라운드 */
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: var(--shadow-md); /* 입체감 있는 섀도 */
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
+}
+
+.btn_logout:active {
+  transform: scale(0.97);
+  box-shadow: var(--shadow-inner-sm);
+}

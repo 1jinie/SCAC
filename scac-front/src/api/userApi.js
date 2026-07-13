@@ -36,3 +36,16 @@ export const getUserByPhone = async (phoneNumber) => {
     throw error;
   }
 };
+/* 회원 정보 수정 */
+export const updateUserProfile = async (memberId, updatedData) => {
+  try {
+    const response = await axiosInstance.put(
+      `/api/users/${memberId}`,
+      updatedData,
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Update User Profile Error:', error);
+    throw error;
+  }
+};

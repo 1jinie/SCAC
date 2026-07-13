@@ -1,0 +1,156 @@
+/* 전체 키오스크 외부 틀 */
+.kiosk_container {
+  width: 100vw;
+  max-width: 480px;
+  height: 100vh;
+  margin: 0 auto;
+  background-color: var(--color-white);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 20px 24px;
+  color: var(--color-text);
+}
+
+/* 상단 헤더 및 로고 */
+.kiosk_header {
+  position: relative;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.time_text {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 13px;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.logo_box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.logo_icon {
+  font-size: 40px;
+  margin-bottom: 5px;
+}
+
+.logo_title {
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--color-important); /* 마스터 가이드 컬러 매핑 */
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+/* 실시간 좌석 상태 바 */
+.seat_status_bar {
+  background-color: var(--color-sub); /* 서브 민트 톤 매핑 */
+  border-radius: var(--radius-button);
+  height: 54px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.chair_icon {
+  font-size: 22px;
+  margin-right: 12px;
+}
+
+.status_text {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--color-text);
+}
+
+/* 메인 메뉴 그리드 */
+.menu_grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+/* 상단 오렌지색 강조 메뉴 행 (입실, 외출, 퇴실) */
+.highlight_menu_row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+/* 하단 2x2 기본 메뉴 그리드 */
+.standard_menu_grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-rows: minmax(110px, auto);
+  gap: 16px;
+}
+
+/* 공통 메뉴 버튼 양식 */
+.menu_btn {
+  border: none;
+  border-radius: var(--radius-button); /* 16px 통일 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 10px;
+  cursor: pointer;
+  box-shadow: var(--shadow-md); /* 피그마 주 사용 섀도 반영 */
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
+}
+
+.menu_btn:active {
+  transform: scale(0.98);
+  box-shadow: var(--shadow-inner-sm);
+}
+
+/* 오렌지 버튼 커스텀 */
+.btn_orange {
+  background-color: var(--color-highlight);
+  color: var(--color-white);
+}
+
+/* 회색 버튼 커스텀 */
+.btn_gray {
+  background-color: var(--color-normal);
+  color: var(--color-text);
+}
+
+.btn_icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.btn_label {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* 하단 관리자 푸터 띠 */
+.kiosk_footer {
+  background-color: var(--color-important);
+  border-radius: var(--radius-button);
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: auto;
+  color: var(--color-text-admin-call); /* 관리자 전화 전용 컬러 */
+  font-size: 13px;
+}
+
+.headset_icon {
+  font-size: 16px;
+}
