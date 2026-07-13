@@ -6,7 +6,7 @@ import { ticketApi } from '../../../api/ticketApi';
 export default function SeatPayment() {
   const selectTicketId = useTicketStore((state) => state.selectedTicketId);
   const paymentMethod = usePaymentStore((state) => state.paymentMethod);
-  // 티켓정보 불러오는거 생략
+
   const [ticket, setTicket] = useState([]);
 
   useEffect(() => {
