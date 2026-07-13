@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { reservations } from '../../data/Reservations';
-import { formatDate } from '../../utils/date';
+import { formatDate, addOneHour } from '../../utils/date';
 import { reservationStore } from '../../store/reservationStore';
 import { rooms } from '../../data/RoomInfo';
 import '../../styles/reservation.css';
@@ -71,6 +71,7 @@ export default () => {
     setEndTime(null);
   };
 
+  // 예약 시간 선택 버튼에 스타일 적용 위한 함수
   const isSelected = (time) => {
     if (!startTime) return false;
 
@@ -85,6 +86,20 @@ export default () => {
     return currentIndex >= startIndex && currentIndex <= endIndex;
   };
 
+  // 선택완료 버튼 이벤트
+  const handleConfirm = () => {
+    if (!startTime) {
+      alert('시간을 선택해주세요');
+      return;
+    }
+
+    const finalEndTime = addOneHour(endTime ?? startTime);
+
+    console.log({ startTime, endTime: finalEndTime });
+
+    navigate('/payment');
+  };
+
   return (
     <div className="reservation_page">
       <div className="reservation_header">
@@ -92,7 +107,6 @@ export default () => {
           뒤로가기
         </div>
         <h1 className="reservation_title">스터디룸 예약</h1>
-        <span className="header_time">오전 11:41</span>
       </div>
 
       <div className="date_container">
@@ -134,7 +148,7 @@ export default () => {
           ROOM {room.name} 👥 {room.capacity}인실
         </div>
       </div>
-      <button className="confirm_button" onClick={() => navigate('/payment')}>
+      <button className="confirm_button" onClick={handleConfirm}>
         선택완료
       </button>
     </div>

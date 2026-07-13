@@ -95,7 +95,7 @@
 
 /* Specific colors for the back layer */
 .seat.available {
-  background-color: #b0b0b0;
+  background-color: #d9d9d9;
 }
 
 .seat.using {
@@ -103,7 +103,7 @@
 }
 
 .seat.selected {
-  background-color: #e57d45;
+  background-color: #ff985c;
 }
 
 .seat.unavailable {
@@ -141,7 +141,7 @@
 }
 
 .seat.selected .seat_inner {
-  background-color: #ff9255;
+  background-color: #ff985c;
   border-color: #e57d45;
 }
 
@@ -205,7 +205,7 @@
 }
 
 .seat.room.selected {
-  background-color: #ff9255;
+  background-color: #ff985c;
 }
 
 .seat.room.available,
@@ -286,7 +286,7 @@
 }
 
 .legend_color.select {
-  background-color: #ff9255;
+  background-color: #ff985c;
 }
 
 .legend_color.available {
