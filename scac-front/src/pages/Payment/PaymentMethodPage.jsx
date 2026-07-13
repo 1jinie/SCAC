@@ -16,15 +16,14 @@ export default function PaymentMethodPage() {
       <p>이용하실 결제 수단을 선택해주세요</p>
       <button
         className="payment_btn credit_card"
-        id="CARD"
-        onClick={(e) => handleMethod(e.target.id)}
+        onClick={(e) => handleMethod('CARD')}
       >
         카드결제
       </button>
       <button
         className="payment_btn simple_pay"
         id="SIMPLE"
-        onClick={(e) => handleMethod(e.target.id)}
+        onClick={(e) => handleMethod('SIMPLE')}
       >
         간편결제
       </button>

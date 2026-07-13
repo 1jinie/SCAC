@@ -1,56 +1,56 @@
 [
   {
     "ticketId": 0,
-    "ticketName": "2시간권",
+    "ticketName": "2시간",
     "ticketType": "TIME",
     "ticketTime": 120,
     "ticketPrice": 4000
   },
   {
     "ticketId": 1,
-    "ticketName": "4시간권",
+    "ticketName": "4시간",
     "ticketType": "TIME",
     "ticketTime": 240,
     "ticketPrice": 8000
   },
   {
     "ticketId": 2,
-    "ticketName": "6시간권",
+    "ticketName": "6시간",
     "ticketType": "TIME",
     "ticketTime": 360,
     "ticketPrice": 8000
   },
   {
     "ticketId": 3,
-    "ticketName": "9시간권",
+    "ticketName": "9시간",
     "ticketType": "TIME",
     "ticketTime": 540,
     "ticketPrice": 8000
   },
   {
     "ticketId": 4,
-    "ticketName": "12시간권",
+    "ticketName": "12시간",
     "ticketType": "TIME",
     "ticketTime": 720,
     "ticketPrice": 8000
   },
   {
     "ticketId": 5,
-    "ticketName": "24시간권",
+    "ticketName": "24시간",
     "ticketType": "TIME",
     "ticketTime": 1440,
     "ticketPrice": 8000
   },
   {
     "ticketId": 6,
-    "ticketName": "50시간권",
+    "ticketName": "50시간",
     "ticketType": "TIME",
     "ticketTime": 3000,
     "ticketPrice": 8000
   },
   {
     "ticketId": 7,
-    "ticketName": "100시간권",
+    "ticketName": "100시간",
     "ticketType": "TIME",
     "ticketTime": 6000,
     "ticketPrice": 8000
