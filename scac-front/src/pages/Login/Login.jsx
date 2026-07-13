@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
+import '../../styles/Auth.css';
 
 function LoginPage() {
   // 전역 스토어에서 로그인 액션 함수 가져오기
@@ -39,6 +40,16 @@ function LoginPage() {
     <div className="login_container">
       <div className="login_box">
         <h2 className="login_title">스터디카페 로그인</h2>
+        <header className="auth_header">
+          <button
+            type="button"
+            className="btn_home"
+            onClick={() => navigate('/')}
+          >
+            🏠
+          </button>
+          <span className="header_time">오전 11:41</span>
+        </header>
 
         <form id="login_form" onSubmit={handleLoginSubmit}>
           <div className="input_group">

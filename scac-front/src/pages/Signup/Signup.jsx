@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
+import '../../styles/Auth.css';
 
 function SignUpPage() {
   // 전역 스토어에서 회원가입 액션 가져오기
