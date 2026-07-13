@@ -30,7 +30,8 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <PaymentMethodPage /> },
           { path: 'process', element: <PaymentProcess /> },
-          { path: 'result', element: <PaymentResult /> },
+
+          { path: 'result/:status', element: <PaymentResult /> },
         ],
       },
     ],

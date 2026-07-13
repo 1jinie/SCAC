@@ -1,4 +1,5 @@
 import { useTicketStore } from '../../../store/ticketStore';
+import { formatPrice } from '../../../utils/formatter';
 
 export default function TicketCard({ ticket }) {
   const { ticketId, ticketName, ticketPrice } = ticket;
@@ -19,7 +20,7 @@ export default function TicketCard({ ticket }) {
     >
       <span className="ticket_name">{ticketName}</span>
       <br />
-      <span className="ticket_price">{ticketPrice} 원</span>
+      <span className="ticket_price">{formatPrice(ticketPrice)} 원</span>
     </button>
   );
 }

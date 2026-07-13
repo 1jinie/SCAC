@@ -1,8 +1,10 @@
 import React from 'react';
 import PaymentResultCard from './components/PaymentResultCard';
+import { useParams } from 'react-router-dom';
 
 export default function PaymentResult() {
-  const isSuccess = true;
+  const { status } = useParams();
+  const isSuccess = status === 'success';
 
   return (
     <div className="overlay">
