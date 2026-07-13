@@ -1,1 +1,106 @@
-/* 색상, 폰트, 크기 등의 CSS 변수 */
+/* ==========================================================
+   SCAC Design Tokens
+   공통 색상, 폰트, 그림자, Radius 등을 관리합니다.
+
+   사용 예시
+   ------------------------------------------
+   color: var(--color-text);
+   background: var(--color-highlight);
+   font-size: var(--font-size-title);
+   font-weight: var(--font-bold);
+   border-radius: var(--radius-button);
+   box-shadow: var(--shadow-md);
+   ========================================================== */
+
+:root {
+  /* ========================================================
+     Brand Color
+     ======================================================== */
+
+  --color-highlight: #ff985c;
+  --color-sub: #91c6bc;
+  --color-important: #4b9da9;
+  --color-normal: #d9d9d9;
+
+  /* ========================================================
+     State Color
+     ======================================================== */
+
+  --color-pay-mint: #6bafaa;
+  --color-error: #ff985c;
+
+  /* ========================================================
+   Font Family
+   ======================================================== */
+
+  --font-family: 'Pretendard', sans-serif;
+
+  /* ========================================================
+     Text Color
+     ======================================================== */
+
+  --color-text: #363636;
+  --color-text-brown: #612800;
+  --color-text-light: #666666;
+  --color-text-admin-call: #ebebeb;
+  --color-btn-cancel-text: #656565;
+
+  /* ========================================================
+     Background Color
+     ======================================================== */
+
+  --color-white: #ffffff;
+  --color-pay-white: #f8f8f8;
+  --color-btn-cancel-fill: #cdcdcd;
+  --color-btn-white: #f6f6f6;
+  --color-reserv-time-disavailable: #efefef;
+  --color-overlay: rgba(0, 0, 0, 0.7);
+
+  /* ========================================================
+     Border / Stroke
+     ======================================================== */
+
+  --color-reserv-stroke: #c2c2c2;
+
+  /* ========================================================
+     Font Size
+     피그마 기준
+     ======================================================== */
+
+  --font-size-title: 64px;
+  --font-size-heading: 48px;
+  --font-size-subtitle: 32px;
+  --font-size-body: 24px;
+  --font-size-caption: 20px;
+  --font-size-small: 16px;
+
+  /* ========================================================
+     Font Weight
+     ======================================================== */
+
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-bold: 700;
+
+  /* ========================================================
+     Shadow
+     Figma에서 주로 사용하는 것은
+     --shadow-md
+     --shadow-inner-md
+     ======================================================== */
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 22px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+  --shadow-inner-sm: inset 0 2px 6px rgba(0, 0, 0, 0.08);
+  --shadow-inner-md: inset 4px 4px 44px rgba(0, 0, 0, 0.25);
+
+  /* ========================================================
+     Border Radius
+     ======================================================== */
+
+  --radius-card: 32px;
+  --radius-button: 16px;
+  --radius-small: 8px;
+}

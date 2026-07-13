@@ -4,6 +4,7 @@ import SeatPayment from './components/SeatPayment';
 import WaitingPayment from './components/WaitingPayment';
 import { useEffect, useState } from 'react';
 import ProceedPayment from './components/ProceedPayment';
+import stylesheet from './css/PaymentResult.css';
 
 export default function PaymentProcess() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -18,7 +19,9 @@ export default function PaymentProcess() {
     if (!isProcessing) return;
 
     const timer = setTimeout(() => {
-      navi('/payment/result');
+      // 결제 성공시 navigate('/payment/result/success');
+      // 결제 실패시 navigate('/payment/result/fail');
+      navi('/payment/result/success');
     }, 5000);
 
     return () => clearTimeout(timer);

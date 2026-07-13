@@ -1,0 +1,188 @@
+/* ==========================
+   Payment Result
+========================== */
+
+.modal {
+  width: 840px;
+  min-height: 1350px;
+
+  background: var(--color-white);
+
+  border-radius: var(--radius-card);
+
+  display: flex;
+  justify-content: stretch;
+  align-items: stretch;
+
+  box-sizing: border-box;
+
+  /* border: solid 4px red; */
+}
+
+.payment_status_box {
+  position: relative;
+  width: 100%;
+  flex-grow: 1;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 80px 60px;
+
+  box-sizing: border-box;
+
+  /* border: solid 4px red; */
+}
+
+/* ==========================
+   Icon
+========================== */
+
+.payment_result_icon {
+  width: 124px;
+  height: 124px;
+
+  margin-bottom: 40px;
+}
+
+/* ==========================
+   Title
+========================== */
+
+.payment_status_box h2 {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-bold);
+  color: var(--color-text);
+
+  margin-bottom: 60px;
+}
+
+/* ==========================
+   Status Card
+========================== */
+
+.payment_status_row {
+  width: 520px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px 0;
+
+  margin-bottom: 20px;
+}
+
+/*  박스 */
+
+.payment_status_container {
+  background: var(--color-white);
+
+  border: 2px solid var(--color-sub);
+
+  box-shadow: var(--shadow-md);
+
+  border-radius: 20px;
+
+  min-height: 250px;
+}
+
+/* 성공 */
+
+.payment_status_box.success .payment_status_row:first-of-type span {
+  color: var(--color-text);
+}
+
+.payment_status_box.success .btn_select {
+  border-color: var(--color-pay-mint);
+  color: var(--color-pay-mint);
+}
+
+/* 실패 */
+
+.payment_status_box.fail .payment_status_container {
+  background: var(--color-error);
+  border: none;
+}
+
+.payment_status_box.fail .payment_status_row:first-of-type span {
+  color: var(--color-text-brown);
+}
+
+/* ==========================
+   Status Text
+========================== */
+
+.payment_status_row span:first-child {
+  font-size: var(--font-size-subtitle);
+  font-weight: var(--font-regular);
+
+  color: var(--color-text-light);
+
+  margin-bottom: 12px;
+}
+
+.payment_status_row span:last-child {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-bold);
+
+  color: var(--color-text);
+}
+
+/* ==========================
+   Ticket Name
+========================== */
+
+.payment_status_row:nth-of-type(2) span:first-child {
+  font-size: var(--font-size-subtitle);
+  font-weight: var(--font-regular);
+
+  color: var(--color-text-light);
+}
+
+.payment_status_row:nth-of-type(2) span:last-child {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-bold);
+
+  color: var(--color-text);
+}
+
+/* ==========================
+   Message
+========================== */
+
+.payment_message {
+  margin-top: 30px;
+
+  text-align: center;
+
+  font-size: var(--font-size-heading);
+  font-weight: var(--font-regular);
+
+  color: var(--color-text);
+
+  line-height: 1.4;
+}
+
+/* ==========================
+   Timer
+========================== */
+
+.payment_timer {
+  margin-top: 48px;
+
+  font-size: var(--font-size-subtitle);
+  font-weight: var(--font-regular);
+
+  color: var(--color-text-light);
+}
+
+/* ==========================
+   Button
+========================== */
+.btn_select {
+  position: absolute;
+  bottom: 90px;
+}
