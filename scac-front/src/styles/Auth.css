@@ -6,30 +6,28 @@ body {
   font-family: 'Noto Sans KR', sans-serif;
 }
 
-/* 1. 전체 외부 레이아웃 컨테이너 (세로형 고정 배치) */
+/* 로그인/회원가입 레이아웃 컨테이너 */
 .login_container,
 .signup_container {
   width: 100vw;
-  max-width: 480px; /* 전형적인 모바일/키오스크 가로 해상도 제약 */
+  max-width: 480px;
   height: 100vh;
   margin: 0 auto;
-  background-color: #ffffff;
+  background-color: var(--color-white);
   box-sizing: border-box;
-  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 20px 40px; /* 내부 양옆 여백 */
+  padding: 20px 40px;
+  color: var(--color-text);
 }
 
-/* 2. 상단 헤더 영역 (홈 아이콘 & 실시간 시계 배치) */
+/* 상단 탑바 */
 .auth_header {
-  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 0;
-  margin-bottom: 60px; /* 타이틀과의 간격 확보 */
+  width: 100%;
+  margin-bottom: 80px;
 }
 
 .btn_home {
@@ -37,32 +35,42 @@ body {
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #333333;
+  color: var(--color-text);
+  padding: 0;
 }
 
 .header_time {
-  font-size: 14px;
-  color: #333333;
+  font-size: 13px;
+  color: var(--color-text);
   font-weight: 500;
 }
 
-/* 3. 메인 타이틀 영역 (LOGIN / 회원가입) */
-.login_title,
-.signup_title {
-  font-size: 36px;
-  font-weight: bold;
-  color: #000000;
-  margin: 0 0 40px 0;
-  text-align: center;
+/* 중앙 정렬 박스 */
+.login_box,
+.signup_box {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* 4. 폼 및 입력창 그룹 (둥근 모서리 보더라인 재현) */
+/* 타이틀 */
+.login_title,
+.signup_title {
+  font-size: 38px;
+  font-weight: bold;
+  color: var(--color-text);
+  margin: 0 0 50px 0;
+  letter-spacing: 1px;
+}
+
+/* 폼 내부 정렬 */
 #login_form,
 #signup_form {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 20px; /* 인풋창 사이의 간격 */
+  gap: 22px;
 }
 
 .input_group {
@@ -72,34 +80,35 @@ body {
   position: relative;
 }
 
-/* 회원가입 시 인풋창 위에 안내 문구(안내용 소형 텍스트) 레이아웃 */
 .input_guide_label {
   font-size: 12px;
-  color: #333333;
+  color: var(--color-text-light);
   margin-bottom: 6px;
   text-align: center;
   font-weight: bold;
 }
 
+/* 라운드 사각형 인풋 윈도우 */
 .input_field {
   width: 100%;
-  height: 52px;
-  border: 1px solid #cccccc;
-  border-radius: 12px; /* 시안 속 부드러운 곡선 라운딩 처리 */
+  height: 54px;
+  border: 1px solid var(--color-reserv-stroke);
+  border-radius: var(--radius-button); /* 디자인 규칙에 맞춤 */
   padding: 0 20px;
   font-size: 16px;
-  color: #333333;
+  color: var(--color-text);
   box-sizing: border-box;
-  background-color: #ffffff;
+  background-color: var(--color-white);
+  transition: border-color 0.2s ease;
 }
 
 .input_field::placeholder {
-  color: #aaaaaa;
+  color: var(--color-btn-cancel-fill);
 }
 
 .input_field:focus {
   outline: none;
-  border-color: #ff9153; /* 포커스 시 주황색 강조 효과 */
+  border-color: var(--color-highlight); /* 포커싱 시 하이라이트 브랜드 컬러 */
 }
 
 /* 회원가입 화면 속 우측 '인증번호발송' 소형 버튼 */
@@ -108,56 +117,57 @@ body {
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  background-color: #ffffff;
-  border: 1px solid #ff9153;
-  border-radius: 15px;
-  color: #ff9153;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-highlight);
+  border-radius: var(--radius-button);
+  color: var(--color-highlight);
   padding: 6px 14px;
   font-size: 12px;
   cursor: pointer;
   font-weight: bold;
 }
 
-/* 5. 주황색 메인 전송 버튼 (로그인 / 가입완료 버튼 공통) */
+/* 에러 텍스트 알림 */
+.error_text {
+  color: var(--color-error);
+  font-size: 13px;
+  margin: -6px 0 4px 0;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* 입체감 있는 하단 오렌지 로그인/가입 버튼 */
 .btn_submit {
   width: 100%;
   height: 52px;
-  background-color: #ff9153; /* 기획안의 화사한 오렌지 톤 매칭 */
+  background-color: var(--color-highlight);
   border: none;
-  border-radius: 12px;
-  color: #ffffff;
+  border-radius: var(--radius-button);
+  color: var(--color-white);
   font-size: 18px;
   font-weight: bold;
   cursor: pointer;
-  margin-top: 25px;
-  /* 부드러운 입체감을 주기 위한 시안 속 밑그림자 구현 */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  margin-top: 15px;
+  box-shadow: var(--shadow-md); /* 피그마 대표 섀도 지정 */
   transition: background-color 0.2s ease;
 }
 
 .btn_submit:hover {
-  background-color: #e87e3e; /* 마우스 오버 시 미세하게 딥해지는 오렌지 */
+  filter: brightness(0.95); /* 변수 색상을 유지하며 톤다운 효과 */
 }
 
-/* 에러 메시지 스타일 */
-.error_text {
-  color: #ff3333;
-  font-size: 14px;
-  margin: -5px 0 5px 0;
-  text-align: center;
-}
-
-/* 6. 하단 푸터 링크 (아직 회원이 아니신가요? 등) */
+/* 하단 전환 링크 */
 .login_footer,
 .signup_footer {
-  margin-top: 30px;
+  margin-top: 35px;
+  width: 100%;
   text-align: center;
 }
 
 .btn_link {
   background: none;
   border: none;
-  color: #888888;
+  color: var(--color-btn-cancel-text);
   font-size: 14px;
   cursor: pointer;
   text-decoration: underline;
