@@ -1,7 +1,9 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import HomePage from '../pages/Main/Home';
+import LoginPage from '../pages/Login/Login';
+import SignUpPage from '../pages/Signup/Signup';
 import TicketPage from '../pages/Ticket/TicketPage';
-import Home from '../pages/Main/Home';
 import KioskLayout from '../layouts/KioskLayout';
 import KioskErrorPage from '../pages/Error/KioskErrorPage';
 import Seat from '../pages/Seat/Seat';
@@ -16,10 +18,10 @@ const router = createBrowserRouter([
     element: <KioskLayout />,
     errorElement: <KioskErrorPage />,
     children: [
-      { index: true, element: <Home /> },
+      { index: true, element: <HomePage /> },
       { path: 'seat', element: <Seat /> },
-      // { path: 'login', element: <Login /> },
-      // { path: 'signup', element: <Signup /> },
+      { path: 'login', element: <LoginPage /> },
+      { path: 'signup', element: <SignUpPage /> },
       { path: 'studyroom_reservation', element: <Reservation /> },
       {
         path: 'ticket',
