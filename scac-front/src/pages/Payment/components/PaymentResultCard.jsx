@@ -41,13 +41,13 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
       />
 
       <h2>{isSuccess ? '결제 완료' : '결제 실패'}</h2>
-      <div className="payment_status_row">
-        <span>status</span>
-        <span>{isSuccess ? '[결제 성공]' : '[Error!]'}</span>
-      </div>
 
-      {isSuccess ? (
-        <>
+      <div className="payment_status_container">
+        <div className="payment_status_row">
+          <span>status</span>
+          <span>{isSuccess ? '[결제 성공]' : '[Error!]'}</span>
+        </div>
+        {isSuccess ? (
           <div className="payment_status_row">
             <span>선택한 이용권</span>
             <span>
@@ -55,23 +55,25 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
               {ticket?.ticketType === 'TIME' ? '시간권' : '기간권'}
             </span>
           </div>
-          <p className="payment_message">
-            결제가 완료되었습니다.
-            <br />
-            영수증을 확인해 주세요.
-          </p>
-        </>
-      ) : (
-        <>
+        ) : (
           <div className="payment_status_row">
             <span>{errorMessage}</span>
           </div>
-          <p className="payment_message">
-            결제가 실패하였습니다.
-            <br />
-            다시 확인해 주세요.
-          </p>
-        </>
+        )}
+      </div>
+
+      {isSuccess ? (
+        <p className="payment_message">
+          결제가 완료되었습니다.
+          <br />
+          영수증을 확인해 주세요.
+        </p>
+      ) : (
+        <p className="payment_message">
+          결제가 실패하였습니다.
+          <br />
+          다시 확인해 주세요.
+        </p>
       )}
       <p className="payment_timer">10초 후 자동으로 종료됩니다</p>
       <SelectButton nextPage={'/'} text={'홈으로 돌아가기'} />

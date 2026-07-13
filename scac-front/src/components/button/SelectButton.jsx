@@ -33,7 +33,7 @@ export default function SelectButton({ nextPage, text, onClickAction }) {
     }
   };
   return (
-    <button className="select_complete" onClick={() => handleNextPage()}>
+    <button className="btn_select" onClick={() => handleNextPage()}>
       {text}
     </button>
   );

@@ -1,7 +1,4 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePaymentStore } from '../../store/paymentStore';
-import { useTicketStore } from '../../store/ticketStore';
 import { useResetStore } from '../../hooks/useResetStore';
 
 // 사용할 페이지에선

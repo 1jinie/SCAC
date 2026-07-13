@@ -6,25 +6,33 @@
   width: 840px;
   min-height: 1350px;
 
-  background: #ffffff;
+  background: var(--color-white);
 
-  border-radius: 32px;
+  border-radius: var(--radius-card);
 
   display: flex;
-  justify-content: center;
+  justify-content: stretch;
+  align-items: stretch;
+
+  box-sizing: border-box;
+
+  /* border: solid 4px red; */
+}
+
+.payment_status_box {
+  position: relative;
+  width: 100%;
+  flex-grow: 1;
+
+  display: flex;
+  flex-direction: column;
   align-items: center;
 
   padding: 80px 60px;
 
   box-sizing: border-box;
-}
 
-.payment_status_box {
-  width: 100%;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  /* border: solid 4px red; */
 }
 
 /* ==========================
@@ -43,9 +51,9 @@
 ========================== */
 
 .payment_status_box h2 {
-  font-size: 64px;
-  font-weight: 700;
-  color: #363636;
+  font-size: var(--font-size-title);
+  font-weight: var(--font-bold);
+  color: var(--color-text);
 
   margin-bottom: 60px;
 }
@@ -64,38 +72,43 @@
 
   padding: 24px 0;
 
-  border-radius: 20px;
-
   margin-bottom: 20px;
 }
 
-/* 첫 번째(status) 박스 */
+/*  박스 */
 
-.payment_status_row:first-of-type {
-  background: #ffffff;
+.payment_status_container {
+  background: var(--color-white);
 
-  border: 2px solid #d7e9e8;
+  border: 2px solid var(--color-sub);
 
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
+
+  border-radius: 20px;
 
   min-height: 250px;
 }
 
 /* 성공 */
 
-.payment_status_box.success .payment_status_row:first-of-type span:last-child {
-  color: #363636;
+.payment_status_box.success .payment_status_row:first-of-type span {
+  color: var(--color-text);
+}
+
+.payment_status_box.success .btn_select {
+  border-color: var(--color-pay-mint);
+  color: var(--color-pay-mint);
 }
 
 /* 실패 */
 
-.payment_status_box.fail .payment_status_row:first-of-type {
-  background: #ff985c;
+.payment_status_box.fail .payment_status_container {
+  background: var(--color-error);
   border: none;
 }
 
-.payment_status_box.fail .payment_status_row:first-of-type span:last-child {
-  color: #612800;
+.payment_status_box.fail .payment_status_row:first-of-type span {
+  color: var(--color-text-brown);
 }
 
 /* ==========================
@@ -103,15 +116,19 @@
 ========================== */
 
 .payment_status_row span:first-child {
-  font-size: 32px;
-  color: #666;
+  font-size: var(--font-size-subtitle);
+  font-weight: var(--font-regular);
+
+  color: var(--color-text-light);
+
   margin-bottom: 12px;
 }
 
 .payment_status_row span:last-child {
-  font-size: 64px;
-  font-weight: 700;
-  color: #363636;
+  font-size: var(--font-size-title);
+  font-weight: var(--font-bold);
+
+  color: var(--color-text);
 }
 
 /* ==========================
@@ -119,14 +136,17 @@
 ========================== */
 
 .payment_status_row:nth-of-type(2) span:first-child {
-  font-size: 32px;
-  color: #666;
+  font-size: var(--font-size-subtitle);
+  font-weight: var(--font-regular);
+
+  color: var(--color-text-light);
 }
 
 .payment_status_row:nth-of-type(2) span:last-child {
-  font-size: 64px;
-  font-weight: 700;
-  color: #363636;
+  font-size: var(--font-size-title);
+  font-weight: var(--font-bold);
+
+  color: var(--color-text);
 }
 
 /* ==========================
@@ -138,8 +158,10 @@
 
   text-align: center;
 
-  font-size: 48px;
-  color: #363636;
+  font-size: var(--font-size-heading);
+  font-weight: var(--font-regular);
+
+  color: var(--color-text);
 
   line-height: 1.4;
 }
@@ -151,17 +173,16 @@
 .payment_timer {
   margin-top: 48px;
 
-  font-size: 32px;
+  font-size: var(--font-size-subtitle);
+  font-weight: var(--font-regular);
 
-  color: #7b7b7b;
+  color: var(--color-text-light);
 }
 
 /* ==========================
    Button
 ========================== */
-
-.payment_status_box .btn_select {
-  width: 100%;
-
-  margin-top: 60px;
+.btn_select {
+  position: absolute;
+  bottom: 90px;
 }
