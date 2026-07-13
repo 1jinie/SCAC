@@ -3,10 +3,12 @@ import { seats } from '../../data/Seats';
 import { useNavigate } from 'react-router-dom';
 import { reservationStore } from '../../store/reservationStore';
 import SeatItem from './SeatItem';
+import CheckInModal from '../../components/modal/CheckInModal';
 import '../../styles/seat.css';
 
 function SeatPage({ mode }) {
   const [selected, setSelected] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   const setRoomId = reservationStore((state) => state.setRoomId);
   const navigate = useNavigate();
 
@@ -39,7 +41,14 @@ function SeatPage({ mode }) {
       return;
     }
 
-    navigate('/');
+    setShowModal(true);
+  };
+
+  const handleCheckIn = (data) => {
+    console.log('입실 정보:', data);
+    console.log('선택 좌석:', selected);
+
+    setShowModal(false);
   };
 
   return (
@@ -93,6 +102,12 @@ function SeatPage({ mode }) {
       <button className="confirm_button" onClick={handleConfirm}>
         선택완료
       </button>
+      {showModal && (
+        <CheckInModal
+          onClose={() => setShowModal(false)}
+          onConfirm={handleCheckIn}
+        />
+      )}
     </div>
   );
 }
