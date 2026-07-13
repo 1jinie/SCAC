@@ -1,0 +1,167 @@
+/* ==========================
+   Payment Result
+========================== */
+
+.modal {
+  width: 840px;
+  min-height: 1350px;
+
+  background: #ffffff;
+
+  border-radius: 32px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 80px 60px;
+
+  box-sizing: border-box;
+}
+
+.payment_status_box {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ==========================
+   Icon
+========================== */
+
+.payment_result_icon {
+  width: 124px;
+  height: 124px;
+
+  margin-bottom: 40px;
+}
+
+/* ==========================
+   Title
+========================== */
+
+.payment_status_box h2 {
+  font-size: 64px;
+  font-weight: 700;
+  color: #363636;
+
+  margin-bottom: 60px;
+}
+
+/* ==========================
+   Status Card
+========================== */
+
+.payment_status_row {
+  width: 520px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px 0;
+
+  border-radius: 20px;
+
+  margin-bottom: 20px;
+}
+
+/* 첫 번째(status) 박스 */
+
+.payment_status_row:first-of-type {
+  background: #ffffff;
+
+  border: 2px solid #d7e9e8;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  min-height: 250px;
+}
+
+/* 성공 */
+
+.payment_status_box.success .payment_status_row:first-of-type span:last-child {
+  color: #363636;
+}
+
+/* 실패 */
+
+.payment_status_box.fail .payment_status_row:first-of-type {
+  background: #ff985c;
+  border: none;
+}
+
+.payment_status_box.fail .payment_status_row:first-of-type span:last-child {
+  color: #612800;
+}
+
+/* ==========================
+   Status Text
+========================== */
+
+.payment_status_row span:first-child {
+  font-size: 32px;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.payment_status_row span:last-child {
+  font-size: 64px;
+  font-weight: 700;
+  color: #363636;
+}
+
+/* ==========================
+   Ticket Name
+========================== */
+
+.payment_status_row:nth-of-type(2) span:first-child {
+  font-size: 32px;
+  color: #666;
+}
+
+.payment_status_row:nth-of-type(2) span:last-child {
+  font-size: 64px;
+  font-weight: 700;
+  color: #363636;
+}
+
+/* ==========================
+   Message
+========================== */
+
+.payment_message {
+  margin-top: 30px;
+
+  text-align: center;
+
+  font-size: 48px;
+  color: #363636;
+
+  line-height: 1.4;
+}
+
+/* ==========================
+   Timer
+========================== */
+
+.payment_timer {
+  margin-top: 48px;
+
+  font-size: 32px;
+
+  color: #7b7b7b;
+}
+
+/* ==========================
+   Button
+========================== */
+
+.payment_status_box .btn_select {
+  width: 100%;
+
+  margin-top: 60px;
+}

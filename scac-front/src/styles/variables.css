@@ -1,1 +1,52 @@
-/* 색상, 폰트, 크기 등의 CSS 변수 */
+/* 색상, 폰트, border-radius 등 */
+/* 
+사용은
+color: var(--color-text);
+background: var(--color-primary);
+box-shadow: var(--shadow-card);
+box-shadow: var(--shadow-inner-simple);
+이런식으로 쓰면 됩니다
+*/
+
+:root {
+  /* Brand */
+  --color-highlight: #ff985c;
+  --color-sub: #91c6bc;
+  --color-important: #4b9da9;
+  --color-nomal: #d9d9d9;
+
+  /* State */
+  --color-pay-mint: #6bafaa;
+  --color-error: #ff985c;
+
+  /* Text */
+  --color-text: #363636;
+  --color-text-brown: #612800;
+  --color-text-light: #666666;
+  --color-text-admin-call: #ebebeb;
+  --color-btn-cancel-text: #656565;
+
+  /* Background */
+  --color-white: #ffffff;
+  --color-pay-white: #f8f8f8;
+  --color-btn-cancel-fill: #cdcdcd;
+  --color-btn-white: #f6f6f6;
+  --color-reserv-time-disavailable: #efefef;
+  --color-overlay: rgba(0, 0, 0, 0.7);
+
+  /* Shadow 
+  figma에서 주로 사용한 것은 --shadow-md 와 --shadow-inner-md 입니다 */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 22px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+  --shadow-inner-sm: inset 0 2px 6px rgba(0, 0, 0, 0.08);
+  --shadow-inner-md: inset 4px 4px 44px rgba(0, 0, 0, 0.25);
+
+  /* Stroke */
+  --color-reserv-stroke: #c2c2c2;
+
+  /* Radius */
+  --radius-card: 32px;
+  --radius-button: 16px;
+}
