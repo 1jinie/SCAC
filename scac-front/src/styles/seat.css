@@ -175,8 +175,8 @@
 }
 
 /* seat 모드에서 대각선 적용 */
-.seat.unavailable.r1,
-.seat.unavailable.r2 {
+.seat.unavailable.R1,
+.seat.unavailable.R2 {
   background-image: linear-gradient(
     to bottom right,
     transparent 49.3%,
@@ -186,7 +186,7 @@
   );
 }
 
-.seat.unavailable.r3 {
+.seat.unavailable.R3 {
   background-image: linear-gradient(
     to bottom right,
     transparent 49.5%,

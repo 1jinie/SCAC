@@ -24,7 +24,7 @@ export const seats = [
   { id: 23, name: '23', type: 'seat', x: 3, y: 7, status: 'using' },
   { id: 24, name: '24', type: 'seat', x: 4, y: 7, status: 'available' },
   { id: 25, name: '25', type: 'seat', x: 5, y: 7, status: 'available' },
-  { id: 101, name: 'r1', type: 'room', x: 1, y: 10, status: 'available' },
-  { id: 102, name: 'r2', type: 'room', x: 4, y: 10, status: 'available' },
-  { id: 103, name: 'r3', type: 'room', x: 7, y: 10, status: 'available' },
+  { id: 101, name: 'R1', type: 'room', x: 1, y: 10, status: 'available' },
+  { id: 102, name: 'R2', type: 'room', x: 4, y: 10, status: 'available' },
+  { id: 103, name: 'R3', type: 'room', x: 7, y: 10, status: 'available' },
 ];
