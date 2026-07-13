@@ -21,7 +21,7 @@ export const formatDate = (fullDate) => {
     day: date.toLocaleDateString('ko-KR', {
       weekday: 'short',
     }),
-    date: `${date.getDate()}일`,
+    date: `${date.getMonth() + 1}/${date.getDate()}`,
   };
 };
 
