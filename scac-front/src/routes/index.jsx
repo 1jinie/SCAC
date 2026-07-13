@@ -3,6 +3,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import HomePage from '../pages/Main/Home';
 import LoginPage from '../pages/Login/Login';
 import SignUpPage from '../pages/Signup/Signup';
+import LoginHomePage from '../pages/Main/LoginHome';
+import MyPage from '../pages/MyPage/MyPage';
 import TicketPage from '../pages/Ticket/TicketPage';
 import KioskLayout from '../layouts/KioskLayout';
 import KioskErrorPage from '../pages/Error/KioskErrorPage';
@@ -22,6 +24,8 @@ const router = createBrowserRouter([
       { path: 'seat', element: <Seat /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignUpPage /> },
+      { path: 'loginhome', element: <LoginHomePage /> },
+      { path: 'mypage', element: <MyPage /> },
       { path: 'studyroom_reservation', element: <Reservation /> },
       {
         path: 'ticket',

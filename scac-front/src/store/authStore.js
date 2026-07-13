@@ -27,37 +27,41 @@ export const useAuthStore = create((set) => ({
     }
   },
 
-  // /* 로그아웃 처리 액션 - 상태를 초기화하여 출입 권한을 회수 */
+  /* 로그아웃 처리 액션 - 상태를 초기화하여 출입 권한을 회수 */
+  logout: async () => {
+    try {
+      await postLogout();
+    } catch (error) {
+      console.error('Store Logout Error:', error);
+    } finally {
+      // 에러가 나더라도 클라이언트 상태는 안전하게 리셋
+      set({
+        isLoggedIn: false,
+        userRole: 'GUEST',
+        memberId: null,
+      });
+    }
+  },
 
-  // 현재는 에러가 나서 주석처리 해둡니다 필요시 주석해제 해주세요.
+  /* 회원가입 처리 액션 */
+  signUp: async (userData) => {
+    try {
+      // authApi의 postSignUp 함수를 호출하여 서버에 전송
+      const data = await postSignUp(userData);
 
-  // logout: async () => {
-  //   try {
-  //     await postLogout();
-  //   } catch (error) {
-  //     console.error('Store Logout Error:', error);
-  //   } finally {
-  //     // 에러가 나더라도 클라이언트 상태는 안전하게 리셋
-  //     set({
-  //       isLoggedIn: false,
-  //       userRole: 'GUEST',
-  //       memberId: null,
-  //     });
-  //   }
-  // },
+      // 회원가입 성공 시 로그인 상태로 설정
+      set({
+        isLoggedIn: true,
+        userRole: data.user_role || 'USER', // 기본값은 'USER'
+        memberId: data.member_id,
+      });
 
-  // /* 회원가입 처리 액션 */
-  // signUp: async (userData) => {
-  //   try {
-  //     // authApi의 postSignUp 함수를 호출하여 서버에 전송
-  //     await postSignUp(userData);
-
-  //     // 회원가입 성공 시 화면(Component)에 성공 신호를 리턴
-  //     return { success: true };
-  //   } catch (error) {
-  //     console.error('Store SignUp Error:', error);
-  //     // 서버에서 에러 메시지가 올 경우 화면에 뿌려줄 수 있도록 에러 객체 반환
-  //     return { success: false, error };
-  //   }
-  // },
+      // 회원가입 성공 신호를 리턴
+      return { success: true };
+    } catch (error) {
+      console.error('Store SignUp Error:', error);
+      // 서버에서 에러 메시지가 올 경우 화면에 뿌려줄 수 있도록 에러 객체 반환
+      return { success: false, error };
+    }
+  },
 }));

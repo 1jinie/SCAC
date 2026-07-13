@@ -41,9 +41,9 @@ function SignUpPage() {
 
     if (result.success) {
       alert(
-        '회원가입이 성공적으로 완료되었습니다! 로그인 페이지로 이동합니다.',
+        '회원가입이 성공적으로 완료되었습니다! 로그인 홈페이지로 이동합니다.',
       );
-      navigate('/'); // 가입 성공 시 메인 페이지로 복귀
+      navigate('/loginhome'); // 가입 성공 시 로그인 홈으로 이동
     } else {
       setErrorMessage(
         '회원가입에 실패했습니다. 이미 등록된 번호인지 확인해 주세요.',
