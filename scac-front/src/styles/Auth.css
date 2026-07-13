@@ -19,7 +19,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 40px; /* 내부 양옆 여백 */
+  padding: 20px 40px; /* 내부 양옆 여백 */
 }
 
 /* 2. 상단 헤더 영역 (홈 아이콘 & 실시간 시계 배치) */
