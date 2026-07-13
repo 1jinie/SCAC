@@ -45,9 +45,13 @@ function SeatPage({ mode }) {
   };
 
   const handleCheckIn = (data) => {
-    console.log('입실 정보:', data);
-    console.log('선택 좌석:', selected);
+    const checkIn = {
+      seatId: selected,
+      phone: data.phone,
+      password: data.password,
+    };
 
+    console.log(checkIn);
     setShowModal(false);
   };
 

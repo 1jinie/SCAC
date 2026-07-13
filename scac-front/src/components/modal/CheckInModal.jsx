@@ -19,7 +19,7 @@ function CheckInModal({ onClose, onConfirm }) {
   return (
     <div className="modal_overlay">
       <div className="modal">
-        <button className="modal_close" onClick={onclose}>
+        <button className="modal_close" onClick={onClose}>
           x
         </button>
         <h2>입실</h2>
