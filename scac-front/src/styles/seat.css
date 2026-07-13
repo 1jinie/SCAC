@@ -25,6 +25,7 @@
   box-sizing: border-box;
   background-color: #ffffff;
   border-bottom: 2px solid #e5e5e5;
+  position: relative;
 }
 
 .back_btn {
@@ -35,6 +36,15 @@
   color: #333333;
   cursor: pointer;
   user-select: none;
+  position: absolute;
+  left: 0;
+}
+
+.header_title {
+  width: 100%;
+  text-align: center;
+  font-size: 48px;
+  font-weight: 700;
 }
 
 .back_arrow {
@@ -164,7 +174,7 @@
   position: relative;
 }
 
-/* Diagonal line in rooms */
+/* seat 모드에서 대각선 적용 */
 .seat.unavailable.r1,
 .seat.unavailable.r2 {
   background-image: linear-gradient(
@@ -198,7 +208,9 @@
   background-color: #ff9255;
 }
 
-.seat.room {
+.seat.room.available,
+.seat.room.using,
+.seat.room.selected {
   background-image: none !important;
 }
 

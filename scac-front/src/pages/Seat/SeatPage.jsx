@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import { seats } from '../../data/Seats';
+import { useNavigate } from 'react-router-dom';
+import { reservationStore } from '../../store/reservationStore';
 import SeatItem from './SeatItem';
 import '../../styles/seat.css';
 
 function SeatPage({ mode }) {
   const [selected, setSelected] = useState(null);
+  const setRoomId = reservationStore((state) => state.setRoomId);
+  const navigate = useNavigate();
 
+  // 좌석 / 룸 선택 이벤트 정의
   const handleClick = (seat) => {
     // 좌석 페이지
     if (mode === 'seat') {
@@ -20,10 +25,32 @@ function SeatPage({ mode }) {
     setSelected((prev) => (prev === seat.id ? null : seat.id));
   };
 
+  const handleConfirm = () => {
+    if (!selected) {
+      alert(
+        mode === 'seat' ? '좌석을 선택해주세요' : '스터디룸을 선택해주세요',
+      );
+      return;
+    }
+
+    if (mode === 'room') {
+      setRoomId(selected);
+      navigate('/room/reservation');
+      return;
+    }
+
+    navigate('/');
+  };
+
   return (
     <div className="seat_page">
       <div className="seat_header">
-        <div className="back_btn">뒤로가기</div>
+        <div className="back_btn" onClick={() => navigate('/')}>
+          뒤로가기
+        </div>
+        <h1 className="header_title">
+          {mode === 'seat' ? '좌석 선택' : '스터디룸 선택'}
+        </h1>
       </div>
 
       <div className="seat_grid_wrapper">
@@ -63,7 +90,7 @@ function SeatPage({ mode }) {
         </div>
       </div>
 
-      <button className="confirm_button" text>
+      <button className="confirm_button" onClick={handleConfirm}>
         선택완료
       </button>
     </div>
