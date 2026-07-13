@@ -4,8 +4,13 @@ import axios from 'axios';
 
 export default function SelectButton({ nextPage, onClickAction }) {
   // 사용할 페이지에선
-  // <SelectButton nextPage='넘어갈 페이지' onClickAction={handle* 함수}/>
+  // <SelectButton nextPage={'넘어갈 페이지'} onClickAction={handle* 함수}/>
   // 로 사용하시면 됩니다
+
+  // 경로 설정 예시
+  // 'ticket' : 현재 위치에서 이동합니다 ex. /payment에서 버튼 누를 시 경로 /payment/ticket
+  // '/ticket' : 라우터에 연결된 <Ticket/>으로 이동합니다 ex. /payment에서 버튼 누를 시 경로 /ticket
+
   // ex. <SelectButton nextPage={`ticket`} /> => <Payment/>로 이동
 
   // API함수에 보낼 데이터가 있다면

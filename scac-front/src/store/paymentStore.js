@@ -6,5 +6,5 @@ export const usePaymentStore = create((set) => ({
 
   setPaymentMethod: (paymentMethod) => set({ paymentMethod: paymentMethod }),
 
-  clearSelectedPaymentMethod: () => set({ paymentMethod: null }),
+  resetStore: () => set({ paymentMethod: null }),
 }));
