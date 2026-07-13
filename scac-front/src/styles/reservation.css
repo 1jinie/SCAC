@@ -35,17 +35,12 @@
   cursor: pointer;
 }
 
-.header_time {
-  font-size: 28px;
-  font-weight: 500;
-}
-
 /* ================= Title ================= */
 
 .reservation_title {
   width: 920px;
   margin: 10px 0 40px;
-  font-size: 72px;
+  font-size: 48px;
   font-weight: 700;
   color: #111;
 }
@@ -77,7 +72,7 @@
 }
 
 .date_btn.active {
-  background: #ff9255;
+  background: #ff985c;
   color: white;
 }
 
@@ -115,7 +110,7 @@
 }
 
 .time_btn.active {
-  background: #ff9255;
+  background: #ff985c;
   color: white;
 }
 

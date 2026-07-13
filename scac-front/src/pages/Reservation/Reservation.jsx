@@ -1,20 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { reservationDates } from '../../data/Dumdates';
-import { formatDate } from '../../utils/date';
+import React, { useState } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { reservations } from '../../data/Reservations';
+import { formatDate, addOneHour } from '../../utils/date';
+import { reservationStore } from '../../store/reservationStore';
+import { rooms } from '../../data/RoomInfo';
 import '../../styles/reservation.css';
 
 export default () => {
-  const [selectedDate, setSelectedDate] = useState(reservationDates[0]);
+  const roomId = reservationStore((state) => state.roomId);
+  const room = rooms[roomId];
+  const roomReservations = reservations[roomId];
+  const dates = Object.keys(roomReservations);
+
+  const [selectedDate, setSelectedDate] = useState(dates[0]);
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log('startTime:', startTime);
-    console.log('endTime:', endTime);
-  }, [endTime]);
+  // 현재 선택 날짜의 시간 목록
+  const selectedTimes = roomReservations[selectedDate];
 
   // 날짜 클릭 이벤트
   const handleDateClick = (date) => {
@@ -33,12 +38,8 @@ export default () => {
     }
 
     if (!endTime) {
-      const startIndex = selectedDate.times.findIndex(
-        (t) => t.time === startTime,
-      );
-      const currentIndex = selectedDate.times.findIndex(
-        (t) => t.time === time.time,
-      );
+      const startIndex = selectedTimes.findIndex((t) => t.time === startTime);
+      const currentIndex = selectedTimes.findIndex((t) => t.time === time.time);
 
       let newStartIndex = startIndex;
       let newEndIndex = currentIndex;
@@ -50,7 +51,7 @@ export default () => {
       }
 
       // 사이에 예약 불가 시간이 있는지 확인
-      const hasUnavailable = selectedDate.times
+      const hasUnavailable = selectedTimes
         .slice(newStartIndex + 1, newEndIndex + 1)
         .some((t) => !t.available);
 
@@ -61,8 +62,8 @@ export default () => {
         return;
       }
 
-      setStartTime(selectedDate.times[newStartIndex].time);
-      setEndTime(selectedDate.times[newEndIndex].time);
+      setStartTime(selectedTimes[newStartIndex].time);
+      setEndTime(selectedTimes[newEndIndex].time);
       return;
     }
 
@@ -70,6 +71,7 @@ export default () => {
     setEndTime(null);
   };
 
+  // 예약 시간 선택 버튼에 스타일 적용 위한 함수
   const isSelected = (time) => {
     if (!startTime) return false;
 
@@ -77,43 +79,56 @@ export default () => {
       return time === startTime;
     }
 
-    const startIndex = selectedDate.times.findIndex(
-      (t) => t.time === startTime,
-    );
-    const endIndex = selectedDate.times.findIndex((t) => t.time === endTime);
-    const currentIndex = selectedDate.times.findIndex((t) => t.time === time);
+    const startIndex = selectedTimes.findIndex((t) => t.time === startTime);
+    const endIndex = selectedTimes.findIndex((t) => t.time === endTime);
+    const currentIndex = selectedTimes.findIndex((t) => t.time === time);
 
     return currentIndex >= startIndex && currentIndex <= endIndex;
+  };
+
+  // 선택완료 버튼 이벤트
+  const handleConfirm = () => {
+    if (!startTime) {
+      alert('시간을 선택해주세요');
+      return;
+    }
+
+    const finalEndTime = addOneHour(endTime ?? startTime);
+
+    console.log({ startTime, endTime: finalEndTime });
+
+    navigate('/payment');
   };
 
   return (
     <div className="reservation_page">
       <div className="reservation_header">
-        <div className="back_btn" onClick={() => navigate('/Seat')}>
+        <div className="back_btn" onClick={() => navigate('/Room')}>
           뒤로가기
         </div>
         <h1 className="reservation_title">스터디룸 예약</h1>
-        <span className="header_time">오전 11:41</span>
       </div>
+
       <div className="date_container">
         <div className="date_selector">
-          {reservationDates.map((item) => {
-            const { day, date } = formatDate(item.fullDate);
+          {dates.map((date, index) => {
+            const { day, date: displayDate } = formatDate(date);
             return (
               <button
-                key={item.id}
-                className={`date_btn ${selectedDate?.id === item.id ? 'active' : ''}`}
-                onClick={() => handleDateClick(item)}
+                key={date}
+                className={`date_btn ${selectedDate === date ? 'active' : ''}`}
+                onClick={() => handleDateClick(date)}
               >
                 <span className="date_day">{day}</span>
-                <span className="date_number">{date}</span>
+                <span className="date_number">{displayDate}</span>
               </button>
             );
           })}
         </div>
       </div>
+
       <div className="time_selector">
-        {selectedDate?.times?.map((item) => (
+        {selectedTimes.map((item) => (
           <button
             key={item.time}
             onClick={() => handleTimeClick(item)}
@@ -127,11 +142,15 @@ export default () => {
       </div>
       <div className="room_info">
         <div className="preview_img">
-          <img src="/images/studyroom_6people_00.jpg" alt="" />
+          <img src={room.image} alt="" />
         </div>
-        <div className="room_badge">ROOM R1 👥 6인실</div>
+        <div className="room_badge">
+          ROOM {room.name} 👥 {room.capacity}인실
+        </div>
       </div>
-      <button className="confirm_button">선택완료</button>
+      <button className="confirm_button" onClick={handleConfirm}>
+        선택완료
+      </button>
     </div>
   );
 };

@@ -9,6 +9,7 @@ import TicketPage from '../pages/Ticket/TicketPage';
 import KioskLayout from '../layouts/KioskLayout';
 import KioskErrorPage from '../pages/Error/KioskErrorPage';
 import Seat from '../pages/Seat/Seat';
+import Room from '../pages/Seat/Room';
 import Reservation from '../pages/Reservation/Reservation';
 import PaymentMethodPage from '../pages/Payment/PaymentMethodPage';
 import PaymentProcess from '../pages/Payment/PaymentProcess';
@@ -26,7 +27,13 @@ const router = createBrowserRouter([
       { path: 'signup', element: <SignUpPage /> },
       { path: 'loginhome', element: <LoginHomePage /> },
       { path: 'mypage', element: <MyPage /> },
-      { path: 'studyroom_reservation', element: <Reservation /> },
+      {
+        path: 'room',
+        children: [
+          { index: true, element: <Room /> },
+          { path: 'reservation', element: <Reservation /> },
+        ],
+      },
       {
         path: 'ticket',
         children: [{ index: true, element: <TicketPage /> }],
@@ -36,7 +43,8 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <PaymentMethodPage /> },
           { path: 'process', element: <PaymentProcess /> },
-          { path: 'result', element: <PaymentResult /> },
+
+          { path: 'result/:status', element: <PaymentResult /> },
         ],
       },
     ],

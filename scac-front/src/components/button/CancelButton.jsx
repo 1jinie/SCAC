@@ -1,7 +1,5 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePaymentStore } from '../../store/paymentStore';
-import { useTicketStore } from '../../store/ticketStore';
+import { useResetStore } from '../../hooks/useResetStore';
 
 // 사용할 페이지에선
 // <CancelButton nextPage={'넘어갈 페이지'} text={'버튼이름'}>
@@ -14,13 +12,11 @@ import { useTicketStore } from '../../store/ticketStore';
 
 export default function CancelButton({ text, nextPage }) {
   const navi = useNavigate();
-  const clearPayment = usePaymentStore((state) => state.resetStore);
-  const clearTicket = useTicketStore((state) => state.resetStore);
+  const resetAll = useResetStore();
 
   const handleClear = () => {
     // 결제정보 초기화
-    clearPayment();
-    clearTicket();
+    resetAll();
     navi(nextPage);
   };
 

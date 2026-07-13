@@ -34,7 +34,7 @@ export default function TicketPage() {
         <h3 className="ticket_type">정기권 &#40;기간선택&#41;</h3>
         <TicketList tickets={periodTickets} />
       </section>
-      <SelectButton nextPage={`/payment`} />
+      <SelectButton nextPage={`/payment`} text={'선택완료'} />
     </div>
   );
 }

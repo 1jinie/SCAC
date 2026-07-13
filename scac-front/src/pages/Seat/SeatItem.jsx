@@ -19,7 +19,7 @@ function SeatItem({ seat, isSelected, onClick, mode }) {
     classNames.push('room');
   }
 
-  // Determine grid span dynamically
+  // 그리드 동적 병합
   let gridRow = seat.y;
   let gridColumn = seat.x;
 
@@ -46,10 +46,10 @@ function SeatItem({ seat, isSelected, onClick, mode }) {
         ...(extraMarginLeft > 0 ? { marginLeft: `${extraMarginLeft}px` } : {}),
       }}
     >
-      {seat.id > 100 ? (
+      {seat.type === 'room' ? (
         <>
           <div className="room_door" />
-          <div className="room_name">{seat.name}</div>
+          <div className="room_name">{label}</div>
         </>
       ) : (
         <div className="seat_inner">{label}</div>

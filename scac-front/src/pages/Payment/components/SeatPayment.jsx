@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useTicketStore } from '../../../store/ticketStore';
 import { usePaymentStore } from '../../../store/paymentStore';
 import { ticketApi } from '../../../api/ticketApi';
+import { formatPrice } from '../../../utils/formatter';
 
 export default function SeatPayment() {
   const selectTicketId = useTicketStore((state) => state.selectedTicketId);
   const paymentMethod = usePaymentStore((state) => state.paymentMethod);
-  // 티켓정보 불러오는거 생략
+
   const [ticket, setTicket] = useState([]);
 
   useEffect(() => {
@@ -31,7 +32,7 @@ export default function SeatPayment() {
         {ticket.ticketType === 'TIME' ? '시간권' : '기간권'}
       </p>
       {/* <p>상품 종류 : </p> */}
-      <p>최종 가격 : {ticket.ticketPrice}</p>
+      <p>최종 가격 : {formatPrice(ticket.ticketPrice)} 원</p>
     </div>
   );
 }

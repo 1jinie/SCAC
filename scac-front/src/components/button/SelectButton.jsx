@@ -2,9 +2,9 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-export default function SelectButton({ nextPage, onClickAction }) {
+export default function SelectButton({ nextPage, text, onClickAction }) {
   // 사용할 페이지에선
-  // <SelectButton nextPage={'넘어갈 페이지'} onClickAction={handle* 함수}/>
+  // <SelectButton nextPage={'넘어갈 페이지'} onClickAction={handle* 함수} text={'버튼이름'}/>
   // 로 사용하시면 됩니다
 
   // 경로 설정 예시
@@ -33,8 +33,8 @@ export default function SelectButton({ nextPage, onClickAction }) {
     }
   };
   return (
-    <button className="select_complete" onClick={() => handleNextPage()}>
-      선택완료
+    <button className="btn_select" onClick={() => handleNextPage()}>
+      {text}
     </button>
   );
 }
