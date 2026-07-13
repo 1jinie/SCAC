@@ -25,6 +25,7 @@
   box-sizing: border-box;
   background-color: #ffffff;
   border-bottom: 2px solid #e5e5e5;
+  position: relative;
 }
 
 .back_btn {
@@ -35,6 +36,15 @@
   color: #333333;
   cursor: pointer;
   user-select: none;
+  position: absolute;
+  left: 0;
+}
+
+.header_title {
+  width: 100%;
+  text-align: center;
+  font-size: 48px;
+  font-weight: 700;
 }
 
 .back_arrow {
@@ -85,7 +95,7 @@
 
 /* Specific colors for the back layer */
 .seat.available {
-  background-color: #b0b0b0;
+  background-color: #d9d9d9;
 }
 
 .seat.using {
@@ -93,7 +103,7 @@
 }
 
 .seat.selected {
-  background-color: #e57d45;
+  background-color: #ff985c;
 }
 
 .seat.unavailable {
@@ -131,7 +141,7 @@
 }
 
 .seat.selected .seat_inner {
-  background-color: #ff9255;
+  background-color: #ff985c;
   border-color: #e57d45;
 }
 
@@ -164,9 +174,9 @@
   position: relative;
 }
 
-/* Diagonal line in rooms */
-.seat.unavailable.r1,
-.seat.unavailable.r2 {
+/* seat 모드에서 대각선 적용 */
+.seat.unavailable.R1,
+.seat.unavailable.R2 {
   background-image: linear-gradient(
     to bottom right,
     transparent 49.3%,
@@ -176,7 +186,7 @@
   );
 }
 
-.seat.unavailable.r3 {
+.seat.unavailable.R3 {
   background-image: linear-gradient(
     to bottom right,
     transparent 49.5%,
@@ -195,10 +205,12 @@
 }
 
 .seat.room.selected {
-  background-color: #ff9255;
+  background-color: #ff985c;
 }
 
-.seat.room {
+.seat.room.available,
+.seat.room.using,
+.seat.room.selected {
   background-image: none !important;
 }
 
@@ -274,7 +286,7 @@
 }
 
 .legend_color.select {
-  background-color: #ff9255;
+  background-color: #ff985c;
 }
 
 .legend_color.available {

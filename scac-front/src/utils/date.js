@@ -21,6 +21,15 @@ export const formatDate = (fullDate) => {
     day: date.toLocaleDateString('ko-KR', {
       weekday: 'short',
     }),
-    date: `${date.getDate()}일`,
+    date: `${date.getMonth() + 1}/${date.getDate()}`,
   };
+};
+
+export const addOneHour = (time) => {
+  const [hour, minute] = time.split(':').map(Number);
+  const date = new Date(2000, 0, 1, hour, minute);
+
+  date.setHours(date.getHours() + 1);
+
+  return date.toTimeString().slice(0, 5);
 };
