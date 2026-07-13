@@ -61,7 +61,11 @@ export const useAuthStore = create((set) => ({
     } catch (error) {
       console.error('Store SignUp Error:', error);
       // 서버에서 에러 메시지가 올 경우 화면에 뿌려줄 수 있도록 에러 객체 반환
-      return { success: false, error };
+      return {
+        success: false,
+        errorMessage:
+          error.response?.data?.message || error.message || '알 수 없는 에러',
+      };
     }
   },
 }));
