@@ -1,10 +1,10 @@
-import axios from './axios';
+import axiosInstance from './axiosInstance.js';
 // login,logout처럼 인증(토큰 발급/세션) 및 권한 도메인
 const DEFAULT_RETRY_COUNT = 3;
 /* 일반 사용자 로그인 */
 export const postLogin = async (phoneNumber, password) => {
   try {
-    const response = await axios.post('/api/auth/login', {
+    const response = await axiosInstance.post('/api/auth/login', {
       phone_number: phoneNumber,
       password: password,
     });
@@ -18,7 +18,7 @@ export const postLogin = async (phoneNumber, password) => {
 /* 관리자 로그인 */
 export const postAdminLogin = async (adminId, password) => {
   try {
-    const response = await axios.post('/api/auth/admin/login', {
+    const response = await axiosInstance.post('/api/auth/admin/login', {
       admin_id: adminId,
       password: password,
     });
@@ -32,7 +32,7 @@ export const postAdminLogin = async (adminId, password) => {
 /* 회원가입 */
 export const postSignUp = async (userData) => {
   try {
-    const response = await axios.post('/api/auth/signup', {
+    const response = await axiosInstance.post('/api/auth/signup', {
       phone_number: userData.phoneNumber,
       password: userData.password,
     });
