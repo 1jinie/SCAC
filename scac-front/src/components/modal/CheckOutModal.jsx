@@ -8,12 +8,13 @@ function CheckOutModal({ onClose, onConfirm, seatId }) {
 
   const handleSubmit = () => {
     const result = checkOut(phone, password);
-    alert(result.message);
 
     if (!phone || !password) {
       alert('정보를 입력해주세요');
       return;
     }
+
+    alert(result.message);
 
     if (result.success) {
       onConfirm({

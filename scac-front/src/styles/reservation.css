@@ -87,6 +87,20 @@
   font-size: 34px;
   font-weight: 700;
   display: block;
+  position: relative;
+}
+
+.date_number::before {
+  content: '';
+  position: absolute;
+
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 50px; /* 선 길이 */
+  height: 2px;
+  background: black;
 }
 
 /* ================= Time ================= */
@@ -118,6 +132,7 @@
   color: #c6c6c6;
   background: #efefef;
   cursor: not-allowed;
+  text-decoration: line-through;
 }
 
 /* ================= Room ================= */

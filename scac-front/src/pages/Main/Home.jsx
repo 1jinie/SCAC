@@ -8,7 +8,14 @@ import { updateCheckOut } from '../../utils/updateCheckOut';
 function HomePage() {
   const [showCheckOutModal, setShowCheckOutModal] = useState(false);
   const checkOutSeat = seatStore((state) => state.checkOutSeat);
+  const seats = seatStore((state) => state.seats);
   const navigate = useNavigate();
+
+  const availableSeats = seats.filter(
+    (seat) => seat.type === 'seat' && seat.status === 'available',
+  ).length;
+
+  const totalSeats = seats.filter((seat) => seat.type === 'seat').length;
 
   const handleCheckOut = (data) => {
     console.log('퇴실 처리', data);
@@ -29,7 +36,9 @@ function HomePage() {
       {/* 실시간 좌석 현황 대시보드 */}
       <div className="seat_status_bar">
         <span className="chair_icon">🪑</span>
-        <span className="status_text">좌석 수 00/100</span>
+        <span className="status_text">
+          좌석 수 {availableSeats}/{totalSeats}
+        </span>
       </div>
 
       {/* 메인 메뉴 그리드 영역 */}

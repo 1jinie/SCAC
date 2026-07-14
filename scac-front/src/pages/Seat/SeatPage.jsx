@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { seatStore } from '../../store/seatStore';
 import { reservationStore } from '../../store/reservationStore';
@@ -57,6 +57,12 @@ function SeatPage({ mode }) {
     checkInSeat();
     setShowModal(false);
   };
+
+  // mode 변경시 선택 초기화
+  const clearSelected = seatStore((state) => state.clearSelected);
+  useEffect(() => {
+    clearSelected();
+  }, [mode]);
 
   return (
     <div className="seat_page">
