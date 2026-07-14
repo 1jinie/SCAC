@@ -111,6 +111,7 @@ function SeatPage({ mode }) {
       </button>
       {showModal && (
         <CheckInModal
+          seatId={selected}
           onClose={() => setShowModal(false)}
           onConfirm={handleCheckIn}
         />
