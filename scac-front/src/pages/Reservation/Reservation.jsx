@@ -95,8 +95,6 @@ export default () => {
 
     const finalEndTime = addOneHour(endTime ?? startTime);
 
-    console.log({ startTime, endTime: finalEndTime });
-
     navigate('/payment');
   };
 

@@ -14,7 +14,7 @@ function SeatPage({ mode }) {
   const selectSeat = seatStore((state) => state.selectSeat);
   const checkInSeat = seatStore((state) => state.checkInSeat);
   const navigate = useNavigate();
-  console.log(seats);
+
   // 좌석 / 룸 선택 이벤트 정의
   const handleClick = (seat) => {
     // 좌석 페이지
@@ -54,7 +54,6 @@ function SeatPage({ mode }) {
       password: data.password,
     };
 
-    console.log(checkIn);
     checkInSeat();
     setShowModal(false);
   };
