@@ -55,7 +55,7 @@ function HomePage() {
           <button
             type="button"
             className="menu_btn btn_gray"
-            onClick={() => navigate('ticket')}
+            onClick={() => navigate('nonmember-signup')} // 비회원 회원가입 경로 설정
           >
             <span className="btn_icon">💳</span>
             <span className="btn_label">이용권 결제</span>
