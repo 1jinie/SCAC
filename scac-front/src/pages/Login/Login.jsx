@@ -48,6 +48,7 @@ function LoginPage() {
           >
             🏠
           </button>
+          <span className="header_time" />
         </header>
 
         <form id="login_form" onSubmit={handleLoginSubmit}>

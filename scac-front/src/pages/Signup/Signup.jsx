@@ -63,6 +63,7 @@ function SignUpPage() {
           >
             🏠
           </button>
+          <span className="header_time" />
         </header>
 
         <form id="signup_form" onSubmit={handleSignUpSubmit}>

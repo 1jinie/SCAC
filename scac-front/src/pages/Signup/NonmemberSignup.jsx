@@ -83,7 +83,7 @@ function NonmemberSignup() {
         >
           ←
         </button>
-        <span className="header_time">10:14</span>
+        <span className="header_time" />
       </header>
 
       <section className="signup_card">
