@@ -64,13 +64,10 @@ function NonmemberSignup() {
       return;
     }
 
-    // 유효성 검사 통과 시 처리
     console.log('✅ 유효한 데이터:', formData);
 
-    // TODO: 서버에 비회원 등록 요청
     setSuccessMessage('입실 준비가 완료되었습니다!');
 
-    // 2초 후 이동
     setTimeout(() => {
       navigate('/ticket');
     }, 1500);
