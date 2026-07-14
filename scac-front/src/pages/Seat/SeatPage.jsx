@@ -62,7 +62,7 @@ function SeatPage({ mode }) {
   const clearSelected = seatStore((state) => state.clearSelected);
   useEffect(() => {
     clearSelected();
-  }, [mode]);
+  }, [mode, clearSelected]);
 
   return (
     <div className="seat_page">
