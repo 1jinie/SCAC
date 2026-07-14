@@ -10,7 +10,7 @@ function SeatPage({ mode }) {
   const seats = seatStore((state) => state.seats);
   const selected = seatStore((state) => state.selectedSeat);
   const [showModal, setShowModal] = useState(false);
-  const setRoomId = reservationStore((state) => state.setRoomId);
+  const setReservation = reservationStore((state) => state.setReservation);
   const selectSeat = seatStore((state) => state.selectSeat);
   const checkInSeat = seatStore((state) => state.checkInSeat);
   const navigate = useNavigate();
@@ -39,7 +39,9 @@ function SeatPage({ mode }) {
     }
 
     if (mode === 'room') {
-      setRoomId(selected);
+      setReservation({
+        roomId: selected,
+      });
       navigate('/room/reservation');
       return;
     }

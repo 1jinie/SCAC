@@ -1,14 +1,28 @@
 import { create } from 'zustand';
 
 export const reservationStore = create((set) => ({
-  roomId: null,
+  reservation: {
+    roomId: null,
+    date: null,
+    startTime: null,
+    endTime: null,
+  },
 
-  setRoomId: (roomId) =>
-    set({
-      roomId,
-    }),
+  setReservation: (data) =>
+    set((state) => ({
+      reservation: {
+        ...state.reservation,
+        ...data,
+      },
+    })),
+
   clearReservation: () =>
     set({
-      roomId: null,
+      reservation: {
+        roomId: null,
+        date: null,
+        startTime: null,
+        endTime: null,
+      },
     }),
 }));
