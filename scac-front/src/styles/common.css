@@ -43,7 +43,6 @@
   transition: all 0.2s ease;
 
   position: absolute;
-  bottom: 210px;
   left: 50%;
   transform: translateX(-50%);
 }
