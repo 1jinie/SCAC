@@ -78,7 +78,14 @@
   transition: all 0.2s ease;
 
   position: absolute;
-  bottom: 210px;
   left: 50%;
   transform: translateX(-50%);
+}
+
+/* 상단 시계 */
+.time_text {
+  color: var(--color-text);
+  font-size: 36px;
+  margin-top: 36px;
+  margin-right: 36px;
 }

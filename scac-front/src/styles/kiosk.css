@@ -3,12 +3,12 @@
 /* 브라우저 개발용으로 모니터에서 보기 편하게 하기위해 만들었습니다 작게 보시려면 주석을 풀어주세요 
 transform scale의 숫자를 마음대로 조절하시면 됩니다
 */
-/* .kiosk_viewport {
+.kiosk_viewport {
   width: 1080px;
   min-height: 1920px;
 
   transform-origin: top left;
-  transform: scale(0.6);
+  transform: scale(0.5);
 
   display: flex;
   justify-content: center;
@@ -16,8 +16,8 @@ transform scale의 숫자를 마음대로 조절하시면 됩니다
 
   overflow: auto;
 
-  background: #ddd;
-} */
+  background: #222224;
+}
 
 /* 실제 키오스크 */
 .kiosk_wrap {
