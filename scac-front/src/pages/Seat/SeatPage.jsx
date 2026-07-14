@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
-import { seats } from '../../data/Seats';
 import { useNavigate } from 'react-router-dom';
+import { seatStore } from '../../store/seatStore';
 import { reservationStore } from '../../store/reservationStore';
 import SeatItem from './SeatItem';
 import CheckInModal from '../../components/modal/CheckInModal';
 import '../../styles/seat.css';
 
 function SeatPage({ mode }) {
-  const [selected, setSelected] = useState(null);
+  const seats = seatStore((state) => state.seats);
+  const selected = seatStore((state) => state.selectedSeat);
   const [showModal, setShowModal] = useState(false);
   const setRoomId = reservationStore((state) => state.setRoomId);
+  const selectSeat = seatStore((state) => state.selectSeat);
+  const checkInSeat = seatStore((state) => state.checkInSeat);
   const navigate = useNavigate();
-
+  console.log(seats);
   // 좌석 / 룸 선택 이벤트 정의
   const handleClick = (seat) => {
     // 좌석 페이지
@@ -24,7 +27,7 @@ function SeatPage({ mode }) {
       if (seat.type !== 'room' || seat.status !== 'available') return;
     }
 
-    setSelected((prev) => (prev === seat.id ? null : seat.id));
+    selectSeat(seat.id);
   };
 
   const handleConfirm = () => {
@@ -52,6 +55,7 @@ function SeatPage({ mode }) {
     };
 
     console.log(checkIn);
+    checkInSeat();
     setShowModal(false);
   };
 
