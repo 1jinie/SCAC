@@ -1,0 +1,246 @@
+/* ==========================
+   Payment Method
+========================== */
+
+.payment_method_box {
+  position: relative;
+
+  width: 900px;
+  min-height: 1500px;
+
+  margin: 140px auto 0;
+  padding: 130px 50px 170px;
+
+  box-sizing: border-box;
+
+  background-color: var(--color-text-admin-call);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-md);
+
+  color: var(--color-text);
+}
+
+/* ==========================
+   Title
+========================== */
+
+.payment_method_title {
+  margin: 0;
+
+  text-align: center;
+
+  font-size: 64px;
+  font-weight: var(--font-bold);
+  line-height: 1.2;
+
+  color: var(--color-text);
+}
+
+.payment_method_text {
+  margin: 20px 0 160px;
+
+  text-align: center;
+
+  font-size: 28px;
+  font-weight: var(--font-regular);
+  line-height: 1.4;
+
+  color: var(--color-text-light);
+}
+
+/* ==========================
+   Payment Button Common
+========================== */
+
+.payment_btn {
+  position: relative;
+
+  width: 100%;
+  height: 260px;
+
+  display: grid;
+  grid-template-columns: 126px 1fr 64px;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 28px;
+
+  padding: 36px 42px;
+
+  box-sizing: border-box;
+
+  border: none;
+  border-radius: 18px;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  box-shadow: var(--shadow-md);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.payment_btn + .payment_btn {
+  margin-top: 90px;
+}
+
+.payment_btn:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.payment_btn:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ==========================
+   Payment Icon Circle
+========================== */
+
+.payment_method_icon {
+  grid-column: 1;
+  grid-row: 1 / 3;
+
+  width: 126px;
+  height: 126px;
+
+  padding: 28px;
+
+  box-sizing: border-box;
+
+  border-radius: 50%;
+
+  object-fit: contain;
+}
+
+/* ==========================
+   Text
+========================== */
+
+.payment_card {
+  grid-column: 2;
+  grid-row: 1;
+
+  align-self: end;
+
+  font-size: 48px;
+  font-weight: var(--font-bold);
+  line-height: 1.2;
+}
+
+.payment_detail {
+  grid-column: 2;
+  grid-row: 2;
+
+  align-self: start;
+
+  margin-top: 10px;
+
+  font-size: 24px;
+  font-weight: var(--font-regular);
+  line-height: 1.4;
+}
+
+/* ==========================
+   Arrow
+========================== */
+
+.payment_method_next {
+  grid-column: 3;
+  grid-row: 1 / 3;
+
+  width: 52px;
+  height: 52px;
+
+  justify-self: end;
+
+  object-fit: contain;
+}
+
+/* ==========================
+   Credit Card
+========================== */
+
+.credit_card {
+  background-color: var(--color-highlight);
+  color: var(--color-text-brown);
+}
+
+.credit_card .payment_method_icon {
+  background-color: #ffb574;
+}
+
+.credit_card .payment_card,
+.credit_card .payment_detail {
+  color: var(--color-text-brown);
+}
+
+/*
+SVG 내부 색상이 이미 지정되어 있다면
+CSS에서 img 색상은 바로 바뀌지 않습니다.
+카드 아이콘과 화살표 SVG의 fill/stroke를
+#f8f8f8 또는 currentColor로 설정해야 합니다.
+*/
+
+/* ==========================
+   Simple Pay
+========================== */
+
+.simple_pay {
+  background-color: var(--color-sub);
+  color: var(--color-text);
+}
+
+.simple_pay .payment_method_icon {
+  background-color: var(--color-pay-mint);
+}
+
+.simple_pay .payment_card,
+.simple_pay .payment_detail {
+  color: var(--color-text);
+}
+
+/* ==========================
+   Cancel Button
+========================== */
+
+.payment_method_box .btn_cancel {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+
+  width: 420px;
+  height: 100px;
+
+  transform: translateX(-50%);
+
+  border: 3px solid var(--color-btn-cancel-text);
+  border-radius: var(--radius-button);
+
+  background-color: var(--color-btn-cancel-fill);
+
+  color: var(--color-btn-cancel-text);
+
+  font-size: 36px;
+  font-weight: var(--font-medium);
+
+  box-shadow: var(--shadow-md);
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.payment_method_box .btn_cancel:hover {
+  background-color: var(--color-normal);
+}
+
+.payment_method_box .btn_cancel:active {
+  transform: translateX(-50%) translateY(2px);
+  box-shadow: var(--shadow-sm);
+}

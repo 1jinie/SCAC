@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { reservations } from '../../data/Reservations';
 import { formatDate, addOneHour } from '../../utils/date';
+import {
+  getSelectionRange,
+  hasUnavailableTime,
+  isTimeSelected,
+} from '../../utils/reservationUtils';
 import { reservationStore } from '../../store/reservationStore';
 import { rooms } from '../../data/RoomInfo';
 import '../../styles/reservation.css';
 
 export default () => {
-  const roomId = reservationStore((state) => state.roomId);
+  const roomId = reservationStore((state) => state.reservation.roomId);
+  const setReservation = reservationStore((state) => state.setReservation);
   const room = rooms[roomId];
   const roomReservations = reservations[roomId];
   const dates = Object.keys(roomReservations);
@@ -37,54 +43,25 @@ export default () => {
       return;
     }
 
-    if (!endTime) {
-      const startIndex = selectedTimes.findIndex((t) => t.time === startTime);
-      const currentIndex = selectedTimes.findIndex((t) => t.time === time.time);
+    const { startIndex, endIndex } = getSelectionRange(
+      selectedTimes,
+      startTime,
+      time.time,
+    );
 
-      let newStartIndex = startIndex;
-      let newEndIndex = currentIndex;
-
-      // 거꾸로 선택한 경우
-      if (currentIndex < startIndex) {
-        newStartIndex = currentIndex;
-        newEndIndex = startIndex;
-      }
-
-      // 사이에 예약 불가 시간이 있는지 확인
-      const hasUnavailable = selectedTimes
-        .slice(newStartIndex + 1, newEndIndex + 1)
-        .some((t) => !t.available);
-
-      if (hasUnavailable) {
-        // 선택 해제
-        setStartTime(null);
-        setEndTime(null);
-        return;
-      }
-
-      setStartTime(selectedTimes[newStartIndex].time);
-      setEndTime(selectedTimes[newEndIndex].time);
+    if (hasUnavailableTime(selectedTimes, startIndex, endIndex)) {
+      // 선택 해제
+      setStartTime(null);
+      setEndTime(null);
       return;
     }
-
-    setStartTime(time.time);
-    setEndTime(null);
+    setStartTime(selectedTimes[startIndex].time);
+    setEndTime(selectedTimes[endIndex].time);
   };
 
   // 예약 시간 선택 버튼에 스타일 적용 위한 함수
-  const isSelected = (time) => {
-    if (!startTime) return false;
-
-    if (!endTime) {
-      return time === startTime;
-    }
-
-    const startIndex = selectedTimes.findIndex((t) => t.time === startTime);
-    const endIndex = selectedTimes.findIndex((t) => t.time === endTime);
-    const currentIndex = selectedTimes.findIndex((t) => t.time === time);
-
-    return currentIndex >= startIndex && currentIndex <= endIndex;
-  };
+  const isSelected = (time) =>
+    isTimeSelected(selectedTimes, startTime, endTime, time);
 
   // 선택완료 버튼 이벤트
   const handleConfirm = () => {
@@ -95,7 +72,12 @@ export default () => {
 
     const finalEndTime = addOneHour(endTime ?? startTime);
 
-    console.log({ startTime, endTime: finalEndTime });
+    setReservation({
+      roomId,
+      date: selectedDate,
+      startTime,
+      endTime: finalEndTime,
+    });
 
     navigate('/payment');
   };

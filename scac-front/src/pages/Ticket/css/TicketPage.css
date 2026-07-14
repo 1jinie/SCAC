@@ -1,86 +1,174 @@
-/* 전반적인 페이지 레이아웃 */
-.ticket_page_box {
-  max-width: 600px;
-  margin: 40px auto;
-  padding: 24px;
-  background-color: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+/* ==========================
+   Ticket Page
+========================== */
+
+.ticket_page_container {
+  position: relative;
+
+  width: 100%;
+  min-height: 1800px;
+
+  padding: 100px 130px 220px;
+
+  box-sizing: border-box;
+
+  color: var(--color-text);
 }
 
-/* 페이지 메인 타이틀 */
+/* ==========================
+   Page Title
+========================== */
+
 .ticket_page_title {
-  font-size: 24px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin-bottom: 32px;
+  margin: 0 0 70px;
+
   text-align: center;
+
+  font-size: 80px;
+  font-weight: var(--font-regular);
+  line-height: 1.2;
+
+  color: var(--color-text);
 }
 
-/* 시간권 / 정기권 섹션 */
-.ticket_list {
-  margin-bottom: 28px;
+/* ==========================
+   Ticket Section
+========================== */
+
+.ticket_list_container {
+  width: 100%;
+
+  margin-bottom: 70px;
 }
 
-/* 섹션 타이틀 (시간권, 정기권) */
 .ticket_type {
-  font-size: 16px;
-  font-weight: 600;
-  color: #666666;
-  margin-bottom: 12px;
-  padding-left: 4px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  margin: 0 0 36px;
+
+  font-size: 32px;
+  font-weight: var(--font-regular);
+  color: var(--color-text);
 }
 
-/* 이용권 카드들이 가로로 배치되는 그리드 레이아웃 */
-.ticket_list > div:first-of-type, /* 컴포넌트 구조상 TicketList 내부 맵핑 대응 */
-.ticket_list {
+.ticket_type_icon {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+
+/* ==========================
+   Ticket List
+========================== */
+
+.ticket_list_container > div,
+.ticket_list_container {
+  align-content: start;
+}
+
+/*
+TicketList가 Fragment를 반환하고 있기 때문에
+각 ticket_list_box를 grid item처럼 배치합니다.
+*/
+.ticket_list_container {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 한 줄에 2개씩 배치 */
-  gap: 12px;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 32px;
+  row-gap: 36px;
 }
 
-/* 이용권 버튼 스타일 (TicketCard) */
+/* 제목은 한 줄 전체 사용 */
+.ticket_list_container .ticket_type {
+  grid-column: 1 / -1;
+}
+
+.ticket_list_box {
+  width: 100%;
+}
+
+/* ==========================
+   Ticket Button
+========================== */
+
 .btn_ticket {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px 16px;
-  background-color: #f8f9fa;
-  border: 2px solid #e9ecef;
-  border-radius: 12px;
+  height: 132px;
+
+  padding: 18px 12px;
+
+  border: none;
+  border-radius: 18px;
+
+  background-color: var(--color-sub);
+
+  color: var(--color-text);
+
+  font-family: inherit;
+
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  text-align: center;
+
+  box-shadow: none;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
-/* 버튼에 마우스를 올렸을 때 (Hover) */
 .btn_ticket:hover {
-  background-color: #edf2ff;
-  border-color: #4c6ef5;
   transform: translateY(-2px);
 }
 
-/* 버튼을 클릭했을 때 활성화 느낌 (Active) */
-.btn_ticket:active {
-  transform: translateY(0);
-  background-color: #dbe4ff;
+.btn_ticket.selected {
+  background-color: var(--color-highlight);
+
+  box-shadow: var(--shadow-md);
 }
 
-/* 티켓 이름 스타일 */
 .ticket_name {
-  font-size: 16px;
-  font-weight: 600;
-  color: #212529;
-  margin-bottom: 6px;
+  display: inline-block;
+
+  margin-bottom: 8px;
+
+  font-size: 28px;
+  font-weight: var(--font-medium);
+  line-height: 1.2;
 }
 
-/* 티켓 가격 스타일 */
 .ticket_price {
-  font-size: 15px;
-  font-weight: 700;
-  color: #4c6ef5; /* 브랜드 포인트 컬러 (블루 계열) */
+  display: inline-block;
+
+  font-size: 24px;
+  font-weight: var(--font-bold);
+  line-height: 1.2;
+}
+
+/* ==========================
+   Select Button
+========================== */
+
+.ticket_page_container .btn_select {
+  position: absolute;
+  bottom: 90px;
+  left: 50%;
+
+  width: 820px;
+  height: 112px;
+
+  border: 3px solid var(--color-highlight);
+  border-radius: 14px;
+
+  background-color: var(--color-btn-white);
+
+  color: var(--color-highlight);
+
+  font-size: 40px;
+  font-weight: var(--font-medium);
+
+  box-shadow: var(--shadow-md);
+
+  transform: translateX(-50%);
 }

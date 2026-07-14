@@ -1,3 +1,5 @@
+import { getSeatStyle } from '../../utils/getSeatStyle';
+
 function SeatItem({ seat, isSelected, onClick, mode }) {
   let effectiveStatus = seat.status;
 
@@ -19,32 +21,14 @@ function SeatItem({ seat, isSelected, onClick, mode }) {
     classNames.push('room');
   }
 
-  // 그리드 동적 병합
-  let gridRow = seat.y;
-  let gridColumn = seat.x;
-
-  if (seat.type === 'room') {
-    gridRow = `${seat.y} / span 5`;
-    gridColumn = seat.id === 103 ? `${seat.x} / span 4` : `${seat.x} / span 3`;
-  }
-
-  // s6~s25 좌석들은 x좌표에 비례한 추가 margin으로 간격 확보
-  // s1~s2 사이 간격(gap 포함 약 104px)의 절반 수준으로 띄움
-  const isSmallSeat = seat.id >= 6 && seat.id <= 25;
-  const extraMarginLeft = isSmallSeat ? (seat.x - 1) * 40 : 0;
-
-  // Show empty label for unavailable seats as shown in the mockup
+  // 비활성화일 때 이름을 보이지 않음
   const label = effectiveStatus === 'unavailable' ? '' : seat.name;
 
   return (
     <div
       className={classNames.filter(Boolean).join(' ')}
       onClick={onClick}
-      style={{
-        gridRow,
-        gridColumn,
-        ...(extraMarginLeft > 0 ? { marginLeft: `${extraMarginLeft}px` } : {}),
-      }}
+      style={getSeatStyle(seat)}
     >
       {seat.type === 'room' ? (
         <>

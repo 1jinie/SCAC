@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
-import { seats } from '../../data/Seats';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { seatStore } from '../../store/seatStore';
 import { reservationStore } from '../../store/reservationStore';
 import SeatItem from './SeatItem';
 import CheckInModal from '../../components/modal/CheckInModal';
 import '../../styles/seat.css';
 
 function SeatPage({ mode }) {
-  const [selected, setSelected] = useState(null);
+  const seats = seatStore((state) => state.seats);
+  const selected = seatStore((state) => state.selectedSeat);
   const [showModal, setShowModal] = useState(false);
-  const setRoomId = reservationStore((state) => state.setRoomId);
+  const setReservation = reservationStore((state) => state.setReservation);
+  const selectSeat = seatStore((state) => state.selectSeat);
+  const checkInSeat = seatStore((state) => state.checkInSeat);
   const navigate = useNavigate();
 
   // 좌석 / 룸 선택 이벤트 정의
@@ -24,7 +27,7 @@ function SeatPage({ mode }) {
       if (seat.type !== 'room' || seat.status !== 'available') return;
     }
 
-    setSelected((prev) => (prev === seat.id ? null : seat.id));
+    selectSeat(seat.id);
   };
 
   const handleConfirm = () => {
@@ -36,7 +39,9 @@ function SeatPage({ mode }) {
     }
 
     if (mode === 'room') {
-      setRoomId(selected);
+      setReservation({
+        roomId: selected,
+      });
       navigate('/room/reservation');
       return;
     }
@@ -51,9 +56,15 @@ function SeatPage({ mode }) {
       password: data.password,
     };
 
-    console.log(checkIn);
+    checkInSeat();
     setShowModal(false);
   };
+
+  // mode 변경시 선택 초기화
+  const clearSelected = seatStore((state) => state.clearSelected);
+  useEffect(() => {
+    clearSelected();
+  }, [mode, clearSelected]);
 
   return (
     <div className="seat_page">
@@ -108,6 +119,7 @@ function SeatPage({ mode }) {
       </button>
       {showModal && (
         <CheckInModal
+          seatId={selected}
           onClose={() => setShowModal(false)}
           onConfirm={handleCheckIn}
         />

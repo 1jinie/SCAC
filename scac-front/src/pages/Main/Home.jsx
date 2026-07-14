@@ -1,9 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { seatStore } from '../../store/seatStore';
+import { checkInStore } from '../../store/checkInStore';
+import CheckOutModal from '../../components/modal/CheckOutModal';
 import '../../styles/Home.css';
 
 function HomePage() {
+  const [showCheckOutModal, setShowCheckOutModal] = useState(false);
+  const checkOutSeat = seatStore((state) => state.checkOutSeat);
+  const updateCheckOut = checkInStore((state) => state.updateCheckOut);
+  const seats = seatStore((state) => state.seats);
   const navigate = useNavigate();
+
+  const availableSeats = seats.filter(
+    (seat) => seat.type === 'seat' && seat.status === 'available',
+  ).length;
+
+  const totalSeats = seats.filter((seat) => seat.type === 'seat').length;
+
+  const handleCheckOut = (data) => {
+    updateCheckOut(data.checkInId);
+    checkOutSeat(data.seatId);
+    setShowCheckOutModal(false);
+  };
 
   return (
     <div className="kiosk_container">
@@ -18,8 +37,10 @@ function HomePage() {
 
       {/* 실시간 좌석 현황 대시보드 */}
       <div className="seat_status_bar">
-        <div className="chair_icon"></div>
-        <span className="status_text">좌석 수 00/100</span>
+        <span className="chair_icon">🪑</span>
+        <span className="status_text">
+          좌석 수 {availableSeats}/{totalSeats}
+        </span>
       </div>
 
       {/* 메인 메뉴 그리드 영역 */}
@@ -45,7 +66,7 @@ function HomePage() {
           <button
             type="button"
             className="menu_btn btn_orange"
-            onClick={() => navigate('/')}
+            onClick={() => setShowCheckOutModal(true)}
           >
             <div className="btn_icon">🚪🔒</div>
             <span className="btn_label">퇴실</span>
@@ -96,6 +117,13 @@ function HomePage() {
         <div className="headset_icon">🎧</div>
         <span className="footer_text">관리자 번호: 010-0000-0000</span>
       </footer>
+
+      {showCheckOutModal && (
+        <CheckOutModal
+          onClose={() => setShowCheckOutModal(false)}
+          onConfirm={handleCheckOut}
+        />
+      )}
     </div>
   );
 }
