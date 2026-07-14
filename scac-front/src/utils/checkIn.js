@@ -1,5 +1,5 @@
 import { users } from '../data/User';
-import { checkIns } from '../data/CheckIn';
+import { checkInStore } from '../store/checkInStore';
 
 export function checkIn(phone, password, seatId) {
   const user = users.find(
@@ -21,9 +21,11 @@ export function checkIn(phone, password, seatId) {
   }
 
   // 현재 입실 여부 확인
-  const activeCheckIn = checkIns.find(
-    (checkIn) => checkIn.userId === user.id && checkIn.checkOutTime === null,
-  );
+  const activeCheckIn = checkInStore
+    .getState()
+    .checkIns.find(
+      (checkIn) => checkIn.userId === user.id && checkIn.checkOutTime === null,
+    );
 
   if (activeCheckIn) {
     return {

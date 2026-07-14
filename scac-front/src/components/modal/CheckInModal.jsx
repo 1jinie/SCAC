@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { checkIn } from '../../utils/checkIn';
-import { addCheckIn } from '../../utils/addCheckIn';
+import { checkInStore } from '../../store/checkInStore';
 import '../../styles/checkIn.css';
-import { checkIns } from '../../data/CheckIn';
 
 function CheckInModal({ onClose, onConfirm, seatId }) {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const addCheckIn = checkInStore((state) => state.addCheckIn);
 
   const handleSubmit = () => {
     const result = checkIn(phone, password, seatId);
@@ -21,7 +21,6 @@ function CheckInModal({ onClose, onConfirm, seatId }) {
 
     if (result.success) {
       addCheckIn({
-        id: checkIns.length + 1,
         userId: result.user.id,
         seatId,
         checkInTime: new Date(),

@@ -2,17 +2,17 @@ import { useState } from 'react';
 import { checkOut } from '../../utils/checkOut';
 import '../../styles/checkIn.css';
 
-function CheckOutModal({ onClose, onConfirm, seatId }) {
+function CheckOutModal({ onClose, onConfirm }) {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = () => {
-    const result = checkOut(phone, password);
-
     if (!phone || !password) {
       alert('정보를 입력해주세요');
       return;
     }
+
+    const result = checkOut(phone, password);
 
     alert(result.message);
 
@@ -22,10 +22,9 @@ function CheckOutModal({ onClose, onConfirm, seatId }) {
         checkInId: result.checkIn.id,
         seatId: result.checkIn.seatId,
       });
+
       onClose();
     }
-
-    onClose();
   };
 
   return (

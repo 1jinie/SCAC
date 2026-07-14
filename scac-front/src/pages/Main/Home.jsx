@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { seatStore } from '../../store/seatStore';
+import { checkInStore } from '../../store/checkInStore';
 import CheckOutModal from '../../components/modal/CheckOutModal';
 import '../../styles/Home.css';
-import { updateCheckOut } from '../../utils/updateCheckOut';
 
 function HomePage() {
   const [showCheckOutModal, setShowCheckOutModal] = useState(false);
   const checkOutSeat = seatStore((state) => state.checkOutSeat);
+  const updateCheckOut = checkInStore((state) => state.updateCheckOut);
   const seats = seatStore((state) => state.seats);
   const navigate = useNavigate();
 
@@ -18,7 +19,6 @@ function HomePage() {
   const totalSeats = seats.filter((seat) => seat.type === 'seat').length;
 
   const handleCheckOut = (data) => {
-    console.log('퇴실 처리', data);
     updateCheckOut(data.checkInId);
     checkOutSeat(data.seatId);
     setShowCheckOutModal(false);

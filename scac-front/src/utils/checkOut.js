@@ -1,5 +1,5 @@
 import { users } from '../data/User';
-import { checkIns } from '../data/CheckIn';
+import { checkInStore } from '../store/checkInStore';
 
 export function checkOut(phone, password) {
   // 사용자 확인
@@ -14,9 +14,11 @@ export function checkOut(phone, password) {
     };
   }
 
-  const activeCheckIn = checkIns.find(
-    (checkIn) => checkIn.userId === user.id && checkIn.checkOutTime === null,
-  );
+  const activeCheckIn = checkInStore
+    .getState()
+    .checkIns.find(
+      (checkIn) => checkIn.userId === user.id && checkIn.checkOutTime === null,
+    );
 
   if (!activeCheckIn) {
     return {
