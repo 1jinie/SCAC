@@ -32,7 +32,7 @@ function LoginHomePage() {
 
       {/* 실시간 좌석 현황 대시보드 */}
       <div className="seat_status_bar">
-        <span className="chair_icon">🪑</span>
+        <div className="chair_icon">🪑</div>
         <span className="status_text">좌석 수 00/100</span>
       </div>
 
@@ -45,7 +45,7 @@ function LoginHomePage() {
             className="menu_btn btn_orange"
             onClick={() => navigate('/seat')}
           >
-            <span className="btn_icon">🚪➡️</span>
+            <div className="btn_icon">🚪➡️</div>
             <span className="btn_label">입실</span>
           </button>
           <button
@@ -53,7 +53,7 @@ function LoginHomePage() {
             className="menu_btn btn_orange"
             onClick={() => navigate('/')}
           >
-            <span className="btn_icon">🚪⬅️</span>
+            <div className="btn_icon">🚪⬅️</div>
             <span className="btn_label">외출</span>
           </button>
           <button
@@ -61,7 +61,7 @@ function LoginHomePage() {
             className="menu_btn btn_orange"
             onClick={() => navigate('/')}
           >
-            <span className="btn_icon">🚪🔒</span>
+            <div className="btn_icon">🚪🔒</div>
             <span className="btn_label">퇴실</span>
           </button>
         </div>
@@ -73,7 +73,7 @@ function LoginHomePage() {
             className="menu_btn btn_gray"
             onClick={() => navigate('/')}
           >
-            <span className="btn_icon">💳</span>
+            <div className="btn_icon">💳</div>
             <span className="btn_label">이용권 결제</span>
           </button>
           <button
@@ -81,7 +81,7 @@ function LoginHomePage() {
             className="menu_btn btn_gray"
             onClick={() => navigate('/')}
           >
-            <span className="btn_icon">📅</span>
+            <div className="btn_icon">📅</div>
             <span className="btn_label">스터디룸 예약</span>
           </button>
 
@@ -90,7 +90,7 @@ function LoginHomePage() {
             className="menu_btn btn_gray"
             onClick={() => navigate('/mypage')}
           >
-            <span className="btn_icon">🔍👤</span>
+            <div className="btn_icon">🔍👤</div>
             <span className="btn_label">내 정보</span>
           </button>
           <button
@@ -98,7 +98,7 @@ function LoginHomePage() {
             className="menu_btn btn_gray"
             onClick={handleLogoutClick}
           >
-            <span className="btn_icon">↪️</span>
+            <div className="btn_icon">↪️</div>
             <span className="btn_label">로그아웃</span>
           </button>
         </div>
@@ -106,7 +106,7 @@ function LoginHomePage() {
 
       {/* 하단 풋터 (관리자 안내 영역) */}
       <footer className="kiosk_footer">
-        <span className="headset_icon">🎧</span>
+        <div className="headset_icon">🎧</div>
         <span className="footer_text">관리자 번호: 010-0000-0000</span>
       </footer>
     </div>
