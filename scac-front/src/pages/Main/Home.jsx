@@ -1,9 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { seatStore } from '../../store/seatStore';
+import CheckOutModal from '../../components/modal/CheckOutModal';
 import '../../styles/Home.css';
+import { updateCheckOut } from '../../utils/updateCheckOut';
 
 function HomePage() {
+  const [showCheckOutModal, setShowCheckOutModal] = useState(false);
+  const checkOutSeat = seatStore((state) => state.checkOutSeat);
   const navigate = useNavigate();
+
+  const handleCheckOut = (data) => {
+    console.log('퇴실 처리', data);
+    updateCheckOut(data.checkInId);
+    checkOutSeat(data.seatId);
+    setShowCheckOutModal(false);
+  };
 
   return (
     <div className="kiosk_container">
@@ -43,7 +55,7 @@ function HomePage() {
           <button
             type="button"
             className="menu_btn btn_orange"
-            onClick={() => navigate('/')}
+            onClick={() => setShowCheckOutModal(true)}
           >
             <span className="btn_icon">🚪🔒</span>
             <span className="btn_label">퇴실</span>
@@ -94,6 +106,13 @@ function HomePage() {
         <span className="headset_icon">🎧</span>
         <span className="footer_text">관리자 번호: 010-0000-0000</span>
       </footer>
+
+      {showCheckOutModal && (
+        <CheckOutModal
+          onClose={() => setShowCheckOutModal(false)}
+          onConfirm={handleCheckOut}
+        />
+      )}
     </div>
   );
 }

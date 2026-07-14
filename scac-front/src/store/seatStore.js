@@ -33,6 +33,19 @@ export const seatStore = create((set) => ({
       selectedSeat: null,
     })),
 
+  // 체크아웃 성공시 좌석 사용가능 변경
+  checkOutSeat: (seatId) =>
+    set((state) => ({
+      seats: state.seats.map((seat) =>
+        seat.id === seatId
+          ? {
+              ...seat,
+              status: 'available',
+            }
+          : seat,
+      ),
+    })),
+
   // 특정 좌석 상태 변경(관리자용)
   updateSeatStatus: (seatId, status) =>
     set((state) => ({
