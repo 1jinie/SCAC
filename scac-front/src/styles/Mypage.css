@@ -19,7 +19,7 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin-bottom: 24px;
+  margin-bottom: 40px;
 }
 
 .btn_home {
@@ -37,16 +37,42 @@
   font-weight: 500;
 }
 
+/* 마이페이지 제목 */
+.mypage_title {
+  font-size: 32px;
+  font-weight: bold;
+  color: var(--color-text);
+  margin: 0 0 30px 0;
+  letter-spacing: 0.5px;
+}
+
+/* 에러 및 성공 메시지 */
+.error_text {
+  color: var(--color-error);
+  font-size: 14px;
+  margin: -10px 0 15px 0;
+  text-align: center;
+  font-weight: 500;
+}
+
+.success_text {
+  color: var(--color-important);
+  font-size: 14px;
+  margin: -10px 0 15px 0;
+  text-align: center;
+  font-weight: 500;
+}
+
 /* 내 정보 타이틀 및 프로필 섹션 */
 .profile_section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
 }
 
 .profile_title {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: bold;
   margin: 0 0 20px 0;
   color: var(--color-text);
@@ -54,101 +80,266 @@
 
 /* 원형 유저 아이콘 컨테이너 */
 .profile_icon_circle {
-  width: 90px;
-  height: 90px;
-  border: 1px solid var(--color-reserv-stroke);
+  width: 80px;
+  height: 80px;
+  border: 2px solid var(--color-reserv-stroke);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 48px;
+  font-size: 40px;
   background-color: var(--color-white);
-  margin-bottom: 14px;
+  margin-bottom: 12px;
   color: var(--color-text-light);
 }
 
 .user_phone_number {
   font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* 회원 정보 구간 */
+.profile_info_section {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.info_group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.info_lable {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-light);
+}
+
+.info_value {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* 구분선 */
+.divider {
+  width: 100%;
+  height: 1px;
+  background-color: #e5e5e5;
+  border: none;
+  margin: 20px 0;
+}
+
+/* 비밀번호 변경 섹션 */
+.password_change_section {
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.section_title {
+  font-size: 16px;
   font-weight: bold;
   color: var(--color-text);
-  letter-spacing: 0.5px;
+  margin: 0 0 15px 0;
+}
+
+/* 폼 입력 그룹 */
+.input_group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.input_group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 6px;
+}
+
+.input_field {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--color-reserv-stroke);
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.input_field:focus {
+  outline: none;
+  border-color: var(--color-highlight);
+  box-shadow: 0 0 0 2px rgba(255, 154, 85, 0.1);
 }
 
 /* 🎫 현재 이용중인 이용권 대형 카드 박스 */
 .ticket_card_box {
   background-color: var(--color-white);
-  border: 1px solid var(--color-important);
-  border-radius: var(--radius-card); /* 32px 큰 라운드 처리 */
+  border: 2px solid var(--color-important);
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* 상단 민트 헤더의 모서리를 둥글게 깎아내기 위함 */
+  overflow: hidden;
   box-shadow: var(--shadow-md);
-  margin-bottom: auto; /* 하단 로그아웃 버튼과 자연스럽게 거리를 벌림 */
+  margin-bottom: 30px;
 }
 
 /* 이용권 카드 상단 민트색 헤더 타이틀 띠 */
 .ticket_card_header {
-  background-color: var(--color-important); /* 중요 안내 민트색 매핑 */
+  background-color: var(--color-important);
   color: var(--color-white);
-  padding: 14px 20px;
-  font-size: 16px;
+  padding: 12px 16px;
+  font-size: 14px;
   font-weight: bold;
   letter-spacing: 0.5px;
 }
 
-/* 이용 시간 진행률 바 (오렌지 프로그레스 바) */
-.ticket_progress_container {
-  width: 100%;
-  height: 8px;
-  background-color: var(--color-reserv-time-disavailable); /* 회색 잔여 배경 */
-  position: relative;
-}
-
-.ticket_progress_bar {
-  height: 100%;
-  background-color: var(--color-highlight); /* 오렌지 강조 컬러 */
-  width: 75%; /* 시안 흐름에 맞춰 임시 지정 (실제 데이터 연동 시 style={{width: `${진행률}%`}} 처리) */
-}
-
 /* 카드 내부 상세 정보 텍스트 영역 */
 .ticket_card_body {
-  padding: 24px 20px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .ticket_name {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: bold;
   color: var(--color-text);
 }
 
 .ticket_time_left {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   color: var(--color-text);
 }
 
-/* 🚪 하단 로그아웃 버튼 구역 */
-.mypage_footer {
+/* 이용 시간 진행률 바 */
+.ticket_progress_container {
   width: 100%;
-  display: flex;
-  justify-content: center;
-  padding-bottom: 30px;
+  height: 6px;
+  background-color: #e5e5e5;
+  border-radius: 3px;
+  position: relative;
+  margin-top: 4px;
 }
 
-.btn_logout {
-  width: 160px;
+.ticket_progress_bar {
+  height: 100%;
+  background-color: var(--color-highlight);
+  width: 75%;
+  border-radius: 3px;
+}
+
+/* 이용권 없음 상태 */
+.no_ticket {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.btn_buy_ticket {
+  width: 200px;
   height: 44px;
-  background-color: var(--color-highlight); /* 피그마 주 사용 오렌지 버튼 */
-  color: var(--color-white);
+  background-color: var(--color-highlight);
   border: none;
-  border-radius: var(--radius-button); /* 16px 버튼 라운드 */
+  border-radius: var(--radius-button);
+  color: var(--color-white);
   font-size: 15px;
   font-weight: bold;
   cursor: pointer;
-  box-shadow: var(--shadow-md); /* 입체감 있는 섀도 */
+  box-shadow: var(--shadow-md);
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
+}
+
+.btn_buy_ticket:active {
+  transform: scale(0.97);
+  box-shadow: var(--shadow-inner-sm);
+}
+
+/* 비밀번호 변경 제출 버튼 */
+#password_change_form .btn_submit {
+  width: 100%;
+  height: 44px;
+  background-color: var(--color-highlight);
+  border: none;
+  border-radius: var(--radius-button);
+  color: var(--color-white);
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
+  margin-top: 10px;
+}
+
+#password_change_form .btn_submit:hover:not(:disabled) {
+  filter: brightness(0.95);
+}
+
+#password_change_form .btn_submit:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+#password_change_form .btn_submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 하단 제어 버튼 구역 */
+.mypage_footer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+.btn_back_main {
+  width: 100%;
+  height: 44px;
+  background-color: var(--color-normal);
+  border: none;
+  border-radius: var(--radius-button);
+  color: var(--color-text);
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
+}
+
+.btn_back_main:active {
+  transform: scale(0.97);
+  box-shadow: var(--shadow-inner-sm);
+}
+
+.btn_logout {
+  width: 100%;
+  height: 44px;
+  background-color: var(--color-highlight);
+  border: none;
+  border-radius: var(--radius-button);
+  color: var(--color-white);
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
   transition:
     transform 0.1s ease,
     box-shadow 0.1s ease;
@@ -157,4 +348,14 @@
 .btn_logout:active {
   transform: scale(0.97);
   box-shadow: var(--shadow-inner-sm);
+}
+
+.loading_box {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--color-text-light);
 }

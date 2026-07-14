@@ -55,6 +55,16 @@ function SignUpPage() {
     <div className="signup_container">
       <div className="signup_box">
         <h2 className="signup_title">스터디카페 회원가입</h2>
+        <header className="auth_header">
+          <button
+            type="button"
+            className="btn_home"
+            onClick={() => navigate('/')}
+          >
+            🏠
+          </button>
+          <span className="header_time" />
+        </header>
 
         <form id="signup_form" onSubmit={handleSignUpSubmit}>
           <div className="input_group">
@@ -67,6 +77,11 @@ function SignUpPage() {
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
             />
+            <div className="form_group verify_group">
+              <button type="button" className="btn_inner_verify">
+                인증번호발송
+              </button>
+            </div>
           </div>
 
           <div className="input_group">

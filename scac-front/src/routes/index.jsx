@@ -14,6 +14,7 @@ import Reservation from '../pages/Reservation/Reservation';
 import PaymentMethodPage from '../pages/Payment/PaymentMethodPage';
 import PaymentProcess from '../pages/Payment/PaymentProcess';
 import PaymentResult from '../pages/Payment/PaymentResult';
+import NonmemberSignup from '../pages/Signup/NonmemberSignup';
 
 const router = createBrowserRouter([
   {
@@ -27,6 +28,7 @@ const router = createBrowserRouter([
       { path: 'signup', element: <SignUpPage /> },
       { path: 'loginhome', element: <LoginHomePage /> },
       { path: 'mypage', element: <MyPage /> },
+      { path: 'nonmember-signup', element: <NonmemberSignup /> },
       {
         path: 'room',
         children: [

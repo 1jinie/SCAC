@@ -48,7 +48,7 @@ function LoginPage() {
           >
             🏠
           </button>
-          <span className="header_time">오전 11:41</span>
+          <span className="header_time" />
         </header>
 
         <form id="login_form" onSubmit={handleLoginSubmit}>
