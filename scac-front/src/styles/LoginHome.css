@@ -29,14 +29,14 @@
 
 .logo_box {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 15px;
+  align-items: center; /* 아이콘과 글자 높낮이 맞추기 */
+  gap: 8px; /* 아이콘과 글자 사이 간격 */
 }
 
-.logo_icon {
-  font-size: 40px;
-  margin-bottom: 5px;
+.logo_img {
+  width: 32px; /* 원하는 너비 */
+  height: 32px; /* 원하는 높이 */
+  object-fit: contain; /* 이미지 비율 유지하며 박스에 맞춤 */
 }
 
 .logo_title {
