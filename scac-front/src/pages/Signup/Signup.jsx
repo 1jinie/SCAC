@@ -63,7 +63,6 @@ function SignUpPage() {
           >
             🏠
           </button>
-          <span className="header_time">오전 11:41</span>
         </header>
 
         <form id="signup_form" onSubmit={handleSignUpSubmit}>
