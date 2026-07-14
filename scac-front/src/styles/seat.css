@@ -40,18 +40,20 @@
   left: 0;
 }
 
-.header_title {
-  width: 100%;
-  text-align: center;
-  font-size: 48px;
-  font-weight: 700;
+.back_icon{
+  width: 60px;
+  height: 60px;
+  transform: rotate(180deg);
 }
 
-.back_arrow {
-  width: 32px;
-  height: 32px;
-  margin-right: 12px;
-  color: #333333;
+.logo_image{
+  position: absolute;
+
+  left: 50%;
+  transform: translateX(-50%);
+
+  height: 120px;
+  width: auto;
 }
 
 .header_time {
@@ -63,16 +65,18 @@
 /* Grid Wrapper & Container */
 .seat_grid_wrapper {
   width: 920px;
-  height: 1280px;
+  height: 1325px;
   margin-top: 40px;
   margin-bottom: 40px;
   background-color: #eaeaea;
+  border: 2px solid #aaaaaa;
   border-radius: 16px;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   padding: 40px 0;
   box-sizing: border-box;
+  box-shadow: 0 5px 12px #cccccc;
 }
 
 .seat_grid {

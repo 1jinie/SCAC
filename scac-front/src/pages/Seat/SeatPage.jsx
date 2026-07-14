@@ -70,11 +70,10 @@ function SeatPage({ mode }) {
     <div className="seat_page">
       <div className="seat_header">
         <div className="back_btn" onClick={() => navigate('/')}>
-          뒤로가기
+          <img src="/icons/common/next_black.svg" alt="뒤로가기" className='back_icon'/>
+          <span>뒤로가기</span>
         </div>
-        <h1 className="header_title">
-          {mode === 'seat' ? '좌석 선택' : '스터디룸 선택'}
-        </h1>
+        <img src="/logo/logo.png" alt="로고" className='logo_image'/>
       </div>
 
       <div className="seat_grid_wrapper">
