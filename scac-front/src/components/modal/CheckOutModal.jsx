@@ -1,39 +1,30 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { checkIn } from '../../utils/checkIn';
-import { checkInStore } from '../../store/checkInStore';
+import { useState } from 'react';
+import { checkOut } from '../../utils/checkOut';
 import '../../styles/checkIn.css';
 
-function CheckInModal({ onClose, onConfirm, seatId }) {
+function CheckOutModal({ onClose, onConfirm }) {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
-  const addCheckIn = checkInStore((state) => state.addCheckIn);
 
   const handleSubmit = () => {
-    const result = checkIn(phone, password, seatId);
-    alert(result.message);
-
     if (!phone || !password) {
       alert('정보를 입력해주세요');
       return;
     }
 
+    const result = checkOut(phone, password);
+
+    alert(result.message);
+
     if (result.success) {
-      addCheckIn({
-        userId: result.user.id,
-        seatId,
-        checkInTime: new Date(),
-        checkOutTime: null,
-      });
       onConfirm({
-        phone,
-        password,
+        userId: result.user.id,
+        checkInId: result.checkIn.id,
+        seatId: result.checkIn.seatId,
       });
+
       onClose();
-      navigate('/');
     }
-    onClose();
   };
 
   return (
@@ -42,7 +33,7 @@ function CheckInModal({ onClose, onConfirm, seatId }) {
         <button className="modal_close" onClick={onClose}>
           x
         </button>
-        <h2>입실</h2>
+        <h2>퇴실</h2>
         <div className="content">
           <input
             type="text"
@@ -65,4 +56,4 @@ function CheckInModal({ onClose, onConfirm, seatId }) {
   );
 }
 
-export default CheckInModal;
+export default CheckOutModal;
