@@ -10,13 +10,16 @@ import {
 import { reservationStore } from '../../store/reservationStore';
 import { rooms } from '../../data/RoomInfo';
 import '../../styles/reservation.css';
+import { useTicketStore } from '../../store/ticketStore';
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default () => {
   const roomId = reservationStore((state) => state.reservation.roomId);
   const setReservation = reservationStore((state) => state.setReservation);
   const room = rooms[roomId];
   const roomReservations = reservations[roomId];
   const dates = Object.keys(roomReservations);
+  const setPurchaseType = useTicketStore((state) => state.setPurchaseType);
 
   const [selectedDate, setSelectedDate] = useState(dates[0]);
   const [startTime, setStartTime] = useState(null);
@@ -78,6 +81,8 @@ export default () => {
       startTime,
       endTime: finalEndTime,
     });
+
+    setPurchaseType('STUDY_ROOM');
 
     navigate('/payment');
   };

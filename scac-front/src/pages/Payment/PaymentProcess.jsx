@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import ProceedPayment from './components/ProceedPayment';
 import stylesheet from './css/PaymentProcess.css';
 import { usePaymentStore } from '../../store/paymentStore';
+import StudyRoomPayment from './components/StudyRoomPayment';
 
 export default function PaymentProcess() {
   const paymentMethod = usePaymentStore((state) => state.paymentMethod);
@@ -36,7 +37,13 @@ export default function PaymentProcess() {
         <div className="payment_process_box">
           {
             // seat면 SeatPayment, 아니면 StudyRoomPayment(아직 안만듦)컴퍼넌트 불러옴
-            purchaseType === 'SEAT' ? <SeatPayment /> : ''
+            purchaseType === 'SEAT' ? (
+              <SeatPayment />
+            ) : purchaseType === 'STUDY_ROOM' ? (
+              <StudyRoomPayment />
+            ) : (
+              'Error'
+            )
           }
         </div>
         {!isProcessing ? (
