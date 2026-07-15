@@ -1,86 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-
-const DASHBOARD_SUMMARY = [
-  {
-    id: 'total-seat',
-    title: '전체 좌석',
-    value: 32,
-    unit: '석',
-    description: '스터디룸 포함',
-  },
-  {
-    id: 'using-seat',
-    title: '사용 중 좌석',
-    value: 18,
-    unit: '석',
-    description: '현재 이용 중',
-  },
-  {
-    id: 'pending-reservation',
-    title: '예약 승인 대기',
-    value: 4,
-    unit: '건',
-    description: '승인 확인 필요',
-  },
-  {
-    id: 'device-error',
-    title: '장치 이상',
-    value: 1,
-    unit: '건',
-    description: '장치 상태 확인 필요',
-  },
-];
-
-const DEVICE_LIST = [
-  {
-    id: 1,
-    name: '카드 리더기',
-    status: 'NORMAL',
-    statusLabel: '정상',
-  },
-  {
-    id: 2,
-    name: '영수증 프린터',
-    status: 'NORMAL',
-    statusLabel: '정상',
-  },
-  {
-    id: 3,
-    name: '출입문 장치',
-    status: 'WARNING',
-    statusLabel: '확인 필요',
-  },
-  {
-    id: 4,
-    name: '네트워크',
-    status: 'NORMAL',
-    statusLabel: '정상',
-  },
-];
-
-const RECENT_LOG_LIST = [
-  {
-    id: 1,
-    createdAt: '2026.07.15 14:30',
-    type: 'DEVICE',
-    content: '출입문 장치 연결 상태가 불안정합니다.',
-  },
-  {
-    id: 2,
-    createdAt: '2026.07.15 14:12',
-    type: 'PAYMENT',
-    content: '결제 취소 요청이 등록되었습니다.',
-  },
-  {
-    id: 3,
-    createdAt: '2026.07.15 13:45',
-    type: 'RESERVATION',
-    content: '스터디룸 예약 승인 요청이 등록되었습니다.',
-  },
-];
+import dashboardData from '../../../data/dashboard_data.json';
 
 export default function AdminMainPage() {
+  const { dashboard, logList, device } = dashboardData;
   const navigate = useNavigate();
 
   const handleMovePage = (path) => {
@@ -98,7 +21,7 @@ export default function AdminMainPage() {
       </section>
 
       <section className="admin_summary_grid" aria-label="관리 현황 요약">
-        {DASHBOARD_SUMMARY.map((summary) => (
+        {dashboard.map((summary) => (
           <article key={summary.id} className="admin_summary_card">
             <p className="admin_summary_title">{summary.title}</p>
 
@@ -130,7 +53,7 @@ export default function AdminMainPage() {
           </div>
 
           <div className="admin_device_list">
-            {DEVICE_LIST.map((device) => (
+            {device.map((device) => (
               <div key={device.id} className="admin_device_item">
                 <div className="admin_device_name_wrap">
                   <span
@@ -226,7 +149,7 @@ export default function AdminMainPage() {
               </thead>
 
               <tbody>
-                {RECENT_LOG_LIST.map((log) => (
+                {logList.map((log) => (
                   <tr key={log.id}>
                     <td>{log.createdAt}</td>
                     <td>

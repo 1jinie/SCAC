@@ -10,16 +10,16 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleAdminIdChange = (event) => {
-    setAdminId(event.target.value);
+  const handleAdminIdChange = (e) => {
+    setAdminId(e.target.value);
   };
 
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
   };
 
-  const handleLoginSubmit = (event) => {
-    event.preventDefault();
+  const handleLoginSubmit = (e) => {
+    e.preventDefault();
 
     if (!adminId.trim() || !password.trim()) {
       setErrorMessage('관리자 번호와 비밀번호를 입력해 주세요.');

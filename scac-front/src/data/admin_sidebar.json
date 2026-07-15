@@ -6,6 +6,10 @@
     "end": true
   },
   {
+    "path": "/admin/seat",
+    "label": "전체 좌석 관리"
+  },
+  {
     "path": "/admin/log",
     "label": "로그 확인"
   },

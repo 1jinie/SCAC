@@ -24,6 +24,8 @@ import AdminReservationPage from '../pages/Admin/Reservation/AdminReservationPag
 import AdminDevicePage from '../pages/Admin/Device/AdminDevicePage';
 import AdminTicketManagePage from '../pages/Admin/Ticket/AdminTicketManagePage';
 import AdminPaymentPage from '../pages/Admin/Payment/AdminPaymentPage';
+import AdminSeatPage from '../pages/Admin/Seat/AdminSeatPage';
+// import AdminPrivateRoute from './AdminPrivateRoute';
 
 const router = createBrowserRouter([
   // ============================
@@ -70,6 +72,11 @@ const router = createBrowserRouter([
   {
     path: '/admin',
     element: <AdminLayout />,
+    //   element: (
+    //   <AdminPrivateRoute>
+    //     <AdminLayout />
+    //   </AdminPrivateRoute>
+    // ), 나중에 이걸로 바꿀 예정. JWT 토큰이 없으면 로그인 화면으로 강제이동하게 합니다
     children: [
       { index: true, element: <AdminMainPage /> },
 
@@ -99,6 +106,15 @@ const router = createBrowserRouter([
       {
         path: 'device',
         children: [{ index: true, element: <AdminDevicePage /> }],
+      },
+      {
+        path: 'seat',
+        children: [
+          {
+            index: true,
+            element: <AdminSeatPage />,
+          },
+        ],
       },
     ],
   },

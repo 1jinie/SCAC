@@ -26,7 +26,7 @@ export default function AdminHeader() {
   };
 
   const handleLogout = () => {
-    // 추후 관리자 인증 Store 또는 로그아웃 API 연결
+    // 추후 로그아웃 API 연결필요
     navigate('/admin/login', { replace: true });
   };
 
