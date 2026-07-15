@@ -1,14 +1,7 @@
-/* layout 전용 */
-
-/* 브라우저 개발용으로 모니터에서 보기 편하게 하기위해 만들었습니다 작게 보시려면 주석을 풀어주세요 
-transform scale의 숫자를 마음대로 조절하시면 됩니다
-*/
+/* 브라우저 개발용 화면 */
 .kiosk_viewport {
-  width: 1080px;
-  min-height: 1920px;
-
-  transform-origin: top left;
-  transform: scale(0.5);
+  width: 100vw;
+  min-height: 100vh;
 
   display: flex;
   justify-content: center;
@@ -19,8 +12,10 @@ transform scale의 숫자를 마음대로 조절하시면 됩니다
   background: #222224;
 }
 
-/* 실제 키오스크 */
+/* 실제 키오스크 화면 */
 .kiosk_wrap {
+  --kiosk-scale: 0.5;
+
   width: 1080px;
   min-height: 1920px;
 
@@ -29,15 +24,8 @@ transform scale의 숫자를 마음대로 조절하시면 됩니다
   display: flex;
   flex-direction: column;
 
+  transform: scale(var(--kiosk-scale));
   transform-origin: top center;
-  flex-shrink: 0;
-}
 
-.kiosk_header {
-  height: 120px;
   flex-shrink: 0;
-}
-
-.kiosk_main {
-  flex: 1;
 }

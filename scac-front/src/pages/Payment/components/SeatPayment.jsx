@@ -22,17 +22,30 @@ export default function SeatPayment() {
 
   console.log('SeatPayment');
   return (
-    <div>
-      <p>
-        Seat ticketid : {selectTicketId !== null ? ticket.ticketId : 'null'}
-      </p>
-      <p>{paymentMethod}</p>
-      <p>
-        결제 상품 : {ticket.ticketName}{' '}
-        {ticket.ticketType === 'TIME' ? '시간권' : '기간권'}
-      </p>
-      {/* <p>상품 종류 : </p> */}
-      <p>최종 가격 : {formatPrice(ticket.ticketPrice)} 원</p>
-    </div>
+    <>
+      <ul>
+        <li>
+          <span className="payment_name">결제 상품</span>
+          <span className="payment_item">
+            {ticket.ticketName}{' '}
+            {ticket.ticketType === 'TIME'
+              ? '시간권'
+              : ticket.ticketType === 'PERIOD'
+                ? '기간권'
+                : ''}
+          </span>
+        </li>
+        <li>
+          <span className="payment_name">결제 수단</span>
+          <span className="payment_item">{paymentMethod}</span>
+        </li>
+        <li>
+          <span className="payment_name">최종 가격</span>
+          <span className="payment_item">
+            {formatPrice(ticket.ticketPrice)} 원
+          </span>
+        </li>
+      </ul>
+    </>
   );
 }

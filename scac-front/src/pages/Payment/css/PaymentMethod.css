@@ -209,7 +209,7 @@ CSS에서 img 색상은 바로 바뀌지 않습니다.
 
 .payment_method_box .btn_cancel {
   position: absolute;
-  bottom: 50px;
+  bottom: 56px;
   left: 50%;
 
   width: 420px;

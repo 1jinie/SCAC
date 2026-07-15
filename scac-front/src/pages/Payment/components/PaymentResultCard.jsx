@@ -7,10 +7,12 @@ import { useResetStore } from '../../../hooks/useResetStore';
 
 export default function PaymentResultCard({ isSuccess, errorMessage }) {
   const ticketId = useTicketStore((state) => state.selectedTicketId);
+  const purchaseType = useTicketStore((state) => state.purchaseType);
   const [ticket, setTicket] = useState();
   const navi = useNavigate();
   const resetAll = useResetStore();
 
+  //purchaseType === 'SEAT' 이면 좌석 결제 정보 가져오고 'STUDY_ROOM' 이면 스터디룸 결제 정보 가져올 예정
   useEffect(() => {
     const fetchTicket = async () => {
       const res = await ticketApi.getById(ticketId);
@@ -22,6 +24,7 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
 
   useEffect(() => {
     const timer = setTimeout(() => {
+      console.log('resetAll');
       resetAll();
       navi('/');
     }, 10000);

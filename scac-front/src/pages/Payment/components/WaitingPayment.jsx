@@ -1,13 +1,24 @@
 import React from 'react';
 import CancelButton from '../../../components/button/CancelButton';
+import WaitingCard from './WaitingCard';
+import WaitingSimplePay from './WaitingSimplePay';
+import { useNavigate } from 'react-router-dom';
 
-export default function WaitingPayment({ handlePay }) {
+export default function WaitingPayment({ handlePay, paymentMethod }) {
+  const navi = useNavigate();
   return (
     <div>
-      <button onClick={() => handlePay()}>임시로 만들어둔 결제진행버튼</button>
-      <p>결제를 진행해 주세요</p>
-      <br />
+      {paymentMethod === 'CARD' ? (
+        <WaitingCard />
+      ) : paymentMethod === 'SIMPLE' ? (
+        <WaitingSimplePay />
+      ) : (
+        navi('/payment')
+      )}
+
       <CancelButton text={'결제 취소'} nextPage={'/ticket'} />
+      <br />
+      <button onClick={() => handlePay()}>임시 결제용 버튼</button>
     </div>
   );
 }
