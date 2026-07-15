@@ -1,4 +1,3 @@
-/* Auth 화면을 NonSignup 스타일로 맞춘 CSS */
 body {
   margin: 0;
   padding: 0;
@@ -8,10 +7,10 @@ body {
 
 .login_container,
 .signup_container {
+  display: flex;
   width: 100%;
   max-width: 100%;
-  height: auto;
-  max-height: 100%;
+  height: 100%;
   aspect-ratio: 9 / 16;
   margin: 0 auto;
   padding: 100px 65px;
@@ -48,7 +47,7 @@ body {
 .login_box,
 .signup_box {
   width: 100%;
-
+  margin-top: 50px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -59,14 +58,14 @@ body {
   font-size: 75px;
   font-weight: 700;
   color: var(--color-text);
-  margin: 0 0 40px 0;
+  margin: 10px 0 40px 0;
   letter-spacing: -0.3px;
 }
 
 #login_form,
 #signup_form {
   margin-top: 10px;
-  display: fixd;
+  display: flex;
   width: 800px;
   height: 1200px;
   flex-direction: column;
@@ -74,8 +73,8 @@ body {
 }
 
 .input_group {
-  margin-top: 80px;
-  display: fixed;
+  margin-top: 200px;
+  display: flex;
   gap: 8px;
   margin-bottom: 28px;
 }
@@ -115,7 +114,7 @@ body {
 }
 
 .btn_inner_verify {
-  position: fixed;
+  position: flex;
   right: 140px;
   top: 605px;
   transform: translateY(-100%);
@@ -138,11 +137,11 @@ body {
 }
 
 .btn_submit {
-  margin-top: 80px;
+  margin-top: 30px;
   width: 100%;
-  height: 65px;
+  height: 100px;
   border: none;
-  border-radius: 25px;
+  border-radius: 50px;
   background-color: #ff8f42;
   color: #ffffff;
   font-size: 30px;
@@ -157,16 +156,15 @@ body {
 
 .login_footer,
 .signup_footer {
-  margin-top: 15px;
   width: 100%;
-  height: 300px;
+  height: 1100px;
   text-align: center;
 }
 
 .btn_link {
   background: none;
   border: none;
-  color: #2f2f2f;
+  color: var(--color-btn-cancel-text);
   font-weight: 400;
   font-size: 30px;
   cursor: pointer;

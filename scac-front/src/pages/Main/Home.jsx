@@ -50,7 +50,7 @@ function HomePage() {
           <button
             type="button"
             className="menu_btn btn_orange"
-            onClick={() => navigate('seat')} // 입실 경로 설정
+            onClick={() => navigate('/seat')} //임시 경로
           >
             <div className="btn_icon">🚪➡️</div>
             <span className="btn_label">입실</span>
@@ -86,7 +86,7 @@ function HomePage() {
           <button
             type="button"
             className="menu_btn btn_gray"
-            onClick={() => navigate('room')}
+            onClick={() => navigate('/room')}
           >
             <div className="btn_icon">📅</div>
             <span className="btn_label">스터디룸 예약</span>

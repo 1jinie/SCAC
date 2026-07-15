@@ -114,7 +114,7 @@ function MyPage() {
         <button
           type="button"
           className="btn_home"
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/loginhome')}
         >
           🏠
         </button>
