@@ -7,6 +7,8 @@ import '../../styles/Home.css';
 
 function HomePage() {
   const [showCheckOutModal, setShowCheckOutModal] = useState(false);
+  const [showGoOutModal, setShowGoOutModal] = useState(false);
+  const goOut = checkInStore((state) => state.goOut);
   const checkOutSeat = seatStore((state) => state.checkOutSeat);
   const updateCheckOut = checkInStore((state) => state.updateCheckOut);
   const seats = seatStore((state) => state.seats);
@@ -17,6 +19,11 @@ function HomePage() {
   ).length;
 
   const totalSeats = seats.filter((seat) => seat.type === 'seat').length;
+
+  const handleGoOut = (data) => {
+    goOut(data.userId);
+    setShowGoOutModal(false);
+  };
 
   const handleCheckOut = (data) => {
     updateCheckOut(data.checkInId);
@@ -58,7 +65,7 @@ function HomePage() {
           <button
             type="button"
             className="menu_btn btn_orange"
-            onClick={() => navigate('/')}
+            onClick={() => setShowGoOutModal(true)}
           >
             <div className="btn_icon">🚪⬅️</div>
             <span className="btn_label">외출</span>
@@ -122,6 +129,13 @@ function HomePage() {
         <CheckOutModal
           onClose={() => setShowCheckOutModal(false)}
           onConfirm={handleCheckOut}
+        />
+      )}
+      {showGoOutModal && (
+        <CheckOutModal
+          mode="goOut"
+          onClose={() => setShowGoOutModal(false)}
+          onConfirm={handleGoOut}
         />
       )}
     </div>
