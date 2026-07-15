@@ -35,16 +35,13 @@ export default function PaymentProcess() {
       <div className="payment_modal">
         <h2>결제정보 확인</h2>
         <div className="payment_process_box">
-          {
-            // seat면 SeatPayment, 아니면 StudyRoomPayment(아직 안만듦)컴퍼넌트 불러옴
-            purchaseType === 'SEAT' ? (
-              <SeatPayment />
-            ) : purchaseType === 'STUDY_ROOM' ? (
-              <StudyRoomPayment />
-            ) : (
-              'Error'
-            )
-          }
+          {purchaseType === 'SEAT' ? (
+            <SeatPayment />
+          ) : purchaseType === 'STUDY_ROOM' ? (
+            <StudyRoomPayment />
+          ) : (
+            'Error'
+          )}
         </div>
         {!isProcessing ? (
           <WaitingPayment handlePay={handlePay} paymentMethod={paymentMethod} />
