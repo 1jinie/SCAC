@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { checkOut } from '../../utils/checkOut';
+import { goOut } from '../../utils/goOut';
+import { checkInStore } from '../../store/checkInStore';
 import '../../styles/checkIn.css';
 
-function CheckOutModal({ onClose, onConfirm }) {
+function CheckOutModal({ onClose, onConfirm, mode = 'checkout' }) {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const checkIns = checkInStore((state) => state.checkIns);
 
   const handleSubmit = () => {
     if (!phone || !password) {
@@ -12,7 +15,10 @@ function CheckOutModal({ onClose, onConfirm }) {
       return;
     }
 
-    const result = checkOut(phone, password);
+    const result =
+      mode === 'goOut'
+        ? goOut(phone, password, checkIns)
+        : checkOut(phone, password);
 
     alert(result.message);
 
@@ -33,7 +39,7 @@ function CheckOutModal({ onClose, onConfirm }) {
         <button className="modal_close" onClick={onClose}>
           x
         </button>
-        <h2>퇴실</h2>
+        <h2>{mode === 'goOut' ? '외출' : '퇴실'}</h2>
         <div className="content">
           <input
             type="text"

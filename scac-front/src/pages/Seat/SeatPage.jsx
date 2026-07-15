@@ -70,24 +70,26 @@ function SeatPage({ mode }) {
     <div className="seat_page">
       <div className="seat_header">
         <div className="back_btn" onClick={() => navigate('/')}>
-          <img src="/icons/common/next_black.svg" alt="뒤로가기" className='back_icon'/>
+          <img
+            src="/icons/common/next_black.svg"
+            alt="뒤로가기"
+            className="back_icon"
+          />
           <span>뒤로가기</span>
         </div>
-        <img src="/logo/logo.png" alt="로고" className='logo_image'/>
+        <img src="/logo/logo.png" alt="로고" className="logo_image" />
       </div>
 
-      <div className="seat_grid_wrapper">
-        <div className="seat_grid">
-          {seats.map((seat) => (
-            <SeatItem
-              key={seat.id}
-              seat={seat}
-              isSelected={selected === seat.id}
-              onClick={() => handleClick(seat)}
-              mode={mode}
-            />
-          ))}
-        </div>
+      <div className="seat_wrapper">
+        {seats.map((seat) => (
+          <SeatItem
+            key={seat.id}
+            seat={seat}
+            isSelected={selected === seat.id}
+            onClick={() => handleClick(seat)}
+            mode={mode}
+          />
+        ))}
       </div>
 
       <div className="seat_legend">

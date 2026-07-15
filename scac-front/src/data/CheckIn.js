@@ -5,6 +5,8 @@ export const checkIns = [
     seatId: 3,
     checkInTime: '2026-07-14 10:30',
     checkOutTime: null,
+    awayStartTime: '2026-07-14 12:30',
+    status: 'using',
   },
   {
     id: 2,
@@ -12,6 +14,8 @@ export const checkIns = [
     seatId: 8,
     checkInTime: '2026-07-14 09:40',
     checkOutTime: null,
+    awayStartTime: null,
+    status: 'using',
   },
   {
     id: 3,
@@ -19,6 +23,8 @@ export const checkIns = [
     seatId: 13,
     checkInTime: '2026-07-14 11:00',
     checkOutTime: null,
+    awayStartTime: null,
+    status: 'using',
   },
   {
     id: 4,
@@ -26,6 +32,8 @@ export const checkIns = [
     seatId: 15,
     checkInTime: '2026-07-14 10:10',
     checkOutTime: null,
+    awayStartTime: null,
+    status: 'using',
   },
   {
     id: 5,
@@ -33,6 +41,8 @@ export const checkIns = [
     seatId: 20,
     checkInTime: '2026-07-14 08:30',
     checkOutTime: null,
+    awayStartTime: null,
+    status: 'using',
   },
   {
     id: 6,
@@ -40,6 +50,8 @@ export const checkIns = [
     seatId: 23,
     checkInTime: '2026-07-14 11:30',
     checkOutTime: null,
+    awayStartTime: null,
+    status: 'using',
   },
   {
     id: 7,
@@ -47,6 +59,8 @@ export const checkIns = [
     seatId: 1,
     checkInTime: '2026-07-13 09:00',
     checkOutTime: '2026-07-13 12:00',
+    awayStartTime: null,
+    status: 'checkout',
   },
   {
     id: 8,
@@ -54,6 +68,8 @@ export const checkIns = [
     seatId: 2,
     checkInTime: '2026-07-13 10:00',
     checkOutTime: '2026-07-13 14:00',
+    awayStartTime: null,
+    status: 'checkout',
   },
   {
     id: 9,
@@ -61,6 +77,8 @@ export const checkIns = [
     seatId: 4,
     checkInTime: '2026-07-13 13:00',
     checkOutTime: '2026-07-13 16:30',
+    awayStartTime: null,
+    status: 'checkout',
   },
   {
     id: 10,
@@ -68,6 +86,8 @@ export const checkIns = [
     seatId: 5,
     checkInTime: '2026-07-13 14:00',
     checkOutTime: '2026-07-13 18:00',
+    awayStartTime: null,
+    status: 'checkout',
   },
   {
     id: 11,
@@ -75,6 +95,8 @@ export const checkIns = [
     seatId: 6,
     checkInTime: '2026-07-14 08:00',
     checkOutTime: '2026-07-14 10:00',
+    awayStartTime: null,
+    status: 'checkout',
   },
   {
     id: 12,
@@ -82,6 +104,8 @@ export const checkIns = [
     seatId: 7,
     checkInTime: '2026-07-14 08:30',
     checkOutTime: '2026-07-14 11:00',
+    awayStartTime: null,
+    status: 'checkout',
   },
   {
     id: 13,
@@ -89,6 +113,8 @@ export const checkIns = [
     seatId: 9,
     checkInTime: '2026-07-14 09:00',
     checkOutTime: '2026-07-14 12:30',
+    awayStartTime: null,
+    status: 'checkout',
   },
   {
     id: 14,
@@ -96,6 +122,8 @@ export const checkIns = [
     seatId: 10,
     checkInTime: '2026-07-14 09:30',
     checkOutTime: '2026-07-14 13:00',
+    awayStartTime: null,
+    status: 'checkout',
   },
   {
     id: 15,
@@ -103,6 +131,8 @@ export const checkIns = [
     seatId: 11,
     checkInTime: '2026-07-14 10:00',
     checkOutTime: '2026-07-14 13:30',
+    awayStartTime: null,
+    status: 'checkout',
   },
   {
     id: 16,
@@ -110,6 +140,8 @@ export const checkIns = [
     seatId: 12,
     checkInTime: '2026-07-14 10:30',
     checkOutTime: '2026-07-14 14:00',
+    awayStartTime: null,
+    status: 'checkout',
   },
   {
     id: 17,
@@ -117,6 +149,8 @@ export const checkIns = [
     seatId: 14,
     checkInTime: '2026-07-14 11:00',
     checkOutTime: '2026-07-14 15:00',
+    awayStartTime: null,
+    status: 'checkout',
   },
   {
     id: 18,
@@ -124,6 +158,8 @@ export const checkIns = [
     seatId: 16,
     checkInTime: '2026-07-14 11:30',
     checkOutTime: '2026-07-14 15:30',
+    awayStartTime: null,
+    status: 'checkout',
   },
   {
     id: 19,
@@ -131,6 +167,8 @@ export const checkIns = [
     seatId: 17,
     checkInTime: '2026-07-14 12:00',
     checkOutTime: '2026-07-14 16:00',
+    awayStartTime: null,
+    status: 'checkout',
   },
   {
     id: 20,
@@ -138,6 +176,8 @@ export const checkIns = [
     seatId: 18,
     checkInTime: '2026-07-14 12:30',
     checkOutTime: '2026-07-14 17:00',
+    awayStartTime: null,
+    status: 'checkout',
   },
   {
     id: 21,
@@ -145,6 +185,8 @@ export const checkIns = [
     seatId: 19,
     checkInTime: '2026-07-14 13:00',
     checkOutTime: '2026-07-14 17:30',
+    awayStartTime: null,
+    status: 'checkout',
   },
   {
     id: 22,
@@ -152,6 +194,8 @@ export const checkIns = [
     seatId: 21,
     checkInTime: '2026-07-14 13:30',
     checkOutTime: '2026-07-14 18:00',
+    awayStartTime: null,
+    status: 'checkout',
   },
   {
     id: 23,
@@ -159,6 +203,8 @@ export const checkIns = [
     seatId: 22,
     checkInTime: '2026-07-14 14:00',
     checkOutTime: '2026-07-14 18:30',
+    awayStartTime: null,
+    status: 'checkout',
   },
   {
     id: 24,
@@ -166,6 +212,8 @@ export const checkIns = [
     seatId: 24,
     checkInTime: '2026-07-14 14:30',
     checkOutTime: '2026-07-14 19:00',
+    awayStartTime: null,
+    status: 'checkout',
   },
   {
     id: 25,
@@ -173,5 +221,7 @@ export const checkIns = [
     seatId: 25,
     checkInTime: '2026-07-14 15:00',
     checkOutTime: '2026-07-14 19:30',
+    awayStartTime: null,
+    status: 'checkout',
   },
 ];

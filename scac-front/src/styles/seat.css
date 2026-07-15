@@ -1,6 +1,6 @@
 .seat_page {
-  width: 1080px;
-  height: 1920px;
+  width: 100%;
+  min-height: 100%;
   margin: 0 auto;
   background-color: #ffffff;
   box-sizing: border-box;
@@ -16,8 +16,8 @@
 
 /* Header styling */
 .seat_header {
-  width: 1080px;
-  height: 130px;
+  width: 100%;
+  height: 140px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -40,13 +40,13 @@
   left: 0;
 }
 
-.back_icon{
+.back_icon {
   width: 60px;
   height: 60px;
   transform: rotate(180deg);
 }
 
-.logo_image{
+.logo_image {
   position: absolute;
 
   left: 50%;
@@ -62,217 +62,176 @@
   color: #333333;
 }
 
-/* Grid Wrapper & Container */
-.seat_grid_wrapper {
+.seat_wrapper {
   width: 920px;
   height: 1325px;
+
   margin-top: 40px;
   margin-bottom: 40px;
-  background-color: #eaeaea;
+
+  background-color: white;
   border: 2px solid #aaaaaa;
   border-radius: 16px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 40px 0;
-  box-sizing: border-box;
-  box-shadow: 0 5px 12px #cccccc;
-}
 
-.seat_grid {
-  display: grid;
-  grid-template-columns: repeat(10, 80px);
-  grid-auto-rows: 80px;
-  gap: 12px;
-}
-
-/* Base Seat (Back layer) */
-.seat {
-  width: 80px;
-  height: 80px;
-  border-radius: 12px;
   position: relative;
+
+  box-sizing: border-box;
+}
+
+.seat {
+  width: 120px;
+  height: 120px;
+  border: 2px solid #c2c2c2;
+  border-radius: 32px;
+
+  position: absolute;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
   box-sizing: border-box;
   cursor: pointer;
-  user-select: none;
 }
 
-/* Specific colors for the back layer */
+.seat_number {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+  color: #333;
+}
+
+.seat_icon {
+  width: 40px;
+  height: 40px;
+
+  margin: 4px 0;
+}
+
+.seat_status {
+  font-size: 24px;
+  font-weight: 500;
+  margin-top: 3px;
+}
+
 .seat.available {
-  background-color: #d9d9d9;
+  background-color: white;
 }
 
 .seat.using {
-  background-color: #61afa0;
+  background-color: #91c6bc;
 }
 
 .seat.selected {
   background-color: #ff985c;
 }
 
+.seat.repair {
+  background-color: #d9d9d9;
+}
+
 .seat.unavailable {
-  background-color: #a0a0a0;
+  color: #d9d9d9;
+  background-color: #d9d9d9;
+  border-color: #c2c2c2;
   cursor: not-allowed;
 }
 
-/* Front card layer */
-.seat_inner {
-  position: absolute;
-  width: 80px;
-  height: 80px;
-  top: -4px;
-  left: -4px;
-  border-radius: 12px;
-  border: 2px solid;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  font-weight: 700;
-  color: #333333;
-  transition: transform 0.1s ease;
+.seat.unavailable .seat_number {
+  color: #c2c2c2;
 }
 
-.seat.available .seat_inner {
-  background-color: #d6d6d6;
-  border-color: #c2c2c2;
-}
-
-.seat.using .seat_inner {
-  background-color: #7ec2b2;
-  border-color: #61afa0;
-}
-
-.seat.selected .seat_inner {
-  background-color: #ff985c;
-  border-color: #e57d45;
-}
-
-.seat.unavailable .seat_inner {
-  background-color: #d6d6d6;
-  border-color: #c2c2c2;
-  background-image: linear-gradient(
-    135deg,
-    transparent 48%,
-    #333333 48%,
-    #333333 52%,
-    transparent 52%
-  );
-}
-
-/* Pressed effect on click */
-.seat:active .seat_inner {
-  transform: translate(2px, 2px);
+.seat.unavailable .seat_icon {
+  filter: brightness(0) saturate(100%) invert(78%) sepia(5%) saturate(0%)
+    hue-rotate(0deg) brightness(95%) contrast(90%);
 }
 
 /* Rooms */
 .seat.room {
-  width: 100%;
-  height: 100%;
-  border: 6px solid #1a1a1a;
-  border-top: none;
-  border-radius: 0;
-  box-shadow: none;
-  background-color: #d6d6d6;
-  position: relative;
+  border: 2px solid #1a1a1a;
+  border-radius: 12px;
+  border: 4px solid #d9d9d9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  background-color: #d9d9d9;
+  position: absolute;
 }
 
-/* seat 모드에서 대각선 적용 */
-.seat.unavailable.R1,
-.seat.unavailable.R2 {
-  background-image: linear-gradient(
-    to bottom right,
-    transparent 49.3%,
-    #1a1a1a 49.3%,
-    #1a1a1a 50.7%,
-    transparent 50.7%
-  );
+.room_header {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a1a1a;
 }
 
-.seat.unavailable.R3 {
-  background-image: linear-gradient(
-    to bottom right,
-    transparent 49.5%,
-    #1a1a1a 49.5%,
-    #1a1a1a 50.5%,
-    transparent 50.5%
-  );
+.room_title {
+  display: flex;
+  align-items: flex-end;
+
+  margin-top: 6px;
+}
+
+.room_code {
+  font-size: 96px;
+  font-weight: 600;
+  color: #333;
+}
+
+.room_capacity {
+  margin-left: 8px;
+  margin-bottom: 10px;
+  font-size: 24px;
+  color: #666;
+}
+
+.room_icon {
+  width: 212px;
+  margin-top: 12px;
 }
 
 .seat.room.available {
-  background-color: #d6d6d6;
+  background-color: white;
 }
 
 .seat.room.using {
-  background-color: #7ec2b2;
+  background-color: #91c6bc;
 }
 
 .seat.room.selected {
   background-color: #ff985c;
 }
 
-.seat.room.available,
-.seat.room.using,
-.seat.room.selected {
-  background-image: none !important;
+.seat.room.unavailable {
+  background-color: #d9d9d9;
+  border-color: #c2c2c2;
+  cursor: not-allowed;
 }
 
-.seat.room .seat_inner {
-  background-image: none !important;
+.seat.room.unavailable .room_header,
+.seat.room.unavailable .room_code,
+.seat.room.unavailable .room_capacity {
+  color: #c2c2c2;
 }
 
-.room_name {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 64px;
-  font-weight: 700;
-  color: #333;
-}
-
-/* Door Symbol at top of rooms */
-.room_door {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.room_door::before {
-  content: '';
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  left: 28%;
-  height: 6px;
-  background-color: #1a1a1a;
-}
-
-.room_door::after {
-  content: '';
-  position: absolute;
-  top: -6px;
-  left: -6px;
-  width: 33%;
-  height: 6px;
-  background-color: #1a1a1a;
-  transform-origin: left center;
-  transform: rotate(-25deg);
+.seat.room.unavailable .room_icon {
+  filter: brightness(0) saturate(100%) invert(78%) sepia(5%) saturate(0%)
+    hue-rotate(0deg) brightness(95%) contrast(90%);
 }
 
 /* Legend section */
 .seat_legend {
   width: 920px;
+  height: 100px;
   margin-top: 40px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 20px;
+  background-color: white;
+  border: 1px solid #c2c2c2;
+  border-radius: 16px;
   box-sizing: border-box;
 }
 
@@ -284,6 +243,7 @@
 .legend_color {
   width: 60px;
   height: 50px;
+  border: 2px solid #aaaaaa;
   border-radius: 6px;
   margin-right: 12px;
   box-sizing: border-box;
@@ -294,31 +254,16 @@
 }
 
 .legend_color.available {
-  background-color: #d6d6d6;
+  background-color: white;
 }
 
 .legend_color.using {
-  background-color: #7ec2b2;
+  background-color: #91c6bc;
 }
 
 .legend_color.unavailable {
-  background-color: #d6d6d6;
+  background-color: #d9d9d9;
   position: relative;
-}
-
-.legend_diagonal {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: linear-gradient(
-    135deg,
-    transparent 47%,
-    #333333 47%,
-    #333333 53%,
-    transparent 53%
-  );
 }
 
 .legend_text {
