@@ -4,7 +4,7 @@ import SeatPayment from './components/SeatPayment';
 import WaitingPayment from './components/WaitingPayment';
 import { useEffect, useState } from 'react';
 import ProceedPayment from './components/ProceedPayment';
-import stylesheet from './css/PaymentResult.css';
+import stylesheet from './css/PaymentProcess.css';
 
 export default function PaymentProcess() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -29,14 +29,14 @@ export default function PaymentProcess() {
 
   return (
     <div className="overlay">
-      <div className="modal">
+      <div className="payment_modal">
         <h2>결제정보 확인</h2>
-        {
-          // seat면 SeatPayment, 아니면 StudyRoomPayment(아직 안만듦)컴퍼넌트 불러옴
-          purchaseType === 'SEAT' ? <SeatPayment /> : ''
-        }
-        <Link to={'/'}>임시로 만들어둔 Home 링크</Link>
-        <br />
+        <div className="payment_process_box">
+          {
+            // seat면 SeatPayment, 아니면 StudyRoomPayment(아직 안만듦)컴퍼넌트 불러옴
+            purchaseType === 'SEAT' ? <SeatPayment /> : ''
+          }
+        </div>
         {!isProcessing ? (
           <WaitingPayment handlePay={handlePay} />
         ) : (

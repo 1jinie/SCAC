@@ -1,13 +1,14 @@
 import React from 'react';
 import CancelButton from '../../../components/button/CancelButton';
+import WaitingCard from './WaitingCard';
 
 export default function WaitingPayment({ handlePay }) {
   return (
     <div>
-      <button onClick={() => handlePay()}>임시로 만들어둔 결제진행버튼</button>
-      <p>결제를 진행해 주세요</p>
-      <br />
+      <WaitingCard />
       <CancelButton text={'결제 취소'} nextPage={'/ticket'} />
+      <br />
+      <button onClick={() => handlePay()}>임시 결제용 버튼</button>
     </div>
   );
 }
