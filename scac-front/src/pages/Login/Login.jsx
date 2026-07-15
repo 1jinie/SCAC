@@ -65,7 +65,7 @@ function LoginPage() {
           </div>
 
           <div className="input_group">
-            <label htmlFor="user_password">비밀번호</label>
+            <label htmlFor="user_password">입실 비밀번호</label>
             <input
               id="user_password"
               className="input_field"

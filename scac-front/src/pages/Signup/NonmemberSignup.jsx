@@ -34,9 +34,9 @@ function NonmemberSignup() {
     }
 
     if (!formData.phone.trim()) {
-      newErrors.phone = '휴대폰 번호를 입력해주세요.';
+      newErrors.phone = '전화번호를 입력해주세요.';
     } else if (!/^01\d{8,9}$/.test(formData.phone.replace(/-/g, ''))) {
-      newErrors.phone = '휴대폰 번호 형식이 올바르지 않습니다.';
+      newErrors.phone = '전화번호 형식이 올바르지 않습니다.';
     }
 
     if (!formData.password.trim()) {
@@ -118,7 +118,7 @@ function NonmemberSignup() {
 
           <div className="form_group">
             <label className="form_label" htmlFor="phone">
-              휴대폰 번호
+              전화번호
             </label>
             <input
               id="phone"
@@ -129,6 +129,11 @@ function NonmemberSignup() {
               value={formData.phone}
               onChange={handleChange}
             />
+            <div className="form_group verify_group">
+              <button type="button" className="btn_inner_verify">
+                인증번호발송
+              </button>
+            </div>
             {errors.phone && <span className="error_text">{errors.phone}</span>}
           </div>
 

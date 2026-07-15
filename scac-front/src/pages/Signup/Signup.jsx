@@ -54,7 +54,7 @@ function SignUpPage() {
   return (
     <div className="signup_container">
       <div className="signup_box">
-        <h2 className="signup_title">스터디카페 회원가입</h2>
+        <h2 className="signup_title">회원가입</h2>
         <header className="auth_header">
           <button
             type="button"
@@ -85,12 +85,12 @@ function SignUpPage() {
           </div>
 
           <div className="input_group">
-            <label htmlFor="reg_password">비밀번호</label>
+            <label htmlFor="reg_password">입실 비밀번호</label>
             <input
               id="reg_password"
               className="input_field"
               type="password"
-              placeholder="비밀번호를 입력하세요"
+              placeholder="숫자 6자리"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
