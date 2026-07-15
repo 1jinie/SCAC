@@ -18,15 +18,6 @@
   margin-bottom: 20px;
 }
 
-.time_text {
-  position: absolute;
-  right: 0;
-  top: 0;
-  font-size: 13px;
-  color: #333333;
-  font-weight: 500;
-}
-
 .logo_box {
   display: flex;
   align-items: center; /* 아이콘과 글자 높낮이 맞추기 */
@@ -37,14 +28,6 @@
   width: 32px; /* 원하는 너비 */
   height: 32px; /* 원하는 높이 */
   object-fit: contain; /* 이미지 비율 유지하며 박스에 맞춤 */
-}
-
-.logo_title {
-  font-size: 22px;
-  font-weight: bold;
-  color: #4db6ac; /* 로고 포인트 민트 색상 */
-  margin: 0;
-  letter-spacing: 1px;
 }
 
 /* 실시간 좌석 상태 바 */

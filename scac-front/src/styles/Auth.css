@@ -1,27 +1,26 @@
-/* 키오스크 모바일 화면을 구성하기 위한 베이스 가이드 */
 body {
   margin: 0;
   padding: 0;
-  background-color: #f5f5f5;
+  background-color: #f8f5f2;
   font-family: 'Noto Sans KR', sans-serif;
 }
 
-/* 로그인/회원가입 레이아웃 컨테이너 */
 .login_container,
 .signup_container {
-  width: 100vw;
-  max-width: 480px;
-  height: 100vh;
-  margin: 0 auto;
-  background-color: var(--color-white);
-  box-sizing: border-box;
   display: flex;
-  flex-direction: column;
-  padding: 20px 40px;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  aspect-ratio: 9 / 16;
+  margin: 0 auto;
+  padding: 100px 65px;
+  background-color: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
   color: var(--color-text);
 }
 
-/* 상단 탑바 */
 .auth_header {
   display: flex;
   justify-content: space-between;
@@ -31,12 +30,12 @@ body {
 }
 
 .btn_home {
-  background: none;
   border: none;
-  font-size: 24px;
+  background: transparent;
+  font-size: 40px;
+  line-height: 1;
   cursor: pointer;
-  color: var(--color-text);
-  padding: 0;
+  color: #000000;
 }
 
 .header_time {
@@ -45,121 +44,120 @@ body {
   font-weight: 500;
 }
 
-/* 중앙 정렬 박스 */
 .login_box,
 .signup_box {
   width: 100%;
+  margin-top: 50px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* 타이틀 */
 .login_title,
 .signup_title {
-  font-size: 38px;
-  font-weight: bold;
+  font-size: 75px;
+  font-weight: 700;
   color: var(--color-text);
-  margin: 0 0 50px 0;
-  letter-spacing: 1px;
+  margin: 10px 0 40px 0;
+  letter-spacing: -0.3px;
 }
 
-/* 폼 내부 정렬 */
 #login_form,
 #signup_form {
-  width: 100%;
+  margin-top: 10px;
   display: flex;
+  width: 800px;
+  height: 1200px;
   flex-direction: column;
-  gap: 22px;
+  gap: 16px;
 }
 
 .input_group {
-  width: 100%;
+  margin-top: 200px;
   display: flex;
-  flex-direction: column;
-  position: relative;
+  gap: 8px;
+  margin-bottom: 28px;
 }
 
 .input_guide_label {
-  font-size: 12px;
-  color: var(--color-text-light);
-  margin-bottom: 6px;
-  text-align: center;
-  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-size: 30px;
+  font-weight: 600;
+  color: #4a4a4a;
 }
 
-/* 라운드 사각형 인풋 윈도우 */
 .input_field {
   width: 100%;
-  height: 54px;
-  border: 1px solid var(--color-reserv-stroke);
-  border-radius: var(--radius-button);
+  height: 80px;
   padding: 0 20px;
-  font-size: 16px;
-  color: var(--color-text);
+  border: 1px solid #e2e2e2;
+  border-radius: 30px;
+  background-color: #fafafa;
+  font-size: 20px;
+  font-weight: 700;
+  color: #2b2b2b;
   box-sizing: border-box;
-  background-color: var(--color-white);
-  transition: border-color 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .input_field::placeholder {
-  color: var(--color-btn-cancel-fill);
+  color: #b0b0b0;
 }
 
 .input_field:focus {
   outline: none;
-  border-color: var(--color-highlight);
+  border-color: #ff9c51;
+  background-color: #ffffff;
 }
 
-/* 회원가입 화면 속 우측 '인증번호발송' 소형 버튼 */
 .btn_inner_verify {
-  position: absolute;
-  right: 5px;
-  top: 65%;
-  transform: translateY(-50%);
+  position: flex;
+  right: 140px;
+  top: 605px;
+  transform: translateY(-100%);
   background-color: var(--color-white);
   border: 1px solid var(--color-highlight);
   border-radius: var(--radius-button);
   color: var(--color-highlight);
   padding: 6px 14px;
-  font-size: 12px;
+  font-size: 22px;
   cursor: pointer;
   font-weight: bold;
 }
 
-/* 에러 텍스트 알림 */
 .error_text {
-  color: var(--color-error);
-  font-size: 13px;
-  margin: -6px 0 4px 0;
+  font-size: 20px;
+  color: #ff4444;
+  font-weight: 600;
+  margin-top: 2px;
   text-align: center;
-  font-weight: 500;
 }
 
-/* 입체감 있는 하단 오렌지 로그인/가입 버튼 */
 .btn_submit {
+  margin-top: 30px;
   width: 100%;
-  height: 52px;
-  background-color: var(--color-highlight);
+  height: 100px;
   border: none;
-  border-radius: var(--radius-button);
-  color: var(--color-white);
-  font-size: 18px;
-  font-weight: bold;
+  border-radius: 50px;
+  background-color: #ff8f42;
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 700;
   cursor: pointer;
-  margin-top: 15px;
-  box-shadow: var(--shadow-md);
-  transition: background-color 0.2s ease;
+  transition: transform 0.15s ease;
 }
 
 .btn_submit:hover {
-  filter: brightness(0.95);
+  transform: translateY(-1px);
 }
 
 .login_footer,
 .signup_footer {
-  margin-top: 35px;
   width: 100%;
+  height: 1100px;
   text-align: center;
 }
 
@@ -167,7 +165,9 @@ body {
   background: none;
   border: none;
   color: var(--color-btn-cancel-text);
-  font-size: 14px;
+  font-weight: 400;
+  font-size: 30px;
   cursor: pointer;
   text-decoration: underline;
+  transition: transform 0.15s ease;
 }
