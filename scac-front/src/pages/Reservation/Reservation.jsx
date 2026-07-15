@@ -12,7 +12,6 @@ import { rooms } from '../../data/RoomInfo';
 import '../../styles/reservation.css';
 import { useTicketStore } from '../../store/ticketStore';
 
-// eslint-disable-next-line import/no-anonymous-default-export
 export default () => {
   const roomId = reservationStore((state) => state.reservation.roomId);
   const setReservation = reservationStore((state) => state.setReservation);
