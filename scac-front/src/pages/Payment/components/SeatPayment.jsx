@@ -42,7 +42,7 @@ export default function SeatPayment() {
         <li>
           <span className="payment_name">최종 가격</span>
           <span className="payment_item">
-            {formatPrice(ticket.ticketPrice)}
+            {formatPrice(ticket.ticketPrice)} 원
           </span>
         </li>
       </ul>

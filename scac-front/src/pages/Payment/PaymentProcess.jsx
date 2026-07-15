@@ -5,8 +5,10 @@ import WaitingPayment from './components/WaitingPayment';
 import { useEffect, useState } from 'react';
 import ProceedPayment from './components/ProceedPayment';
 import stylesheet from './css/PaymentProcess.css';
+import { usePaymentStore } from '../../store/paymentStore';
 
 export default function PaymentProcess() {
+  const paymentMethod = usePaymentStore((state) => state.paymentMethod);
   const [isProcessing, setIsProcessing] = useState(false);
   const purchaseType = useTicketStore((state) => state.purchaseType);
   // console.log(purchaseType);
@@ -38,9 +40,9 @@ export default function PaymentProcess() {
           }
         </div>
         {!isProcessing ? (
-          <WaitingPayment handlePay={handlePay} />
+          <WaitingPayment handlePay={handlePay} paymentMethod={paymentMethod} />
         ) : (
-          <ProceedPayment />
+          <ProceedPayment paymentMethod={paymentMethod} />
         )}
       </div>
     </div>

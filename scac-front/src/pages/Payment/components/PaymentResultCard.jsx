@@ -22,6 +22,7 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
 
   useEffect(() => {
     const timer = setTimeout(() => {
+      console.log('resetAll');
       resetAll();
       navi('/');
     }, 10000);
