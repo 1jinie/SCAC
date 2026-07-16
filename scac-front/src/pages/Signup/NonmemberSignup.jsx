@@ -17,19 +17,16 @@ function NonmemberSignup() {
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // 입력값 변경 시 해당 필드 에러 초기화
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }));
     }
   };
 
-  // 인증번호 관련 핵심 상태 (재사용 및 이식 용이)
-  const [isVerificationSent, setIsVerificationSent] = useState(false); // 인증번호 발송 여부
-  const [verificationCode, setVerificationCode] = useState(''); // 입력된 인증번호
-  const [isVerified, setIsVerified] = useState(false); // 인증 완료 여부
-  const [timer, setTimer] = useState(180); // 타이머 (3분 = 180초)
+  const [isVerificationSent, setIsVerificationSent] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [isVerified, setIsVerified] = useState(false);
+  const [timer, setTimer] = useState(180);
 
-  // 타이머 카운트다운 로직
   useEffect(() => {
     let interval = null;
     if (isVerificationSent && timer > 0 && !isVerified) {
@@ -46,14 +43,12 @@ function NonmemberSignup() {
     return () => clearInterval(interval);
   }, [isVerificationSent, timer, isVerified]);
 
-  // 타이머 초단위를 MM:SS 형식으로 변환
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // 🎯 [기능] 인증번호 발송 버튼 클릭
   const handleSendVerification = () => {
     if (!formData.phone.trim()) {
       setErrors((prev) => ({ ...prev, phone: '전화번호를 입력해주세요.' }));
@@ -67,16 +62,13 @@ function NonmemberSignup() {
       return;
     }
 
-    // 에러 초기화 및 가상 발송 처리
     setErrors((prev) => ({ ...prev, phone: '', verification: '' }));
     setIsVerificationSent(true);
-    setTimer(180); // 타이머 3분 초기화
+    setTimer(180);
     alert('인증번호 6자리가 발송되었습니다. (테스트용: 123456)');
   };
 
-  // 🎯 [기능] 인증확인 버튼 클릭
   const handleConfirmVerification = () => {
-    // 프론트엔드 모의 검증 (테스트 번호: 123456)
     if (verificationCode === '123456') {
       setIsVerified(true);
       setErrors((prev) => ({ ...prev, verification: '' }));
@@ -88,11 +80,9 @@ function NonmemberSignup() {
     }
   };
 
-  // 유효성 검사 함수
   const validateForm = () => {
     const newErrors = {};
 
-    // 공백 검사
     if (!formData.name.trim()) {
       newErrors.name = '이름을 입력해주세요.';
     }
@@ -127,11 +117,9 @@ function NonmemberSignup() {
     event.preventDefault();
     setSuccessMessage('');
 
-    // 유효성 검사 실행
     if (!validateForm()) return;
 
     console.log('✅ 유효한 데이터:', formData);
-
     setSuccessMessage('입실 준비가 완료되었습니다!');
 
     setTimeout(() => {
@@ -170,6 +158,7 @@ function NonmemberSignup() {
         )}
 
         <form className="signup_form" onSubmit={handleSubmit}>
+          {/* 이름 입력 */}
           <div className="form_group">
             <label className="form_label" htmlFor="name">
               이름
@@ -186,101 +175,80 @@ function NonmemberSignup() {
             {errors.name && <span className="error_text">{errors.name}</span>}
           </div>
 
+          {/* 전화번호 입력 (인증번호 발송 포함) */}
           <div className="form_group">
             <label className="form_label" htmlFor="phone">
               전화번호
             </label>
-            <input
-              id="phone"
-              name="phone"
-              type="tel"
-              className={`form_input ${errors.phone ? 'input_error' : ''}`}
-              placeholder="01012345678"
-              disabled={isVerified} // 인증 완동 시 번호 수정 불가 처리
-              value={formData.phone}
-              onChange={handleChange}
-            />
+            {/* 🎯 absolute 기준점을 만들어주는 wrapper 추가 */}
+            <div className="input_wrapper">
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                /* 💡 버튼 영역을 침범하지 않게 'with_btn' 클래스 유동 추가 */
+                className={`form_input ${errors.phone ? 'input_error' : ''} ${!isVerified ? 'with_btn' : ''}`}
+                placeholder="01012345678"
+                disabled={isVerified}
+                value={formData.phone}
+                onChange={handleChange}
+              />
 
-            {!isVerified && (
-              <button
-                type="button"
-                className="btn_inner_verify"
-                onClick={handleSendVerification}
-              >
-                {isVerificationSent ? '재발송' : '인증번호 발송'}
-              </button>
-            )}
-
+              {!isVerified && (
+                <button
+                  type="button"
+                  className="btn_inner_verify"
+                  onClick={handleSendVerification}
+                >
+                  {isVerificationSent ? '재발송' : '인증번호 발송'}
+                </button>
+              )}
+            </div>
             {errors.phone && <span className="error_text">{errors.phone}</span>}
           </div>
 
-          {/* 🎯 인증번호 입력창 (발송 버튼 클릭 시에만 노출 / 피그마 시안 완벽 대응) */}
+          {/* 인증번호 입력 (발송 완료 시 노출) */}
           {isVerificationSent && (
-            <div className="form_group verify_group">
+            <div className="form_group">
               <label className="form_label" htmlFor="verificationCode">
                 인증번호 입력
               </label>
-              <input
-                id="verificationCode"
-                name="verificationCode"
-                type="text"
-                className="input_field"
-                placeholder="인증번호 6자리 입력"
-                disabled={isVerified}
-                value={verificationCode}
-                onChange={(e) => setVerificationCode(e.target.value)}
-              />
 
-              {/* 인증 전에는 타이머와 확인 버튼 노출, 인증 후에는 완료 안내문 처리 */}
-              {!isVerified ? (
-                <div
-                  style={{
-                    position: 'absolute',
-                    right: '24px',
-                    bottom: '15px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '15px',
-                  }}
-                >
-                  <span
-                    style={{
-                      color: '#ff4444',
-                      fontSize: '24px',
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    {formatTime(timer)}
-                  </span>
-                  <button
-                    type="button"
-                    className="btn_inner_verify"
-                    style={{ position: 'static', height: '80px' }}
-                    onClick={handleConfirmVerification}
-                  >
-                    인증확인
-                  </button>
-                </div>
-              ) : (
-                <span
-                  className="success_text"
-                  style={{
-                    color: '#4b9da9',
-                    fontSize: '24px',
-                    fontWeight: '700',
-                    marginTop: '8px',
-                    paddingLeft: '12px',
-                  }}
-                >
-                  ✓ 인증이 확인되었습니다.
-                </span>
-              )}
+              <div className="input_wrapper">
+                <input
+                  id="verificationCode"
+                  name="verificationCode"
+                  type="text"
+                  className={`form_input ${errors.verification ? 'input_error' : ''} with_btn`}
+                  placeholder="인증번호 6자리 입력"
+                  disabled={isVerified}
+                  value={verificationCode}
+                  onChange={(e) => setVerificationCode(e.target.value)}
+                />
+
+                {!isVerified ? (
+                  /* 🎯 타이머와 인증확인 버튼 레이아웃 맞춤형 정렬 */
+                  <div className="verify_action_container">
+                    <span className="verify_timer">{formatTime(timer)}</span>
+                    <button
+                      type="button"
+                      className="btn_inner_verify static_btn"
+                      onClick={handleConfirmVerification}
+                    >
+                      인증확인
+                    </button>
+                  </div>
+                ) : (
+                  <span className="inner_success_badge">✓ 인증 확인됨</span>
+                )}
+              </div>
               {errors.verification && (
                 <span className="error_text">{errors.verification}</span>
               )}
             </div>
           )}
 
+          {/* 입실 비밀번호 */}
           <div className="form_group">
             <label className="form_label" htmlFor="password">
               입실 비밀번호
@@ -299,6 +267,7 @@ function NonmemberSignup() {
             )}
           </div>
 
+          {/* 비밀번호 확인 */}
           <div className="form_group">
             <label className="form_label" htmlFor="confirmPassword">
               비밀번호 확인
@@ -307,9 +276,7 @@ function NonmemberSignup() {
               id="confirmPassword"
               name="confirmPassword"
               type="password"
-              className={`form_input ${
-                errors.confirmPassword ? 'input_error' : ''
-              }`}
+              className={`form_input ${errors.confirmPassword ? 'input_error' : ''}`}
               placeholder="비밀번호 재입력"
               value={formData.confirmPassword}
               onChange={handleChange}
