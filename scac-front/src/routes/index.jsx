@@ -1,31 +1,19 @@
-import React from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import HomePage from '../pages/Main/Home';
-import LoginPage from '../pages/Login/Login';
-import SignUpPage from '../pages/Signup/Signup';
-import LoginHomePage from '../pages/Main/LoginHome';
-import MyPage from '../pages/MyPage/MyPage';
-import TicketPage from '../pages/Ticket/TicketPage';
+import { createBrowserRouter } from 'react-router-dom';
 import KioskLayout from '../layouts/KioskLayout';
 import KioskErrorPage from '../pages/Error/KioskErrorPage';
-import Seat from '../pages/Seat/Seat';
-import Room from '../pages/Seat/Room';
-import Reservation from '../pages/Reservation/Reservation';
+import LoginPage from '../pages/Login/Login';
+import HomePage from '../pages/Main/Home';
+import LoginHomePage from '../pages/Main/LoginHome';
+import MyPage from '../pages/MyPage/MyPage';
 import PaymentMethodPage from '../pages/Payment/PaymentMethodPage';
 import PaymentProcess from '../pages/Payment/PaymentProcess';
 import PaymentResult from '../pages/Payment/PaymentResult';
+import Reservation from '../pages/Reservation/Reservation';
+import Room from '../pages/Seat/Room';
+import Seat from '../pages/Seat/Seat';
 import NonmemberSignup from '../pages/Signup/NonmemberSignup';
-import AdminLayout from '../layouts/AdminLayout';
-import AdminMainPage from '../pages/Admin/Main/AdminMainPage';
-import AdminLoginPage from '../pages/Admin/Login/AdminLoginPage';
-import AdminLogPage from '../pages/Admin/Log/AdminLogPage';
-import AdminLogDetailPage from '../pages/Admin/Log/AdminLogDetailPage';
-import AdminReservationPage from '../pages/Admin/Reservation/AdminReservationPage';
-import AdminDevicePage from '../pages/Admin/Device/AdminDevicePage';
-import AdminTicketManagePage from '../pages/Admin/Ticket/AdminTicketManagePage';
-import AdminPaymentPage from '../pages/Admin/Payment/AdminPaymentPage';
-import AdminSeatPage from '../pages/Admin/Seat/AdminSeatPage';
-// import AdminPrivateRoute from './AdminPrivateRoute';
+import SignUpPage from '../pages/Signup/Signup';
+import TicketPage from '../pages/Ticket/TicketPage';
 
 const router = createBrowserRouter([
   // ============================
@@ -64,64 +52,6 @@ const router = createBrowserRouter([
         ],
       },
     ],
-  },
-
-  // ============================
-  // Admin
-  // ============================
-  {
-    path: '/admin',
-    element: <AdminLayout />,
-    //   element: (
-    //   <AdminPrivateRoute>
-    //     <AdminLayout />
-    //   </AdminPrivateRoute>
-    // ), 나중에 이걸로 바꿀 예정. JWT 토큰이 없으면 로그인 화면으로 강제이동하게 합니다
-    children: [
-      { index: true, element: <AdminMainPage /> },
-
-      {
-        path: 'log',
-        children: [
-          { index: true, element: <AdminLogPage /> },
-          { path: ':logId', element: <AdminLogDetailPage /> },
-        ],
-      },
-
-      {
-        path: 'ticket',
-        children: [{ index: true, element: <AdminTicketManagePage /> }],
-      },
-
-      {
-        path: 'payment',
-        children: [{ index: true, element: <AdminPaymentPage /> }],
-      },
-
-      {
-        path: 'reservation',
-        children: [{ index: true, element: <AdminReservationPage /> }],
-      },
-
-      {
-        path: 'device',
-        children: [{ index: true, element: <AdminDevicePage /> }],
-      },
-      {
-        path: 'seat',
-        children: [
-          {
-            index: true,
-            element: <AdminSeatPage />,
-          },
-        ],
-      },
-    ],
-  },
-
-  {
-    path: '/admin/login',
-    element: <AdminLoginPage />,
   },
 ]);
 export default router;

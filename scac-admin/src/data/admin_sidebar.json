@@ -1,0 +1,32 @@
+[
+  {
+    "path": "/",
+    "label": "관리자 메인",
+
+    "end": true
+  },
+  {
+    "path": "/seat",
+    "label": "전체 좌석 관리"
+  },
+  {
+    "path": "/log",
+    "label": "로그 확인"
+  },
+  {
+    "path": "/reservation",
+    "label": "예약 승인"
+  },
+  {
+    "path": "/device",
+    "label": "장치 관리"
+  },
+  {
+    "path": "/ticket",
+    "label": "이용권 관리"
+  },
+  {
+    "path": "/payment",
+    "label": "결제 관리"
+  }
+]
