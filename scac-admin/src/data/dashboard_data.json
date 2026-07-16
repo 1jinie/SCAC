@@ -16,10 +16,10 @@
     },
     {
       "id": "pending-reservation",
-      "title": "예약 승인 대기",
+      "title": "스터디룸 예약",
       "value": 4,
       "unit": "건",
-      "description": "승인 확인 필요"
+      "description": "스터디룸 예약 확인 필요"
     },
     {
       "id": "device-error",

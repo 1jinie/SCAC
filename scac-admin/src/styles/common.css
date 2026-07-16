@@ -45,8 +45,8 @@
 
   background: white;
 
-  border: 1px solid #ff9255;
-  color: #ff9255;
+  border: 1px solid var(--color-highlight);
+  color: var(--color-highlight);
   font-size: 50px;
 
   border-radius: 10px;
@@ -139,7 +139,7 @@
   border-color: var(--color-primary, #4b9da9);
   background: var(--color-primary, #4b9da9);
 
-  color: #ffffff;
+  color: var(--color-white);
 
   cursor: default;
 }
@@ -203,7 +203,7 @@
 
   padding: 28px 20px;
 
-  background: #ffffff;
+  background: var(--color-white);
   border-right: 1px solid #e3e7ea;
 }
 
@@ -328,7 +328,7 @@ div.time_text {
 
   padding: 0 32px;
 
-  background: #ffffff;
+  background: var(--color-white);
   border-bottom: 1px solid #e3e7ea;
 }
 
@@ -353,7 +353,7 @@ div.time_text {
   border: 1px solid #dce1e4;
   border-radius: 12px;
 
-  background: #ffffff;
+  background: var(--color-white);
 
   color: #4c5358;
   font-size: 24px;
@@ -408,12 +408,12 @@ div.time_text {
 
   padding: 0 18px;
 
-  border: 1px solid #d9dee1;
+  border: 1px solid var(--color-normal);
   border-radius: 10px;
 
-  background: #ffffff;
+  background: var(--color-white);
 
-  color: #5d6469;
+  color: var(--color-text-light);
   font-size: 14px;
   font-weight: 600;
 
@@ -421,5 +421,5 @@ div.time_text {
 }
 
 .admin_logout_button:hover {
-  background: #f4f6f7;
+  background: var(--color-btn-white);
 }

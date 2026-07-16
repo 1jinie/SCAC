@@ -1,0 +1,435 @@
+/* =========================
+   Admin Study Room
+========================= */
+
+.admin_reservation_page {
+  width: 100%;
+  max-width: 1500px;
+
+  margin: 0 auto;
+}
+
+.admin_room_workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(340px, 0.8fr);
+  gap: 24px;
+
+  align-items: start;
+}
+
+.admin_room_map_section,
+.admin_room_detail {
+  min-height: 520px;
+
+  padding: 26px;
+
+  background: #ffffff;
+  border: 1px solid #e3e7ea;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgb(28 46 55 / 5%);
+}
+
+.admin_room_detail {
+  position: sticky;
+  top: 112px;
+}
+
+.admin_room_detail.is_empty {
+  display: grid;
+  place-items: center;
+
+  color: #858d92;
+  text-align: center;
+}
+
+.admin_room_detail.is_empty strong {
+  color: #4f575c;
+  font-size: 16px;
+}
+
+.admin_room_detail.is_empty p {
+  margin: 8px 0 0;
+
+  font-size: 14px;
+}
+
+.admin_room_map_all {
+  flex-shrink: 0;
+
+  min-width: 130px;
+  height: 42px;
+
+  padding: 0 16px;
+
+  border: 1px solid var(--color-primary, #4b9da9);
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: var(--color-primary, #4b9da9);
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.admin_room_map_all:hover {
+  background: var(--color-primary, #4b9da9);
+  color: #ffffff;
+}
+
+.admin_room_map_placeholder {
+  min-height: 410px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px dashed #cfd6da;
+  border-radius: 14px;
+
+  background: #f8fafb;
+}
+
+.admin_room_dummy_buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.admin_room_dummy_buttons button {
+  height: 44px;
+
+  padding: 0 18px;
+
+  border: 1px solid #d9dee1;
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  cursor: pointer;
+}
+
+/* =========================
+   Room Detail
+========================= */
+
+.admin_room_status {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 30px;
+
+  padding: 0 12px;
+
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin_room_status.status_avb {
+  background: #e7f5ed;
+  color: #32805c;
+}
+
+.admin_room_status.status_usr {
+  background: #e4f2f0;
+  color: var(--color-primary, #4b9da9);
+}
+
+.admin_room_status.status_brk {
+  background: #fff0df;
+  color: var(--color-highlight);
+}
+
+.admin_room_info_list {
+  margin: 0;
+}
+
+.admin_room_info_list > div {
+  min-height: 54px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  border-bottom: 1px solid #edf0f2;
+}
+
+.admin_room_info_list dt {
+  color: #777f84;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.admin_room_info_list dd {
+  margin: 0;
+
+  color: #3f474c;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  text-align: right;
+}
+
+.admin_room_current_usage {
+  margin-top: 28px;
+  padding-top: 24px;
+
+  border-top: 1px solid #e8ecef;
+}
+
+.admin_room_current_usage h3 {
+  margin: 0 0 16px;
+
+  font-size: 16px;
+}
+
+/* =========================
+   Date Slider
+========================= */
+
+.admin_room_schedule_panel {
+  margin-top: 24px;
+}
+
+.admin_date_slider_wrap {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin_date_slider {
+  display: flex;
+  gap: 10px;
+
+  overflow-x: auto;
+
+  padding: 4px 2px 12px;
+
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+}
+
+.admin_date_slider_arrow {
+  width: 44px;
+  height: 44px;
+
+  border: 1px solid #d9dee1;
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: #61686d;
+
+  font-size: 24px;
+
+  cursor: pointer;
+}
+
+.admin_date_item {
+  min-width: 88px;
+  min-height: 74px;
+  flex-shrink: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  border: 1px solid #dfe4e7;
+  border-radius: 12px;
+
+  background: #ffffff;
+  color: #60686d;
+
+  cursor: pointer;
+}
+
+.admin_date_item:hover {
+  border-color: var(--color-primary, #4b9da9);
+  background: #f4faf9;
+}
+
+.admin_date_item.is_active {
+  border-color: var(--color-primary, #4b9da9);
+  background: var(--color-primary, #4b9da9);
+
+  color: #ffffff;
+}
+
+.admin_date_weekday {
+  font-size: 12px;
+}
+
+.admin_date_item strong {
+  font-size: 16px;
+}
+
+/* =========================
+   Daily Schedule
+========================= */
+
+.admin_room_schedule_list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  margin-top: 24px;
+}
+
+.admin_room_schedule_item {
+  min-height: 82px;
+
+  display: grid;
+  grid-template-columns:
+    150px minmax(180px, 1fr)
+    auto auto;
+  align-items: center;
+  gap: 20px;
+
+  padding: 16px 20px;
+
+  border: 1px solid #e3e7ea;
+  border-radius: 14px;
+
+  background: #ffffff;
+}
+
+.admin_room_schedule_time {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin_room_schedule_time strong {
+  font-size: 18px;
+}
+
+.admin_room_schedule_time span,
+.admin_room_schedule_info span {
+  color: #899095;
+  font-size: 13px;
+}
+
+.admin_room_schedule_info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.admin_room_schedule_info strong {
+  font-size: 14px;
+}
+
+.admin_room_schedule_empty {
+  min-height: 180px;
+
+  display: grid;
+  place-content: center;
+
+  margin-top: 24px;
+
+  border: 1px dashed #d6dcdf;
+  border-radius: 14px;
+
+  color: #969da2;
+  text-align: center;
+}
+
+.admin_room_schedule_empty strong {
+  color: #626a6f;
+}
+
+.admin_room_schedule_empty p {
+  margin: 8px 0 0;
+}
+
+.admin_reservation_cancel_button,
+.admin_table_cancel_button {
+  border: 1px solid #e76c6c;
+  border-radius: 8px;
+
+  background: #fde7e7;
+  color: #b94747;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.admin_reservation_cancel_button {
+  min-width: 82px;
+  height: 36px;
+}
+
+.admin_table_cancel_button {
+  min-width: 54px;
+  height: 32px;
+}
+
+/* =========================
+   Recent Reservations
+========================= */
+
+.admin_recent_reservation_panel {
+  margin-top: 24px;
+}
+
+.admin_reservation_count {
+  color: #777f84;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* =========================
+   Reservation Status
+========================= */
+
+.admin_status_badge.reservation_reserved {
+  background: #e7f5ed;
+  color: var(--color-using);
+}
+
+.admin_status_badge.reservation_in_use {
+  background: #e4f2f0;
+  color: var(--color-primary, #4b9da9);
+}
+
+.admin_status_badge.reservation_completed {
+  background: #edf0f2;
+  color: #697176;
+}
+
+.admin_status_badge.reservation_user_canceled,
+.admin_status_badge.reservation_admin_canceled {
+  background: #fde7e7;
+  color: #b94747;
+}
+
+@media (max-width: 1360px) {
+  .admin_room_workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .admin_room_detail {
+    position: static;
+  }
+
+  .admin_room_schedule_item {
+    grid-template-columns:
+      130px minmax(160px, 1fr)
+      auto;
+  }
+
+  .admin_room_schedule_item .admin_reservation_cancel_button {
+    grid-column: 1 / -1;
+
+    justify-self: end;
+  }
+}
