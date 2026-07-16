@@ -116,7 +116,11 @@ function MyPage() {
           className="btn_home"
           onClick={() => navigate('/loginhome')}
         >
-          🏠
+          <img
+            src="/icons/common/home.svg"
+            alt="홈"
+            style={{ width: '60px', height: '70px' }}
+          />
         </button>
         <span className="header_time">오전 11:41</span>
       </header>

@@ -51,7 +51,11 @@ function LoginPage() {
             className="btn_home"
             onClick={() => navigate('/')}
           >
-            🏠
+            <img
+              src="/icons/common/home.svg"
+              alt="홈"
+              style={{ width: '60px', height: '70px' }}
+            />
           </button>
         </header>
 

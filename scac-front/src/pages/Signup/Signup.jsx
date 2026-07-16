@@ -126,7 +126,11 @@ function SignUpPage() {
             className="btn_home"
             onClick={() => navigate('/')}
           >
-            🏠
+            <img
+              src="/icons/common/home.svg"
+              alt="홈"
+              style={{ width: '60px', height: '70px' }}
+            />
           </button>
           <span className="header_time">오전 10:41</span>
         </header>

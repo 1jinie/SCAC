@@ -144,10 +144,14 @@ function NonmemberSignup() {
       <header className="nonmember_signup_header">
         <button
           type="button"
-          className="header_back_button"
-          onClick={() => navigate(-1)}
+          className="btn_home"
+          onClick={() => navigate('/loginhome')}
         >
-          ←
+          <img
+            src="/icons/common/home.svg"
+            alt="홈"
+            style={{ width: '60px', height: '70px' }}
+          />
         </button>
         <span className="header_time" />
       </header>
@@ -208,13 +212,14 @@ function NonmemberSignup() {
             )}
 
             {errors.phone && <span className="error_text">{errors.phone}</span>}
-
           </div>
 
           {/* 🎯 인증번호 입력창 (발송 버튼 클릭 시에만 노출 / 피그마 시안 완벽 대응) */}
           {isVerificationSent && (
             <div className="form_group verify_group">
-              <label className="form_label" htmlFor="verificationCode">인증번호 입력</label>
+              <label className="form_label" htmlFor="verificationCode">
+                인증번호 입력
+              </label>
               <input
                 id="verificationCode"
                 name="verificationCode"
@@ -225,14 +230,31 @@ function NonmemberSignup() {
                 value={verificationCode}
                 onChange={(e) => setVerificationCode(e.target.value)}
               />
-              
+
               {/* 인증 전에는 타이머와 확인 버튼 노출, 인증 후에는 완료 안내문 처리 */}
               {!isVerified ? (
-                <div style={{ position: 'absolute', right: '24px', bottom: '15px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <span style={{ color: '#ff4444', fontSize: '24px', fontWeight: 'bold' }}>{formatTime(timer)}</span>
-                  <button 
-                    type="button" 
-                    className="btn_inner_verify" 
+                <div
+                  style={{
+                    position: 'absolute',
+                    right: '24px',
+                    bottom: '15px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '15px',
+                  }}
+                >
+                  <span
+                    style={{
+                      color: '#ff4444',
+                      fontSize: '24px',
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    {formatTime(timer)}
+                  </span>
+                  <button
+                    type="button"
+                    className="btn_inner_verify"
                     style={{ position: 'static', height: '80px' }}
                     onClick={handleConfirmVerification}
                   >
@@ -240,11 +262,22 @@ function NonmemberSignup() {
                   </button>
                 </div>
               ) : (
-                <span className="success_text" style={{ color: '#4b9da9', fontSize: '24px', fontWeight: '700', marginTop: '8px', paddingLeft: '12px' }}>
+                <span
+                  className="success_text"
+                  style={{
+                    color: '#4b9da9',
+                    fontSize: '24px',
+                    fontWeight: '700',
+                    marginTop: '8px',
+                    paddingLeft: '12px',
+                  }}
+                >
                   ✓ 인증이 확인되었습니다.
                 </span>
               )}
-              {errors.verification && <span className="error_text">{errors.verification}</span>}
+              {errors.verification && (
+                <span className="error_text">{errors.verification}</span>
+              )}
             </div>
           )}
 

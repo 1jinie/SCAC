@@ -44,7 +44,13 @@ function HomePage() {
 
       {/* 실시간 좌석 현황 대시보드 */}
       <div className="seat_status_bar">
-        <span className="chair_icon">🪑</span>
+        <span className="chair_icon">
+          <img
+            src="/icons/common/chair.svg"
+            alt="의자"
+            style={{ width: '32px', height: '32px' }}
+          />
+        </span>
         <span className="status_text">
           좌석 수 {availableSeats}/{totalSeats}
         </span>
@@ -59,7 +65,13 @@ function HomePage() {
             className="menu_btn btn_orange"
             onClick={() => navigate('/seat')} //임시 경로
           >
-            <div className="btn_icon">🚪➡️</div>
+            <div className="btn_icon">
+              <img
+                src="/icons/common/open_door.svg"
+                alt="입실"
+                style={{ width: '80px', height: '45px' }}
+              />
+            </div>
             <span className="btn_label">입실</span>
           </button>
           <button
@@ -67,7 +79,13 @@ function HomePage() {
             className="menu_btn btn_orange"
             onClick={() => setShowGoOutModal(true)}
           >
-            <div className="btn_icon">🚪⬅️</div>
+            <div className="btn_icon">
+              <img
+                src="/icons/common/open_door.svg"
+                alt="외출"
+                style={{ width: '80px', height: '45px' }}
+              />
+            </div>
             <span className="btn_label">외출</span>
           </button>
           <button
@@ -75,7 +93,13 @@ function HomePage() {
             className="menu_btn btn_orange"
             onClick={() => setShowCheckOutModal(true)}
           >
-            <div className="btn_icon">🚪🔒</div>
+            <div className="btn_icon">
+              <img
+                src="/icons/common/close_door.svg"
+                alt="퇴실"
+                style={{ width: '80px', height: '45px' }}
+              />
+            </div>
             <span className="btn_label">퇴실</span>
           </button>
         </div>
@@ -87,7 +111,13 @@ function HomePage() {
             className="menu_btn btn_gray"
             onClick={() => navigate('nonmember-signup')} // 비회원 회원가입 경로 설정
           >
-            <div className="btn_icon">💳</div>
+            <div className="btn_icon">
+              <img
+                src="/icons/common/ticket.svg"
+                alt="이용권 결제"
+                style={{ width: '80px', height: '45px' }}
+              />
+            </div>
             <span className="btn_label">이용권 결제</span>
           </button>
           <button
@@ -95,7 +125,13 @@ function HomePage() {
             className="menu_btn btn_gray"
             onClick={() => navigate('/room')}
           >
-            <div className="btn_icon">📅</div>
+            <div className="btn_icon">
+              <img
+                src="/icons/reservation/reserv.svg"
+                alt="스터디룸 예약"
+                style={{ width: '60px', height: '60px' }}
+              />
+            </div>
             <span className="btn_label">스터디룸 예약</span>
           </button>
 
@@ -105,7 +141,13 @@ function HomePage() {
             className="menu_btn btn_gray"
             onClick={() => navigate('/login')}
           >
-            <div className="btn_icon">👤</div>
+            <div className="btn_icon">
+              <img
+                src="/icons/common/login.svg"
+                alt="로그인"
+                style={{ width: '80px', height: '65px' }}
+              />
+            </div>
             <span className="btn_label">로그인</span>
           </button>
           <button
@@ -113,7 +155,13 @@ function HomePage() {
             className="menu_btn btn_gray"
             onClick={() => navigate('/signup')}
           >
-            <div className="btn_icon">👥</div>
+            <div className="btn_icon">
+              <img
+                src="/icons/common/register.svg"
+                alt="회원가입"
+                style={{ width: '80px', height: '65px' }}
+              />
+            </div>
             <span className="btn_label">회원가입</span>
           </button>
         </div>
@@ -121,7 +169,13 @@ function HomePage() {
 
       {/* 하단 풋터 (관리자 안내 영역) */}
       <footer className="kiosk_footer">
-        <div className="headset_icon">🎧</div>
+        <div className="headset_icon">
+          <img
+            src="/icons/common/headphone.svg"
+            alt="관리자 정보"
+            style={{ width: '80px', height: '45px' }}
+          />
+        </div>
         <span className="footer_text">관리자 번호: 010-0000-0000</span>
       </footer>
 
