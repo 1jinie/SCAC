@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { seatStore } from '../../store/seatStore';
 import { reservationStore } from '../../store/reservationStore';
-import SeatItem from './SeatItem';
+import SeatList from '../../components/seat/SeatList';
 import '../../styles/seat.css';
 import { checkInStore } from '../../store/checkInStore';
 
@@ -81,17 +81,12 @@ function SeatPage({ mode }) {
         <img src="/logo/logo.png" alt="로고" className="logo_image" />
       </div>
 
-      <div className="seat_wrapper">
-        {seats.map((seat) => (
-          <SeatItem
-            key={seat.id}
-            seat={seat}
-            isSelected={selected === seat.id}
-            onClick={() => handleClick(seat)}
-            mode={mode}
-          />
-        ))}
-      </div>
+      <SeatList
+        seats={seats}
+        selected={selected}
+        mode={mode}
+        onClick={handleClick}
+      />
 
       <div className="seat_legend">
         <div className="legend_item">
