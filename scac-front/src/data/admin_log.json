@@ -1,0 +1,18 @@
+{
+  "seatUserLog": [
+    {
+      "logId": 1,
+      "action": "CHECK_IN",
+      "message": "사용자 입실",
+      "phoneNumber": "01012345678",
+      "createdAt": "20260716 09:30"
+    },
+    {
+      "logId": 2,
+      "action": "TICKET_EXTENDED",
+      "message": "이용권 시간 연장",
+      "phoneNumber": "01012345678",
+      "createdAt": "20260716 10:42"
+    }
+  ]
+}

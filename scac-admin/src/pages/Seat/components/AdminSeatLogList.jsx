@@ -1,4 +1,4 @@
-import userSeatLog from '../../../../data/admin_log.json';
+import userSeatLog from '../../../data/admin_log.json';
 
 export default function AdminSeatLogList({ selectedSeat }) {
   if (!selectedSeat) {

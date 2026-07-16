@@ -1,0 +1,71 @@
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import HeaderTime from './HeaderTime';
+
+const ADMIN_PAGE_TITLES = {
+  '/admin': '관리자 메인',
+  '/admin/log': '로그 확인',
+  '/admin/reservation': '예약 승인',
+  '/admin/device': '장치 관리',
+  '/admin/ticket': '이용권 관리',
+  '/admin/payment': '결제 관리',
+};
+
+export default function AdminHeader() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const pageTitle =
+    ADMIN_PAGE_TITLES[location.pathname] ||
+    (location.pathname.startsWith('/admin/log/')
+      ? '로그 상세'
+      : '관리자 페이지');
+
+  const handleBack = () => {
+    navigate(-1);
+  };
+
+  const handleLogout = () => {
+    // 추후 로그아웃 API 연결필요
+    navigate('/admin/login', { replace: true });
+  };
+
+  return (
+    <header className="admin_header">
+      <div className="admin_header_left">
+        {location.pathname !== '/admin' && (
+          <button
+            type="button"
+            className="admin_back_button"
+            onClick={handleBack}
+            aria-label="이전 페이지로 이동"
+          >
+            ←
+          </button>
+        )}
+
+        <div>
+          <p className="admin_header_category">SCAC ADMIN</p>
+          <h1 className="admin_header_title">{pageTitle}</h1>
+        </div>
+      </div>
+
+      <div className="admin_header_right">
+        <HeaderTime />
+
+        <div className="admin_user_info">
+          <span className="admin_user_role">관리자</span>
+          <span className="admin_user_name">관리자이름</span>
+        </div>
+
+        <button
+          type="button"
+          className="admin_logout_button"
+          onClick={handleLogout}
+        >
+          로그아웃
+        </button>
+      </div>
+    </header>
+  );
+}

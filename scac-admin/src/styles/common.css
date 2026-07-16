@@ -1,0 +1,91 @@
+/* 공통 클래스 ex. .hidden 등 */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+
+  background: var(--color-overlay);
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  backdrop-filter: blur(3px);
+
+  overflow-y: auto;
+
+  padding: 80px 0;
+
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.modal_close {
+  position: absolute;
+  top: 15px;
+  right: 25px;
+
+  border: none;
+  background: none;
+
+  font-size: 48px;
+  cursor: pointer;
+}
+
+.modal_confirm {
+  width: 60%;
+  height: 100px;
+
+  margin: auto 0 100px;
+
+  background: white;
+
+  border: 1px solid #ff9255;
+  color: #ff9255;
+  font-size: 50px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
+
+/* 선택완료 버튼 */
+.btn_select {
+  width: 724px;
+  height: 112px;
+
+  border-radius: 12px;
+  border: 3px solid;
+
+  background-color: var(--color-btn-white);
+
+  color: var(--color-highlight);
+
+  font-size: 48px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* 상단 시계 */
+.time_text {
+  color: var(--color-text);
+  font-size: 36px;
+  margin-top: 36px;
+  margin-right: 36px;
+}

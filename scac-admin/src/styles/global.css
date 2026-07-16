@@ -1,0 +1,6 @@
+/* body, font, background 등 전체 스타일 */
+
+body {
+  font-family: var(--font-family);
+  color: var(--color-text);
+}
