@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import AdminSeatDetail from './components/AdminSeatDetail';
 import AdminSeatLogList from './components/AdminSeatLogList';
 import stylesheet from './css/AdminSeatPage.css';
@@ -8,7 +8,6 @@ import stylesheet from './css/AdminSeatPage.css';
 export default function AdminSeatPage() {
   const [selectedSeat, setSelectedSeat] = useState(null);
   const [data, setData] = useState([]);
-  const [logs, setLog] = useState([]);
 
   useEffect(() => {
     fetch('/admin_seat_log_dummy.csv')
@@ -24,15 +23,25 @@ export default function AdminSeatPage() {
             return obj;
           }, {});
         });
-
-        // 빈 줄 제거 필터링 후 저장
         setData(parsedData);
-        setLog(parsedData);
       });
   }, []);
+
+  const filteredLogs = useMemo(() => {
+    if (!selectedSeat) {
+      return data;
+    }
+
+    return data.filter(
+      (log) => Number(log.seat_id) === Number(selectedSeat.seatId),
+    );
+  }, [data, selectedSeat]);
+
   const handleSeatSelect = (seat) => {
     setSelectedSeat(seat);
-    setLog(data.filter((t) => t.seat_id === seat.seatId));
+  };
+  const handleReset = () => {
+    setSelectedSeat(null);
   };
 
   return (
@@ -43,10 +52,13 @@ export default function AdminSeatPage() {
             <div>
               <h2>좌석 배치도</h2>
               <p>관리할 좌석을 선택해 주세요.</p>
-              <button onClick={() => setSelectedSeat(null)}>
-                전체 좌석 보기
-              </button>
             </div>
+            <button
+              className="admin_seat_map_all"
+              onClick={() => handleReset()}
+            >
+              좌석 전체 보기
+            </button>
           </div>
 
           <div className="admin_seat_map_placeholder">
@@ -81,7 +93,7 @@ export default function AdminSeatPage() {
         />
       </section>
 
-      <AdminSeatLogList logs={logs} selectedSeat={selectedSeat} />
+      <AdminSeatLogList logs={filteredLogs} selectedSeat={selectedSeat} />
     </div>
   );
 }

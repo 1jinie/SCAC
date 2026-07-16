@@ -1,7 +1,16 @@
 import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import userSeatLog from '../../../data/admin_log.json';
+import Pagination from '../../../components/common/Pagination';
 
 export default function AdminSeatLogList({ logs, selectedSeat }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 10;
+  const totalPages = Math.ceil(logs.length / PAGE_SIZE);
+  const currentLogs = useMemo(() => {
+    const startIndex = (currentPage - 1) * PAGE_SIZE;
+    return logs.slice(startIndex, startIndex + PAGE_SIZE);
+  }, [logs, currentPage]);
   const ACTION_LABEL = {
     CHECK_IN: '입실',
     CHECK_OUT: '퇴실',
@@ -9,6 +18,10 @@ export default function AdminSeatLogList({ logs, selectedSeat }) {
     FORCE_CHECKOUT: '강제퇴실',
     STATUS_CHANGE: '상태변경',
   };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [logs, selectedSeat]);
 
   return (
     <section className="admin_panel admin_recent_log_panel">
@@ -37,7 +50,7 @@ export default function AdminSeatLogList({ logs, selectedSeat }) {
             </thead>
 
             <tbody>
-              {logs.map((log) => (
+              {currentLogs.map((log) => (
                 <tr key={log.log_id}>
                   <td>{log.created_at}</td>
 
@@ -58,6 +71,12 @@ export default function AdminSeatLogList({ logs, selectedSeat }) {
       ) : (
         <div className="admin_seat_log_empty">해당 좌석의 로그가 없습니다.</div>
       )}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        pageGroupSize={5}
+      />
     </section>
   );
 }
