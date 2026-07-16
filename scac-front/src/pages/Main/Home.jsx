@@ -113,7 +113,7 @@ function HomePage() {
           <button
             type="button"
             className="menu_btn btn_gray"
-            onClick={() => navigate('/room')}
+            onClick={() => navigate('/login')}
           >
             <div className="btn_icon">📅</div>
             <span className="btn_label">스터디룸 예약</span>
