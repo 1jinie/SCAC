@@ -8,7 +8,7 @@ function CheckInModal({ onClose, onConfirm, seatId }) {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const addCheckIn = checkInStore((state) => state.addCheckIn);
+  const authenticate = checkInStore((state) => state.authenticate);
 
   const handleSubmit = () => {
     const result = checkIn(phone, password, seatId);
@@ -20,18 +20,16 @@ function CheckInModal({ onClose, onConfirm, seatId }) {
     }
 
     if (result.success) {
-      addCheckIn({
-        userId: result.user.id,
-        seatId,
-        checkInTime: new Date(),
-        checkOutTime: null,
-      });
-      onConfirm({
-        phone,
-        password,
-      });
+      authenticate(result.user);
+
+      if (result.comeback) {
+        checkInStore.getState().comeBack(result.user.id);
+        onClose();
+        navigate('/');
+        return;
+      }
       onClose();
-      navigate('/');
+      navigate('/seat');
     }
     onClose();
   };
@@ -40,7 +38,11 @@ function CheckInModal({ onClose, onConfirm, seatId }) {
     <div className="overlay checkIn">
       <div className="modal checkIn">
         <button className="modal_close" onClick={onClose}>
-          x
+          <img
+            src="/icons/common/cancel.svg"
+            alt="닫기"
+            className="close_img"
+          />
         </button>
         <h2>입실</h2>
         <div className="content">

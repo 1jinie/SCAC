@@ -20,23 +20,37 @@ export function checkIn(phone, password, seatId) {
     };
   }
 
-  // 현재 입실 여부 확인
+  // 현재 입실 기록 조회
   const activeCheckIn = checkInStore
     .getState()
     .checkIns.find(
       (checkIn) => checkIn.userId === user.id && checkIn.checkOutTime === null,
     );
 
+  // 실제 사용중인 경우만 막기
   if (activeCheckIn) {
+    if (activeCheckIn.status !== 'away') {
+      return {
+        success: false,
+        message: '이미 입실하셨습니다',
+      };
+    }
+  }
+
+  // 외출 복귀
+  if (activeCheckIn?.status === 'away') {
     return {
-      success: false,
-      message: '이미 입실하셨습니다',
+      success: true,
+      message: '재입실하였습니다',
+      user,
+      activeCheckIn,
+      comeback: true,
     };
   }
 
   return {
     success: true,
-    message: '문이 열렸습니다',
+    message: '좌석을 선택해주세요',
     user,
     seatId,
   };

@@ -37,7 +37,11 @@ function CheckOutModal({ onClose, onConfirm, mode = 'checkout' }) {
     <div className="overlay checkIn">
       <div className="modal checkIn">
         <button className="modal_close" onClick={onClose}>
-          x
+          <img
+            src="/icons/common/cancel.svg"
+            alt="닫기"
+            className="close_img"
+          />
         </button>
         <h2>{mode === 'goOut' ? '외출' : '퇴실'}</h2>
         <div className="content">
