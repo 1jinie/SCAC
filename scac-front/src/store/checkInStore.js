@@ -2,7 +2,14 @@ import { create } from 'zustand';
 import { checkIns as initialCheckIns } from '../data/CheckIn';
 
 export const checkInStore = create((set) => ({
+  currentUser: null,
   checkIns: initialCheckIns,
+
+  // 사용자 인증
+  authenticate: (user) =>
+    set({
+      currentUser: user,
+    }),
 
   // 입실 추가
   addCheckIn: (data) =>

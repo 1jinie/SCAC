@@ -4,13 +4,18 @@ import { seatStore } from '../../store/seatStore';
 import { checkInStore } from '../../store/checkInStore';
 import CheckOutModal from '../../components/modal/CheckOutModal';
 import '../../styles/Home.css';
+import CheckInModal from '../../components/modal/CheckInModal';
 
 function HomePage() {
   const [showCheckOutModal, setShowCheckOutModal] = useState(false);
+  const [showCheckInModal, setShowCheckInModal] = useState(false);
   const [showGoOutModal, setShowGoOutModal] = useState(false);
+  const authenticate = checkInStore((state) => state.authenticate);
   const goOut = checkInStore((state) => state.goOut);
-  const checkOutSeat = seatStore((state) => state.checkOutSeat);
+  const getActiveCheckIn = checkInStore((state) => state.getActiveCheckIn);
+  const comeBack = checkInStore((state) => state.comeBack);
   const updateCheckOut = checkInStore((state) => state.updateCheckOut);
+  const checkOutSeat = seatStore((state) => state.checkOutSeat);
   const seats = seatStore((state) => state.seats);
   const navigate = useNavigate();
 
@@ -19,6 +24,21 @@ function HomePage() {
   ).length;
 
   const totalSeats = seats.filter((seat) => seat.type === 'seat').length;
+
+  const handleCheckIn = (result) => {
+    authenticate(result.user);
+
+    if (result.activeCheckIn?.status === 'away') {
+      comeBack(result.user.id);
+
+      setShowCheckInModal(false);
+
+      return;
+    }
+
+    setShowCheckInModal(false);
+    navigate('/seat');
+  };
 
   const handleGoOut = (data) => {
     goOut(data.userId);
@@ -57,7 +77,7 @@ function HomePage() {
           <button
             type="button"
             className="menu_btn btn_orange"
-            onClick={() => navigate('/seat')} //임시 경로
+            onClick={() => setShowCheckInModal(true)}
           >
             <div className="btn_icon">🚪➡️</div>
             <span className="btn_label">입실</span>
@@ -125,6 +145,12 @@ function HomePage() {
         <span className="footer_text">관리자 번호: 010-0000-0000</span>
       </footer>
 
+      {showCheckInModal && (
+        <CheckInModal
+          onClose={() => setShowCheckInModal(false)}
+          onConfirm={handleCheckIn}
+        />
+      )}
       {showCheckOutModal && (
         <CheckOutModal
           onClose={() => setShowCheckOutModal(false)}

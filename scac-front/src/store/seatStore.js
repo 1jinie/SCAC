@@ -20,10 +20,10 @@ export const seatStore = create((set) => ({
     }),
 
   // 체크인 성공시 좌석 사용중 변경
-  checkInSeat: () =>
+  checkInSeat: (seatId) =>
     set((state) => ({
       seats: state.seats.map((seat) =>
-        seat.id === state.selectedSeat
+        seat.id === seatId
           ? {
               ...seat,
               status: 'using',

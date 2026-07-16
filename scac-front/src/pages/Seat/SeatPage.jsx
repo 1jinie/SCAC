@@ -3,16 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import { seatStore } from '../../store/seatStore';
 import { reservationStore } from '../../store/reservationStore';
 import SeatItem from './SeatItem';
-import CheckInModal from '../../components/modal/CheckInModal';
 import '../../styles/seat.css';
+import { checkInStore } from '../../store/checkInStore';
 
 function SeatPage({ mode }) {
   const seats = seatStore((state) => state.seats);
   const selected = seatStore((state) => state.selectedSeat);
-  const [showModal, setShowModal] = useState(false);
+  const user = checkInStore((state) => state.currentUser);
+  const addCheckIn = checkInStore((state) => state.addCheckIn);
+  const checkInSeat = seatStore((state) => state.checkInSeat);
   const setReservation = reservationStore((state) => state.setReservation);
   const selectSeat = seatStore((state) => state.selectSeat);
-  const checkInSeat = seatStore((state) => state.checkInSeat);
   const navigate = useNavigate();
 
   // 좌석 / 룸 선택 이벤트 정의
@@ -46,18 +47,18 @@ function SeatPage({ mode }) {
       return;
     }
 
-    setShowModal(true);
-  };
+    checkInSeat(selected);
 
-  const handleCheckIn = (data) => {
-    const checkIn = {
+    addCheckIn({
+      userId: user.id,
       seatId: selected,
-      phone: data.phone,
-      password: data.password,
-    };
+      status: 'using',
+      checkInTime: new Date(),
+      checkOutTime: null,
+    });
 
-    checkInSeat();
-    setShowModal(false);
+    navigate('/');
+    alert('입실되었습니다');
   };
 
   // mode 변경시 선택 초기화
@@ -118,13 +119,6 @@ function SeatPage({ mode }) {
       <button className="confirm_button" onClick={handleConfirm}>
         선택완료
       </button>
-      {showModal && (
-        <CheckInModal
-          seatId={selected}
-          onClose={() => setShowModal(false)}
-          onConfirm={handleCheckIn}
-        />
-      )}
     </div>
   );
 }
