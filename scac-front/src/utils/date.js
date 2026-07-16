@@ -14,6 +14,14 @@ export const formatClock = (time) => {
   return `${hours}:${minutes}`;
 };
 
+// 000 시간 00 분 형태
+export const formatfullClock = (time) => {
+  if (!(time instanceof Date)) return '';
+  const hours = time.getHours().toString().padStart(3, '0');
+  const minutes = time.getMinutes().toString().padStart(2, '0');
+  return `${hours} 시간 ${minutes} 분`;
+};
+
 export const formatDate = (fullDate) => {
   const date = new Date(fullDate);
 
