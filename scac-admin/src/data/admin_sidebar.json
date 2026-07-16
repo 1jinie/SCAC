@@ -1,32 +1,32 @@
 [
   {
-    "path": "/admin",
+    "path": "/",
     "label": "관리자 메인",
 
     "end": true
   },
   {
-    "path": "/admin/seat",
+    "path": "/seat",
     "label": "전체 좌석 관리"
   },
   {
-    "path": "/admin/log",
+    "path": "/log",
     "label": "로그 확인"
   },
   {
-    "path": "/admin/reservation",
+    "path": "/reservation",
     "label": "예약 승인"
   },
   {
-    "path": "/admin/device",
+    "path": "/device",
     "label": "장치 관리"
   },
   {
-    "path": "/admin/ticket",
+    "path": "/ticket",
     "label": "이용권 관리"
   },
   {
-    "path": "/admin/payment",
+    "path": "/payment",
     "label": "결제 관리"
   }
 ]

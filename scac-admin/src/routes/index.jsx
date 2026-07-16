@@ -16,7 +16,7 @@ const router = createBrowserRouter([
   // Admin
   // ============================
   {
-    path: '/admin',
+    path: '/',
     element: <AdminLayout />,
     //   element: (
     //   <AdminPrivateRoute>
