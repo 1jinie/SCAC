@@ -1,0 +1,5 @@
+# process.env.PORT, process.env.REACT_APP_API_URL 로 사용하시면 됩니다
+# scac-admin, scac-front 프로젝트 최상위에 만들어주세요
+
+PORT=포트번호
+REACT_APP_API_URL=http://localhost:api포트번호
