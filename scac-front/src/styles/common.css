@@ -14,18 +14,20 @@
 
   overflow-y: auto;
 
-  padding: 80px 0;
+  padding: 100px 0;
 
   z-index: 1000;
 }
 
 .modal {
-  background: #ffffff;
+  background: #fff;
   border-radius: 24px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
 }
 
 .modal_close {
+  width: 100px;
+  height: 100px;
   position: absolute;
   top: 15px;
   right: 25px;
@@ -33,25 +35,25 @@
   border: none;
   background: none;
 
-  font-size: 48px;
   cursor: pointer;
 }
 
 .modal_confirm {
-  width: 60%;
+  width: 70%;
   height: 100px;
-
-  margin: auto 0 100px;
-
-  background: white;
-
-  border: 1px solid #ff9255;
+  background-color: #faf8f6;
+  border: 3.5px solid #ff9255;
+  border-radius: 16px;
+  margin-bottom: 70px;
   color: #ff9255;
-  font-size: 50px;
-
-  border-radius: 10px;
-
+  font-size: 32px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 22px 0px rgba(0, 0, 0, 0.25);
 }
 
 .hidden {
@@ -88,112 +90,4 @@
   font-size: 36px;
   margin-top: 36px;
   margin-right: 36px;
-}
-
-.logo_box {
-  display: flex;
-  align-items: center;
-  justify-content: center; /* 가운데 정렬 */
-  gap: 16px;
-}
-
-.logo_img {
-  width: 64px; /* 대형 키오스크 화면에 맞게 이미지 크기 확대 */
-  height: 64px;
-  object-fit: contain;
-}
-
-.logo_title {
-  font-size: var(--font-size-heading); /* 48px */
-  font-weight: var(--font-bold);
-  color: var(--color-important);
-  margin: 0;
-  letter-spacing: 2px;
-}
-
-.time_text {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: var(--font-size-subtitle); /* 32px */
-  color: var(--color-text-light);
-  font-weight: var(--font-medium);
-}
-
-/* 실시간 좌석 상태 바 */
-.seat_status_bar {
-  background-color: var(--color-sub); /* 토큰 매핑 */
-  border-radius: var(--radius-card); /* 32px 대형 라운드 */
-  height: 110px; /* FHD 터치 영역 확보를 위한 대형 크기 */
-  display: flex;
-  align-items: center;
-  padding: 0 40px;
-  margin-bottom: 50px;
-  box-shadow: var(--shadow-sm);
-}
-
-.chair_icon {
-  font-size: var(--font-size-heading); /* 48px */
-  margin-right: 20px;
-}
-
-.status_text {
-  font-size: var(--font-size-subtitle); /* 32px */
-  font-weight: var(--font-bold);
-  color: var(--color-text-brown);
-}
-
-/* 메인 메뉴 그리드 */
-.menu_grid {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  flex: 1;
-}
-
-/* 상단 오렌지색 강조 메뉴 행 (입실, 외출, 퇴실) */
-.highlight_menu_row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-}
-
-/* 하단 2x2 기본 메뉴 그리드 */
-.standard_menu_grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-auto-rows: minmax(280px, auto); /* 버튼 영역을 큼직하게 유지 */
-  gap: 32px;
-}
-
-/* 공통 메뉴 버튼 양식 (피그마 디자인 토큰 매핑) */
-.menu_btn {
-  border: none;
-  border-radius: var(--radius-card); /* 32px 큰 라운딩 */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
-  cursor: pointer;
-  box-shadow: var(--shadow-md);
-  transition:
-    transform 0.1s ease,
-    box-shadow 0.1s ease;
-}
-
-.menu_btn:active {
-  transform: scale(0.97);
-  box-shadow: var(--shadow-inner-md);
-}
-
-.btn_icon {
-  font-size: 72px; /* 큼직한 메인 메뉴 아이콘 */
-  margin-bottom: 16px;
-}
-
-.btn_label {
-  font-size: var(--font-size-subtitle); /* 32px 선명한 글씨 */
-  font-weight: var(--font-bold);
 }
