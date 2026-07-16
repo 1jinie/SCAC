@@ -2,11 +2,10 @@ import { create } from 'zustand';
 import { seats as initialSeats } from '../data/Seats';
 
 export const seatStore = create((set) => ({
-  seats: initialSeats,
-
   // 현재 선택 좌석 id
-  selectedSeat: null,
+  seats: initialSeats,
   // 좌석 선택, 초기화
+  selectedSeat: null,
 
   selectSeat: (seatId) =>
     set((state) => ({
