@@ -28,27 +28,35 @@ function LoginPage() {
     const result = await login(phoneNumber, password);
 
     if (result.success) {
-      if (result.role === 'ADMIN') navigate('/admin');
-      else navigate('/loginhome');
+      alert('로그인이 성공적으로 완료되었습니다!');
+
+      if (result.role === 'ADMIN') {
+        navigate('/admin');
+      } else {
+        navigate('/loginhome'); // 요구 사항: /loginhome 경로 이동
+      }
     } else {
-      setErrorMessage('존재하지 않는 회원입니다.');
-      navigate('/');
+      // 로그인 실패 시 에러 핸들링
+      setErrorMessage('전화번호 또는 입실 비밀번호가 일치하지 않습니다.');
     }
   };
 
   return (
     <div className="login_container">
       <div className="login_box">
-        <h2 className="login_title">스터디카페 로그인</h2>
+        <h2 className="login_title">로그인</h2>
         <header className="auth_header">
           <button
             type="button"
             className="btn_home"
             onClick={() => navigate('/')}
           >
-            🏠
+            <img
+              src="/icons/common/home.svg"
+              alt="홈"
+              style={{ width: '90px', height: '150px' }}
+            />
           </button>
-          <span className="header_time" />
         </header>
 
         <form id="login_form" onSubmit={handleLoginSubmit}>

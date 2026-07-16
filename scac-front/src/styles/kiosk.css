@@ -1,31 +1,55 @@
-/* 브라우저 개발용 화면 */
-.kiosk_viewport {
-  width: 100vw;
-  min-height: 100vh;
+/* ==========================================================
+   SCAC Kiosk Common Layout Standard (1080 x 1920 FHD)
+   ========================================================== */
 
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-
-  overflow: auto;
-
-  background: #222224;
-}
-
-/* 실제 키오스크 화면 */
+/* 🎯 [개발용/테스트용 통합 랩퍼] 
+   실제 기기 배포 시에는 --kiosk-scale을 1로 두거나 이 랩퍼를 제거하고 사용합니다. */
 .kiosk_wrap {
-  --kiosk-scale: 0.5;
+  --kiosk-scale: 1; /* 개발 모니터 검수 시에는 0.5 등으로 조절 */
 
   width: 1080px;
-  min-height: 1920px;
-
+  height: 1920px;
   background: var(--color-white);
-
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 
   transform: scale(var(--kiosk-scale));
   transform-origin: top center;
-
   flex-shrink: 0;
+  margin: 0 auto;
+}
+
+/* 🎯 [실제 키오스크 전체 메인 컨테이너]
+   480px 같은 모바일 제약을 걷어내고, 1080*1920 픽셀을 온전히 사용합니다. */
+.kiosk_container {
+  width: 1080px;
+  height: 1920px;
+  background-color: var(--color-white);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 80px 60px; /* 대형 화면 규격에 걸맞은 넉넉한 내부 여백 */
+  color: var(--color-text);
+}
+
+/* 상단 헤더 및 로고 영역 */
+.kiosk_header {
+  position: relative;
+  width: 100%;
+  margin-bottom: 50px;
+}
+
+/* 하단 관리자 푸터 띠 */
+.kiosk_footer {
+  background-color: var(--color-important);
+  border-radius: var(--radius-card);
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: auto;
+  color: var(--color-text-admin-call);
+  font-size: var(--font-size-body); /* 24px */
 }
