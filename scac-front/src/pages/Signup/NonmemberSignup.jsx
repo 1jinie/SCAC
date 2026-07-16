@@ -145,7 +145,7 @@ function NonmemberSignup() {
         <button
           type="button"
           className="btn_home"
-          onClick={() => navigate('/loginhome')}
+          onClick={() => navigate('/')}
         >
           <img
             src="/icons/common/home.svg"
