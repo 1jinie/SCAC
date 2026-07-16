@@ -1,173 +1,240 @@
+/* ==========================================================
+   SCAC Auth Common Styles (Login & Signup)
+   Figma Design Scale: 1080 x 1920 Full HD (Kiosk Perfect)
+   ========================================================== */
+
+/* 웹 브라우저 전체 화면 설정 */
+html,
 body {
   margin: 0;
   padding: 0;
+  width: 100%;
+  height: 100%;
   background-color: #f8f5f2;
-  font-family: 'Noto Sans KR', sans-serif;
+  font-family: var(--font-family, 'Noto Sans KR', sans-serif);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* 스크롤바 방지 */
 }
 
+/* 🎯 1080 x 1920 정밀 종횡비 키오스크 컨테이너 (자동 축소 스케일 적용) */
 .login_container,
 .signup_container {
-  display: flex;
-  width: 100%;
-  max-width: 100%;
-  height: 100%;
-  aspect-ratio: 9 / 16;
-  margin: 0 auto;
-  padding: 100px 65px;
+  width: 1080px;
+  height: 1920px;
   background-color: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.08);
   box-sizing: border-box;
-  color: var(--color-text);
+  color: #000000;
+
+  display: flex;
+  flex-direction: column;
+  padding: 60px 80px;
+  position: relative;
+  overflow: hidden;
+
+  /* 💡 핵심: 기기 화면 비율에 맞게 찌그러짐 없이 일정한 9:16 비율로 자동 축소 */
+  transform-origin: center center;
 }
 
+/* 화면이 키오스크 해상도보다 작아질 때 비율을 보존하며 전체 크기 축소 */
+@media (max-height: 1920px), (max-width: 1080px) {
+  .login_container,
+  .signup_container {
+    transform: scale(min(calc(100vh / 1920), calc(100vw / 1080)));
+    position: absolute;
+  }
+}
+
+/* 상단 헤더 (홈 아이콘 + 디지털 시계) */
 .auth_header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin-bottom: 80px;
+  margin-top: 20px;
+  margin-bottom: 100px;
 }
 
 .btn_home {
   border: none;
   background: transparent;
-  font-size: 40px;
-  line-height: 1;
   cursor: pointer;
-  color: #000000;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn_home img {
+  width: 76px;
+  height: 76px;
+  object-fit: contain;
 }
 
 .header_time {
-  font-size: 13px;
-  color: var(--color-text);
+  font-size: 38px;
+  color: #000000;
   font-weight: 500;
 }
 
+/* 중앙 정렬 베이스 */
 .login_box,
 .signup_box {
   width: 100%;
-  margin-top: 50px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  flex-grow: 1;
 }
 
+/* 대형 타이틀 (회원가입 / 로그인) */
 .login_title,
 .signup_title {
-  font-size: 75px;
+  font-size: 110px;
   font-weight: 700;
-  color: var(--color-text);
-  margin: 10px 0 40px 0;
-  letter-spacing: -0.3px;
+  color: #000000;
+  margin: 40px 0 100px 0;
+  letter-spacing: -1px;
 }
 
+/* Form 레이아웃 */
 #login_form,
 #signup_form {
-  margin-top: 10px;
   display: flex;
-  width: 800px;
-  height: 1200px;
   flex-direction: column;
-  gap: 16px;
+  align-items: center;
+  width: 100%;
+  gap: 48px;
 }
 
+/* 🎯 인풋창과 라벨, 인증버튼을 묶는 개별 그룹 */
 .input_group {
-  margin-top: 200px;
   display: flex;
-  gap: 8px;
-  margin-bottom: 28px;
+  flex-direction: column;
+  gap: 12px;
+  width: 720px; /* 홈 화면 버튼 너비와 대칭을 이루는 황금 비율 크기 */
+  position: relative; /* 자식 요소인 인증번호 버튼의 기준점 */
 }
 
+/* 입력 필드 상단 가이드 라벨 */
 .input_guide_label {
-  margin-top: 20px;
-  margin-bottom: 20px;
-  font-size: 30px;
-  font-weight: 600;
-  color: #4a4a4a;
+  font-size: 28px;
+  font-weight: 700;
+  color: #000000;
+  text-align: center;
+  margin: 0;
 }
 
+/* 🎯 시안과 일치하는 큼직하고 시원한 입력 필드 규격 */
 .input_field {
   width: 100%;
-  height: 80px;
-  padding: 0 20px;
-  border: 1px solid #e2e2e2;
-  border-radius: 30px;
-  background-color: #fafafa;
-  font-size: 20px;
-  font-weight: 700;
-  color: #2b2b2b;
+  height: 140px; /* 극단적으로 얇아지지 않도록 고정 세로폭 유지 */
+  padding: 0 40px;
+  border: 3px solid #707070;
+  border-radius: 36px;
+  background-color: #ffffff;
+  font-size: 38px;
+  font-weight: 500;
+  color: #000000;
   box-sizing: border-box;
-  transition:
-    border-color 0.2s ease,
-    background-color 0.2s ease;
+  transition: border-color 0.2s ease;
+}
+
+/* 우측에 인증 버튼이 내장되는 "전화번호 인풋 전용" 우측 여백 패딩 */
+.input_field_with_btn {
+  padding-right: 280px; /* 글자가 버튼 뒤로 겹쳐서 숨겨지지 않도록 여백 확보 */
 }
 
 .input_field::placeholder {
-  color: #b0b0b0;
+  color: #8a8a8a;
+  font-weight: 400;
 }
 
 .input_field:focus {
   outline: none;
-  border-color: #ff9c51;
-  background-color: #ffffff;
+  border-color: #ff985c;
 }
 
+/* 🎯 [위치 긴급 교정] 전화번호 인풋창 내부 우측에 완전히 밀착 고정 */
 .btn_inner_verify {
-  position: flex;
-  right: 140px;
-  top: 605px;
-  transform: translateY(-100%);
-  background-color: var(--color-white);
-  border: 1px solid var(--color-highlight);
-  border-radius: var(--radius-button);
-  color: var(--color-highlight);
-  padding: 6px 14px;
-  font-size: 22px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.error_text {
-  font-size: 20px;
-  color: #ff4444;
-  font-weight: 600;
-  margin-top: 2px;
-  text-align: center;
-}
-
-.btn_submit {
-  margin-top: 30px;
-  width: 100%;
-  height: 100px;
-  border: none;
-  border-radius: 50px;
-  background-color: #ff8f42;
-  color: #ffffff;
-  font-size: 30px;
+  position: absolute;
+  right: 20px;
+  bottom: 20px; /* 인풋창 세로 크기가 140px일 때 수직 정가운데에 배치되도록 보정 */
+  background-color: #ffffff;
+  border: 3px solid #ff9d5c;
+  border-radius: 28px;
+  color: #ff9d5c;
+  padding: 0 24px;
+  font-size: 26px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.15s ease;
+  height: 100px; /* 인풋창(140px) 내부에서 상하 대칭 여백을 가지는 크기 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  box-sizing: border-box;
 }
 
-.btn_submit:hover {
-  transform: translateY(-1px);
+.btn_inner_verify:active {
+  background-color: #ffeae0;
 }
 
-.login_footer,
-.signup_footer {
-  width: 100%;
-  height: 1100px;
+/* 에러 메시지 */
+.error_text {
+  font-size: 26px;
+  color: #ff4444;
+  font-weight: 500;
+  margin-top: -10px;
+  margin-bottom: 10px;
   text-align: center;
 }
 
+/* 하단 메인 제출 버튼 */
+.btn_submit {
+  margin-top: 80px;
+  width: 520px;
+  height: 120px;
+  border: none;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #ffa366, #ff8a4d);
+  color: #ffffff;
+  font-size: 38px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0px 16px 28px rgba(255, 138, 77, 0.4);
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.2s ease;
+}
+
+.btn_submit:active {
+  transform: scale(0.97);
+  box-shadow: 0px 8px 14px rgba(255, 138, 77, 0.3);
+}
+
+/* 푸터 레이아웃 */
+.login_footer,
+.signup_footer {
+  margin-top: auto;
+  margin-bottom: 40px;
+  width: 100%;
+  text-align: center;
+}
+
+/* 하단 전환용 링크 버튼 */
 .btn_link {
   background: none;
   border: none;
-  color: var(--color-btn-cancel-text);
-  font-weight: 400;
-  font-size: 30px;
+  color: #656565;
+  font-weight: 500;
+  font-size: 28px;
   cursor: pointer;
   text-decoration: underline;
-  transition: transform 0.15s ease;
+  text-underline-offset: 6px;
+}
+
+.btn_link:hover {
+  color: #000000;
 }

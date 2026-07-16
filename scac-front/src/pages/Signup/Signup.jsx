@@ -129,10 +129,9 @@ function SignUpPage() {
             <img
               src="/icons/common/home.svg"
               alt="홈"
-              style={{ width: '60px', height: '70px' }}
+              style={{ width: '90px', height: '150px' }}
             />
           </button>
-          <span className="header_time">오전 10:41</span>
         </header>
 
         <form id="signup_form" onSubmit={handleSignUpSubmit}>

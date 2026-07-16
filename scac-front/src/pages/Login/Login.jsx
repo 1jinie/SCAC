@@ -44,7 +44,7 @@ function LoginPage() {
   return (
     <div className="login_container">
       <div className="login_box">
-        <h2 className="login_title">스터디카페 로그인</h2>
+        <h2 className="login_title">로그인</h2>
         <header className="auth_header">
           <button
             type="button"
@@ -54,7 +54,7 @@ function LoginPage() {
             <img
               src="/icons/common/home.svg"
               alt="홈"
-              style={{ width: '60px', height: '70px' }}
+              style={{ width: '90px', height: '150px' }}
             />
           </button>
         </header>
