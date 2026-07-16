@@ -2,17 +2,15 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { seatStore } from '../../store/seatStore';
 import { checkInStore } from '../../store/checkInStore';
-import CheckOutModal from '../../components/modal/CheckOutModal';
+import InOutModal from '../../components/modal/InOutModal';
 import '../../styles/Home.css';
-import CheckInModal from '../../components/modal/CheckInModal';
 
 function HomePage() {
-  const [showCheckOutModal, setShowCheckOutModal] = useState(false);
-  const [showCheckInModal, setShowCheckInModal] = useState(false);
-  const [showGoOutModal, setShowGoOutModal] = useState(false);
-  const authenticate = checkInStore((state) => state.authenticate);
+  const [modalType, setModalType] = useState(null);
+  const verifyCheckIn = checkInStore((state) => state.verifyCheckIn);
+  const verifyGoOut = checkInStore((state) => state.verifyGoOut);
+  const verifyCheckOut = checkInStore((state) => state.verifyCheckOut);
   const goOut = checkInStore((state) => state.goOut);
-  const getActiveCheckIn = checkInStore((state) => state.getActiveCheckIn);
   const comeBack = checkInStore((state) => state.comeBack);
   const updateCheckOut = checkInStore((state) => state.updateCheckOut);
   const checkOutSeat = seatStore((state) => state.checkOutSeat);
@@ -25,30 +23,61 @@ function HomePage() {
 
   const totalSeats = seats.filter((seat) => seat.type === 'seat').length;
 
-  const handleCheckIn = (result) => {
-    authenticate(result.user);
+  // 입실 관리
+  const handleCheckIn = (phone, password) => {
+    const result = verifyCheckIn(phone, password);
+    alert(result.message);
 
-    if (result.activeCheckIn?.status === 'away') {
+    if (!result.success) return;
+
+    if (result.comeback) {
       comeBack(result.user.id);
-
-      setShowCheckInModal(false);
-
+      setModalType(null);
       return;
     }
 
-    setShowCheckInModal(false);
+    setModalType(null);
     navigate('/seat');
   };
 
-  const handleGoOut = (data) => {
-    goOut(data.userId);
-    setShowGoOutModal(false);
+  // 외출 관리
+  const handleGoOut = (phone, password) => {
+    const result = verifyGoOut(phone, password);
+    alert(result.message);
+
+    if (!result.success) return;
+
+    goOut(result.user.id);
+    setModalType(null);
   };
 
-  const handleCheckOut = (data) => {
-    updateCheckOut(data.checkInId);
-    checkOutSeat(data.seatId);
-    setShowCheckOutModal(false);
+  // 퇴실 관리
+  const handleCheckOut = (phone, password) => {
+    const result = verifyCheckOut(phone, password);
+    alert(result.message);
+
+    if (!result.success) return;
+
+    updateCheckOut(result.checkIn.id);
+    checkOutSeat(result.checkIn.seatId);
+    setModalType(null);
+  };
+
+  // 버튼 관리
+  const handleSubmit = (phone, password) => {
+    switch (modalType) {
+      case '입실':
+        handleCheckIn(phone, password);
+        break;
+      case '외출':
+        handleGoOut(phone, password);
+        break;
+      case '퇴실':
+        handleCheckOut(phone, password);
+        break;
+      default:
+        break;
+    }
   };
 
   return (
@@ -77,7 +106,7 @@ function HomePage() {
           <button
             type="button"
             className="menu_btn btn_orange"
-            onClick={() => setShowCheckInModal(true)}
+            onClick={() => setModalType('입실')}
           >
             <div className="btn_icon">🚪➡️</div>
             <span className="btn_label">입실</span>
@@ -85,7 +114,7 @@ function HomePage() {
           <button
             type="button"
             className="menu_btn btn_orange"
-            onClick={() => setShowGoOutModal(true)}
+            onClick={() => setModalType('외출')}
           >
             <div className="btn_icon">🚪⬅️</div>
             <span className="btn_label">외출</span>
@@ -93,7 +122,7 @@ function HomePage() {
           <button
             type="button"
             className="menu_btn btn_orange"
-            onClick={() => setShowCheckOutModal(true)}
+            onClick={() => setModalType('퇴실')}
           >
             <div className="btn_icon">🚪🔒</div>
             <span className="btn_label">퇴실</span>
@@ -145,23 +174,11 @@ function HomePage() {
         <span className="footer_text">관리자 번호: 010-0000-0000</span>
       </footer>
 
-      {showCheckInModal && (
-        <CheckInModal
-          onClose={() => setShowCheckInModal(false)}
-          onConfirm={handleCheckIn}
-        />
-      )}
-      {showCheckOutModal && (
-        <CheckOutModal
-          onClose={() => setShowCheckOutModal(false)}
-          onConfirm={handleCheckOut}
-        />
-      )}
-      {showGoOutModal && (
-        <CheckOutModal
-          mode="goOut"
-          onClose={() => setShowGoOutModal(false)}
-          onConfirm={handleGoOut}
+      {modalType && (
+        <InOutModal
+          title={modalType}
+          onClose={() => setModalType(null)}
+          onConfirm={handleSubmit}
         />
       )}
     </div>

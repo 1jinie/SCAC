@@ -22,6 +22,7 @@ export const formatfullClock = (time) => {
   return `${hours} 시간 ${minutes} 분`;
 };
 
+// 원본 날짜를 day:화 date:7/27 형식으로 분해
 export const formatDate = (fullDate) => {
   const date = new Date(fullDate);
 
@@ -33,6 +34,7 @@ export const formatDate = (fullDate) => {
   };
 };
 
+// 스터디룸 예약 시 두번째 선택한 시간 + 1 반환
 export const addOneHour = (time) => {
   const [hour, minute] = time.split(':').map(Number);
   const date = new Date(2000, 0, 1, hour, minute);
