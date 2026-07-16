@@ -1,0 +1,24 @@
+.admin_log_type.check_in {
+  background: #e8f7ef;
+  color: #2d8b57;
+}
+
+.admin_log_type.check_out {
+  background: #edf7ff;
+  color: #3178c6;
+}
+
+.admin_log_type.auto_checkout {
+  background: #fff6dc;
+  color: #b07a00;
+}
+
+.admin_log_type.force_checkout {
+  background: #fde9e9;
+  color: #d84848;
+}
+
+.admin_log_type.status_change {
+  background: #ececec;
+  color: #666;
+}

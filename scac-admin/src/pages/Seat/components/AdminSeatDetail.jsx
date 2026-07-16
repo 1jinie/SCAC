@@ -7,12 +7,6 @@ const STATUS_LABELS = {
   BRK: '점검 중',
 };
 
-const ZONE_LABELS = {
-  GENERAL: '일반 구역',
-  QUIET: '집중 구역',
-  WINDOW: '창가 구역',
-};
-
 export default function AdminSeatDetail({ selectedSeat, onSeatChange }) {
   if (!selectedSeat) {
     return (
@@ -46,11 +40,6 @@ export default function AdminSeatDetail({ selectedSeat, onSeatChange }) {
         <div>
           <dt>현재 상태</dt>
           <dd>{STATUS_LABELS[selectedSeat.status]}</dd>
-        </div>
-
-        <div>
-          <dt>구역 유형</dt>
-          <dd>{ZONE_LABELS[selectedSeat.zoneType] ?? selectedSeat.zoneType}</dd>
         </div>
       </dl>
 
