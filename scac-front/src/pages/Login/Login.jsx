@@ -28,11 +28,16 @@ function LoginPage() {
     const result = await login(phoneNumber, password);
 
     if (result.success) {
-      if (result.role === 'ADMIN') navigate('/admin');
-      else navigate('/loginhome');
+      alert('로그인이 성공적으로 완료되었습니다!');
+
+      if (result.role === 'ADMIN') {
+        navigate('/admin');
+      } else {
+        navigate('/loginhome'); // 요구 사항: /loginhome 경로 이동
+      }
     } else {
-      setErrorMessage('존재하지 않는 회원입니다.');
-      navigate('/');
+      // 로그인 실패 시 에러 핸들링
+      setErrorMessage('전화번호 또는 입실 비밀번호가 일치하지 않습니다.');
     }
   };
 
@@ -48,7 +53,6 @@ function LoginPage() {
           >
             🏠
           </button>
-          <span className="header_time" />
         </header>
 
         <form id="login_form" onSubmit={handleLoginSubmit}>
