@@ -4,7 +4,7 @@ import { useAuthStore } from '../../store/authStore';
 import { useUserStore } from '../../store/userStore';
 import { seatStore } from '../../store/seatStore';
 import { checkInStore } from '../../store/checkInStore';
-import CheckOutModal from '../../components/modal/CheckOutModal';
+import InOutModal from '../../components/modal/InOutModal';
 import '../../styles/LoginHome.css';
 
 function LoginHomePage() {
@@ -132,7 +132,8 @@ function LoginHomePage() {
       </footer>
 
       {showCheckOutModal && (
-        <CheckOutModal
+        <InOutModal
+          title="퇴실"
           onClose={() => setShowCheckOutModal(false)}
           onConfirm={handleCheckOut}
         />
