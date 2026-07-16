@@ -138,10 +138,13 @@ function SignUpPage() {
         <form id="signup_form" onSubmit={handleSignUpSubmit}>
           {/* 1. 전화번호 입력 그룹 (FHD 시안 맞춤형 절대 위치 배치 반영) */}
           <div className="input_group">
-            <label htmlFor="reg_phone">전화번호</label>
+            <label htmlFor="reg_phone" className="input_guide_label">
+              전화번호
+            </label>
             <input
               id="reg_phone"
-              className="input_field"
+              /* 🎯 중요: 일반 input_field 외에 우측 여백 확보용 input_field_with_btn 클래스 추가 */
+              className={`input_field ${!isVerified ? 'input_field_with_btn' : ''}`}
               type="text"
               placeholder="01012345678 (숫자만 입력)"
               disabled={isVerified} // 인증 완료 시 수정 불가
