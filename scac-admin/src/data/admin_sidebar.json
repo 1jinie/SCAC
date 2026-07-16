@@ -10,12 +10,8 @@
     "label": "전체 좌석 관리"
   },
   {
-    "path": "/log",
-    "label": "로그 확인"
-  },
-  {
     "path": "/reservation",
-    "label": "예약 승인"
+    "label": "스터디룸 예약 관리"
   },
   {
     "path": "/device",
@@ -28,5 +24,9 @@
   {
     "path": "/payment",
     "label": "결제 관리"
+  },
+  {
+    "path": "/log",
+    "label": "전체 로그 확인"
   }
 ]

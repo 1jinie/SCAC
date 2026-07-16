@@ -86,16 +86,16 @@ export default function AdminMainPage() {
             <button
               type="button"
               className="admin_quick_menu"
-              onClick={() => handleMovePage('/admin/reservation')}
+              onClick={() => handleMovePage('/reservation')}
             >
-              <strong>예약 승인</strong>
-              <span>예약 요청 확인</span>
+              <strong>스터디룸 현황</strong>
+              <span>스터디룸의 현재 상태 및 예약일정 관리</span>
             </button>
 
             <button
               type="button"
               className="admin_quick_menu"
-              onClick={() => handleMovePage('/admin/ticket')}
+              onClick={() => handleMovePage('/ticket')}
             >
               <strong>이용권 관리</strong>
               <span>가격 및 판매 여부 설정</span>
@@ -104,7 +104,7 @@ export default function AdminMainPage() {
             <button
               type="button"
               className="admin_quick_menu"
-              onClick={() => handleMovePage('/admin/payment')}
+              onClick={() => handleMovePage('/payment')}
             >
               <strong>결제 관리</strong>
               <span>결제 조회 및 취소</span>
@@ -113,7 +113,7 @@ export default function AdminMainPage() {
             <button
               type="button"
               className="admin_quick_menu"
-              onClick={() => handleMovePage('/admin/log')}
+              onClick={() => handleMovePage('/log')}
             >
               <strong>로그 확인</strong>
               <span>오류 및 시스템 기록 조회</span>
@@ -131,7 +131,7 @@ export default function AdminMainPage() {
             <button
               type="button"
               className="admin_text_button"
-              onClick={() => handleMovePage('/admin/log')}
+              onClick={() => handleMovePage('/log')}
             >
               전체 보기
             </button>
@@ -160,7 +160,7 @@ export default function AdminMainPage() {
                       <button
                         type="button"
                         className="admin_table_detail_button"
-                        onClick={() => handleMovePage(`/admin/log/${log.id}`)}
+                        onClick={() => handleMovePage(`/log/${log.id}`)}
                       >
                         상세
                       </button>
