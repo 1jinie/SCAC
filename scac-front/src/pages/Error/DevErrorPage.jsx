@@ -1,7 +1,7 @@
 import { useNavigate, useRouteError } from 'react-router-dom';
 import './css/AdminErrorPage.css';
 
-export default function AdminErrorPage({ status: statusProp }) {
+export default function DevErrorPage({ status: statusProp }) {
   const error = useRouteError();
   const navi = useNavigate();
 
