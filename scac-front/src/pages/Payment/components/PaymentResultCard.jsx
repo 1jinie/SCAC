@@ -79,7 +79,11 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
         </p>
       )}
       <p className="payment_timer">10초 후 자동으로 종료됩니다</p>
-      <SelectButton nextPage={'/'} text={'홈으로 돌아가기'} />
+      <SelectButton
+        nextPage={'/'}
+        text={'홈으로 돌아가기'}
+        onClickAction={resetAll}
+      />
     </div>
   );
 }

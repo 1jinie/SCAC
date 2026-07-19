@@ -23,7 +23,7 @@ export default function SelectButton({ nextPage, text, onClickAction }) {
       try {
         await onClickAction();
         // API 함수 성공시 nextPage로 이동
-        navigate(`${nextPage}`);
+        navigate(nextPage);
       } catch (err) {
         console.error('요청 실패:', err); //임시
       }
