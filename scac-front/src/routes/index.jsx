@@ -14,6 +14,7 @@ import Seat from '../pages/Seat/Seat';
 import NonmemberSignup from '../pages/Signup/NonmemberSignup';
 import SignUpPage from '../pages/Signup/Signup';
 import TicketPage from '../pages/Ticket/TicketPage';
+// import DevErrorPage from '../pages/Error/DevErrorPage';
 
 const router = createBrowserRouter([
   // ============================
@@ -23,6 +24,9 @@ const router = createBrowserRouter([
     path: '/',
     element: <KioskLayout />,
     errorElement: <KioskErrorPage />,
+    // 개발용 에러 페이지가 필요하다면 KioskErrorPage를 주석처리하고
+    // 아래 DevErrorPage와 import DevErrorPage를 활성화해 주세요
+    // errorElement: <DevErrorPage />,
     children: [
       { index: true, element: <HomePage /> },
       { path: 'seat', element: <Seat /> },
@@ -52,6 +56,10 @@ const router = createBrowserRouter([
         ],
       },
     ],
+  },
+  {
+    path: '*',
+    element: <KioskErrorPage status={404} />,
   },
 ]);
 export default router;

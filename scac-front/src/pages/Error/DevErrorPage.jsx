@@ -1,7 +1,7 @@
-import React from 'react';
-import { Link, useNavigate, useRouteError } from 'react-router-dom';
+import { useNavigate, useRouteError } from 'react-router-dom';
+import './css/AdminErrorPage.css';
 
-export default function KioskErrorPage() {
+export default function DevErrorPage({ status: statusProp }) {
   const error = useRouteError();
   const navi = useNavigate();
 
@@ -9,22 +9,21 @@ export default function KioskErrorPage() {
   return (
     <div>
       <h1>Error !</h1>
-      <p>
-        에!러!가!났!다
-        <br />
-        오!타!일!까!문!법!에!러!일!까
-      </p>
+
       <br />
       <br />
       <section>
         <h3>{error.status || '에러코드가.. 없다! (Runtime Error)'}</h3>
         {/* 네트워크/서버 에러: status+statusText, 런타임에러: message */}
         <p>{error.statusText || error.message}</p>
-        <br />
-        <br />
-        <Link to={'/'}>Home으로 돌아가기</Link>
-        <br />
-        <br />
+        <div>
+          <button type="button" onClick={() => navi(-1)}>
+            이전 페이지
+          </button>
+          <button type="button" onClick={() => navi('/')}>
+            홈으로
+          </button>
+        </div>
         {/* 어디서 에러가 났는지 알려줍니다 */}
         <p>{error.stack}</p>
       </section>

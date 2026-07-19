@@ -1,33 +1,64 @@
-import React from 'react';
-import { Link, useNavigate, useRouteError } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate, useRouteError } from 'react-router-dom';
+import SelectButton from '../../components/button/SelectButton';
+import { useResetStore } from '../../hooks/useResetStore';
+import './css/KioskErrorPage.css';
 
-export default function KioskErrorPage() {
+export default function KioskErrorPage({ status: statusProp }) {
   const error = useRouteError();
   const navi = useNavigate();
+  const resetAll = useResetStore();
 
   console.error(error);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log('resetAll');
+      resetAll();
+      navi('/');
+    }, 10000);
+
+    return () => clearTimeout(timer);
+  }, [navi, resetAll]);
+
+  const status = statusProp || error?.status || 500;
+  const title =
+    status === 404 ? '페이지를 찾을 수 없습니다' : '문제가 발생했습니다';
+
+  const message =
+    status === 404
+      ? '요청하신 페이지가 존재하지 않거나 이동된 페이지입니다.'
+      : '요청을 처리하는 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.';
+
   return (
-    <div>
-      <h1>Error !</h1>
-      <p>
-        에!러!가!났!다
-        <br />
-        오!타!일!까!문!법!에!러!일!까
-      </p>
-      <br />
-      <br />
-      <section>
-        <h3>{error.status || '에러코드가.. 없다! (Runtime Error)'}</h3>
-        {/* 네트워크/서버 에러: status+statusText, 런타임에러: message */}
-        <p>{error.statusText || error.message}</p>
-        <br />
-        <br />
-        <Link to={'/'}>Home으로 돌아가기</Link>
-        <br />
-        <br />
-        {/* 어디서 에러가 났는지 알려줍니다 */}
-        <p>{error.stack}</p>
-      </section>
+    <div className="overlay">
+      <div className="modal">
+        <div className="kiosk_error_page">
+          <img
+            src="/icons/common/caution.svg"
+            alt="에러 발생"
+            className="error_caoution_icon"
+          />
+
+          <div className="error_status_container">
+            <div className="error_status_header kiosk_error_row">
+              <span>status</span>
+              <span className="code">[{status} Error!]</span>
+            </div>
+
+            <div className="error_status_text  kiosk_error_row">
+              <span>{title}</span>
+              <span>{message}</span>
+            </div>
+          </div>
+          <p className="error_timer">10초 후 자동으로 종료됩니다</p>
+          <SelectButton
+            nextPage={'/'}
+            text={'홈으로 돌아가기'}
+            onClickAction={resetAll}
+          />
+        </div>
+      </div>
     </div>
   );
 }
