@@ -4,38 +4,47 @@
 
 ---
 
-### 🖥 Smart Study Cafe Kiosk System
+### 🖥 Smart Study Cafe Kiosk & Admin System
 
-Spring Boot + React 기반의 스터디카페 키오스크 시스템
+Spring Boot + React 기반의 스터디카페 키오스크 및 관리자 시스템
 
 ---
 
 ## 📖 프로젝트 소개
 
-SCAC는 **스터디카페 키오스크 관리 시스템**입니다.
+SCAC는 **스터디카페 키오스크 및 관리자 통합 관리 시스템**입니다.
 
-사용자가 키오스크를 통해 회원가입, 로그인, 이용권 구매, 좌석 선택, 스터디룸 예약 및 입·퇴실을 수행할 수 있으며,
-관리자는 관리자 페이지를 통해 키오스크와 이용 현황을 관리할 수 있습니다.
+사용자는 키오스크를 통해 회원가입, 로그인, 이용권 구매, 좌석 선택,  
+스터디룸 예약 및 입·퇴실을 수행할 수 있습니다.
+
+관리자는 별도의 PC용 관리자 웹 애플리케이션을 통해  
+좌석 현황, 스터디룸 예약, 이용권, 결제, 장치 및 이용 로그를 관리할 수 있습니다.
+
+키오스크와 관리자 화면은 서로 다른 React 프로젝트로 분리하여  
+각 환경에 적합한 UI와 기능을 제공하며,  
+공통 Spring Boot 백엔드와 REST API를 통해 데이터를 주고받습니다.
 
 ---
 
 ## 🎯 프로젝트 목표
 
 - 직관적인 키오스크 UI 제공
-- 사용자와 관리자의 기능 분리
-- 실시간 좌석 관리
+- 키오스크와 관리자 시스템의 프론트엔드 분리
+- 사용자와 관리자의 권한 및 기능 분리
+- 실시간 좌석 및 스터디룸 현황 관리
 - 이용권 및 결제 기능 제공
+- 이용 및 상태 변경 로그 관리
 - 유지보수가 쉬운 구조 설계
 
 ---
 
 ## ✨ 주요 기능
 
-### 👤 사용자
+### 👤 사용자 / 키오스크
 
 - 회원가입
 - 로그인
-- 내 정보
+- 내 정보 조회
 - 이용권 구매
 - 결제
 - 좌석 선택
@@ -43,21 +52,37 @@ SCAC는 **스터디카페 키오스크 관리 시스템**입니다.
 - 퇴실
 - 외출
 - 스터디룸 예약
+- 예약 취소
 
-### 🛠 관리자
+### 🛠 관리자 / PC
 
 - 관리자 로그인
-- 좌석 관리
+- 전체 좌석 현황 관리
+- 좌석 상태 변경
+- 사용자 강제 퇴실
+- 좌석 이용 로그 조회
+- 스터디룸 현황 조회
+- 스터디룸 날짜별 예약 조회
+- 스터디룸 예약 관리
 - 이용권 관리
-- 회원 관리
 - 결제 관리
-- 로그 조회
+- 장치 관리
+- 전체 로그 조회
 
 ---
 
 ## 🛠 Tech Stack
 
-### Frontend
+### Kiosk Frontend
+
+- React
+- React Router
+- Axios
+- Zustand
+- React Hook Form
+- CSS
+
+### Admin Frontend
 
 - React
 - React Router
@@ -79,15 +104,33 @@ SCAC는 **스터디카페 키오스크 관리 시스템**입니다.
 ## 🏗 System Architecture
 
 ```text
-React
-   │
-REST API
-   │
-Spring Boot
-   │
-Spring Data JPA
-   │
-MySQL
+┌──────────────────────┐
+│   SCAC Kiosk React   │
+│     scac-front       │
+└──────────┬───────────┘
+           │
+           │ REST API
+           │
+           ▼
+┌──────────────────────┐
+│     Spring Boot      │
+│      scac-back       │
+└──────────┬───────────┘
+           │
+           │ JPA / MyBatis
+           │
+           ▼
+┌──────────────────────┐
+│        MySQL         │
+└──────────────────────┘
+           ▲
+           │
+           │ REST API
+           │
+┌──────────┴───────────┐
+│   SCAC Admin React   │
+│     scac-admin       │
+└──────────────────────┘
 ```
 
 ---
@@ -100,8 +143,13 @@ SCAC
 ├── docs
 │
 ├── scac-front
+│   └── 키오스크 사용자용 React 애플리케이션
+│
+├── scac-admin
+│   └── 관리자 PC용 React 애플리케이션
 │
 └── scac-back
+    └── Spring Boot 백엔드
 ```
 
 ---
@@ -124,7 +172,7 @@ SCAC
 
 ## 🚀 Getting Started
 
-### Frontend
+### Kiosk Frontend
 
 ```bash
 cd scac-front
@@ -132,12 +180,49 @@ npm install
 npm start
 ```
 
+기본 개발 서버:
+
+```text
+http://localhost:3000
+```
+
+---
+
+### Admin Frontend
+
+```bash
+cd scac-admin
+npm install
+npm start
+```
+
+기본 개발 서버:
+
+```text
+http://localhost:3001
+```
+
+`.env` 예시:
+
+```env
+PORT=3001
+REACT_APP_API_URL=http://localhost:8888
+```
+
+---
+
 ### Backend
 
 ```bash
 cd scac-back
+```
 
 Backend Project is under development.
+
+기본 서버:
+
+```text
+http://localhost:8888
 ```
 
 ---
@@ -160,19 +245,33 @@ Backend Project is under development.
 
 ## 🎨 UI Design
 
-Figma를 기반으로 32인치 세로형 키오스크(1080×1920)에 최적화된 UI를 설계하였습니다.
+### Kiosk
+
+Figma를 기반으로  
+**32인치 세로형 키오스크(1080×1920)** 환경에 최적화된 UI를 설계하였습니다.
+
+터치 환경을 고려하여 큰 버튼과 명확한 상태 표현을 적용했습니다.
+
+### Admin
+
+관리자 페이지는 별도의 PC 환경에서 사용할 수 있도록  
+키오스크와 독립된 React 애플리케이션으로 구성하였습니다.
+
+대시보드, 테이블, 페이지네이션 및 상태 배지를 활용하여  
+좌석, 스터디룸, 결제 및 이용 로그를 효율적으로 관리할 수 있도록 설계했습니다.
 
 ---
 
 ## 📌 Project Status
 
-| Status        | Progress       |
-| ------------- | -------------- |
-| UI Design     | ✅ Complete    |
-| Prototype     | ✅ Complete    |
-| Frontend      | 🟡 In Progress |
-| Backend       | 🟡 In Progress |
-| Documentation | 🟡 In Progress |
+| Status         | Progress       |
+| -------------- | -------------- |
+| UI Design      | ✅ Complete    |
+| Prototype      | ✅ Complete    |
+| Kiosk Frontend | 🟡 In Progress |
+| Admin Frontend | 🟡 In Progress |
+| Backend        | 🟡 In Progress |
+| Documentation  | 🟡 In Progress |
 
 ---
 
@@ -189,11 +288,12 @@ Figma를 기반으로 32인치 세로형 키오스크(1080×1920)에 최적화�
 
 ## 📝 Documentation Version
 
-- **README v1.2**
-- Last Updated : 2026.07.14
+- **README v1.3**
+- Last Updated : 2026.07.19
 
 ### History
 
 - README v1.0 (2026.07.11)
 - README v1.1 (2026.07.11)
 - README v1.2 (2026.07.14)
+- README v1.3 (2026.07.19)
