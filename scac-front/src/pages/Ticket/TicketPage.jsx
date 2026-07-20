@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { ticketApi } from '../../api/ticketApi';
 import SelectButton from '../../components/button/SelectButton';
 import TicketList from './TicketList';
-import stylesheet from './css/TicketPage.css';
+import './css/TicketPage.css';
 
 export default function TicketPage() {
   const [tickets, setTickets] = useState([]);

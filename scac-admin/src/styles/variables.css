@@ -29,13 +29,15 @@
 
   --color-pay-mint: #6bafaa;
   --color-using: #517d7a;
-  --color-error: #ff985c;
+  --color-warning: #ff985c;
+  --color-error: #e76c6c;
+  --color-success: #91c6bc;
 
   /* ========================================================
    Font Family
    ======================================================== */
 
-  --font-family: 'Pretendard', sans-serif;
+  --font-family: "Pretendard", sans-serif;
 
   /* ========================================================
      Text Color
