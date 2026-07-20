@@ -1,29 +1,36 @@
-import { useMemo, useState } from 'react';
-import AdminRoomDetail from './components/AdminRoomDetail';
-import ReservationDateSlider from './components/ReservationDateSlider';
-import RoomDailySchedule from './components/RoomDailySchedule';
-import RecentReservationList from './components/RecentReservationList';
-import './css/AdminReservationPage.css';
+import { useMemo, useState } from "react";
+import AdminRoomDetail from "./components/AdminRoomDetail";
+import ReservationDateSlider from "./components/ReservationDateSlider";
+import RoomDailySchedule from "./components/RoomDailySchedule";
+import RecentReservationList from "./components/RecentReservationList";
+import "./css/AdminReservationPage.css";
 
 const ROOM_DUMMY = [
   {
     roomId: 1,
-    roomNumber: 'R1',
-    roomName: '스터디룸 A',
+    roomNumber: "R1",
+    roomName: "스터디룸 A",
     capacity: 4,
-    status: 'AVB',
+    status: "AVB",
   },
   {
     roomId: 2,
-    roomNumber: 'R2',
-    roomName: '스터디룸 B',
-    capacity: 6,
-    status: 'USR',
+    roomNumber: "R2",
+    roomName: "스터디룸 B",
+    capacity: 4,
+    status: "USR",
     currentUsage: {
-      phoneNumber: '010-1234-5678',
-      startAt: '2026-07-16 13:00',
-      endAt: '2026-07-16 15:00',
+      phoneNumber: "010-1234-5678",
+      startAt: "2026-07-16 13:00",
+      endAt: "2026-07-16 15:00",
     },
+  },
+  {
+    roomId: 3,
+    roomNumber: "R3",
+    roomName: "스터디룸 C",
+    capacity: 6,
+    status: "AVB",
   },
 ];
 
@@ -31,42 +38,42 @@ const RESERVATION_DUMMY = [
   {
     reservationId: 1,
     roomId: 1,
-    roomNumber: 'R1',
-    phoneNumber: '010-1111-2222',
-    reservationDate: '2026-07-16',
-    startTime: '09:00',
-    endTime: '11:00',
-    status: 'RESERVED',
-    createdAt: '2026-07-15 18:30:00',
+    roomNumber: "R1",
+    phoneNumber: "010-1111-2222",
+    reservationDate: "2026-07-16",
+    startTime: "09:00",
+    endTime: "11:00",
+    status: "RESERVED",
+    createdAt: "2026-07-15 18:30:00",
   },
   {
     reservationId: 2,
     roomId: 1,
-    roomNumber: 'R1',
-    phoneNumber: '010-3333-4444',
-    reservationDate: '2026-07-16',
-    startTime: '13:00',
-    endTime: '15:00',
-    status: 'IN_USE',
-    createdAt: '2026-07-15 19:20:00',
+    roomNumber: "R1",
+    phoneNumber: "010-3333-4444",
+    reservationDate: "2026-07-16",
+    startTime: "13:00",
+    endTime: "15:00",
+    status: "IN_USE",
+    createdAt: "2026-07-15 19:20:00",
   },
   {
     reservationId: 3,
     roomId: 2,
-    roomNumber: 'R2',
-    phoneNumber: '010-5555-6666',
-    reservationDate: '2026-07-17',
-    startTime: '16:00',
-    endTime: '18:00',
-    status: 'RESERVED',
-    createdAt: '2026-07-16 09:10:00',
+    roomNumber: "R2",
+    phoneNumber: "010-5555-6666",
+    reservationDate: "2026-07-17",
+    startTime: "16:00",
+    endTime: "18:00",
+    status: "RESERVED",
+    createdAt: "2026-07-16 09:10:00",
   },
 ];
 
 const toDateString = (date) => {
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
 };
@@ -96,7 +103,7 @@ export default function AdminReservationPage() {
 
   const handleAdminCancel = (reservationId) => {
     const confirmed = window.confirm(
-      '선택한 예약을 관리자 취소 처리하시겠습니까?',
+      "선택한 예약을 관리자 취소 처리하시겠습니까?",
     );
 
     if (!confirmed) {
@@ -108,7 +115,7 @@ export default function AdminReservationPage() {
         reservation.reservationId === reservationId
           ? {
               ...reservation,
-              status: 'ADMIN_CANCELED',
+              status: "ADMIN_CANCELED",
             }
           : reservation,
       ),
