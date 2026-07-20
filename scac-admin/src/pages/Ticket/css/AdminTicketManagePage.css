@@ -1,0 +1,313 @@
+/* =========================
+   Admin Ticket Page
+========================= */
+
+.admin_ticket_page {
+  width: 100%;
+  max-width: 1500px;
+
+  margin: 0 auto;
+}
+
+.admin_ticket_workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(360px, 0.8fr);
+  gap: 24px;
+
+  align-items: start;
+}
+
+.admin_ticket_list_section,
+.admin_ticket_detail {
+  background: #ffffff;
+  border: 1px solid #e3e7ea;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgb(28 46 55 / 5%);
+}
+
+.admin_ticket_list_section,
+.admin_ticket_detail {
+  min-height: 640px;
+
+  padding: 26px;
+}
+
+.admin_ticket_detail {
+  position: sticky;
+  top: 120px;
+}
+
+/* =========================
+   Section Header
+========================= */
+
+.admin_section_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+
+  margin-bottom: 24px;
+}
+
+.admin_section_header h2 {
+  margin: 0;
+
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.admin_section_header p {
+  margin: 8px 0 0;
+
+  color: #858d92;
+  font-size: 14px;
+}
+
+/* =========================
+   Register Button
+========================= */
+
+.admin_ticket_add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 140px;
+  height: 42px;
+
+  padding: 0 18px;
+
+  border: 1px solid var(--color-important);
+  border-radius: 10px;
+
+  background: #fff;
+
+  color: var(--color-important);
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.admin_ticket_add:hover {
+  background: var(--color-important);
+  color: white;
+}
+
+/* =========================
+   Tab Button
+========================= */
+
+.ticket_tab {
+  display: flex;
+
+  margin-bottom: 24px;
+}
+
+.ticket_tab button {
+  flex: 1;
+
+  height: 52px;
+
+  border: none;
+
+  background: #5ca8b6;
+  color: white;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.ticket_tab button:first-child {
+  border-radius: 18px 18px 0 0;
+}
+
+.ticket_tab button:last-child {
+  border-radius: 18px 18px 0 0;
+}
+
+.ticket_tab button.active {
+  background: #ff9255;
+}
+
+/* =========================
+   Ticket Table
+========================= */
+
+.admin_ticket_table {
+  width: 100%;
+
+  border-collapse: collapse;
+}
+
+.admin_ticket_table thead {
+  background: #f7f9fa;
+}
+
+.admin_ticket_table th {
+  height: 52px;
+
+  border-bottom: 1px solid #e6ebee;
+
+  color: #5c6469;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 52px;
+}
+
+.admin_ticket_table td {
+  height: 54px;
+
+  border-bottom: 1px solid #edf0f2;
+
+  color: #444;
+  font-size: 14px;
+  line-height: 54px;
+
+  text-align: center;
+
+  cursor: pointer;
+}
+
+.admin_ticket_table tbody tr {
+  transition: 0.15s;
+}
+
+.admin_ticket_table tbody tr:hover {
+  background: #91c6bc;
+}
+
+.admin_ticket_table tbody tr.selected {
+  background: rgba(75, 157, 169, 0.12);
+}
+
+/* =========================
+   Ticket Detail
+========================= */
+
+.admin_ticket_detail h3 {
+  margin: 0 0 24px;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.admin_ticket_form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.admin_ticket_form label {
+  color: #666;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.admin_ticket_form input,
+.admin_ticket_form select {
+  width: 100%;
+  height: 44px;
+
+  margin-top: 8px;
+
+  padding: 0 14px;
+
+  border: 1px solid #d9dfe3;
+  border-radius: 10px;
+
+  box-sizing: border-box;
+
+  font-size: 14px;
+}
+
+.admin_ticket_form input:focus,
+.admin_ticket_form select:focus {
+  border-color: var(--color-primary);
+
+  outline: none;
+}
+
+/* =========================
+   Buttons
+========================= */
+
+.admin_ticket_button_group {
+  display: flex;
+  gap: 12px;
+
+  margin-top: 28px;
+}
+
+.admin_ticket_button_group button {
+  flex: 1;
+
+  min-width: 140px;
+  height: 46px;
+
+  border-radius: 10px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.admin_ticket_save {
+  border: none;
+
+  background: var(--color-primary);
+  color: white;
+}
+
+.admin_ticket_save:hover {
+  opacity: 0.9;
+}
+
+.admin_ticket_delete {
+  border: 1px solid #e76c6c;
+
+  background: #fde7e7;
+  color: #b94747;
+}
+
+.admin_ticket_delete:hover {
+  background: #f9d9d9;
+}
+
+/* =========================
+   Empty
+========================= */
+
+.admin_ticket_detail.is_empty {
+  display: grid;
+  place-items: center;
+
+  color: #999;
+
+  text-align: center;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 1360px) {
+  .admin_ticket_workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .admin_ticket_detail {
+    position: static;
+  }
+}

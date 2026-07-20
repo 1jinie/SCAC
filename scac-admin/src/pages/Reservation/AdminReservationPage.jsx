@@ -28,6 +28,13 @@ const ROOM_DUMMY = [
     roomName: "스터디룸 R3",
     capacity: 6,
   },
+  {
+    roomId: 3,
+    roomNumber: "R3",
+    roomName: "스터디룸 C",
+    capacity: 6,
+    status: "AVB",
+  },
 ];
 
 const RESERVATION_DUMMY = [
