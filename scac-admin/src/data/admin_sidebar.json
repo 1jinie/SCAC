@@ -23,7 +23,7 @@
   },
   {
     "path": "/payment",
-    "label": "결제 관리"
+    "label": "결제 내역 관리"
   },
   {
     "path": "/log",

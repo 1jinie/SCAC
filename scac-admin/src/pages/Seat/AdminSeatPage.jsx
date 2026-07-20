@@ -92,6 +92,15 @@ export default function AdminSeatPage() {
   };
   return (
     <div className="admin_seat_page">
+      <div className="admin_page_heading">
+        <div>
+          <p className="admin_page_eyebrow">SEAT MANAGEMENT</p>
+
+          <h2>좌석 현황</h2>
+
+          <p>좌석의 현재 상태와 이용 내역을 확인합니다.</p>
+        </div>
+      </div>
       <section className="admin_seat_workspace">
         <div className="admin_seat_map_section">
           <div className="admin_section_header">
