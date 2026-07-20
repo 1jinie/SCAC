@@ -3,7 +3,6 @@ import AdminSeatDetail from "./components/AdminSeatDetail";
 import AdminSeatLogList from "./components/AdminSeatLogList";
 import "./css/AdminSeatPage.css";
 import SeatList from "../../components/seat/SeatList";
-import "./css/seat.css";
 import { seatStore } from "../../store/seatStore";
 
 export default function AdminSeatPage() {
@@ -12,8 +11,8 @@ export default function AdminSeatPage() {
   const seats = seatStore((state) => state.seats);
   const selected = seatStore((state) => state.selectedSeat);
   const selectSeat = seatStore((state) => state.selectSeat);
-  const mode = "seat";
   const resetSeat = seatStore((state) => state.clearSelected);
+  const mode = "seat";
 
   const updateSeatStatus = seatStore((state) => state.updateSeatStatus);
 
@@ -114,7 +113,7 @@ export default function AdminSeatPage() {
                 <SeatList
                   seats={seats}
                   selected={selected}
-                  mode={"seat"}
+                  mode={mode}
                   onClick={handleClick}
                 />
                 <div className="seat_legend">
