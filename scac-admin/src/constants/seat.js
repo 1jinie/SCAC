@@ -1,6 +1,6 @@
 // seat 관련 상수
 
-// 사용법
+// 사용법 예시
 // import { SEAT_STATUS_LABELS } from "../constants/seat";
 // SEAT_STATUS_LABELS[seat.status] 로 사용 가능
 

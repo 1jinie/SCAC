@@ -1,6 +1,6 @@
 // device 관련 상수
 
-// 사용법
+// 사용법 예시
 // import { DEVICE_STATUS_LABELS } from "../constants/device";
 // DEVICE_STATUS_LABELS[device.status] 로 사용 가능
 

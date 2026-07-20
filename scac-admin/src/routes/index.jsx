@@ -10,6 +10,8 @@ import AdminReservationPage from "../pages/Reservation/AdminReservationPage";
 import AdminSeatPage from "../pages/Seat/AdminSeatPage";
 import AdminTicketManagePage from "../pages/Ticket/AdminTicketManagePage";
 import AdminErrorPage from "../pages/Error/AdminErrorPage";
+import AdminMemberPage from "../pages/Member/AdminMemberPage";
+import AdminMemoPage from "../pages/Memo/AdminMemoPage";
 // import AdminPrivateRoute from './AdminPrivateRoute';
 
 const router = createBrowserRouter([
@@ -54,6 +56,14 @@ const router = createBrowserRouter([
       {
         path: "device",
         children: [{ index: true, element: <AdminDevicePage /> }],
+      },
+      {
+        path: "member",
+        children: [{ index: true, element: <AdminMemberPage /> }],
+      },
+      {
+        path: "memo",
+        children: [{ index: true, element: <AdminMemoPage /> }],
       },
       {
         path: "seat",
