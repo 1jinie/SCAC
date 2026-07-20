@@ -1,22 +1,64 @@
-import { useEffect, useMemo, useState } from 'react';
-import AdminSeatDetail from './components/AdminSeatDetail';
-import AdminSeatLogList from './components/AdminSeatLogList';
-import stylesheet from './css/AdminSeatPage.css';
-
-// import './css/AdminSeatPage.css';
+import { useEffect, useMemo, useState } from "react";
+import AdminSeatDetail from "./components/AdminSeatDetail";
+import AdminSeatLogList from "./components/AdminSeatLogList";
+import "./css/AdminSeatPage.css";
+import SeatList from "../../components/seat/SeatList";
+import "./css/seat.css";
+import { seatStore } from "../../store/seatStore";
 
 export default function AdminSeatPage() {
   const [selectedSeat, setSelectedSeat] = useState(null);
   const [data, setData] = useState([]);
+  const seats = seatStore((state) => state.seats);
+  const selected = seatStore((state) => state.selectedSeat);
+  const selectSeat = seatStore((state) => state.selectSeat);
+  const mode = "seat";
+  const resetSeat = seatStore((state) => state.clearSelected);
+
+  const updateSeatStatus = seatStore((state) => state.updateSeatStatus);
+
+  const TO_ADMIN_STATUS = {
+    available: "AVB",
+    using: "USR",
+    repair: "BRK",
+  };
+
+  const TO_SEAT_STATUS = {
+    AVB: "available",
+    USR: "using",
+    BRK: "repair",
+  };
+
+  const handleClick = (seat) => {
+    if (seat.type !== "seat") return;
+
+    selectSeat(seat.id);
+
+    setSelectedSeat({
+      seatId: seat.id,
+      seatNumber: seat.name,
+      status: TO_ADMIN_STATUS[seat.status],
+
+      user:
+        seat.status === "using"
+          ? {
+              phoneNumber: "010-1234-5678",
+              ticketName: "4시간권",
+              ticketType: "TIME",
+              remainingTime: 95,
+            }
+          : null,
+    });
+  };
 
   useEffect(() => {
-    fetch('/admin_seat_log_dummy.csv')
+    fetch("/admin_seat_log_dummy.csv")
       .then((response) => response.text())
       .then((csvText) => {
-        const rows = csvText.split('\n');
-        const headers = rows[0].split(',');
+        const rows = csvText.split("\n");
+        const headers = rows[0].split(",");
         const parsedData = rows.slice(1).map((row) => {
-          const values = row.split(',');
+          const values = row.split(",");
           // 헤더와 값을 매핑하여 객체로 변환
           return headers.reduce((obj, header, index) => {
             obj[header.trim()] = values[index]?.trim();
@@ -28,22 +70,27 @@ export default function AdminSeatPage() {
   }, []);
 
   const filteredLogs = useMemo(() => {
-    if (!selectedSeat) {
+    if (!selected) {
       return data;
     }
 
-    return data.filter(
-      (log) => Number(log.seat_id) === Number(selectedSeat.seatId),
-    );
-  }, [data, selectedSeat]);
+    return data.filter((log) => Number(log.seat_id) === Number(selected));
+  }, [data, selected]);
 
-  const handleSeatSelect = (seat) => {
-    setSelectedSeat(seat);
-  };
   const handleReset = () => {
+    resetSeat();
     setSelectedSeat(null);
   };
 
+  const handleSeatStatusChange = (newStatus, isForceCheckout = false) => {
+    setSelectedSeat((prevSeat) => ({
+      ...prevSeat,
+      status: newStatus,
+      user: isForceCheckout ? null : prevSeat.user,
+    }));
+
+    updateSeatStatus(Number(selectedSeat.seatId), TO_SEAT_STATUS[newStatus]);
+  };
   return (
     <div className="admin_seat_page">
       <section className="admin_seat_workspace">
@@ -61,39 +108,50 @@ export default function AdminSeatPage() {
             </button>
           </div>
 
-          <div className="admin_seat_map_placeholder">
-            {/* 담당자에게 받을 좌석 배치 컴포넌트 */}
-            {/* <SeatMap onSeatSelect={handleSeatSelect} /> */}
-
-            <button
-              type="button"
-              onClick={() =>
-                handleSeatSelect({
-                  seatId: '14',
-                  seatNumber: 14,
-                  status: 'USR',
-                  zoneType: 'QUIET',
-                  user: {
-                    phoneNumber: '010-1234-5678',
-                    ticketName: '4시간권',
-                    ticketType: 'TIME',
-                    remainingTime: 95,
-                  },
-                })
-              }
-            >
-              임시 14번 좌석 선택
-            </button>
+          <div className="admin_seat_map">
+            <div className="admin_map_viewport">
+              <div className="admin_map_scale">
+                <SeatList
+                  seats={seats}
+                  selected={selected}
+                  mode={"seat"}
+                  onClick={handleClick}
+                />
+                <div className="seat_legend">
+                  <div className="legend_item">
+                    <span className="legend_color select"></span>
+                    <span className="legend_text">선택</span>
+                  </div>
+                  <div className="legend_item">
+                    <span className="legend_color available"></span>
+                    <span className="legend_text">선택가능</span>
+                  </div>
+                  <div className="legend_item">
+                    <span className="legend_color unavailable">
+                      <span className="legend_diagonal"></span>
+                    </span>
+                    <span className="legend_text">불가능</span>
+                  </div>
+                  <div className="legend_item">
+                    <span className="legend_color using"></span>
+                    <span className="legend_text">
+                      {mode === "seat" ? "사용중" : "예약됨"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
         <AdminSeatDetail
+          // 샘플 데이터로 14번 좌석을 잠시 사용할 예정
           selectedSeat={selectedSeat}
-          onSeatChange={setSelectedSeat}
+          onSeatChange={handleSeatStatusChange}
         />
       </section>
 
-      <AdminSeatLogList logs={filteredLogs} selectedSeat={selectedSeat} />
+      <AdminSeatLogList logs={filteredLogs} selectedSeat={selected} />
     </div>
   );
 }

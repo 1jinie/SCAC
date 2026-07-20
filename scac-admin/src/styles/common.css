@@ -423,3 +423,12 @@ div.time_text {
 .admin_logout_button:hover {
   background: var(--color-btn-white);
 }
+
+@media (max-width: 1360px) {
+  .admin_layout {
+    min-width: 0;
+  }
+  .admin_content_wrap {
+    min-width: 0;
+  }
+}

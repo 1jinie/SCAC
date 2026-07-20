@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { seats as initialSeats } from '../data/Seats';
+import { create } from "zustand";
+import { seats as initialSeats } from "../data/Seats";
 
 export const seatStore = create((set) => ({
   seats: initialSeats,
@@ -26,7 +26,7 @@ export const seatStore = create((set) => ({
         seat.id === state.selectedSeat
           ? {
               ...seat,
-              status: 'using',
+              status: "using",
             }
           : seat,
       ),
@@ -40,7 +40,7 @@ export const seatStore = create((set) => ({
         seat.id === seatId
           ? {
               ...seat,
-              status: 'available',
+              status: "available",
             }
           : seat,
       ),
@@ -51,6 +51,19 @@ export const seatStore = create((set) => ({
     set((state) => ({
       seats: state.seats.map((seat) =>
         seat.id === seatId
+          ? {
+              ...seat,
+              status,
+            }
+          : seat,
+      ),
+    })),
+
+  // 특정 좌석 상태 변경(관리자용) - seatId가 문자열로 들어오는 경우 처리
+  updateSeatStatus: (seatId, status) =>
+    set((state) => ({
+      seats: state.seats.map((seat) =>
+        Number(seat.id) === Number(seatId)
           ? {
               ...seat,
               status,
