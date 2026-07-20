@@ -25,10 +25,9 @@
   border-radius: 18px;
   box-shadow: 0 8px 24px rgb(28 46 55 / 5%);
 }
-
 .admin_seat_map_section,
 .admin_seat_detail {
-  min-height: 640px;
+  min-height: 320px;
 
   padding: 26px;
 }
@@ -75,35 +74,40 @@
 }
 
 /* =========================
-   Seat Map Placeholder
+   Seat Map 
 ========================= */
 
-.admin_seat_map_placeholder {
-  min-height: 540px;
+.admin_seat_map {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 
-  display: grid;
-  place-items: center;
-
-  border: 1px dashed #cfd6da;
-  border-radius: 14px;
+  /* padding: 40px 32px; */
 
   background: #f8fafb;
+  border: 1px solid #e3e7ea;
+  /* border: 1px solid red; */
+  border-radius: 14px;
 }
 
-.admin_seat_map_placeholder button {
-  min-height: 44px;
+.admin_map_scale {
+  width: 920px;
 
-  padding: 0 18px;
+  position: absolute;
+  top: 0;
+  left: 0;
 
-  border: 1px solid var(--color-primary, #4b9da9);
-  border-radius: 10px;
+  transform: scale(0.55);
+  transform-origin: top left;
+}
 
-  background: #ffffff;
+.admin_map_viewport {
+  width: 506px; /* 920 × 0.55 */
+  height: 806px; /* 좌석배치 + 범례까지 고려 */
 
-  color: var(--color-primary, #4b9da9);
-  font-weight: 700;
+  position: relative;
 
-  cursor: pointer;
+  overflow: hidden;
 }
 
 /* =========================
@@ -350,5 +354,20 @@
 
   .admin_seat_detail {
     position: static;
+  }
+  .admin_seat_page {
+    width: 100%;
+  }
+  .admin_seat_map {
+    width: 100%;
+    box-sizing: border-box;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    padding: 20px;
+
+    overflow: hidden;
   }
 }

@@ -1,0 +1,210 @@
+/* seat 스타일 */
+.seat_wrapper {
+  width: 920px;
+  height: 1325px;
+
+  margin-top: 20px;
+  margin-bottom: 20px;
+
+  background-color: white;
+  border: 2px solid #aaaaaa;
+  border-radius: 16px;
+
+  position: relative;
+
+  box-sizing: border-box;
+  box-shadow: 0 4px 22px 0px rgba(0, 0, 0, 0.25);
+}
+
+.seat {
+  width: 120px;
+  height: 120px;
+  border: 2px solid #c2c2c2;
+  border-radius: 32px;
+
+  position: absolute;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.seat_number {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+  color: #333;
+}
+
+.seat_icon {
+  width: 40px;
+  height: 40px;
+
+  margin: 4px 0;
+}
+
+.seat_status {
+  font-size: 24px;
+  font-weight: 500;
+  margin-top: 3px;
+}
+
+.seat.available {
+  background-color: white;
+}
+
+.seat.using {
+  background-color: #91c6bc;
+}
+
+.seat.repair {
+  background-color: #d9d9d9;
+}
+
+.seat.unavailable {
+  color: #d9d9d9;
+  background-color: #d9d9d9;
+  border-color: #c2c2c2;
+  cursor: not-allowed;
+}
+
+.seat.selected {
+  background-color: #ff985c;
+}
+
+.seat.unavailable .seat_number {
+  color: #c2c2c2;
+}
+
+.seat.unavailable .seat_icon {
+  filter: brightness(0) saturate(100%) invert(78%) sepia(5%) saturate(0%)
+    hue-rotate(0deg) brightness(95%) contrast(90%);
+}
+
+/* Rooms */
+.seat.room {
+  border: 2px solid #1a1a1a;
+  border-radius: 12px;
+  border: 4px solid #d9d9d9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  background-color: #d9d9d9;
+  position: absolute;
+}
+
+.room_header {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.room_title {
+  display: flex;
+  align-items: flex-end;
+
+  margin-top: 6px;
+}
+
+.room_code {
+  font-size: 96px;
+  font-weight: 600;
+  color: #333;
+}
+
+.room_capacity {
+  margin-left: 8px;
+  margin-bottom: 10px;
+  font-size: 24px;
+  color: #666;
+}
+
+.room_icon {
+  width: 212px;
+  margin-top: 12px;
+}
+
+.seat.room.available {
+  background-color: white;
+}
+
+.seat.room.using {
+  background-color: #91c6bc;
+}
+
+.seat.room.selected {
+  background-color: #ff985c;
+}
+
+.seat.room.unavailable {
+  background-color: #d9d9d9;
+  border-color: #c2c2c2;
+  cursor: not-allowed;
+}
+
+.seat.room.unavailable .room_header,
+.seat.room.unavailable .room_code,
+.seat.room.unavailable .room_capacity {
+  color: #c2c2c2;
+}
+
+.seat.room.unavailable .room_icon {
+  filter: brightness(0) saturate(100%) invert(78%) sepia(5%) saturate(0%)
+    hue-rotate(0deg) brightness(95%) contrast(90%);
+}
+
+/* Legend section */
+.seat_legend {
+  width: 920px;
+  height: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  background-color: white;
+  border: 1px solid #c2c2c2;
+  border-radius: 16px;
+  box-sizing: border-box;
+}
+
+.legend_item {
+  display: flex;
+  align-items: center;
+}
+
+.legend_color {
+  width: 60px;
+  height: 50px;
+  border: 2px solid #aaaaaa;
+  border-radius: 6px;
+  margin-right: 12px;
+  box-sizing: border-box;
+}
+
+.legend_color.select {
+  background-color: #ff985c;
+}
+
+.legend_color.available {
+  background-color: white;
+}
+
+.legend_color.using {
+  background-color: #91c6bc;
+}
+
+.legend_color.unavailable {
+  background-color: #d9d9d9;
+  position: relative;
+}
+
+.legend_text {
+  font-size: 26px;
+  font-weight: 700;
+  color: #333333;
+}

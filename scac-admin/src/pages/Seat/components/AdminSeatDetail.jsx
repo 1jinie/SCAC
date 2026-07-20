@@ -1,10 +1,10 @@
-import AdminSeatStatusButtons from './AdminSeatStatusButtons';
-import AdminSeatUserInfo from './AdminSeatUserInfo';
+import AdminSeatStatusButtons from "./AdminSeatStatusButtons";
+import AdminSeatUserInfo from "./AdminSeatUserInfo";
 
 const STATUS_LABELS = {
-  AVB: '이용 가능',
-  USR: '사용 중',
-  BRK: '점검 중',
+  AVB: "이용 가능",
+  USR: "사용 중",
+  BRK: "점검 중",
 };
 
 export default function AdminSeatDetail({ selectedSeat, onSeatChange }) {
@@ -21,12 +21,10 @@ export default function AdminSeatDetail({ selectedSeat, onSeatChange }) {
       <div className="admin_section_header">
         <div>
           <p className="admin_section_eyebrow">SEAT INFORMATION</p>
-          <h2>{selectedSeat.seatNumber}번 좌석</h2>
+          <h2>{selectedSeat.seatNumber}번 좌석 샘플데이터입니다</h2>
         </div>
 
-        <span
-          className={`admin_seat_status status_${selectedSeat.status.toLowerCase()}`}
-        >
+        <span className={`admin_seat_status status_${selectedSeat.status}`}>
           {STATUS_LABELS[selectedSeat.status]}
         </span>
       </div>
@@ -43,7 +41,7 @@ export default function AdminSeatDetail({ selectedSeat, onSeatChange }) {
         </div>
       </dl>
 
-      {selectedSeat.status === 'USR' && selectedSeat.user && (
+      {selectedSeat.status === "USR" && selectedSeat.user && (
         <AdminSeatUserInfo user={selectedSeat.user} />
       )}
 
