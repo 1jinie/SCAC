@@ -1,10 +1,15 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import dashboardData from '../../data/dashboard_data.json';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import dashboardData from "../../data/dashboard_data.json";
+import AdminSummary from "./components/AdminSummary";
 
 export default function AdminMainPage() {
   const { dashboard, logList, device } = dashboardData;
   const navigate = useNavigate();
+  const reservationAlertCount = 2;
+  const deviceAlertCount = device.filter(
+    (item) => item.status === "WARNING" || item.status === "ERROR",
+  ).length;
 
   const handleMovePage = (path) => {
     navigate(path);
@@ -20,20 +25,7 @@ export default function AdminMainPage() {
         </div>
       </section>
 
-      <section className="admin_summary_grid" aria-label="관리 현황 요약">
-        {dashboard.map((summary) => (
-          <article key={summary.id} className="admin_summary_card">
-            <p className="admin_summary_title">{summary.title}</p>
-
-            <div className="admin_summary_value_wrap">
-              <strong className="admin_summary_value">{summary.value}</strong>
-              <span className="admin_summary_unit">{summary.unit}</span>
-            </div>
-
-            <p className="admin_summary_description">{summary.description}</p>
-          </article>
-        ))}
-      </section>
+      <AdminSummary dashboard={dashboard} />
 
       <section className="admin_dashboard_grid">
         <article className="admin_panel">
@@ -46,7 +38,7 @@ export default function AdminMainPage() {
             <button
               type="button"
               className="admin_text_button"
-              onClick={() => handleMovePage('/admin/device')}
+              onClick={() => handleMovePage("/device")}
             >
               전체 보기
             </button>
@@ -86,7 +78,7 @@ export default function AdminMainPage() {
             <button
               type="button"
               className="admin_quick_menu"
-              onClick={() => handleMovePage('/reservation')}
+              onClick={() => handleMovePage("/reservation")}
             >
               <strong>스터디룸 현황</strong>
               <span>스터디룸의 현재 상태 및 예약일정 관리</span>
@@ -95,7 +87,7 @@ export default function AdminMainPage() {
             <button
               type="button"
               className="admin_quick_menu"
-              onClick={() => handleMovePage('/ticket')}
+              onClick={() => handleMovePage("/ticket")}
             >
               <strong>이용권 관리</strong>
               <span>가격 및 판매 여부 설정</span>
@@ -104,7 +96,7 @@ export default function AdminMainPage() {
             <button
               type="button"
               className="admin_quick_menu"
-              onClick={() => handleMovePage('/payment')}
+              onClick={() => handleMovePage("/payment")}
             >
               <strong>결제 관리</strong>
               <span>결제 조회 및 취소</span>
@@ -113,7 +105,7 @@ export default function AdminMainPage() {
             <button
               type="button"
               className="admin_quick_menu"
-              onClick={() => handleMovePage('/log')}
+              onClick={() => handleMovePage("/log")}
             >
               <strong>로그 확인</strong>
               <span>오류 및 시스템 기록 조회</span>
@@ -131,7 +123,7 @@ export default function AdminMainPage() {
             <button
               type="button"
               className="admin_text_button"
-              onClick={() => handleMovePage('/log')}
+              onClick={() => handleMovePage("/log")}
             >
               전체 보기
             </button>

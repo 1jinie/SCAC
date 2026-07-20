@@ -59,6 +59,11 @@
   min-height: 170px;
 
   padding: 24px;
+  position: relative;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .admin_summary_title {
@@ -93,6 +98,59 @@
 
   color: #9ba1a5;
   font-size: 13px;
+}
+
+/* 확인이 필요한 카드 */
+.admin_summary_card.is_alert {
+  border-color: var(--color-warning);
+}
+
+/* 제목 + 확인 필요 배지 */
+.admin_summary_title_wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin_summary_alert {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 24px;
+  padding: 0 10px;
+
+  border-radius: 999px;
+
+  color: var(--color-white);
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* 확인 필요한 카드의 숫자 강조 */
+.admin_summary_card.is_alert.device {
+  border-color: var(--color-warning);
+
+  box-shadow: 0 8px 24px rgb(255 152 92 / 12%);
+}
+.admin_summary_card.is_alert.reservation {
+  border-color: var(--color-primary);
+}
+
+.admin_summary_value.device {
+  color: var(--color-warning);
+}
+.admin_summary_value.reservation {
+  color: var(--color-primary);
+}
+
+.admin_summary_alert.reservation {
+  background: var(--color-primary);
+}
+.admin_summary_alert.device {
+  background: var(--color-warning);
 }
 
 .admin_dashboard_grid {
