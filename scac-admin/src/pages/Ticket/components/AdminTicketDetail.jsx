@@ -29,7 +29,10 @@ export default function AdminTicketDetail({
 
     setTicket((prev) => ({
       ...prev,
-      [name]: value,
+      [name]:
+        name === 'ticketTime' && prev.ticketType === 'TIME'
+          ? Number(value) * 60
+          : Number(value) * 24 * 60,
     }));
   };
 
@@ -90,7 +93,7 @@ export default function AdminTicketDetail({
         <input
           type="number"
           name="ticketTime"
-          value={formatTicketTime(ticket.ticketType, ticket.ticketTime)}
+          value={ticket.ticketType === 'TIME' ? ticket.ticketTime / 60 : ticket.ticketTime / (24 * 60)}
           onChange={handleChange}
         />
         <label>가격</label>
