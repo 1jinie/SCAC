@@ -1,9 +1,5 @@
 import { create } from 'zustand';
-import {
-  getUserProfile,
-  updateUserProfile,
-  getUserByPhone,
-} from '../api/userApi';
+import { users as mockUsers } from '../data/User';
 
 export const useUserStore = create((set, get) => ({
   userProfile: null, // 마이페이지에 표시할 유저 상세 정보 객체
@@ -15,9 +11,17 @@ export const useUserStore = create((set, get) => ({
   getUserProfile: async (memberId) => {
     set({ isLoading: true, errorMessage: '' });
     try {
-      const data = await getUserProfile(memberId);
-      // 서버에서 준 데이터 저장
-      set({ userProfile: data });
+      const user = mockUsers.find((item) => item.id === memberId);
+      if (!user) {
+        throw new Error('회원 정보를 찾을 수 없습니다.');
+      }
+
+      set({
+        userProfile: {
+          ...user,
+          phoneNumber: user.phone,
+        },
+      });
       return { success: true };
     } catch (error) {
       console.error('Store Get Profile Error:', error);
@@ -31,14 +35,21 @@ export const useUserStore = create((set, get) => ({
   modifyUserProfile: async (memberId, updatedData) => {
     set({ isLoading: true, errorMessage: '' });
     try {
-      await updateUserProfile(memberId, updatedData);
+      const userIndex = mockUsers.findIndex((item) => item.id === memberId);
+      if (userIndex < 0) {
+        throw new Error('회원 정보를 찾을 수 없습니다.');
+      }
 
-      // 수정 성공 후, 현재 스토어의 userProfile 상태도 최신화
+      mockUsers[userIndex] = {
+        ...mockUsers[userIndex],
+        ...updatedData,
+      };
+
       const currentProfile = get().userProfile;
       set({
         userProfile: {
           ...currentProfile,
-          ...updatedData, // 변경된 비밀번호 폼 덮어쓰기
+          ...updatedData,
         },
       });
       return { success: true };
@@ -55,11 +66,14 @@ export const useUserStore = create((set, get) => ({
   searchUserByPhone: async (phoneNumber) => {
     set({ isLoading: true, errorMessage: '', searchResult: null });
     try {
-      const data = await getUserByPhone(phoneNumber);
-      set({ searchResult: data });
-      return { success: true, data };
+      const user = mockUsers.find((item) => item.phone === phoneNumber);
+      if (!user) {
+        throw new Error('존재하지 않는 회원 번호입니다.');
+      }
+      set({ searchResult: user });
+      return { success: true, data: user };
     } catch (error) {
-      console.error('Store Modify Profile Error:', error);
+      console.error('Store Search User Error:', error);
       set({ errorMessage: '존재하지 않는 회원 번호입니다.' });
       return { success: false, error };
     } finally {

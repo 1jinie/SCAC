@@ -1,7 +1,7 @@
 import React from 'react';
 import PaymentResultCard from './components/PaymentResultCard';
 import { useParams } from 'react-router-dom';
-import stylesheet from './css/PaymentResult.css';
+import './css/PaymentResult.css';
 
 export default function PaymentResult() {
   const { status } = useParams();

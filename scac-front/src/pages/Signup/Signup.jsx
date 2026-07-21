@@ -111,7 +111,8 @@ function SignUpPage() {
       navigate('/login');
     } else {
       setErrorMessage(
-        '회원가입에 실패했습니다. 이미 등록된 번호인지 확인해 주세요.',
+        result.errorMessage ||
+          '회원가입에 실패했습니다. 이미 등록된 번호인지 확인해 주세요.',
       );
     }
   };
@@ -153,7 +154,7 @@ function SignUpPage() {
             {!isVerified && (
               <button
                 type="button"
-                className="btn_inner_verify"
+                className="btn_inner_verify1"
                 onClick={handleSendVerification}
               >
                 {isVerificationSent ? '재발송' : '인증번호 발송'}
@@ -165,46 +166,34 @@ function SignUpPage() {
           {isVerificationSent && (
             <div className="input_group">
               <label htmlFor="verification_code">인증번호 입력</label>
-              <input
-                id="verification_code"
-                className="input_field"
-                type="text"
-                placeholder="인증번호 6자리 입력"
-                disabled={isVerified} // 인증 완료 시 수정 불가
-                value={verificationCode}
-                onChange={(e) => setVerificationCode(e.target.value)}
-              />
+              <div className="input_field_wrapper">
+                <input
+                  id="verification_code"
+                  className={`input_field ${!isVerified ? 'input_field_with_btn' : ''}`}
+                  type="text"
+                  placeholder="인증번호 6자리 입력"
+                  disabled={isVerified} // 인증 완료 시 수정 불가
+                  value={verificationCode}
+                  onChange={(e) => setVerificationCode(e.target.value)}
+                />
 
-              {!isVerified ? (
-                <div
-                  style={{
-                    position: 'absolute',
-                    right: '24px',
-                    bottom: '15px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '15px',
-                  }}
-                >
-                  <span
-                    style={{
-                      color: '#ff4444',
-                      fontSize: '24px',
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    {formatTime(timer)}
-                  </span>
-                  <button
-                    type="button"
-                    className="btn_inner_verify"
-                    style={{ position: 'static', height: '80px' }}
-                    onClick={handleConfirmVerification}
-                  >
-                    인증확인
-                  </button>
-                </div>
-              ) : (
+                {!isVerified ? (
+                  <>
+                    <span className="verification_timer">
+                      {formatTime(timer)}
+                    </span>
+                    <button
+                      type="button"
+                      className="btn_inner_verify"
+                      onClick={handleConfirmVerification}
+                    >
+                      인증확인
+                    </button>
+                  </>
+                ) : null}
+              </div>
+
+              {isVerified && (
                 <span
                   className="success_text"
                   style={{

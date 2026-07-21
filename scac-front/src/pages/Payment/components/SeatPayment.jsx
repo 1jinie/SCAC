@@ -18,7 +18,7 @@ export default function SeatPayment() {
     };
     fetchTickets();
     // console.log(ticket);
-  }, []);
+  }, [selectTicketId]);
 
   console.log('SeatPayment');
   return (

@@ -41,32 +41,31 @@ body {
 }
 
 /* ==========================================================
-   1. 상단 헤더 (뒤로가기 버튼 + 디지털 시계)
+   1. 상단 헤더 (홈 버튼 + 디지털 시계)
    ========================================================== */
 .nonmember_signup_header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin-top: 10px;
-  margin-bottom: 30px;
+  margin-top: 20px;
+  margin-bottom: 100px;
 }
 
-.header_back_button {
+.btn_home {
   border: none;
   background: transparent;
-  font-size: 60px;
-  line-height: 1;
   cursor: pointer;
-  color: #000000;
+  padding: 0;
   display: flex;
   align-items: center;
-  font-weight: 300;
-  transition: transform 0.1s ease;
+  justify-content: center;
 }
 
-.header_back_button:active {
-  transform: scale(0.9);
+.btn_home img {
+  width: 76px;
+  height: 76px;
+  object-fit: contain;
 }
 
 .header_time {
@@ -78,13 +77,21 @@ body {
 /* ==========================================================
    2. 타이틀 & 상단 탭 그룹
    ========================================================== */
+.signup_card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
+}
+
 .signup_title {
-  font-size: 84px;
-  font-weight: 800;
-  color: #1e1e1e;
+  font-size: 80px;
+  font-weight: 700;
+  color: #000000;
+  margin: 20px;
+  letter-spacing: -1px;
   text-align: center;
-  margin: 20px 0 30px 0;
-  letter-spacing: -1.5px;
 }
 
 .signup_tab_group {
@@ -113,10 +120,10 @@ body {
    ========================================================== */
 .signup_form {
   width: 720px;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  align-items: center;
+  gap: 40px;
   flex-grow: 1;
 }
 
@@ -125,13 +132,13 @@ body {
   flex-direction: column;
   gap: 12px;
   width: 100%;
+  position: relative;
 }
 
 .form_label {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 700;
-  color: #4a4a4a;
-  padding-left: 10px;
+  color: #000000;
 }
 
 .input_wrapper {
@@ -143,23 +150,23 @@ body {
   width: 100%;
   height: 100px;
   padding: 0 40px;
-  border: 3px solid #e2e2e2;
-  border-radius: 28px;
+  border: 3px solid #707070;
+  border-radius: 36px;
   background-color: #ffffff;
-  font-size: 32px;
+  font-size: 30px;
   font-weight: 500;
-  color: #2b2b2b;
+  color: #000000;
   box-sizing: border-box;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.2s ease;
 }
 
 .form_input.with_btn {
-  padding-right: 230px;
+  padding-right: 340px;
 }
 
 .form_input:focus {
   outline: none;
-  border-color: #ff9c51;
+  border-color: #ff985c;
 }
 
 .form_input.input_error {
@@ -168,7 +175,7 @@ body {
 }
 
 /* ==========================================================
-   4. 입력창 내부 '인증번호 발송' 절대위치 소형 버튼
+   4. 입력창 내부 버튼 및 타이머 정렬
    ========================================================== */
 .btn_inner_verify {
   position: absolute;
@@ -176,42 +183,82 @@ body {
   top: 50%;
   transform: translateY(-50%);
   background-color: #ffffff;
-  border: 2px solid #ff8f42;
-  border-radius: 20px;
-  color: #ff8f42;
-  padding: 10px 24px;
-  font-size: 24px;
+  border: 3px solid #ff9d5c;
+  border-radius: 28px;
+  color: #ff9d5c;
+  padding: 0 10px;
+  font-size: 22px;
+  font-weight: 700;
   cursor: pointer;
-  font-weight: bold;
-  transition: all 0.1s ease;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  box-sizing: border-box;
 }
 
 .btn_inner_verify:active {
-  background-color: #ff8f42;
-  color: #ffffff;
+  background-color: #ffeae0;
+}
+
+.verify_action_container {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.verify_action_container .btn_inner_verify {
+  position: static;
+  right: auto;
+  top: auto;
+  transform: none;
+}
+
+.verify_timer {
+  color: #ff4444;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.inner_success_badge {
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #2fb575;
+  font-size: 26px;
+  font-weight: 700;
 }
 
 /* ==========================================================
-   5. 하단 고정 가입하기 버튼 및 메시지
+   5. 하단 버튼 및 메시지
    ========================================================== */
 .submit_button {
-  width: 720px;
-  height: 110px;
+  width: 520px;
+  height: 100px;
   border: none;
   border-radius: 28px;
-  background-color: #ff8f42;
+  background: linear-gradient(135deg, #ffa366, #ff8a4d);
   color: #ffffff;
-  font-size: 36px;
+  font-size: 38px;
   font-weight: 700;
   cursor: pointer;
-  margin-top: auto;
+  margin-top: 24px;
   margin-bottom: 20px;
-  box-shadow: 0px 8px 16px rgba(255, 143, 66, 0.3);
-  transition: transform 0.1s ease;
+  box-shadow: 0px 16px 28px rgba(255, 138, 77, 0.4);
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.2s ease;
 }
 
 .submit_button:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
+  box-shadow: 0px 8px 14px rgba(255, 138, 77, 0.3);
 }
 
 .error_text {
@@ -232,37 +279,4 @@ body {
   font-weight: 600;
   margin-bottom: 20px;
   text-align: center;
-}
-
-.input_wrapper {
-  position: relative;
-  width: 100%;
-  display: flex;
-  align-items: center;
-}
-
-.verify_action_container {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.verify_timer {
-  color: #ff4444;
-  font-size: 26px;
-  font-weight: 800;
-}
-
-.inner_success_badge {
-  position: absolute;
-  right: 30px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #2fb575;
-  font-size: 26px;
-  font-weight: 700;
 }

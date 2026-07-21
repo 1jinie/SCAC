@@ -1,6 +1,6 @@
 import React from 'react';
 import ProceedCard from './ProceedCard';
-import { usePaymentStore } from '../../../store/paymentStore';
+// import { usePaymentStore } from '../../../store/paymentStore';
 import ProceedSimplePay from './ProceedSimplePay';
 import { useNavigate } from 'react-router-dom';
 
