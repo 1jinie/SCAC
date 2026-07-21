@@ -59,7 +59,7 @@ export const useUserStore = create((set, get) => ({
       set({ searchResult: data });
       return { success: true, data };
     } catch (error) {
-      console.error('Store Modify Profile Error:', error);
+      console.error('Store Search User Error:', error);
       set({ errorMessage: '존재하지 않는 회원 번호입니다.' });
       return { success: false, error };
     } finally {

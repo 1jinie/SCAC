@@ -1,0 +1,92 @@
+[
+  {
+    "userId": 1,
+    "phoneNumber": "010-1234-5678",
+    "isMember": true,
+    "role": "USER",
+    "userStatus": "ACTIVE",
+    "penaltyEndDate": null,
+    "createdAt": "2026-01-15T09:30:00"
+  },
+  {
+    "userId": 2,
+    "phoneNumber": "010-2345-6789",
+    "isMember": true,
+    "role": "USER",
+    "userStatus": "SUSPENDED",
+    "penaltyEndDate": "2026-07-28",
+    "createdAt": "2026-02-03T14:20:00"
+  },
+  {
+    "userId": 3,
+    "phoneNumber": "010-3456-7890",
+    "isMember": false,
+    "role": "GUEST",
+    "userStatus": "ACTIVE",
+    "penaltyEndDate": null,
+    "createdAt": "2026-03-11T11:45:00"
+  },
+  {
+    "userId": 4,
+    "phoneNumber": "010-4567-8901",
+    "isMember": true,
+    "role": "USER",
+    "userStatus": "BANNED",
+    "penaltyEndDate": null,
+    "createdAt": "2026-03-28T16:10:00"
+  },
+  {
+    "userId": 5,
+    "phoneNumber": "010-5678-9012",
+    "isMember": true,
+    "role": "ADMIN",
+    "userStatus": "ACTIVE",
+    "penaltyEndDate": null,
+    "createdAt": "2026-04-07T08:50:00"
+  },
+  {
+    "userId": 6,
+    "phoneNumber": "010-6789-0123",
+    "isMember": true,
+    "role": "USER",
+    "userStatus": "SUSPENDED",
+    "penaltyEndDate": "2026-08-05",
+    "createdAt": "2026-04-22T13:15:00"
+  },
+  {
+    "userId": 7,
+    "phoneNumber": "010-7890-1234",
+    "isMember": false,
+    "role": "GUEST",
+    "userStatus": "ACTIVE",
+    "penaltyEndDate": null,
+    "createdAt": "2026-05-09T19:40:00"
+  },
+  {
+    "userId": 8,
+    "phoneNumber": "010-8901-2345",
+    "isMember": true,
+    "role": "USER",
+    "userStatus": "ACTIVE",
+    "penaltyEndDate": null,
+    "createdAt": "2026-05-24T10:05:00"
+  },
+  {
+    "userId": 9,
+    "phoneNumber": "010-9012-3456",
+    "isMember": true,
+    "role": "USER",
+    "userStatus": "BANNED",
+    "penaltyEndDate": null,
+    "createdAt": "2026-06-18T17:35:00"
+  },
+  {
+    "userId": 10,
+    "phoneNumber": "010-1122-3344",
+    "isMember": true,
+    "role": "USER",
+    "userStatus": "SUSPENDED",
+    "penaltyEndDate": "2026-07-31",
+    "createdAt": "2026-07-12T12:25:00"
+  }
+]

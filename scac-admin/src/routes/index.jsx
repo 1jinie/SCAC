@@ -1,17 +1,17 @@
-import { createBrowserRouter } from "react-router-dom";
-import AdminLayout from "../layouts/AdminLayout";
-import AdminDevicePage from "../pages/Device/AdminDevicePage";
-import AdminLogDetailPage from "../pages/Log/AdminLogDetailPage";
-import AdminLogPage from "../pages/Log/AdminLogPage";
-import AdminLoginPage from "../pages/Login/AdminLoginPage";
-import AdminMainPage from "../pages/Main/AdminMainPage";
-import AdminPaymentPage from "../pages/Payment/AdminPaymentPage";
-import AdminReservationPage from "../pages/Reservation/AdminReservationPage";
-import AdminSeatPage from "../pages/Seat/AdminSeatPage";
-import AdminTicketManagePage from "../pages/Ticket/AdminTicketManagePage";
-import AdminErrorPage from "../pages/Error/AdminErrorPage";
-import AdminMemberPage from "../pages/Member/AdminMemberPage";
-import AdminMemoPage from "../pages/Memo/AdminMemoPage";
+import { createBrowserRouter } from 'react-router-dom';
+import AdminLayout from '../layouts/AdminLayout';
+import AdminDevicePage from '../pages/Device/AdminDevicePage';
+import AdminLogDetailPage from '../pages/Log/AdminLogDetailPage';
+import AdminLogPage from '../pages/Log/AdminLogPage';
+import AdminLoginPage from '../pages/Login/AdminLoginPage';
+import AdminMainPage from '../pages/Main/AdminMainPage';
+import AdminPaymentPage from '../pages/Payment/AdminPaymentPage';
+import AdminReservationPage from '../pages/Reservation/AdminReservationPage';
+import AdminSeatPage from '../pages/Seat/AdminSeatPage';
+import AdminTicketManagePage from '../pages/Ticket/AdminTicketManagePage';
+import AdminErrorPage from '../pages/Error/AdminErrorPage';
+import AdminUserPage from '../pages/User/AdminUserPage';
+import AdminMemoPage from '../pages/Memo/AdminMemoPage';
 // import AdminPrivateRoute from './AdminPrivateRoute';
 
 const router = createBrowserRouter([
@@ -19,7 +19,7 @@ const router = createBrowserRouter([
   // Admin
   // ============================
   {
-    path: "/",
+    path: '/',
     element: <AdminLayout />,
     errorElement: <AdminErrorPage />,
     //   element: (
@@ -31,42 +31,42 @@ const router = createBrowserRouter([
       { index: true, element: <AdminMainPage /> },
 
       {
-        path: "log",
+        path: 'log',
         children: [
           { index: true, element: <AdminLogPage /> },
-          { path: ":logId", element: <AdminLogDetailPage /> },
+          { path: ':logId', element: <AdminLogDetailPage /> },
         ],
       },
 
       {
-        path: "ticket",
+        path: 'ticket',
         children: [{ index: true, element: <AdminTicketManagePage /> }],
       },
 
       {
-        path: "payment",
+        path: 'payment',
         children: [{ index: true, element: <AdminPaymentPage /> }],
       },
 
       {
-        path: "reservation",
+        path: 'reservation',
         children: [{ index: true, element: <AdminReservationPage /> }],
       },
 
       {
-        path: "device",
+        path: 'device',
         children: [{ index: true, element: <AdminDevicePage /> }],
       },
       {
-        path: "member",
-        children: [{ index: true, element: <AdminMemberPage /> }],
+        path: 'user',
+        children: [{ index: true, element: <AdminUserPage /> }],
       },
       {
-        path: "memo",
+        path: 'memo',
         children: [{ index: true, element: <AdminMemoPage /> }],
       },
       {
-        path: "seat",
+        path: 'seat',
         children: [
           {
             index: true,
@@ -78,12 +78,12 @@ const router = createBrowserRouter([
   },
 
   {
-    path: "/login",
+    path: '/login',
     element: <AdminLoginPage />,
     errorElement: <AdminErrorPage />,
   },
   {
-    path: "*",
+    path: '*',
     element: <AdminErrorPage status={404} />,
   },
 ]);
