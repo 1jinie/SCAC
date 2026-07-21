@@ -27,13 +27,18 @@ export default function AdminTicketManagePage() {
 
   return (
     <div className="admin_ticket_page">
+      <div className="admin_page_heading">
+        <div>
+          <p className="admin_page_eyebrow">TICKET MANAGEMENT</p>
+
+          <h2>이용권 관리</h2>
+
+          <p>스터디카페 이용권의 종류와 가격 정보를 관리합니다.</p>
+        </div>
+      </div>
       <section className="admin_ticket_workspace">
         <div className="admin_ticket_list_section">
           <div className="admin_section_header">
-            <div>
-              <h2>이용권 관리</h2>
-              <p>관리할 이용권을 선택해주세요</p>
-            </div>
             <button className="admin_ticket_add" onClick={handleReset}>
               이용권 등록
             </button>

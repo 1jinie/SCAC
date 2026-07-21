@@ -22,15 +22,19 @@ export default function AdminMemoPage() {
 
   return (
     <div className="admin_memo_page">
+      <div className="admin_page_heading">
+        <div>
+          <p className="admin_page_eyebrow">MEMO MANAGEMENT</p>
+
+          <h2>인수인계 메모</h2>
+
+          <p>관리자 간 전달사항을 기록하고 관리합니다.</p>
+        </div>
+      </div>
       <section className="admin_memo_workspace">
         {/* 왼쪽 */}
         <div className="admin_memo_list_section">
           <div className="admin_section_header">
-            <div>
-              <h2>인수인계 메모</h2>
-              <p>관리자 간 전달사항을 기록하고 관리합니다.</p>
-            </div>
-
             <button className="admin_memo_add" onClick={handleAddMemo}>
               메모 등록
             </button>
