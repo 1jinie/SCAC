@@ -42,7 +42,7 @@
 
 .admin_section_header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: flex-start;
   gap: 20px;
 

@@ -30,7 +30,7 @@ export default function AdminSeatLogList({ logs, selectedSeat }) {
           <p>
             {selectedSeat
               ? `${selectedSeat}번 좌석 이용 내역`
-              : "전체 좌석 이용 내역"}
+              : '전체 좌석 이용 내역'}
           </p>
         </div>
       </div>
