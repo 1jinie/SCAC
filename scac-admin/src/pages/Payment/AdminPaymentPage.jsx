@@ -18,7 +18,7 @@ export default function AdminPaymentPage() {
 
   const [searchKeyword, setSearchKeyword] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
-  const [currentPage, setCurrentPage] = useState(1);
+  // const [currentPage, setCurrentPage] = useState(1);
 
   const summary = useMemo(() => {
     return payments.reduce(

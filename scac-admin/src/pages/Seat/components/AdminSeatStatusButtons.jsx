@@ -16,7 +16,7 @@ export default function AdminSeatStatusButtons({ selectedSeat, onSeatChange }) {
     // 추후 API 연결
     // await seatApi.forceCheckout(selectedSeat.seatId);
 
-    onSeatChange("AVB", true);
+    onSeatChange('AVB', true);
   };
 
   return (
@@ -27,9 +27,9 @@ export default function AdminSeatStatusButtons({ selectedSeat, onSeatChange }) {
         <button
           type="button"
           disabled={
-            selectedSeat.status === "USR" || selectedSeat.status === "AVB"
+            selectedSeat.status === 'USR' || selectedSeat.status === 'AVB'
           }
-          onClick={() => handleStatusChange("AVB")}
+          onClick={() => handleStatusChange('AVB')}
         >
           이용 가능
         </button>
@@ -37,15 +37,15 @@ export default function AdminSeatStatusButtons({ selectedSeat, onSeatChange }) {
         <button
           type="button"
           disabled={
-            selectedSeat.status === "USR" || selectedSeat.status === "BRK"
+            selectedSeat.status === 'USR' || selectedSeat.status === 'BRK'
           }
-          onClick={() => handleStatusChange("BRK")}
+          onClick={() => handleStatusChange('BRK')}
         >
           점검 중
         </button>
       </div>
 
-      {selectedSeat.status === "USR" && (
+      {selectedSeat.status === 'USR' && (
         <button
           type="button"
           className="admin_force_checkout_button"

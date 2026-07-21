@@ -1,6 +1,5 @@
-import React from "react";
-import AdminDevice from "./AdminDevice";
-import { deviceStore } from "../../../store/deviceStore";
+import { deviceStore } from '../../../store/deviceStore';
+import AdminDevice from './AdminDevice';
 
 export default function AdminDeviceList({ devices }) {
   const selectDevice = deviceStore((state) => state.selectDevice);

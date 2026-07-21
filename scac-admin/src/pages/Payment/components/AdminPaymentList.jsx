@@ -1,9 +1,8 @@
-import React from "react";
 import {
   PAYMENT_METHOD_LABELS,
   PAYMENT_STATUS_LABELS,
-} from "../../../constants/payment";
-import { formatPrice } from "../../../utils/formatter";
+} from '../../../constants/payment';
+import { formatPrice } from '../../../utils/formatter';
 
 export default function AdminPaymentList({
   payments,
@@ -47,7 +46,7 @@ export default function AdminPaymentList({
                 return (
                   <tr
                     key={payment.paymentId}
-                    className={isSelected ? "is_selected" : ""}
+                    className={isSelected ? 'is_selected' : ''}
                     onClick={() => onPaymentSelect(payment)}
                   >
                     <td>{payment.paymentId}</td>

@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { formatTicketTime } from "../../../utils/ticket";
+import { useEffect, useState } from 'react';
 
 export default function AdminTicketDetail({
   selectedTicket,
@@ -7,11 +6,11 @@ export default function AdminTicketDetail({
   setTicketData,
 }) {
   const emptyTicket = {
-    ticketId: "",
-    ticketName: "",
-    ticketType: "TIME",
-    ticketTime: "",
-    ticketPrice: "",
+    ticketId: '',
+    ticketName: '',
+    ticketType: 'TIME',
+    ticketTime: '',
+    ticketPrice: '',
   };
 
   const [ticket, setTicket] = useState(emptyTicket);
@@ -29,12 +28,12 @@ export default function AdminTicketDetail({
 
     let newValue = value;
 
-    if (name === "ticketTime") {
+    if (name === 'ticketTime') {
       newValue =
-        ticket.ticketType === "TIME"
+        ticket.ticketType === 'TIME'
           ? Number(value) * 60
           : Number(value) * 24 * 60;
-    } else if (name === "ticketPrice") {
+    } else if (name === 'ticketPrice') {
       newValue = Number(value);
     }
 
@@ -50,7 +49,7 @@ export default function AdminTicketDetail({
         prev.map((item) => (item.ticketId === ticket.ticketId ? ticket : item)),
       );
 
-      alert("수정되었습니다");
+      alert('수정되었습니다');
     } else {
       setTicketData((prev) => [
         ...prev,
@@ -60,7 +59,7 @@ export default function AdminTicketDetail({
         },
       ]);
 
-      alert("등록되었습니다");
+      alert('등록되었습니다');
       setTicket(emptyTicket);
     }
   };
@@ -68,19 +67,19 @@ export default function AdminTicketDetail({
   const handleDelete = () => {
     if (!selectedTicket) return;
 
-    if (!window.confirm("정말 삭제하시겠습니까?")) return;
+    if (!window.confirm('정말 삭제하시겠습니까?')) return;
 
     setTicketData((prev) =>
       prev.filter((item) => item.ticketId !== selectedTicket.ticketId),
     );
 
     setTicket(emptyTicket);
-    alert("삭제되었습니다");
+    alert('삭제되었습니다');
   };
 
   return (
     <div className="admin_ticket_detail">
-      <h3>{selectedTicket ? "이용권 수정" : "이용권 등록"}</h3>
+      <h3>{selectedTicket ? '이용권 수정' : '이용권 등록'}</h3>
       <div className="admin_ticket_form">
         <label>이용권명</label>
         <input
@@ -97,12 +96,12 @@ export default function AdminTicketDetail({
           <option value="TIME">시간권</option>
           <option value="PERIOD">기간권</option>
         </select>
-        <label>{ticket.ticketType === "TIME" ? "시간" : "일"}</label>
+        <label>{ticket.ticketType === 'TIME' ? '시간' : '일'}</label>
         <input
           type="number"
           name="ticketTime"
           value={
-            ticket.ticketType === "TIME"
+            ticket.ticketType === 'TIME'
               ? ticket.ticketTime / 60
               : ticket.ticketTime / (24 * 60)
           }
@@ -118,7 +117,7 @@ export default function AdminTicketDetail({
 
         <div className="admin_ticket_button_group">
           <button className="admin_ticket_save" onClick={handleSave}>
-            {selectedTicket ? "수정" : "등록"}
+            {selectedTicket ? '수정' : '등록'}
           </button>
           {selectedTicket && (
             <button className="admin_ticket_delete" onClick={handleDelete}>

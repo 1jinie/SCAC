@@ -1,10 +1,9 @@
-import React from "react";
 import {
   PAYMENT_METHOD_LABELS,
   PAYMENT_PRODUCT_TYPE_LABELS,
   PAYMENT_STATUS_LABELS,
-} from "../../../constants/payment";
-import { formatPrice } from "../../../utils/formatter";
+} from '../../../constants/payment';
+import { formatPrice } from '../../../utils/formatter';
 
 export default function AdminPaymentDetail({
   selectedPayment,
@@ -86,7 +85,7 @@ export default function AdminPaymentDetail({
         </div>
       </dl>
 
-      {selectedPayment.status === "COMPLETED" && (
+      {selectedPayment.status === 'COMPLETED' && (
         <div className="admin_payment_actions">
           <p className="admin_payment_cancel_notice">
             결제 취소 후에는 되돌릴 수 없습니다. 결제 정보를 확인한 후 처리해
@@ -103,11 +102,11 @@ export default function AdminPaymentDetail({
         </div>
       )}
 
-      {selectedPayment.status === "CANCELED" && (
+      {selectedPayment.status === 'CANCELED' && (
         <p className="admin_payment_result_message">취소 처리된 결제입니다.</p>
       )}
 
-      {selectedPayment.status === "FAILED" && (
+      {selectedPayment.status === 'FAILED' && (
         <p className="admin_payment_result_message is_error">
           결제에 실패한 내역입니다.
         </p>

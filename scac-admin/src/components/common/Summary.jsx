@@ -1,4 +1,3 @@
-import React from 'react';
 import './AdminSummary.css';
 
 export default function AdminSummary({ items }) {

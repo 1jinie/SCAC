@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
-import tickets from "../../data/tickets.json";
-import AdminTicketList from "./components/AdminTicketList";
-import AdminTicketDetail from "./components/AdminTicketDetail";
-import "./css/AdminTicketManagePage.css";
+import { useEffect, useState } from 'react';
+import tickets from '../../data/tickets.json';
+import AdminTicketDetail from './components/AdminTicketDetail';
+import AdminTicketList from './components/AdminTicketList';
+import './css/AdminTicketManagePage.css';
 
 export default function AdminTicketManagePage() {
   const [ticketData, setTicketData] = useState([]);
   const [selectedTicket, setSelectedTicket] = useState(null);
-  const [tab, setTab] = useState("TIME");
+  const [tab, setTab] = useState('TIME');
 
   useEffect(() => {
     setTicketData(tickets);
@@ -45,14 +45,14 @@ export default function AdminTicketManagePage() {
           </div>
           <div className="ticket_tab">
             <button
-              className={tab === "TIME" ? "active" : ""}
-              onClick={() => setTab("TIME")}
+              className={tab === 'TIME' ? 'active' : ''}
+              onClick={() => setTab('TIME')}
             >
               시간권
             </button>
             <button
-              className={tab === "PERIOD" ? "active" : ""}
-              onClick={() => setTab("PERIOD")}
+              className={tab === 'PERIOD' ? 'active' : ''}
+              onClick={() => setTab('PERIOD')}
             >
               정기권
             </button>

@@ -1,4 +1,3 @@
-import React from 'react';
 import { USER_ROLE_LABELS, USER_STATUS_LABELS } from '../../../constants/user';
 
 export default function AdminUserList({
