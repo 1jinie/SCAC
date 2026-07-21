@@ -4,27 +4,32 @@ import './css/AdminSummary.css';
 export default function AdminSummary({ items }) {
   return (
     <section className="admin_summary" aria-label="관리 현황 요약">
-      {items.map((item) => (
-        <article
-          key={item.key}
-          className={`admin_summary_card is_${item.color}`}
-        >
-          <div className="admin_summary_header">
-            <span className="admin_summary_indicator" aria-hidden="true" />
+      {items.map((summary) => {
+        const isAlert = summary.alert && summary.value > 0;
 
-            <p className="admin_summary_label">{item.label}</p>
-          </div>
+        return (
+          <article
+            key={summary.key}
+            className={`admin_summary_card is_${summary.color} ${isAlert ? 'is_alert' : ''}`}
+          >
+            <div className="admin_summary_header">
+              <p className="admin_summary_label">{summary.label}</p>
+            </div>
 
-          <strong className="admin_summary_value">
-            {item.value.toLocaleString()}
-            {item.unit && <span>{item.unit}</span>}
-          </strong>
+            <div className="admin_summary_value_wrap">
+              <strong className="admin_summary_value">{summary.value}</strong>
 
-          {item.description && (
-            <p className="admin_summary_description">{item.description}</p>
-          )}
-        </article>
-      ))}
+              {summary.unit && (
+                <span className="admin_summary_unit">{summary.unit}</span>
+              )}
+            </div>
+
+            {summary.description && (
+              <p className="admin_summary_description">{summary.description}</p>
+            )}
+          </article>
+        );
+      })}
     </section>
   );
 }

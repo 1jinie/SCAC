@@ -1,32 +1,37 @@
 {
   "dashboard": [
     {
-      "id": "total-seat",
-      "title": "전체 좌석",
+      "key": "total-seat",
+      "label": "전체 좌석",
       "value": 32,
       "unit": "석",
-      "description": "스터디룸 포함"
+      "description": "스터디룸 포함",
+      "color": "blue"
     },
     {
-      "id": "using-seat",
-      "title": "사용 중 좌석",
+      "key": "using-seat",
+      "label": "사용 중 좌석",
       "value": 18,
       "unit": "석",
-      "description": "현재 이용 중"
+      "description": "현재 이용 중",
+      "color": "mint"
     },
     {
-      "id": "pending-reservation",
-      "title": "스터디룸 예약",
+      "key": "pending-reservation",
+      "label": "스터디룸 예약",
       "value": 4,
       "unit": "건",
-      "description": "스터디룸 예약 확인 필요"
+      "description": "스터디룸 예약 확인 필요",
+      "color": "orange"
     },
     {
-      "id": "device-error",
-      "title": "장치 이상",
+      "key": "device-error",
+      "label": "장치 이상",
       "value": 1,
       "unit": "건",
-      "description": "장치 상태 확인 필요"
+      "description": "장치 상태 확인 필요",
+      "color": "red",
+      "alert": true
     }
   ],
   "device": [

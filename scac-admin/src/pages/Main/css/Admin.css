@@ -129,28 +129,32 @@
   font-weight: 700;
 }
 
-/* 확인 필요한 카드의 숫자 강조 */
-.admin_summary_card.is_alert.device {
-  border-color: var(--color-warning);
+/* Alert 카드 강조 */
+.admin_summary_card.is_alert {
+  box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
+}
 
+/* 색상별 Alert */
+.admin_summary_card.is_alert.is_orange {
+  border-color: var(--color-warning);
   box-shadow: 0 8px 24px rgb(255 152 92 / 12%);
 }
-.admin_summary_card.is_alert.reservation {
+
+.admin_summary_card.is_alert.is_red {
+  border-color: #df6262;
+  box-shadow: 0 8px 24px rgb(223 98 98 / 12%);
+}
+
+.admin_summary_card.is_alert.is_blue {
   border-color: var(--color-primary);
 }
 
-.admin_summary_value.device {
-  color: var(--color-warning);
-}
-.admin_summary_value.reservation {
-  color: var(--color-primary);
+.admin_summary_card.is_alert.is_mint {
+  border-color: var(--color-secondary);
 }
 
-.admin_summary_alert.reservation {
-  background: var(--color-primary);
-}
-.admin_summary_alert.device {
-  background: var(--color-warning);
+.admin_summary_card.is_alert.is_dark {
+  border-color: var(--color-dark);
 }
 
 .admin_dashboard_grid {
