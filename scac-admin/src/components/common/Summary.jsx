@@ -1,5 +1,5 @@
 import React from 'react';
-import './css/AdminSummary.css';
+import './AdminSummary.css';
 
 export default function AdminSummary({ items }) {
   return (

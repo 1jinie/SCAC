@@ -51,7 +51,7 @@
       "id": 3,
       "name": "출입문 장치",
       "status": "WARNING",
-      "statusLabel": "확인 필요"
+      "statusLabel": "점검 필요"
     },
     {
       "id": 4,
