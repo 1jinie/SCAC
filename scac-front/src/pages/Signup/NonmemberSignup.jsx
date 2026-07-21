@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../store/authStore';
+import { checkInStore } from '../../store/checkInStore';
 import './css/NonSignup.css';
 
 function NonmemberSignup() {
@@ -26,6 +28,8 @@ function NonmemberSignup() {
   const [verificationCode, setVerificationCode] = useState('');
   const [isVerified, setIsVerified] = useState(false);
   const [timer, setTimer] = useState(180);
+  // signup action from authStore (adds to local mock users)
+  const signUp = useAuthStore((state) => state.signUp);
 
   useEffect(() => {
     let interval = null;
@@ -119,12 +123,45 @@ function NonmemberSignup() {
 
     if (!validateForm()) return;
 
-    console.log('✅ 유효한 데이터:', formData);
-    setSuccessMessage('입실 준비가 완료되었습니다!');
+    Promise.resolve(
+      signUp({ phoneNumber: formData.phone, password: formData.password }),
+    )
+      .then((res) => {
+        if (!res || !res.success) {
+          setErrors((prev) => ({
+            ...prev,
+            general: res?.errorMessage || '회원가입에 실패했습니다.',
+          }));
+          return;
+        }
 
-    setTimeout(() => {
-      navigate('/ticket');
-    }, 1500);
+        const memberId = res.memberId;
+
+        const addCheckIn = checkInStore.getState().addCheckIn;
+        addCheckIn({
+          userId: memberId,
+          seatId: null,
+          status: 'using',
+          checkInTime: new Date(),
+        });
+
+        const users = useAuthStore.getState().users || [];
+        const createdUser = users.find((u) => u.id === memberId) || {
+          id: memberId,
+          phone: formData.phone,
+        };
+        checkInStore.setState({ currentUser: createdUser });
+
+        setSuccessMessage('입실 준비가 완료되었습니다!');
+        setTimeout(() => navigate('/loginhome'), 800);
+      })
+      .catch((err) => {
+        console.error('Nonmember signUp error:', err);
+        setErrors((prev) => ({
+          ...prev,
+          general: '회원가입 처리 중 오류가 발생했습니다.',
+        }));
+      });
   };
 
   return (
