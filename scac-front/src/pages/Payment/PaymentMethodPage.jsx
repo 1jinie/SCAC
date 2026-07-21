@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePaymentStore } from '../../store/paymentStore';
 import CancelButton from '../../components/button/CancelButton';
-import stylesheet from './css/PaymentMethod.css';
+import './css/PaymentMethod.css';
 
 export default function PaymentMethodPage() {
   const navi = useNavigate();

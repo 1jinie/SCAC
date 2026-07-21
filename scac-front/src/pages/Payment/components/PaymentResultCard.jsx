@@ -7,7 +7,7 @@ import { useResetStore } from '../../../hooks/useResetStore';
 
 export default function PaymentResultCard({ isSuccess, errorMessage }) {
   const ticketId = useTicketStore((state) => state.selectedTicketId);
-  const purchaseType = useTicketStore((state) => state.purchaseType);
+  // const purchaseType = useTicketStore((state) => state.purchaseType);
   const [ticket, setTicket] = useState();
   const navi = useNavigate();
   const resetAll = useResetStore();

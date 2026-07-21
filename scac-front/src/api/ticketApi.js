@@ -1,5 +1,5 @@
 import tickets from '../data/tickets.json';
-import axiosInstance from './axiosInstance.js';
+// import axiosInstance from './axiosInstance.js';
 
 export const ticketApi = {
   getTicketList: async () => {

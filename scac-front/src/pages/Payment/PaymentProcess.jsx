@@ -1,10 +1,10 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTicketStore } from '../../store/ticketStore';
 import SeatPayment from './components/SeatPayment';
 import WaitingPayment from './components/WaitingPayment';
 import { useEffect, useState } from 'react';
 import ProceedPayment from './components/ProceedPayment';
-import stylesheet from './css/PaymentProcess.css';
+import './css/PaymentProcess.css';
 import { usePaymentStore } from '../../store/paymentStore';
 import StudyRoomPayment from './components/StudyRoomPayment';
 
