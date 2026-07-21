@@ -18,7 +18,7 @@
     "label": "이용권 관리"
   },
   {
-    "path": "/member",
+    "path": "/user",
     "label": "회원 관리"
   },
   {

@@ -1,0 +1,620 @@
+.admin_user_page {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.admin_user_content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  align-items: start;
+  gap: 22px;
+}
+
+/* =========================
+   Admin User List
+========================= */
+
+.admin_user_list_panel {
+  min-width: 0;
+  overflow: hidden;
+
+  border: 1px solid #e5e9eb;
+  border-radius: 18px;
+
+  background: #ffffff;
+
+  box-shadow: 0 8px 24px rgb(54 54 54 / 6%);
+}
+
+/* =========================
+   List Header
+========================= */
+
+.admin_user_list_header {
+  min-height: 92px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+
+  padding: 22px 24px;
+
+  border-bottom: 1px solid #e8edef;
+}
+
+.admin_user_list_title {
+  margin: 0;
+
+  color: var(--color-text, #363636);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.admin_user_list_description {
+  margin: 8px 0 0;
+
+  color: var(--color-text-light, #727b80);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.admin_user_result_count {
+  flex-shrink: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 82px;
+  min-height: 36px;
+
+  padding: 0 14px;
+
+  border-radius: 999px;
+
+  background: rgb(145 198 188 / 18%);
+
+  color: var(--color-primary, #4b9da9);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* =========================
+   Table
+========================= */
+
+.admin_user_table_wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.admin_user_table {
+  width: 100%;
+  min-width: 980px;
+
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.admin_user_table th,
+.admin_user_table td {
+  padding: 16px 14px;
+
+  border-bottom: 1px solid #edf0f1;
+
+  text-align: left;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.admin_user_table th:first-child,
+.admin_user_table td:first-child {
+  padding-left: 24px;
+}
+
+.admin_user_table th:last-child,
+.admin_user_table td:last-child {
+  padding-right: 24px;
+}
+
+.admin_user_table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+
+  background: #f7f9fa;
+
+  color: #737d82;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.admin_user_table tbody tr {
+  background: #ffffff;
+
+  cursor: pointer;
+
+  outline: none;
+
+  transition:
+    background-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.admin_user_table tbody tr:hover {
+  background: #f7fbfa;
+}
+
+.admin_user_table tbody tr:focus-visible {
+  box-shadow:
+    inset 0 0 0 2px var(--color-primary, #4b9da9),
+    inset 4px 0 0 var(--color-primary, #4b9da9);
+}
+
+.admin_user_table tbody tr.is_selected {
+  background: #edf7f5;
+
+  box-shadow: inset 4px 0 0 var(--color-primary, #4b9da9);
+}
+
+.admin_user_table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.admin_user_table td {
+  color: var(--color-text, #363636);
+  font-size: 14px;
+}
+
+.admin_user_id {
+  color: #7a8489 !important;
+  font-size: 13px !important;
+  font-weight: 700;
+}
+
+.admin_user_phone {
+  color: var(--color-text, #363636);
+  font-weight: 800;
+}
+
+/* =========================
+   Member Badge
+========================= */
+
+.admin_user_member_badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 28px;
+
+  padding: 0 10px;
+
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin_user_member_badge.is_member {
+  background: rgb(75 157 169 / 13%);
+  color: #347f8a;
+}
+
+.admin_user_member_badge.is_guest {
+  background: #f0f2f3;
+  color: #727b80;
+}
+
+/* =========================
+   Role
+========================= */
+
+.admin_user_role {
+  color: #50595e;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin_user_role.role_admin {
+  color: #9b5c1e;
+  font-weight: 800;
+}
+
+/* =========================
+   Status Badge
+========================= */
+
+.admin_user_status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 72px;
+  min-height: 30px;
+
+  padding: 0 11px;
+
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin_user_status.status_active {
+  background: rgb(145 198 188 / 18%);
+  color: #347f73;
+}
+
+.admin_user_status.status_suspended {
+  background: rgb(255 152 92 / 16%);
+  color: #c66427;
+}
+
+.admin_user_status.status_banned {
+  background: rgb(216 82 82 / 13%);
+  color: #c34848;
+}
+
+/* =========================
+   Empty Result
+========================= */
+
+.admin_user_empty {
+  height: 220px;
+
+  text-align: center !important;
+}
+
+.admin_user_empty strong,
+.admin_user_empty span {
+  display: block;
+}
+
+.admin_user_empty strong {
+  color: var(--color-text, #363636);
+  font-size: 15px;
+}
+
+.admin_user_empty span {
+  margin-top: 8px;
+
+  color: var(--color-text-light, #7a8489);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+/* =========================
+   Loading
+========================= */
+
+.admin_user_list_panel.is_loading {
+  pointer-events: none;
+  opacity: 0.65;
+}
+
+/* =========================
+   Detail Panel
+========================= */
+
+.admin_user_detail {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+
+  min-width: 360px;
+
+  padding: 28px;
+
+  border: 1px solid #e5e9eb;
+  border-radius: 18px;
+
+  background: #ffffff;
+
+  box-shadow: 0 8px 24px rgb(54 54 54 / 6%);
+}
+
+/* =========================
+   Empty
+========================= */
+
+.admin_user_detail.is_empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 360px;
+
+  color: #7a8489;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* =========================
+   Title
+========================= */
+
+.admin_user_detail h3 {
+  margin: 0;
+
+  color: var(--color-text, #363636);
+  font-size: 22px;
+  font-weight: 800;
+}
+
+/* =========================
+   User Info
+========================= */
+
+.admin_user_info_list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  margin: 0;
+}
+
+.admin_user_info_list div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding-bottom: 12px;
+
+  border-bottom: 1px solid #edf0f1;
+}
+
+.admin_user_info_list dt {
+  color: #7a8489;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.admin_user_info_list dd {
+  margin: 0;
+
+  color: var(--color-text, #363636);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* =========================
+   Management Section
+========================= */
+
+.admin_user_management {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin_user_management label {
+  color: #4d565b;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* =========================
+   Select & Input
+========================= */
+
+.admin_user_management select,
+.admin_user_management input {
+  width: 100%;
+  height: 48px;
+
+  padding: 0 14px;
+
+  border: 1px solid #d7dde0;
+  border-radius: 12px;
+
+  background: #ffffff;
+
+  color: #363636;
+  font-size: 14px;
+
+  transition: all 0.2s ease;
+}
+
+.admin_user_management select:focus,
+.admin_user_management input:focus {
+  border-color: var(--color-primary, #4b9da9);
+
+  outline: none;
+
+  box-shadow: 0 0 0 3px rgb(75 157 169 / 15%);
+}
+
+/* =========================
+   Button
+========================= */
+
+.admin_user_status_button {
+  width: 100%;
+  height: 52px;
+
+  margin-top: 6px;
+
+  border: none;
+  border-radius: 14px;
+
+  background: var(--color-primary, #4b9da9);
+
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.admin_user_status_button:hover:not(:disabled) {
+  background: #418b96;
+}
+
+.admin_user_status_button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.admin_user_status_button:disabled {
+  background: #cfd8dc;
+
+  cursor: not-allowed;
+}
+
+/* =========================
+   Admin User Search
+========================= */
+
+.admin_user_search {
+  display: grid;
+  grid-template-columns:
+    minmax(260px, 1.8fr)
+    minmax(150px, 0.8fr)
+    minmax(150px, 0.8fr)
+    110px;
+  align-items: end;
+  gap: 16px;
+
+  padding: 22px 24px;
+
+  border: 1px solid #e5e9eb;
+  border-radius: 18px;
+
+  background: #ffffff;
+
+  box-shadow: 0 8px 24px rgb(54 54 54 / 6%);
+}
+
+.admin_user_search_group {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.admin_user_search_group label {
+  color: #4d565b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin_user_search_group input,
+.admin_user_search_group select {
+  width: 100%;
+  height: 46px;
+
+  padding: 0 14px;
+
+  border: 1px solid #d7dde0;
+  border-radius: 12px;
+
+  background: #ffffff;
+
+  color: #363636;
+  font-size: 14px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.admin_user_search_group input::placeholder {
+  color: #a2aaae;
+}
+
+.admin_user_search_group input:hover,
+.admin_user_search_group select:hover {
+  border-color: #b7c4c8;
+}
+
+.admin_user_search_group input:focus,
+.admin_user_search_group select:focus {
+  border-color: var(--color-primary, #4b9da9);
+
+  box-shadow: 0 0 0 3px rgb(75 157 169 / 14%);
+}
+
+.admin_user_search_reset_button {
+  height: 46px;
+
+  border: 1px solid #d7dde0;
+  border-radius: 12px;
+
+  background: #f7f9fa;
+
+  color: #596368;
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.admin_user_search_reset_button:hover {
+  border-color: #b9c5c9;
+
+  background: #eef2f3;
+}
+
+.admin_user_search_reset_button:active {
+  transform: scale(0.98);
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 1200px) {
+  .admin_user_table {
+    min-width: 900px;
+  }
+  .admin_user_detail {
+    min-width: 320px;
+  }
+  .admin_user_search {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .admin_user_summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .admin_user_content {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin_user_list_header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .admin_user_result_count {
+    min-width: auto;
+  }
+
+  .admin_user_table th,
+  .admin_user_table td {
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+  .admin_user_detail {
+    min-width: 100%;
+  }
+  .admin_user_search {
+    grid-template-columns: 1fr;
+  }
+}

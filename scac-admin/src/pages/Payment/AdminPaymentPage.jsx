@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
-import AdminPaymentSummary from "./components/AdminPaymentSummary";
-import AdminPaymentSearch from "./components/AdminPaymentSearch";
-import AdminPaymentList from "./components/AdminPaymentList";
-import AdminPaymentDetail from "./components/AdminPaymentDetail";
-import payment_dummy from "../../data/payment_dummy.json";
-import { paymentStore } from "../../store/paymentStore";
-import "./css/AdminPaymentPage.css";
+import { useEffect, useMemo, useState } from 'react';
+import AdminSummary from '../../components/common/Summary';
+import payment_dummy from '../../data/payment_dummy.json';
+import { paymentStore } from '../../store/paymentStore';
+import AdminPaymentDetail from './components/AdminPaymentDetail';
+import AdminPaymentList from './components/AdminPaymentList';
+import AdminPaymentSearch from './components/AdminPaymentSearch';
+import './css/AdminPaymentPage.css';
 
 export default function AdminPaymentPage() {
   const payments = paymentStore((state) => state.payments);
@@ -16,9 +16,77 @@ export default function AdminPaymentPage() {
     (state) => state.updatePaymentStatus,
   );
 
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
   const [currentPage, setCurrentPage] = useState(1);
+
+  const summary = useMemo(() => {
+    return payments.reduce(
+      (result, payment) => {
+        result.total += 1;
+
+        if (payment.status === 'COMPLETED') {
+          result.completed += 1;
+          result.totalAmount += Number(payment.paymentAmount ?? 0);
+        }
+
+        if (payment.status === 'CANCELED') {
+          result.canceled += 1;
+        }
+
+        if (payment.status === 'FAILED') {
+          result.failed += 1;
+        }
+
+        return result;
+      },
+      {
+        total: 0,
+        completed: 0,
+        canceled: 0,
+        failed: 0,
+        totalAmount: 0,
+      },
+    );
+  }, [payments]);
+
+  const summaryItems = useMemo(
+    () => [
+      {
+        key: 'total',
+        label: '전체 결제',
+        value: summary.total,
+        unit: '건',
+        description: '전체 결제 내역',
+        color: 'blue',
+      },
+      {
+        key: 'completed',
+        label: '결제 완료',
+        value: summary.completed,
+        unit: '건',
+        description: '정상 승인된 결제',
+        color: 'mint',
+      },
+      {
+        key: 'canceled',
+        label: '결제 취소',
+        value: summary.canceled,
+        unit: '건',
+        description: '취소 처리된 결제',
+        color: 'orange',
+      },
+      {
+        key: 'sales',
+        label: '총 결제 금액',
+        value: summary.totalAmount,
+        unit: '원',
+        description: '완료 결제 기준',
+        color: 'dark',
+      },
+    ],
+    [summary],
+  );
 
   useEffect(() => {
     // 추후 API 연결
@@ -30,31 +98,16 @@ export default function AdminPaymentPage() {
     setPayments(payment_dummy);
   }, [setPayments]);
 
-  // 상단 요약
-  const summary = useMemo(() => {
-    return {
-      total: payments.length,
-
-      completed: payments.filter((payment) => payment.status === "COMPLETED")
-        .length,
-
-      canceled: payments.filter((payment) => payment.status === "CANCELED")
-        .length,
-
-      failed: payments.filter((payment) => payment.status === "FAILED").length,
-    };
-  }, [payments]);
-
   // 검색 + 상태 필터
   const filteredPayments = useMemo(() => {
     return payments.filter((payment) => {
       const matchesKeyword =
-        searchKeyword === "" ||
+        searchKeyword === '' ||
         payment.phoneNumber.includes(searchKeyword) ||
         String(payment.paymentId).includes(searchKeyword);
 
       const matchesStatus =
-        statusFilter === "ALL" || payment.status === statusFilter;
+        statusFilter === 'ALL' || payment.status === statusFilter;
 
       return matchesKeyword && matchesStatus;
     });
@@ -68,7 +121,7 @@ export default function AdminPaymentPage() {
   // 결제 취소
   const handleCancelPayment = (paymentId) => {
     const confirmed = window.confirm(
-      "선택한 결제를 취소 처리하시겠습니까?\n취소 후에는 되돌릴 수 없습니다.",
+      '선택한 결제를 취소 처리하시겠습니까?\n취소 후에는 되돌릴 수 없습니다.',
     );
 
     if (!confirmed) {
@@ -78,7 +131,7 @@ export default function AdminPaymentPage() {
     // 추후 API 연결
     // await paymentApi.cancelPayment(paymentId);
 
-    updatePaymentStatus(paymentId, "CANCELED");
+    updatePaymentStatus(paymentId, 'CANCELED');
   };
 
   return (
@@ -93,7 +146,7 @@ export default function AdminPaymentPage() {
         </div>
       </div>
 
-      <AdminPaymentSummary summary={summary} />
+      <AdminSummary items={summaryItems} />
 
       <AdminPaymentSearch
         searchKeyword={searchKeyword}

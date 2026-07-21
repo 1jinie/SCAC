@@ -9,38 +9,8 @@
   margin: 0 auto;
 }
 
-/* =========================
-   Payment Summary
-========================= */
-
-.admin_payment_summary {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 20px;
-
+.admin_summary {
   margin-bottom: 24px;
-}
-
-.admin_payment_summary .admin_summary_card {
-  min-height: 150px;
-
-  padding: 24px;
-}
-
-.admin_payment_summary .payment_total {
-  border-top: 3px solid var(--color-primary);
-}
-
-.admin_payment_summary .payment_completed {
-  border-top: 3px solid var(--color-success);
-}
-
-.admin_payment_summary .payment_canceled {
-  border-top: 3px solid var(--color-warning);
-}
-
-.admin_payment_summary .payment_failed {
-  border-top: 3px solid var(--color-error);
 }
 
 /* =========================

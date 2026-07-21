@@ -1,0 +1,136 @@
+.admin_summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.admin_summary_card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgb(54 54 54 / 9%);
+}
+
+.admin_summary_card {
+  --summary-accent: #4b9da9;
+  --summary-accent-soft: rgb(75 157 169 / 12%);
+
+  position: relative;
+
+  min-width: 0;
+  padding: 22px 24px;
+  overflow: hidden;
+
+  border: 1px solid #e5e9eb;
+  border-radius: 18px;
+
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgb(54 54 54 / 6%);
+}
+
+.admin_summary_card::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  width: 86px;
+  height: 86px;
+
+  border-radius: 0 0 0 100%;
+
+  background: var(--summary-accent-soft);
+
+  content: '';
+}
+
+.admin_summary_header {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.admin_summary_indicator {
+  width: 9px;
+  height: 9px;
+
+  border-radius: 50%;
+
+  background: var(--summary-accent);
+}
+
+.admin_summary_label {
+  margin: 0;
+
+  color: #596368;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.admin_summary_value {
+  position: relative;
+  z-index: 1;
+
+  display: block;
+  margin-top: 18px;
+
+  color: #363636;
+  font-size: 34px;
+  font-weight: 800;
+}
+
+.admin_summary_value span {
+  margin-left: 5px;
+
+  color: #7c878c;
+  font-size: 15px;
+}
+
+.admin_summary_description {
+  position: relative;
+  z-index: 1;
+
+  margin: 10px 0 0;
+
+  color: #929b9f;
+  font-size: 12px;
+}
+
+.admin_summary_card.is_blue {
+  --summary-accent: #4b9da9;
+  --summary-accent-soft: rgb(75 157 169 / 12%);
+}
+
+.admin_summary_card.is_mint {
+  --summary-accent: #91c6bc;
+  --summary-accent-soft: rgb(145 198 188 / 17%);
+}
+
+.admin_summary_card.is_orange {
+  --summary-accent: #ff985c;
+  --summary-accent-soft: rgb(255 152 92 / 15%);
+}
+
+.admin_summary_card.is_dark {
+  --summary-accent: #363636;
+  --summary-accent-soft: rgb(54 54 54 / 9%);
+}
+
+.admin_summary_card.is_red {
+  --summary-accent: #df6262;
+  --summary-accent-soft: rgb(223 98 98 / 14%);
+}
+@media (max-width: 1200px) {
+  .admin_summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .admin_summary {
+    grid-template-columns: 1fr;
+  }
+}
