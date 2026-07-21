@@ -1,70 +1,93 @@
 import { create } from 'zustand';
-import { postLogin, postLogout, postSignUp } from '../api/authApi';
+import { users as mockUsers } from '../data/User';
 
 export const useAuthStore = create((set) => ({
   // --- 상태 (State) ---
-  isLoggedIn: false, // 로그인 여부 (기본값: 로그아웃 상태)
-  userRole: 'GUEST', // 권한 (GUEST ➔ USER ➔ ADMIN)
-  memberId: null, // DB 연동을 위한 회원 고유 ID
+  isLoggedIn: false,
+  userRole: 'GUEST',
+  memberId: null,
+  userPhone: null,
+  users: mockUsers,
 
   // --- 액션 (Actions) ---
-  /* 로그인 처리 액션 - authApi의 postLogin을 호출하고 성공 시 전역 상태를 업데이트 */
   login: async (phoneNumber, password) => {
     try {
-      // authApi의 postLogin 호출
-      const data = await postLogin(phoneNumber, password);
+      const user = mockUsers.find(
+        (item) => item.phone === phoneNumber && item.password === password,
+      );
+
+      if (!user) {
+        return {
+          success: false,
+          error: '전화번호 또는 비밀번호가 일치하지 않습니다.',
+        };
+      }
 
       set({
         isLoggedIn: true,
-        userRole: data.user_role, // 'USER' 또는 'ADMIN'
-        memberId: data.member_id,
+        userRole: 'USER',
+        memberId: user.id,
+        userPhone: user.phone,
+        users: mockUsers,
       });
 
-      return { success: true, role: data.user_role };
+      return { success: true, role: 'USER' };
     } catch (error) {
       console.error('Store Login Error:', error);
       return { success: false, error };
     }
   },
 
-  /* 로그아웃 처리 액션 - 상태를 초기화하여 출입 권한을 회수 */
   logout: async () => {
-    try {
-      await postLogout();
-    } catch (error) {
-      console.error('Store Logout Error:', error);
-    } finally {
-      // 에러가 나더라도 클라이언트 상태는 안전하게 리셋
-      set({
-        isLoggedIn: false,
-        userRole: 'GUEST',
-        memberId: null,
-      });
-    }
+    set({
+      isLoggedIn: false,
+      userRole: 'GUEST',
+      memberId: null,
+      userPhone: null,
+    });
   },
 
-  /* 회원가입 처리 액션 */
   signUp: async (userData) => {
     try {
-      // authApi의 postSignUp 함수를 호출하여 서버에 전송
-      const data = await postSignUp(userData);
+      const existingUser = mockUsers.find(
+        (item) => item.phone === userData.phoneNumber,
+      );
 
-      // 회원가입 성공 시 로그인 상태로 설정
+      if (existingUser) {
+        return {
+          success: false,
+          errorMessage: '이미 등록된 전화번호입니다.',
+        };
+      }
+
+      const nextId =
+        mockUsers.length > 0
+          ? Math.max(...mockUsers.map((item) => item.id)) + 1
+          : 1;
+
+      const newUser = {
+        id: nextId,
+        phone: userData.phoneNumber,
+        password: userData.password,
+        timeLeft: 120,
+      };
+
+      mockUsers.push(newUser);
+
       set({
         isLoggedIn: true,
-        userRole: data.user_role || 'USER', // 기본값은 'USER'
-        memberId: data.member_id,
+        userRole: 'USER',
+        memberId: nextId,
+        userPhone: userData.phoneNumber,
+        users: mockUsers,
       });
 
-      // 회원가입 성공 신호를 리턴
-      return { success: true };
+      return { success: true, memberId: nextId };
     } catch (error) {
       console.error('Store SignUp Error:', error);
-      // 서버에서 에러 메시지가 올 경우 화면에 뿌려줄 수 있도록 에러 객체 반환
       return {
         success: false,
-        errorMessage:
-          error.response?.data?.message || error.message || '알 수 없는 에러',
+        errorMessage: error.message || '회원가입 처리 중 오류가 발생했습니다.',
       };
     }
   },

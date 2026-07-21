@@ -79,10 +79,10 @@ body {
 
 .login_title,
 .signup_title {
-  font-size: 110px;
+  font-size: 80px;
   font-weight: 700;
   color: #000000;
-  margin: 40px 0 100px 0;
+  margin: 20px;
   letter-spacing: -1px;
 }
 
@@ -92,7 +92,7 @@ body {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  gap: 48px;
+  gap: 40px;
 }
 
 .input_group {
@@ -101,6 +101,13 @@ body {
   gap: 12px;
   width: 720px;
   position: relative;
+}
+
+.input_group label {
+  font-size: 32px;
+  font-weight: 700;
+  color: #000000;
+  line-height: 1.2;
 }
 
 .input_guide_label {
@@ -113,12 +120,12 @@ body {
 
 .input_field {
   width: 100%;
-  height: 140px;
+  height: 100px;
   padding: 0 40px;
   border: 3px solid #707070;
   border-radius: 36px;
   background-color: #ffffff;
-  font-size: 38px;
+  font-size: 30px;
   font-weight: 500;
   color: #000000;
   box-sizing: border-box;
@@ -126,7 +133,22 @@ body {
 }
 
 .input_field_with_btn {
-  padding-right: 280px;
+  padding-right: 340px;
+}
+
+.input_field_wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.verification_timer {
+  position: absolute;
+  right: 200px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ff4444;
+  font-size: 24px;
+  font-weight: 700;
 }
 
 .input_field::placeholder {
@@ -139,19 +161,20 @@ body {
   border-color: #ff985c;
 }
 
-.btn_inner_verify {
+.btn_inner_verify1 {
   position: absolute;
   right: 20px;
-  bottom: 20px;
+  top: 65%;
+  transform: translateY(-50%);
   background-color: #ffffff;
   border: 3px solid #ff9d5c;
   border-radius: 28px;
   color: #ff9d5c;
-  padding: 0 24px;
-  font-size: 26px;
+  padding: 0 10px;
+  font-size: 22px;
   font-weight: 700;
   cursor: pointer;
-  height: 100px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -175,7 +198,7 @@ body {
 .btn_submit {
   margin-top: 80px;
   width: 520px;
-  height: 120px;
+  height: 100px;
   border: none;
   border-radius: 28px;
   background: linear-gradient(135deg, #ffa366, #ff8a4d);
@@ -196,8 +219,6 @@ body {
 
 .login_footer,
 .signup_footer {
-  margin-top: auto;
-  margin-bottom: 40px;
   width: 100%;
   text-align: center;
 }

@@ -129,6 +129,7 @@ function NonmemberSignup() {
 
   return (
     <div className="nonmember_signup_page">
+      <h2 className="signup_title">사용자 정보 입력</h2>
       <header className="nonmember_signup_header">
         <button
           type="button"
@@ -145,8 +146,6 @@ function NonmemberSignup() {
       </header>
 
       <section className="signup_card">
-        <h1 className="signup_title">사용자 정보 입력</h1>
-
         <div className="signup_tab_group">
           <button type="button" className="signup_tab">
             비회원입실
