@@ -12,7 +12,7 @@ import { rooms } from '../../data/RoomInfo';
 import '../../styles/reservation.css';
 import { useTicketStore } from '../../store/ticketStore';
 
-export default () => {
+const Reservation = () => {
   const roomId = reservationStore((state) => state.reservation.roomId);
   const setReservation = reservationStore((state) => state.setReservation);
   const room = rooms[roomId];
@@ -140,3 +140,5 @@ export default () => {
     </div>
   );
 };
+
+export default Reservation;

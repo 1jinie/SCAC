@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { seatStore } from '../../store/seatStore';
 import { reservationStore } from '../../store/reservationStore';
