@@ -1,5 +1,5 @@
-import SeatItem from "./SeatItem";
-import "./css/seat.css";
+import SeatItem from './SeatItem';
+import './css/seat.css';
 
 function SeatList({ seats, selected, mode, onClick }) {
   return (
