@@ -90,6 +90,11 @@ const Reservation = () => {
     <div className="reservation_page">
       <div className="reservation_header">
         <div className="back_btn" onClick={() => navigate('/Room')}>
+          <img
+            src="/icons/common/next_black.svg"
+            alt="뒤로가기"
+            className="back_icon"
+          />
           뒤로가기
         </div>
         <h1 className="reservation_title">스터디룸 예약</h1>

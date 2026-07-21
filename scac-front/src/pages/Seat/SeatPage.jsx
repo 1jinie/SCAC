@@ -70,7 +70,10 @@ function SeatPage({ mode }) {
   return (
     <div className="seat_page">
       <div className="seat_header">
-        <div className="back_btn" onClick={() => navigate('/')}>
+        <div
+          className="back_btn"
+          onClick={() => navigate(mode === 'room' ? '/loginhome' : '/')}
+        >
           <img
             src="/icons/common/next_black.svg"
             alt="뒤로가기"
