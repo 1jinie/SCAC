@@ -59,7 +59,7 @@ body {
 }
 
 /* 우측 상단 실시간 디지털 시간 정렬 */
-.kiosk_header::before {
+/* .kiosk_header::before {
   content: '오전 11:41';
   position: absolute;
   right: 0;
@@ -67,7 +67,7 @@ body {
   font-size: 32px;
   font-weight: 500;
   color: #000000;
-}
+} */
 
 /* 로고 이미지 박스 비율 세팅 */
 .logo_box {
