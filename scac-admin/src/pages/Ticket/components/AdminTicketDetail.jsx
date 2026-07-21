@@ -27,12 +27,20 @@ export default function AdminTicketDetail({
   const handleChange = (e) => {
     const { name, value } = e.target;
 
+    let newValue = value;
+
+    if (name === "ticketTime") {
+      newValue =
+        ticket.ticketType === "TIME"
+          ? Number(value) * 60
+          : Number(value) * 24 * 60;
+    } else if (name === "ticketPrice") {
+      newValue = Number(value);
+    }
+
     setTicket((prev) => ({
       ...prev,
-      [name]:
-        name === 'ticketTime' && prev.ticketType === 'TIME'
-          ? Number(value) * 60
-          : Number(value) * 24 * 60,
+      [name]: newValue,
     }));
   };
 
@@ -93,7 +101,11 @@ export default function AdminTicketDetail({
         <input
           type="number"
           name="ticketTime"
-          value={ticket.ticketType === 'TIME' ? ticket.ticketTime / 60 : ticket.ticketTime / (24 * 60)}
+          value={
+            ticket.ticketType === "TIME"
+              ? ticket.ticketTime / 60
+              : ticket.ticketTime / (24 * 60)
+          }
           onChange={handleChange}
         />
         <label>가격</label>
