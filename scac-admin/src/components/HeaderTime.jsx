@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { formatClock } from '../utils/date.js';
 
 export default function HeaderTime() {

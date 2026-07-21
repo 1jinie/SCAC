@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
-import AdminSeatDetail from "./components/AdminSeatDetail";
-import AdminSeatLogList from "./components/AdminSeatLogList";
-import "./css/AdminSeatPage.css";
-import SeatList from "../../components/seat/SeatList";
-import { seatStore } from "../../store/seatStore";
+import { useEffect, useMemo, useState } from 'react';
+import SeatList from '../../components/seat/SeatList';
+import { seatStore } from '../../store/seatStore';
+import AdminSeatDetail from './components/AdminSeatDetail';
+import AdminSeatLogList from './components/AdminSeatLogList';
+import './css/AdminSeatPage.css';
 
 export default function AdminSeatPage() {
   const [selectedSeat, setSelectedSeat] = useState(null);
@@ -12,24 +12,24 @@ export default function AdminSeatPage() {
   const selected = seatStore((state) => state.selectedSeat);
   const selectSeat = seatStore((state) => state.selectSeat);
   const resetSeat = seatStore((state) => state.clearSelected);
-  const mode = "seat";
+  const mode = 'seat';
 
   const updateSeatStatus = seatStore((state) => state.updateSeatStatus);
 
   const TO_ADMIN_STATUS = {
-    available: "AVB",
-    using: "USR",
-    repair: "BRK",
+    available: 'AVB',
+    using: 'USR',
+    repair: 'BRK',
   };
 
   const TO_SEAT_STATUS = {
-    AVB: "available",
-    USR: "using",
-    BRK: "repair",
+    AVB: 'available',
+    USR: 'using',
+    BRK: 'repair',
   };
 
   const handleClick = (seat) => {
-    if (seat.type !== "seat") return;
+    if (seat.type !== 'seat') return;
 
     selectSeat(seat.id);
 
@@ -39,11 +39,11 @@ export default function AdminSeatPage() {
       status: TO_ADMIN_STATUS[seat.status],
 
       user:
-        seat.status === "using"
+        seat.status === 'using'
           ? {
-              phoneNumber: "010-1234-5678",
-              ticketName: "4시간권",
-              ticketType: "TIME",
+              phoneNumber: '010-1234-5678',
+              ticketName: '4시간권',
+              ticketType: 'TIME',
               remainingTime: 95,
             }
           : null,
@@ -51,13 +51,13 @@ export default function AdminSeatPage() {
   };
 
   useEffect(() => {
-    fetch("/admin_seat_log_dummy.csv")
+    fetch('/admin_seat_log_dummy.csv')
       .then((response) => response.text())
       .then((csvText) => {
-        const rows = csvText.split("\n");
-        const headers = rows[0].split(",");
+        const rows = csvText.split('\n');
+        const headers = rows[0].split(',');
         const parsedData = rows.slice(1).map((row) => {
-          const values = row.split(",");
+          const values = row.split(',');
           // 헤더와 값을 매핑하여 객체로 변환
           return headers.reduce((obj, header, index) => {
             obj[header.trim()] = values[index]?.trim();
@@ -143,7 +143,7 @@ export default function AdminSeatPage() {
                   <div className="legend_item">
                     <span className="legend_color using"></span>
                     <span className="legend_text">
-                      {mode === "seat" ? "사용중" : "예약됨"}
+                      {mode === 'seat' ? '사용중' : '예약됨'}
                     </span>
                   </div>
                 </div>

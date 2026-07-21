@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import adminMenuData from '../data/admin_sidebar.json';
 

@@ -1,6 +1,4 @@
-import { useEffect, useState } from 'react';
-import { useMemo } from 'react';
-import userSeatLog from '../../../data/admin_log.json';
+import { useEffect, useMemo, useState } from 'react';
 import Pagination from '../../../components/common/Pagination';
 
 export default function AdminSeatLogList({ logs, selectedSeat }) {

@@ -1,4 +1,4 @@
-import { formatTicketTime } from "../../../utils/ticket";
+import { formatTicketTime } from '../../../utils/ticket';
 
 export default function AdminTicketList({
   tickets,
@@ -12,7 +12,7 @@ export default function AdminTicketList({
         <tr>
           <th>이용권명</th>
           <th>종류</th>
-          <th>{tab === "TIME" ? "시간" : "일"}</th>
+          <th>{tab === 'TIME' ? '시간' : '일'}</th>
           <th>가격</th>
         </tr>
       </thead>
@@ -22,7 +22,7 @@ export default function AdminTicketList({
             key={ticket.ticketId}
             onClick={() => onTicketSelect(ticket)}
             className={
-              selectedTicket?.ticketId === ticket.ticketId ? "selected" : ""
+              selectedTicket?.ticketId === ticket.ticketId ? 'selected' : ''
             }
           >
             <td>{ticket.ticketName}</td>

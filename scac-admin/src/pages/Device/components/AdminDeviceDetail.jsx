@@ -1,5 +1,4 @@
-import React from "react";
-import { DEVICE_STATUS_LABELS } from "../../../constants/device";
+import { DEVICE_STATUS_LABELS } from '../../../constants/device';
 
 export default function AdminDeviceDetail({ onStatusChange, selectedDevice }) {
   return (
@@ -46,11 +45,11 @@ export default function AdminDeviceDetail({ onStatusChange, selectedDevice }) {
             </div>
           </dl>
 
-          {selectedDevice.status !== "NORMAL" && (
+          {selectedDevice.status !== 'NORMAL' && (
             <button
               type="button"
               className="admin_device_normal_button"
-              onClick={() => onStatusChange("NORMAL")}
+              onClick={() => onStatusChange('NORMAL')}
             >
               정상 처리
             </button>
