@@ -103,7 +103,7 @@
 
 .admin_map_viewport {
   width: 506px; /* 920 × 0.55 */
-  height: 806px; /* 좌석배치 + 범례까지 고려 */
+  height: 810px; /* 좌석배치 + 범례까지 고려 */
 
   position: relative;
 
