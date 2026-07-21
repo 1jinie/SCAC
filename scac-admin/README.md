@@ -491,7 +491,7 @@ npm start
 기본 개발 서버:
 
 ```text
-http://localhost:3000
+http://localhost:3001
 ```
 
 ---
