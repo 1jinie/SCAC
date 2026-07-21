@@ -111,7 +111,8 @@ function SignUpPage() {
       navigate('/login');
     } else {
       setErrorMessage(
-        '회원가입에 실패했습니다. 이미 등록된 번호인지 확인해 주세요.',
+        result.errorMessage ||
+          '회원가입에 실패했습니다. 이미 등록된 번호인지 확인해 주세요.',
       );
     }
   };
