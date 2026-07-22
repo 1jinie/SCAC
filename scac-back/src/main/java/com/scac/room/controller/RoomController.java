@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
-
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,5 +23,11 @@ public class RoomController {
     public List<RoomResponse> getAllRooms(){
         return roomService.getAllRooms();
     }
+
+    @GetMapping("/{roomId}")
+    public RoomResponse getRoomById(@PathVariable("roomId") Long roomId) {
+        return roomService.getRoomById(roomId);
+    }
+    
     
 }
