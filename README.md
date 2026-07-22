@@ -93,11 +93,16 @@ SCAC는 **스터디카페 키오스크 및 관리자 통합 관리 시스템**�
 
 ### Backend
 
+- Java 21
 - Spring Boot
+- Spring Web
 - Spring Security
 - Spring Data JPA
 - MyBatis
+- Bean Validation
+- Lombok
 - MySQL
+- Gradle
 
 ---
 
@@ -217,7 +222,19 @@ REACT_APP_API_URL=http://localhost:8888
 cd scac-back
 ```
 
-Backend Project is under development.
+환경변수를 설정한 후 애플리케이션을 실행합니다.
+
+#### Windows
+
+```bash
+gradlew.bat bootRun
+```
+
+#### macOS / Linux
+
+```bash
+./gradlew bootRun
+```
 
 기본 서버:
 
@@ -225,15 +242,24 @@ Backend Project is under development.
 http://localhost:8888
 ```
 
+기본 API 주소:
+
+```text
+http://localhost:8888/api
+```
+
+> 데이터베이스 및 환경변수 설정 방법은  
+> [`scac-back/README.md`](./scac-back/README.md)를 참고합니다.
+
 ---
 
 ## 👥 Team
 
-| Name   | Role                                                      |
-| ------ | --------------------------------------------------------- |
-| 김수영 | 회원 · 인증 · 권한 · DB 설계 및 관리 · 입실 비밀번호 관리 |
-| 장원진 | 좌석 · 예약 · 입실/퇴실 · Git 저장소 관리                 |
-| 이지현 | 결제 · 이용권 · 관리자 · 프로젝트 문서 관리               |
+| Name   | Role                                                         |
+| ------ | ------------------------------------------------------------ |
+| 김수영 | 회원 · 인증 · 권한 · DB 설계 및 관리 · 입실 비밀번호 관리    |
+| 장원진 | 좌석 · 예약 · 입실/퇴실 · Git 저장소 관리 · Vercel 배포 관리 |
+| 이지현 | 결제 · 이용권 · 관리자 · 프로젝트 문서 관리                  |
 
 ---
 
@@ -268,8 +294,8 @@ Figma를 기반으로
 | -------------- | -------------- |
 | UI Design      | ✅ Complete    |
 | Prototype      | ✅ Complete    |
-| Kiosk Frontend | 🟡 In Progress |
-| Admin Frontend | 🟡 In Progress |
+| Kiosk Frontend | ✅ Complete    |
+| Admin Frontend | ✅ Complete    |
 | Backend        | 🟡 In Progress |
 | Documentation  | 🟡 In Progress |
 
@@ -279,8 +305,8 @@ Figma를 기반으로
 
 | Milestone        | Target Date | Status         |
 | ---------------- | ----------- | -------------- |
-| Frontend 완료    | 2026.07.22  | 🟡 In Progress |
-| Backend 완료     | 2026.08.14  | ⚪ Pending     |
+| Frontend 완료    | 2026.07.22  | ✅ Complete    |
+| Backend 완료     | 2026.08.14  | 🟡 In Progress |
 | 통합 테스트 완료 | 2026.08.28  | ⚪ Pending     |
 | 최종 발표        | 2026.09.02  | ⚪ Pending     |
 
@@ -288,8 +314,8 @@ Figma를 기반으로
 
 ## 📝 Documentation Version
 
-- **README v1.3**
-- Last Updated : 2026.07.19
+- **README v2.0**
+- Last Updated : 2026.07.22
 
 ### History
 
@@ -297,3 +323,10 @@ Figma를 기반으로
 - README v1.1 (2026.07.11)
 - README v1.2 (2026.07.14)
 - README v1.3 (2026.07.19)
+- README v2.0 (2026.07.22)
+
+---
+
+## 📄 License
+
+본 프로젝트는 K-Digital Training 교육 및 팀 프로젝트 목적으로 제작되었습니다.

@@ -69,6 +69,14 @@ SCAC Admin은 스터디카페 운영자가 관리자 웹을 통해
 - 관리자 메모 작성과 조회
 - 운영 관련 전달 사항 관리
 
+### 📋 전체 로그 관리
+
+- 시스템 전체 이벤트 로그 조회
+- 로그 유형 및 상태별 검색·필터링
+- 사용자 및 관리자 활동 내역 확인
+- 대상 정보와 처리 이력 상세 조회
+- 장치, 결제, 좌석, 예약 등 주요 시스템 로그 확인
+
 ---
 
 ## 🛠 Tech Stack
@@ -112,8 +120,7 @@ scac-admin
 │   │
 │   ├── components                 # 공통 컴포넌트
 │   │   ├── common
-│   │   │   ├── css
-│   │   │   │   └── AdminSummary.css
+│   │   │   ├── AdminSummary.css
 │   │   │   ├── Pagination.jsx
 │   │   │   └── Summary.jsx
 │   │   ├── seat
@@ -126,6 +133,7 @@ scac-admin
 │   │
 │   ├── constants                  # 상수 관리
 │   │   ├── device.js
+│   │   ├── log.js
 │   │   ├── payment.js
 │   │   ├── seat.js
 │   │   └── user.js
@@ -516,7 +524,7 @@ SCAC는 키오스크, 관리자, 백엔드 애플리케이션으로 분리하여
 
 ```text
 SCAC
-├── scac-front    # 관리자 PC Frontend
+├── scac-front    # 사용자 Kiosk Frontend
 ├── scac-admin    # 관리자 PC Frontend
 └── scac-back     # Backend
 ```
@@ -538,12 +546,13 @@ SCAC
 
 ## 📝 Documentation Version
 
-- **README v1.0**
-- Last Updated : 2026.07.21
+- **README v1.1**
+- Last Updated : 2026.07.22
 
 ### History
 
 - README v1.0 (2026.07.21)
+- README v1.1 (2026.07.22)
 
 ---
 
