@@ -12,7 +12,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class PaymentDTO {
+public class PaymentResDTO {
     private final Long paymentId;
     private final Long usageId;
     private final Long userId;
@@ -26,8 +26,8 @@ public class PaymentDTO {
     private final LocalDate cancelledAt;
 
   // Payment 엔티티를 PaymentDTO로 변환하는 메서드
-  public static PaymentDTO from(Payment payment) {
-    return new PaymentDTO(
+  public static PaymentResDTO from(Payment payment) {
+    return new PaymentResDTO(
         payment.getPaymentId(),
         payment.getUsageId(),
         payment.getUserId(),

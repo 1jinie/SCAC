@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.scac.payment.dto.PaymentCancelDTO;
 import com.scac.payment.dto.PaymentRequestDTO;
-import com.scac.payment.dto.PaymentDTO;
+import com.scac.payment.dto.PaymentResDTO;
 import com.scac.payment.dto.PaymentStatusUpdateDTO;
 import com.scac.payment.service.PaymentService;
 
@@ -31,29 +31,29 @@ public class PaymentController {
   private final PaymentService paymentService;
 
   @PostMapping
-  public ResponseEntity<PaymentDTO> create(
+  public ResponseEntity<PaymentResDTO> create(
       @Valid @RequestBody PaymentRequestDTO request
   ) {
-    PaymentDTO dto = paymentService.create(request);
+    PaymentResDTO dto = paymentService.create(request);
     return ResponseEntity
         .created(URI.create("/api/payments/" + dto.getPaymentId()))
         .body(dto);
   }
 
   @GetMapping("/{paymentId}")
-  public PaymentDTO findById(@PathVariable Long paymentId) {
+  public PaymentResDTO findById(@PathVariable Long paymentId) {
     return paymentService.findById(paymentId);
   }
 
   @GetMapping
-  public List<PaymentDTO> findAll(
+  public List<PaymentResDTO> findAll(
       @RequestParam(required = false) Long userId
   ) {
     return paymentService.findAll(userId);
   }
 
   @PatchMapping("/{paymentId}/status")
-  public PaymentDTO updateStatus(
+  public PaymentResDTO updateStatus(
       @PathVariable Long paymentId,
       @Valid @RequestBody PaymentStatusUpdateDTO dto
   ) {
@@ -61,7 +61,7 @@ public class PaymentController {
   }
 
   @PatchMapping("/{paymentId}/cancel")
-  public PaymentDTO cancel(
+  public PaymentResDTO cancel(
       @PathVariable Long paymentId,
       @Valid @RequestBody PaymentCancelDTO dto
   ) {
