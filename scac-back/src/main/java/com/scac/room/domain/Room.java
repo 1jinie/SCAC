@@ -2,7 +2,6 @@ package com.scac.room.domain;
 
 import com.scac.seat.domain.SeatStatus;
 
-import jakarta.annotation.Generated;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

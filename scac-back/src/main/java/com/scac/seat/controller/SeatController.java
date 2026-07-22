@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 
 @RestController
@@ -23,5 +24,11 @@ public class SeatController {
     public List<SeatResponse> getAllSeats(){
         return seatService.getAllSeats();
     }
+
+    @GetMapping("/{seatId}")
+    public SeatResponse getSeatById(@PathVariable("seatId") Long seatId) {
+        return seatService.getSeatById(seatId);
+    }
+    
     
 }
