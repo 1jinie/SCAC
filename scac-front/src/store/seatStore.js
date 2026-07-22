@@ -1,9 +1,21 @@
 import { create } from 'zustand';
-import { seats as initialSeats } from '../data/Seats';
+import { seats } from '../data/Seats';
+import { seatLayouts } from '../constants/SeatLayout';
+
+const seatData = seats.map((seat) => {
+  const layout = seatLayouts.find(
+    (item) => item.id === seat.id && item.type === seat.type,
+  );
+
+  return {
+    ...seat,
+    ...layout,
+  };
+});
 
 export const seatStore = create((set) => ({
   // 현재 선택 좌석 id
-  seats: initialSeats,
+  seats: seatData,
   // 좌석 선택, 초기화
   selectedSeat: null,
 
