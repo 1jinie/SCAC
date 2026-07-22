@@ -1,5 +1,12 @@
 # process.env.PORT, process.env.REACT_APP_API_URL 로 사용하시면 됩니다
 # scac-admin, scac-front 프로젝트 최상위에 만들어주세요
 
+# scac-front/admin
 PORT=포트번호
 REACT_APP_API_URL=http://localhost:api포트번호
+
+# scac-back
+DB_URL=jdbc:mysql://nam3324.synology.me:33338/scac_db
+DB_USERNAME=아이디
+DB_PASSWORD=비밀번호
+JWT_SECRET=여기에_충분히_긴_랜덤_문자열
