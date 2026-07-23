@@ -127,4 +127,35 @@ public ResponseEntity<ApiResponse<Map<String, String>>> handleValidation(
             null
         ));
   }
+
+/*
+  비즈니스 로직 수행 중 발생하는 예외를 처리합니다. 400 BAD REQUEST
+  
+  사용예시
+  좌석 입실 시 이미 사용 중인 좌석이면 발생
+  
+  throw new BusinessException(
+      "이미 사용 중인 좌석입니다."
+  );
+  
+  반환 데이터
+  {
+    "success": false,
+    "message": "이미 사용 중인 좌석입니다.",
+    "data": null
+  }
+*/  
+@ExceptionHandler(BusinessException.class)
+  public ResponseEntity<ApiResponse<Void>> handleBusinessException(
+      BusinessException exception
+  ) {
+    return ResponseEntity
+            .badRequest()
+            .body(
+                ApiResponse.error(
+                    exception.getMessage(), 
+                    null
+                )
+            );
+  }
 }

@@ -13,7 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "room")
+@Table(name = "meeting_room")
 @Getter
 @NoArgsConstructor
 public class Room {
