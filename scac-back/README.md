@@ -105,7 +105,7 @@ MySQL 데이터베이스와 연동하여 서비스 데이터를 관리합니다.
 ### Backend
 
 - Java 21
-- Spring Boot
+- Spring Boot 3.5.14
 - Spring Web
 - Spring Security
 - Spring Data JPA
@@ -180,6 +180,7 @@ scac-back
 │   │   │           ├── global
 │   │   │           │   ├── config
 │   │   │           │   ├── controller
+│   │   │           │   ├── enums
 │   │   │           │   ├── exception
 │   │   │           │   └── response
 │   │   │           │
@@ -213,6 +214,8 @@ scac-back
 
 > 실제 폴더 구조는 기능 구현에 따라 변경될 수 있습니다.
 
+> 상수는 enums 패키지에서 주로 관리합니다.
+
 ---
 
 ## 📦 Domain Structure
@@ -229,9 +232,7 @@ payment
 │   ├── PaymentCancelRequest.java
 │   └── PaymentStatusUpdateRequest.java
 ├── entity
-│   ├── Payment.java
-│   ├── PaymentMethod.java
-│   └── PaymentStatus.java
+│   └── Payment.java
 ├── repository
 │   └── PaymentRepository.java
 ├── mapper
@@ -555,8 +556,8 @@ PATCH  /api/payments/{paymentId}/cancel
 
 | Name   | Role                                                      |
 | ------ | --------------------------------------------------------- |
-| 김수영 | 회원 · 인증 · 권한 · DB 설계 및 관리 · 입실 비밀번호 관리 |
-| 장원진 | 좌석 · 예약 · 입실/퇴실 · Git 저장소 관리                 |
+| 김수영 | 회원 · 인증 · 권한 · 입실 비밀번호 관리 · DB 설계 및 관리 |
+| 장원진 | 좌석 · 예약 · 입실/퇴실 · Git 저장소/Vercel 배포 관리     |
 | 이지현 | 결제 · 이용권 · 관리자 · 프로젝트 문서 관리               |
 
 ---
@@ -572,8 +573,8 @@ PATCH  /api/payments/{paymentId}/cancel
 | Domain               | Status         |
 | -------------------- | -------------- |
 | 프로젝트 기본 설정   | ✅ Complete    |
-| 데이터베이스 연결    | 🟡 In Progress |
-| 키오스크 연결 테스트 | 🟡 In Progress |
+| 데이터베이스 연결    | ✅ Complete    |
+| 키오스크 연결 테스트 | ✅ Complete    |
 | 회원 및 인증         | 🟡 In Progress |
 | 이용권               | 🟡 In Progress |
 | 결제 CRUD            | 🟡 In Progress |
@@ -598,12 +599,13 @@ PATCH  /api/payments/{paymentId}/cancel
 
 ## 📝 Documentation Version
 
-- **README v1.0**
-- Last Updated : 2026.07.22
+- **README v1.1**
+- Last Updated : 2026.07.23
 
 ### History
 
 - README v1.0 (2026.07.22)
+- README v1.1 (2026.07.23)
 
 ---
 
