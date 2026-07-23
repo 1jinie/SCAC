@@ -10,7 +10,7 @@ export default function ProceedPayment({ paymentMethod }) {
     <div className="payment_proceed">
       {paymentMethod === 'CARD' ? (
         <ProceedCard />
-      ) : paymentMethod === 'SIMPLE' ? (
+      ) : paymentMethod === 'EASY_PAY' ? (
         <ProceedSimplePay />
       ) : (
         navi('/payment')

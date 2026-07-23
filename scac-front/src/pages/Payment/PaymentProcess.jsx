@@ -37,7 +37,7 @@ export default function PaymentProcess() {
         <div className="payment_process_box">
           {purchaseType === 'SEAT' ? (
             <SeatPayment />
-          ) : purchaseType === 'STUDY_ROOM' ? (
+          ) : purchaseType === 'MEETING_ROOM' ? (
             <StudyRoomPayment />
           ) : (
             'Error'

@@ -81,7 +81,7 @@ const Reservation = () => {
       endTime: finalEndTime,
     });
 
-    setPurchaseType('STUDY_ROOM');
+    setPurchaseType('MEETING_ROOM');
 
     navigate('/payment');
   };
