@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.scac.global.exception.ResourceNotFoundException;
 import com.scac.payment.dto.PaymentCancelDTO;
 import com.scac.payment.dto.PaymentRequestDTO;
 import com.scac.payment.dto.PaymentResDTO;
@@ -77,6 +78,8 @@ public class PaymentService {
 
   private Payment getPayment(Long paymentId) {
     return paymentRepository.findById(paymentId)
-        .orElseThrow(() -> new PaymentNotFoundException(paymentId));
+        .orElseThrow(() ->  new ResourceNotFoundException(
+              "존재하지 않는 결제 내역입니다."
+          ));
   }
 }

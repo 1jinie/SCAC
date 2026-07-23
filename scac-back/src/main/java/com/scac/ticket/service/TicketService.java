@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.scac.global.exception.ResourceNotFoundException;
 import com.scac.ticket.dto.TicketCreateDTO;
 import com.scac.ticket.dto.TicketResDTO;
 import com.scac.ticket.dto.TicketStatusDTO;
@@ -36,7 +37,9 @@ public class TicketService {
   public Ticket findTicket(Long ticketId){
     return ticketRepository.findById(ticketId)
         .orElseThrow(() ->
-            new IllegalArgumentException("존재하지 않는 이용권입니다."));
+            new ResourceNotFoundException(
+              "존재하지 않는 이용권입니다."
+          ));
   }
 
   // TicketCreateDTO로 데이터 form을 받고 form을 Ticket으로 변환 후 DB에 저장
@@ -66,7 +69,7 @@ public class TicketService {
   @Transactional
   public void delete(Long ticketId){
     Ticket ticket = findTicket(ticketId);
-  return ticketRepository.delete(ticket);
+  ticketRepository.delete(ticket);
   }
 
 
