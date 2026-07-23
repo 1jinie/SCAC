@@ -35,7 +35,7 @@ export default function PaymentMethodPage() {
       </button>
       <button
         className="payment_btn simple_pay"
-        onClick={(e) => handleMethod('SIMPLE')}
+        onClick={(e) => handleMethod('EASY_PAY')}
       >
         <img
           src="/icons/payment/qrcode.svg"

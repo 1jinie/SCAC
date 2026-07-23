@@ -23,7 +23,7 @@
     "paymentId": 3,
     "phoneNumber": "010-3333-4444",
     "productName": "스터디룸 R1 2시간",
-    "productType": "STUDY_ROOM",
+    "productType": "MEETING_ROOM",
     "amount": 10000,
     "paymentMethod": "SIMPLE",
     "status": "CANCELED",

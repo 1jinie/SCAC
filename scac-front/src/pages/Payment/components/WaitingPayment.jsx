@@ -10,7 +10,7 @@ export default function WaitingPayment({ handlePay, paymentMethod }) {
     <div>
       {paymentMethod === 'CARD' ? (
         <WaitingCard />
-      ) : paymentMethod === 'SIMPLE' ? (
+      ) : paymentMethod === 'EASY_PAY' ? (
         <WaitingSimplePay />
       ) : (
         navi('/payment')
