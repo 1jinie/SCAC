@@ -6,10 +6,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "User")
+@Table(name = "user")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
@@ -19,105 +20,77 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(name = "login_id", unique = true, length = 50)
-    private String loginId; // GUEST는 null 가능
-
-    @Column(name = "password", length = 255)
-    private String password; // GUEST는 null 가능
-
-    @Column(name = "entry_password", length = 255)
-    private String entryPassword; // 출입용 4~6자리 비밀번호 (BCrypt 암호화)
-
-    @Column(name = "name", nullable = false, length = 50)
-    private String name;
-
-    @Column(name = "phone_number", nullable = false, length = 20)
+    @Column(name = "phone_number", nullable = false, unique = true, length = 30)
     private String phoneNumber;
 
-    @Column(name = "email", length = 100)
-    private String email;
+    @Column(name = "password", nullable = false, length = 255)
+    private String password; // 6자리 간편 암호 (해시 암호화 저장)
+
+    @Column(name = "is_member", nullable = false)
+    private Boolean isMember; // TRUE: 회원, FALSE: 비회원/게스트
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 20)
-    private UserRole role; // USER, GUEST
+    private UserRole role; // GUEST, USER, ADMIN
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_status", nullable = false, length = 20)
-    private UserStatus status; // ACTIVE, SUSPENDED, INACTIVE
+    private UserStatus status; // ACTIVE, SUSPENDED, BANNED
 
     @Column(name = "penalty_end_date")
-    private LocalDateTime penaltyEndDate; // 패널티 종료 일시
-
-    @Column(name = "is_member", nullable = false)
-    private Boolean isMember;
+    private LocalDate penaltyEndDate; // 정지 해제 날짜 (DATE)
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-        if (this.isMember == null) this.isMember = true;
+        if (this.isMember == null) this.isMember = false;
         if (this.role == null) this.role = UserRole.USER;
         if (this.status == null) this.status = UserStatus.ACTIVE;
     }
 
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
     @Builder
-    public User(String loginId, String password, String entryPassword, String name,
-                String phoneNumber, String email, UserRole role, UserStatus status,
-                LocalDateTime penaltyEndDate, Boolean isMember) {
-        this.loginId = loginId;
-        this.password = password;
-        this.entryPassword = entryPassword;
-        this.name = name;
+    public User(String phoneNumber, String password, Boolean isMember,
+                UserRole role, UserStatus status, LocalDate penaltyEndDate) {
         this.phoneNumber = phoneNumber;
-        this.email = email;
+        this.password = password;
+        this.isMember = isMember != null ? isMember : false;
         this.role = role != null ? role : UserRole.USER;
         this.status = status != null ? status : UserStatus.ACTIVE;
         this.penaltyEndDate = penaltyEndDate;
-        this.isMember = isMember != null ? isMember : true;
     }
 
     // ================= 비즈니스 로직 메서드 ================= //
 
     /**
-     * 로그인 / 이용권 구매 / 입실 시 패널티 자동 해제 검증
-     * @return 패널티 정지 상태 지속 여부 (true: 여전히 정지 중, false: 정상 이용 가능)
+     * 패널티 정지 자동 해제 검증 (LocalDate 기준)
      */
     public boolean checkAndReleaseSuspension() {
         if (this.status == UserStatus.SUSPENDED) {
-            if (this.penaltyEndDate != null && LocalDateTime.now().isAfter(this.penaltyEndDate)) {
-                // 정지 기간이 지났으므로 자동 해제
+            if (this.penaltyEndDate != null && LocalDate.now().isAfter(this.penaltyEndDate)) {
                 this.status = UserStatus.ACTIVE;
                 this.penaltyEndDate = null;
-                return false; // 정지 해제됨
+                return false;
             }
-            return true; // 여전히 정지 상태
+            return true;
         }
-        return false; // 정지 상태 아님
+        return false;
     }
 
     /**
-     * 관리자 강제 퇴실 등에 의한 패널티 부여
+     * 관리자 정지 부여 (LocalDate 기준)
      */
-    public void applyPenalty(LocalDateTime endDate) {
+    public void applyPenalty(LocalDate endDate) {
         this.status = UserStatus.SUSPENDED;
         this.penaltyEndDate = endDate;
     }
 
-    // User.java 내부 추가
-public void changeEntryPassword(String newEncodedEntryPassword) {
-    this.entryPassword = newEncodedEntryPassword;
-}
-
-    
+    /**
+     * 비밀번호 변경
+     */
+    public void changePassword(String newEncodedPassword) {
+        this.password = newEncodedPassword;
+    }
 }
