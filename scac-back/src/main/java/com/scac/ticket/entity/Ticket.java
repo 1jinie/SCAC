@@ -2,6 +2,9 @@ package com.scac.ticket.entity;
 
 import java.time.LocalDateTime;
 
+import com.scac.global.enums.TargetType;
+import com.scac.global.enums.TicketType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

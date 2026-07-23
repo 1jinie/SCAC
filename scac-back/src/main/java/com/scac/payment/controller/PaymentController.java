@@ -31,6 +31,7 @@ public class PaymentController {
 
   private final PaymentService paymentService;
 
+  // 결제 요청
   @PostMapping
   public ResponseEntity<ApiResponse<PaymentResDTO>> create(
       @Valid @RequestBody PaymentRequestDTO form
@@ -47,6 +48,7 @@ public class PaymentController {
         ));
   }
 
+  // 특정 결제내역 조회
   @GetMapping("/{paymentId}")
   public ResponseEntity<ApiResponse<PaymentResDTO>> findById(
       @PathVariable Long paymentId
@@ -61,6 +63,7 @@ public class PaymentController {
     );
   }
 
+  // 모든 결제내역 조회
   @GetMapping
   public ResponseEntity<ApiResponse<List<PaymentResDTO>>> findAll(
       @RequestParam(required = false) Long userId
@@ -75,6 +78,7 @@ public class PaymentController {
     );
   }
 
+  // 결제 상태 변경
   @PatchMapping("/{paymentId}/status")
   public ResponseEntity<ApiResponse<PaymentResDTO>> updateStatus(
       @PathVariable Long paymentId,
@@ -91,6 +95,7 @@ public class PaymentController {
     );
   }
 
+  // 결제 취소
   @PatchMapping("/{paymentId}/cancel")
   public ResponseEntity<ApiResponse<PaymentResDTO>> cancel(
       @PathVariable Long paymentId,
@@ -107,6 +112,7 @@ public class PaymentController {
     );
   }
 
+  // 결제내역 삭제
   @DeleteMapping("/{paymentId}")
   public ResponseEntity<ApiResponse<Void>> delete(
       @PathVariable Long paymentId

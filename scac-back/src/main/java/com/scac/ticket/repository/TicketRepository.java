@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.scac.ticket.entity.TargetType;
+import com.scac.global.enums.TargetType;
 import com.scac.ticket.entity.Ticket;
 
 

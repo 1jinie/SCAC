@@ -1,7 +1,8 @@
 package com.scac.ticket.dto;
 
-import com.scac.ticket.entity.TargetType;
-import com.scac.ticket.entity.TicketType;
+import com.scac.global.enums.TargetType;
+import com.scac.global.enums.TicketType;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;

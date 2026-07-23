@@ -11,8 +11,11 @@ export default function TicketPage() {
     const fetchTickets = async () => {
       try {
         const ticketList = await ticketApi.getTicketList();
-        setTickets(Array.isArray(ticketList) ? ticketList : []);
-        console.log('sdf' + ticketList);
+        const activeTicketList = Array.isArray(ticketList)
+          ? ticketList.filter((ticket) => ticket.active)
+          : [];
+
+        setTickets(activeTicketList);
       } catch (error) {
         console.error('이용권 조회 실패:', error);
         setTickets([]);
@@ -21,7 +24,6 @@ export default function TicketPage() {
 
     fetchTickets();
   }, []);
-
   const timeTickets = tickets.filter((t) => t.ticketType === 'TIME_PACK');
   const periodTickets = tickets.filter((t) => t.ticketType === 'PERIOD_PACK');
 

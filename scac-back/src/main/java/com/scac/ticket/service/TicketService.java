@@ -5,12 +5,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.scac.global.enums.TargetType;
 import com.scac.global.exception.ResourceNotFoundException;
 import com.scac.ticket.dto.TicketCreateDTO;
 import com.scac.ticket.dto.TicketResDTO;
 import com.scac.ticket.dto.TicketStatusDTO;
 import com.scac.ticket.dto.TicketUpdateDTO;
-import com.scac.ticket.entity.TargetType;
 import com.scac.ticket.entity.Ticket;
 import com.scac.ticket.repository.TicketRepository;
 
@@ -31,7 +31,7 @@ public class TicketService {
   public List<TicketResDTO> findSeatTicket() {
     return ticketRepository.findByTargetTypeIs(TargetType.SEAT).stream().map(TicketResDTO::from).toList();
   }
-  
+
   // 전체 미팅룸 이용권 조회
   public List<TicketResDTO> findRoomTicket() {
     return ticketRepository.findByTargetTypeIs(TargetType.MEETING_ROOM).stream().map(TicketResDTO::from).toList();

@@ -3,9 +3,9 @@ package com.scac.payment.dto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.scac.global.enums.PaymentMethod;
+import com.scac.global.enums.PaymentStatus;
 import com.scac.payment.entity.Payment;
-import com.scac.payment.entity.PaymentMethod;
-import com.scac.payment.entity.PaymentStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,6 +1,6 @@
 package com.scac.payment.dto;
 
-import com.scac.payment.entity.PaymentMethod;
+import com.scac.global.enums.PaymentMethod;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -13,6 +13,9 @@ import lombok.Data;
 public class PaymentRequestDTO {
     @NotNull
     private final Long usageId;
+
+    @NotNull
+    private final Long ticketId;
 
     @NotNull
     private final Long userId;

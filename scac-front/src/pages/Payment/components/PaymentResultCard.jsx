@@ -13,14 +13,11 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
 
   useEffect(() => {
     if (ticketId == null) {
-      console.error('선택된 이용권 ID가 없습니다:', ticketId);
       return;
     }
 
     const fetchTicket = async () => {
       try {
-        console.log('조회할 ticketId:', ticketId);
-
         const ticketData = await ticketApi.getById(ticketId);
         setTicket(ticketData);
       } catch (error) {
