@@ -8,18 +8,22 @@ export default function TicketPage() {
   const [tickets, setTickets] = useState([]);
 
   useEffect(() => {
-    console.log('test');
     const fetchTickets = async () => {
-      await ticketApi.getTicketList().then((res) => {
-        setTickets(res);
-      });
+      try {
+        const ticketList = await ticketApi.getTicketList();
+        setTickets(Array.isArray(ticketList) ? ticketList : []);
+        console.log('sdf' + ticketList);
+      } catch (error) {
+        console.error('이용권 조회 실패:', error);
+        setTickets([]);
+      }
     };
+
     fetchTickets();
-    // console.log(tickets);
   }, []);
 
-  const timeTickets = tickets.filter((t) => t.ticketType === 'TIME');
-  const periodTickets = tickets.filter((t) => t.ticketType === 'PERIOD');
+  const timeTickets = tickets.filter((t) => t.ticketType === 'TIME_PACK');
+  const periodTickets = tickets.filter((t) => t.ticketType === 'PERIOD_PACK');
 
   return (
     <div className="ticket_page_container">

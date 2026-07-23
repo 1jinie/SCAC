@@ -143,7 +143,7 @@
 }
 
 .payment_status_row:nth-of-type(2) span:last-child {
-  font-size: var(--font-size-title);
+  font-size: var(--font-size-heading);
   font-weight: var(--font-bold);
 
   color: var(--color-text);
