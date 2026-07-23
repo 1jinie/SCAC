@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.scac.global.exception.ResourceNotFoundException;
 import com.scac.seat.domain.Seat;
 import com.scac.seat.dto.SeatResponse;
 import com.scac.seat.repository.SeatRepository;
@@ -25,7 +26,9 @@ public class SeatService {
     // 특정 좌석 조회
     public SeatResponse getSeatById(Long seatId) {
         Seat seat = seatRepository.findById(seatId)
-                .orElseThrow(() -> new IllegalArgumentException("좌석이 존재하지 않습니다."));
+                .orElseThrow(() -> 
+                new ResourceNotFoundException("해당 좌석이 존재하지 않습니다")
+            );
         return SeatResponse.from(seat);
     }
 }

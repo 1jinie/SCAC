@@ -3,6 +3,7 @@ package com.scac.room.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.scac.global.response.ApiResponse;
 import com.scac.room.dto.RoomResponse;
 import com.scac.room.service.RoomService;
 
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -20,14 +22,23 @@ public class RoomController {
     private final RoomService roomService;
 
     @GetMapping
-    public List<RoomResponse> getAllRooms(){
-        return roomService.getAllRooms();
+    public ResponseEntity<ApiResponse<List<RoomResponse>>> getAllRooms(){
+        return ResponseEntity.ok(
+            ApiResponse.success(
+                "전체 스터디룸 조회를 완료했습니다.",
+                roomService.getAllRooms()
+            )
+        );
     }
 
     @GetMapping("/{roomId}")
-    public RoomResponse getRoomById(@PathVariable("roomId") Long roomId) {
-        return roomService.getRoomById(roomId);
+    public ResponseEntity<ApiResponse<RoomResponse>> getRoomById(@PathVariable("roomId") Long roomId) {
+        return ResponseEntity.ok(
+            ApiResponse.success(
+                "스터디룸 조회를 완료했습니다.",
+                roomService.getRoomById(roomId)
+            )
+        );
     }
-    
-    
+
 }
