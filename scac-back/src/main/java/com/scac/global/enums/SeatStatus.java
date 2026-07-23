@@ -1,4 +1,4 @@
-package com.scac.seat.domain;
+package com.scac.global.enums;
 
 public enum SeatStatus {
     AVB,

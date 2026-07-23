@@ -2,7 +2,8 @@ package com.scac.ticketusage.domain;
 
 import java.time.LocalDateTime;
 
-import com.scac.ticket.entity.TicketType;
+import com.scac.global.enums.TicketType;
+import com.scac.global.enums.TicketUsageStatus;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

@@ -1,6 +1,6 @@
 package com.scac.room.domain;
 
-import com.scac.seat.domain.SeatStatus;
+import com.scac.global.enums.SeatStatus;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

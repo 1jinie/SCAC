@@ -5,11 +5,11 @@ import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.scac.global.enums.TicketType;
 import com.scac.global.exception.ResourceNotFoundException;
 import com.scac.seat.domain.Seat;
 import com.scac.seat.repository.SeatRepository;
 import com.scac.ticket.entity.Ticket;
-import com.scac.ticket.entity.TicketType;
 import com.scac.ticket.repository.TicketRepository;
 import com.scac.ticketusage.domain.TicketUsage;
 import com.scac.ticketusage.dto.TicketUsageRequest;

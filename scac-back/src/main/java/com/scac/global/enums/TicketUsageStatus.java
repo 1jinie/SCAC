@@ -1,4 +1,4 @@
-package com.scac.ticketusage.domain;
+package com.scac.global.enums;
 
 public enum TicketUsageStatus {
     USING,

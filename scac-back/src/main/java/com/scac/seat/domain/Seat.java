@@ -1,5 +1,6 @@
 package com.scac.seat.domain;
 
+import com.scac.global.enums.SeatStatus;
 import com.scac.global.exception.BusinessException;
 
 import jakarta.persistence.Entity;
