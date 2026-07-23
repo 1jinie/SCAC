@@ -4,9 +4,9 @@ package com.scac.ticket.dto;
 
 import java.time.LocalDateTime;
 
-import com.scac.ticket.entity.TargetType;
+import com.scac.global.enums.TargetType;
+import com.scac.global.enums.TicketType;
 import com.scac.ticket.entity.Ticket;
-import com.scac.ticket.entity.TicketType;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

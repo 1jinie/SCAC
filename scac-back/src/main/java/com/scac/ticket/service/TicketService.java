@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.scac.global.enums.TargetType;
 import com.scac.global.exception.ResourceNotFoundException;
 import com.scac.ticket.dto.TicketCreateDTO;
 import com.scac.ticket.dto.TicketResDTO;
@@ -13,7 +14,6 @@ import com.scac.ticket.dto.TicketUpdateDTO;
 import com.scac.ticket.entity.Ticket;
 import com.scac.ticket.repository.TicketRepository;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -26,6 +26,15 @@ public class TicketService {
   // 전체 이용권 조회
   public List<TicketResDTO> findAll() {
     return ticketRepository.findAll().stream().map(ticket -> TicketResDTO.from(ticket)).toList();
+  }
+  // 전체 좌석 이용권 조회
+  public List<TicketResDTO> findSeatTicket() {
+    return ticketRepository.findByTargetTypeIs(TargetType.SEAT).stream().map(TicketResDTO::from).toList();
+  }
+
+  // 전체 미팅룸 이용권 조회
+  public List<TicketResDTO> findRoomTicket() {
+    return ticketRepository.findByTargetTypeIs(TargetType.MEETING_ROOM).stream().map(TicketResDTO::from).toList();
   }
 
   // DB 외에서 자유롭게 이용권 데이터 가져오는 용도

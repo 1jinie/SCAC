@@ -7,16 +7,25 @@ import { useResetStore } from '../../../hooks/useResetStore';
 
 export default function PaymentResultCard({ isSuccess, errorMessage }) {
   const ticketId = useTicketStore((state) => state.selectedTicketId);
-  // const purchaseType = useTicketStore((state) => state.purchaseType);
   const [ticket, setTicket] = useState();
   const navi = useNavigate();
   const resetAll = useResetStore();
 
-  //purchaseType === 'SEAT' 이면 좌석 결제 정보 가져오고 'STUDY_ROOM' 이면 스터디룸 결제 정보 가져올 예정
   useEffect(() => {
+    if (ticketId == null) {
+      return;
+    }
+
     const fetchTicket = async () => {
-      const res = await ticketApi.getById(ticketId);
-      setTicket(res);
+      try {
+        const ticketData = await ticketApi.getById(ticketId);
+        setTicket(ticketData);
+      } catch (error) {
+        console.error(
+          '이용권 조회 실패:',
+          error.response?.data ?? error.message,
+        );
+      }
     };
 
     fetchTicket();
@@ -54,8 +63,8 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
           <div className="payment_status_row">
             <span>선택한 이용권</span>
             <span>
-              {ticket?.ticketName}&nbsp;
-              {ticket?.ticketType === 'TIME' ? '시간권' : '기간권'}
+              {ticket?.ticketName}
+              {/* &nbsp;{ticket?.ticketType === 'TIME' ? '시간권' : '기간권'} */}
             </span>
           </div>
         ) : (

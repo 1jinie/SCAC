@@ -2,6 +2,9 @@ package com.scac.ticket.entity;
 
 import java.time.LocalDateTime;
 
+import com.scac.global.enums.TargetType;
+import com.scac.global.enums.TicketType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,7 +21,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "ticket")
+@Table(name = "ticket_table")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Ticket {
 

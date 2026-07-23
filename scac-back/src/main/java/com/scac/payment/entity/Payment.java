@@ -3,6 +3,9 @@ package com.scac.payment.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.scac.global.enums.PaymentMethod;
+import com.scac.global.enums.PaymentStatus;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

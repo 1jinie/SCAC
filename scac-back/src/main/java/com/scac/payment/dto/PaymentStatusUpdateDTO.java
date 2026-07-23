@@ -1,6 +1,6 @@
 package com.scac.payment.dto;
 
-import com.scac.payment.entity.PaymentStatus;
+import com.scac.global.enums.PaymentStatus;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

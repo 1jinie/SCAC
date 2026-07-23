@@ -1,14 +1,15 @@
-import tickets from '../data/tickets.json';
-// import axiosInstance from './axiosInstance.js';
+import axiosInstance from './axiosInstance.js';
 
 export const ticketApi = {
   getTicketList: async () => {
-    return tickets;
+    const response = await axiosInstance.get('/api/tickets');
+    console.log(response);
+    return response.data.data;
   },
 
-  // getTicketList: () => axiosInstance.get('/tickets',data);,
-
   getById: async (ticketId) => {
-    return tickets.find((ticket) => ticket.ticketId === ticketId) ?? null;
+    const response = await axiosInstance.get(`/api/tickets/${ticketId}`);
+
+    return response.data.data;
   },
 };
