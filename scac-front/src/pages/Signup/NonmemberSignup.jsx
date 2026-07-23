@@ -194,7 +194,7 @@ function NonmemberSignup() {
         )}
 
         <form className="signup_form" onSubmit={handleSubmit}>
-          {/* 이름 입력 */}
+          {/* 이름 입력 
           <div className="form_group">
             <label className="form_label" htmlFor="name">
               이름
@@ -209,7 +209,7 @@ function NonmemberSignup() {
               onChange={handleChange}
             />
             {errors.name && <span className="error_text">{errors.name}</span>}
-          </div>
+          </div> */}
 
           {/* 전화번호 입력 (인증번호 발송 포함) */}
           <div className="form_group">
