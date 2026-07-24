@@ -14,8 +14,8 @@ import com.scac.global.exception.BusinessException;
 import com.scac.global.exception.ResourceNotFoundException;
 import com.scac.seat.domain.Seat;
 import com.scac.seat.repository.SeatRepository;
-import com.scac.user.entity.User;
-import com.scac.user.repository.UserRepository;
+// import com.scac.user.entity.User;
+// import com.scac.user.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class CheckinService {
-    private final UserRepository userRepository;
+    // private final UserRepository userRepository;
     private final SeatRepository seatRepository;
     // private final TicketUsageRepository ticketUsageRepository;
     private final CheckinRepository checkinRepository;
@@ -32,10 +32,10 @@ public class CheckinService {
     @Transactional
     public CheckinResponse checkin(CheckinRequest request){
         // 사용자 존재 확인
-        User user = userRepository.findById(request.getUserId())
+        /* User user = userRepository.findById(request.getUserId())
             .orElseThrow(() ->
                 new ResourceNotFoundException("존재하지 않는 사용자입니다")
-        );
+        ); */
 
         // 기존 입실 상태 확인
         if(checkinRepository.existsByUserIdAndCheckinStatusIn(

@@ -1,13 +1,13 @@
-package com.scac.room.dto;
+package com.scac.meetingroom.dto;
 
-import com.scac.room.domain.Room;
+import com.scac.meetingroom.domain.MeetingRoom;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class RoomResponse {
+public class MeetingRoomResponse {
     private Long roomId;
     private String roomName;
     private int capacity;
@@ -15,8 +15,8 @@ public class RoomResponse {
     private int hourlyRate;
     private String description;
 
-    public static RoomResponse from(Room room){
-        return new RoomResponse(
+    public static MeetingRoomResponse from(MeetingRoom room){
+        return new MeetingRoomResponse(
             room.getRoomId(),
             room.getRoomName(),
             room.getCapacity(),
