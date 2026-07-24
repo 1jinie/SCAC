@@ -1,6 +1,7 @@
 package com.scac.checkin.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -37,13 +38,13 @@ public class CheckinService {
         );
 
         // 기존 입실 상태 확인
-        checkinRepository.findByUserIdAndCheckinStatusNot(
+        if(checkinRepository.existsByUserIdAndCheckinStatusIn(
             request.getUserId(),
-            CheckinStatus.CHECKOUT    
-        ).ifPresent(checkin -> {
+            List.of(CheckinStatus.USING, CheckinStatus.AWAY)   
+        )){
             throw new BusinessException("이미 입실 중인 사용자입니다");
-        });
-
+        }
+    
         // 이용권 확인
 
         // 좌석 확인
