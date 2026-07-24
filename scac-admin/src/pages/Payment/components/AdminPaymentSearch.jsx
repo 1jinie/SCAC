@@ -36,7 +36,8 @@ export default function AdminPaymentSearch({
         >
           <option value="ALL">전체</option>
           <option value="PAID">결제 완료</option>
-          <option value="CANCELLED">결제 취소</option>
+          <option value="PENDING">결제 진행 중</option>
+          <option value="CANCELED">결제 취소</option>
           <option value="FAILED">결제 실패</option>
         </select>
       </div>

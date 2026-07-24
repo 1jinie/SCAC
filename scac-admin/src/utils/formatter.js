@@ -7,3 +7,20 @@ export const formatPrice = (value) => {
 
   return Number(value).toLocaleString('ko-KR');
 };
+
+// 휴대폰 번호 000-0000-0000 형식
+export const formatPhoneNumber = (phoneNumber) => {
+  if (!phoneNumber) return '-';
+
+  const numbers = String(phoneNumber).replace(/\D/g, '');
+
+  if (numbers.length === 11) {
+    return numbers.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+  }
+
+  if (numbers.length === 10) {
+    return numbers.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+  }
+
+  return String(phoneNumber);
+};

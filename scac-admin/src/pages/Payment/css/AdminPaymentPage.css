@@ -184,7 +184,7 @@
   font-weight: 700;
 }
 
-.admin_payment_status.status_completed {
+.admin_payment_status.status_paid {
   background: rgb(145 198 188 / 18%);
   color: var(--color-using);
 }
@@ -197,6 +197,10 @@
 .admin_payment_status.status_failed {
   background: rgb(231 108 108 / 15%);
   color: var(--color-error);
+}
+.admin_payment_status.status_pending {
+  background: rgba(115, 160, 197, 15%);
+  color: var(--color-primary);
 }
 
 /* =========================

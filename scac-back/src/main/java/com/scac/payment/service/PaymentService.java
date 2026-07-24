@@ -7,10 +7,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.scac.global.exception.ResourceNotFoundException;
 import com.scac.payment.dto.PaymentCancelDTO;
+import com.scac.payment.dto.PaymentHistoryDTO;
 import com.scac.payment.dto.PaymentRequestDTO;
 import com.scac.payment.dto.PaymentResDTO;
 import com.scac.payment.dto.PaymentStatusUpdateDTO;
 import com.scac.payment.entity.Payment;
+import com.scac.payment.mapper.PaymentMapper;
 import com.scac.payment.repository.PaymentRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class PaymentService {
 
   private final PaymentRepository paymentRepository;
+  private final PaymentMapper paymentMapper;
 
   @Transactional
   public PaymentResDTO create(PaymentRequestDTO dto) {
@@ -40,14 +43,12 @@ public class PaymentService {
     return PaymentResDTO.from(getPayment(paymentId));
   }
 
-  public List<PaymentResDTO> findAll(Long userId) {
-    List<Payment> payments = userId == null
-        ? paymentRepository.findAllByOrderByPaidAtDesc()
-        : paymentRepository.findByUserIdOrderByPaidAtDesc(userId);
+  public List<PaymentHistoryDTO> findAll(Long userId) {
+    List<PaymentHistoryDTO> payments = userId == null
+        ? paymentMapper.findAllPaymentHistory()
+        : paymentMapper.findByUserId(userId);
 
-    return payments.stream()
-        .map(payment -> PaymentResDTO.from(payment))
-        .toList();
+    return payments;
   }
 
   @Transactional

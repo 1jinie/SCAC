@@ -3,7 +3,8 @@ import {
   PAYMENT_PRODUCT_TYPE_LABELS,
   PAYMENT_STATUS_LABELS,
 } from '../../../constants/payment';
-import { formatPrice } from '../../../utils/formatter';
+import { formatfullDateTime } from '../../../utils/date';
+import { formatPhoneNumber, formatPrice } from '../../../utils/formatter';
 
 export default function AdminPaymentDetail({
   selectedPayment,
@@ -45,25 +46,25 @@ export default function AdminPaymentDetail({
 
         <div>
           <dt>사용자</dt>
-          <dd>{selectedPayment.phoneNumber}</dd>
+          <dd>{formatPhoneNumber(selectedPayment.phoneNumber)}</dd>
         </div>
 
         <div>
           <dt>결제 상품</dt>
-          <dd>{selectedPayment.productName}</dd>
+          <dd>{selectedPayment.ticketName}</dd>
         </div>
 
         <div>
           <dt>상품 유형</dt>
           <dd>
-            {PAYMENT_PRODUCT_TYPE_LABELS[selectedPayment.productType] ??
+            {PAYMENT_PRODUCT_TYPE_LABELS[selectedPayment.targetType] ??
               selectedPayment.productType}
           </dd>
         </div>
 
         <div>
           <dt>결제 금액</dt>
-          <dd>{formatPrice(selectedPayment.amount)}</dd>
+          <dd>{formatPrice(selectedPayment.paymentAmount)}</dd>
         </div>
 
         <div>
@@ -76,8 +77,14 @@ export default function AdminPaymentDetail({
 
         <div>
           <dt>결제 일시</dt>
-          <dd>{selectedPayment.paidAt}</dd>
+          <dd>{formatfullDateTime(selectedPayment.paidAt)}</dd>
         </div>
+        {selectedPayment.status === 'CANCELED' && (
+          <div className="payment_detail_item">
+            <dt>취소 일시</dt>
+            <dd>{formatfullDateTime(selectedPayment.cancelledAt)}</dd>
+          </div>
+        )}
 
         <div>
           <dt>결제 상태</dt>

@@ -3,7 +3,8 @@ import {
   PAYMENT_METHOD_LABELS,
   PAYMENT_STATUS_LABELS,
 } from '../../../constants/payment';
-import { formatPrice } from '../../../utils/formatter';
+import { formatAdminMemoDate } from '../../../utils/date';
+import { formatPhoneNumber, formatPrice } from '../../../utils/formatter';
 
 export default function AdminPaymentList({
   payments,
@@ -31,6 +32,7 @@ export default function AdminPaymentList({
               <th>결제 상품</th>
               <th>결제 금액</th>
               <th>결제 수단</th>
+              <th>결제 일시</th>
               <th>상태</th>
             </tr>
           </thead>
@@ -38,7 +40,7 @@ export default function AdminPaymentList({
           <tbody>
             {payments.length === 0 ? (
               <tr>
-                <td colSpan="6" className="admin_payment_empty">
+                <td colSpan="7" className="admin_payment_empty">
                   조회된 결제 내역이 없습니다.
                 </td>
               </tr>
@@ -55,16 +57,18 @@ export default function AdminPaymentList({
                   >
                     <td>{payment.paymentId}</td>
 
-                    <td>{payment.phoneNumber}</td>
+                    <td>{formatPhoneNumber(payment.phoneNumber)}</td>
 
-                    <td>{payment.productName}</td>
+                    <td>{payment.ticketName}</td>
 
-                    <td>{formatPrice(payment.amount)}</td>
+                    <td>{formatPrice(payment.paymentAmount)}</td>
 
                     <td>
                       {PAYMENT_METHOD_LABELS[payment.paymentMethod] ??
                         payment.paymentMethod}
                     </td>
+
+                    <td>{formatAdminMemoDate(payment.paidAt)}</td>
 
                     <td>
                       <span

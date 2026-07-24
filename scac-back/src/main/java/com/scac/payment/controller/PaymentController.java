@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.scac.global.response.ApiResponse;
 import com.scac.payment.dto.PaymentCancelDTO;
+import com.scac.payment.dto.PaymentHistoryDTO;
 import com.scac.payment.dto.PaymentRequestDTO;
 import com.scac.payment.dto.PaymentResDTO;
 import com.scac.payment.dto.PaymentStatusUpdateDTO;
@@ -65,10 +66,10 @@ public class PaymentController {
 
   // 모든 결제내역 조회
   @GetMapping
-  public ResponseEntity<ApiResponse<List<PaymentResDTO>>> findAll(
+  public ResponseEntity<ApiResponse<List<PaymentHistoryDTO>>> findAll(
       @RequestParam(required = false) Long userId
   ) {
-    List<PaymentResDTO> payments = paymentService.findAll(userId);
+    List<PaymentHistoryDTO> payments = paymentService.findAll(userId);
 
     return ResponseEntity.ok(
         ApiResponse.success(
