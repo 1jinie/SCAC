@@ -1,29 +1,40 @@
 import { useEffect, useState } from 'react';
-import tickets from '../../data/tickets.json';
+import { ticketApi } from '../../api/ticketApi';
 import AdminTicketDetail from './components/AdminTicketDetail';
 import AdminTicketList from './components/AdminTicketList';
 import './css/AdminTicketManagePage.css';
 
 export default function AdminTicketManagePage() {
-  const [ticketData, setTicketData] = useState([]);
-  const [selectedTicket, setSelectedTicket] = useState(null);
-  const [tab, setTab] = useState('TIME');
+  const [selectedTicketId, setSelectedTicketId] = useState(null);
+  const [isResister, setIsResister] = useState(false);
+  const [tab, setTab] = useState('TIME_PACK');
 
+  const [tickets, setTickets] = useState([]);
+  const fetchTickets = async () => {
+    try {
+      const ticketList = await ticketApi.getTicketList();
+
+      setTickets(ticketList);
+    } catch (error) {
+      console.error('이용권 목록 조회 실패:', error.response?.data ?? error);
+      setTickets([]);
+    }
+  };
   useEffect(() => {
-    setTicketData(tickets);
+    fetchTickets();
   }, []);
-
-  const handleTicketSelect = (ticket) => {
-    setSelectedTicket(ticket);
+  const timeTickets = tickets.filter((t) => t.ticketType === 'TIME_PACK');
+  const periodTickets = tickets.filter((t) => t.ticketType === 'PERIOD_PACK');
+  const selectedTicket =
+    tickets.find((ticket) => ticket.ticketId === selectedTicketId) ?? null;
+  const handleTicketSelect = (ticketId) => {
+    setSelectedTicketId(ticketId);
   };
 
   const handleReset = () => {
-    setSelectedTicket(null);
+    setSelectedTicketId(null);
+    setIsResister(true);
   };
-
-  const filteredTickets = ticketData.filter(
-    (ticket) => ticket.ticketType === tab,
-  );
 
   return (
     <div className="admin_ticket_page">
@@ -39,36 +50,49 @@ export default function AdminTicketManagePage() {
       <section className="admin_ticket_workspace">
         <div className="admin_ticket_list_section">
           <div className="admin_section_header">
+            <div>
+              <h2>이용권 목록</h2>
+              <p>관리할 이용권을 선택해주세요.</p>
+            </div>
             <button className="admin_ticket_add" onClick={handleReset}>
               이용권 등록
             </button>
           </div>
           <div className="ticket_tab">
             <button
-              className={tab === 'TIME' ? 'active' : ''}
-              onClick={() => setTab('TIME')}
+              className={tab === 'TIME_PACK' ? 'active' : ''}
+              onClick={() => setTab('TIME_PACK')}
             >
               시간권
             </button>
             <button
-              className={tab === 'PERIOD' ? 'active' : ''}
-              onClick={() => setTab('PERIOD')}
+              className={tab === 'PERIOD_PACK' ? 'active' : ''}
+              onClick={() => setTab('PERIOD_PACK')}
             >
-              정기권
+              기간권
             </button>
           </div>
           <AdminTicketList
-            tickets={filteredTickets}
-            selectedTicket={selectedTicket}
+            tickets={
+              tab === 'TIME_PACK'
+                ? timeTickets
+                : tab === 'PERIOD_PACK'
+                  ? periodTickets
+                  : timeTickets
+            }
+            selectedTicketId={selectedTicketId}
             onTicketSelect={handleTicketSelect}
             tab={tab}
           />
         </div>
-        <AdminTicketDetail
-          selectedTicket={selectedTicket}
-          ticketData={ticketData}
-          setTicketData={setTicketData}
-        />
+        {selectedTicketId || isResister ? (
+          <AdminTicketDetail
+            selectedTicket={selectedTicket}
+            fetchTickets={fetchTickets}
+          />
+        ) : (
+          ''
+        )}
       </section>
     </div>
   );

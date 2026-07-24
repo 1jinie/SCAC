@@ -285,6 +285,125 @@
 
   text-align: center;
 }
+/* =========================
+   Active Checkbox
+========================= */
+
+.admin_ticket_active_field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin_ticket_active_label {
+  color: #666;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.admin_ticket_checkbox {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 10px;
+
+  margin: 0;
+
+  color: #444;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.admin_ticket_form .admin_ticket_checkbox input {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+
+  opacity: 0;
+  pointer-events: none;
+}
+
+.admin_ticket_checkbox_box {
+  position: relative;
+
+  width: 22px;
+  height: 22px;
+
+  border: 2px solid #cbd3d8;
+  border-radius: 6px;
+
+  background: #fff;
+
+  box-sizing: border-box;
+
+  transition: 0.2s;
+}
+
+.admin_ticket_checkbox:hover .admin_ticket_checkbox_box {
+  border-color: var(--color-primary);
+}
+
+.admin_ticket_checkbox input:checked + .admin_ticket_checkbox_box {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+}
+
+.admin_ticket_checkbox input:checked + .admin_ticket_checkbox_box::after {
+  content: '';
+
+  position: absolute;
+  top: 3px;
+  left: 7px;
+
+  width: 5px;
+  height: 10px;
+
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+
+  transform: rotate(45deg);
+}
+
+.admin_ticket_checkbox input:focus-visible + .admin_ticket_checkbox_box {
+  outline: 3px solid rgb(75 157 169 / 20%);
+  outline-offset: 2px;
+}
+
+.admin_ticket_checkbox_text {
+  color: #555;
+}
+
+.ticket_status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 72px;
+  height: 28px;
+
+  padding: 0 10px;
+
+  border-radius: 14px;
+
+  font-size: 13px;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.ticket_status.active {
+  background: rgb(75 157 169 / 14%);
+  color: #347f89;
+}
+
+.ticket_status.inactive {
+  background: #f1f2f3;
+  color: #8a9094;
+}
 
 /* =========================
    Responsive

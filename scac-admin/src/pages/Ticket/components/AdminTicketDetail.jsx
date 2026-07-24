@@ -1,66 +1,112 @@
 import { useEffect, useState } from 'react';
+import { ticketApi } from '../../../api/ticketApi';
+
+const EMPTY_TICKET = {
+  ticketId: null,
+  ticketName: '',
+  ticketType: 'TIME_PACK',
+  ticketTime: '',
+  validDays: '',
+  ticketPrice: '',
+  isActive: true,
+};
 
 export default function AdminTicketDetail({
   selectedTicket,
-  ticketData,
-  setTicketData,
-}) {
-  const emptyTicket = {
-    ticketId: '',
-    ticketName: '',
-    ticketType: 'TIME',
-    ticketTime: '',
-    ticketPrice: '',
-  };
 
-  const [ticket, setTicket] = useState(emptyTicket);
+  fetchTickets,
+}) {
+  const [ticket, setTicket] = useState(EMPTY_TICKET);
 
   useEffect(() => {
-    if (selectedTicket) {
-      setTicket(selectedTicket);
-    } else {
-      setTicket(emptyTicket);
-    }
+    setTicket(selectedTicket ? { ...selectedTicket } : { ...EMPTY_TICKET });
   }, [selectedTicket]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
 
-    let newValue = value;
+    setTicket((prev) => {
+      if (name === 'ticketType') {
+        return {
+          ...prev,
+          ticketType: value,
+          ticketTime: '',
+          validDays: '',
+        };
+      }
 
-    if (name === 'ticketTime') {
-      newValue =
-        ticket.ticketType === 'TIME'
-          ? Number(value) * 60
-          : Number(value) * 24 * 60;
-    } else if (name === 'ticketPrice') {
-      newValue = Number(value);
-    }
+      if (name === 'ticketTime') {
+        return {
+          ...prev,
+          ticketTime: value === '' ? '' : Number(value) * 60,
+        };
+      }
 
-    setTicket((prev) => ({
-      ...prev,
-      [name]: newValue,
-    }));
+      if (name === 'validDays' || name === 'ticketPrice') {
+        return {
+          ...prev,
+          [name]: value === '' ? '' : Number(value),
+        };
+      }
+
+      return {
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value,
+      };
+    });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (!ticket.ticketName.trim()) {
+      alert('이용권명을 입력해주세요.');
+      return;
+    }
+
+    if (ticket.ticketPrice === '') {
+      alert('가격을 입력해주세요.');
+      return;
+    }
+
+    if (ticket.ticketType === 'TIME_PACK' && ticket.ticketTime === '') {
+      alert('시간을 입력해주세요.');
+      return;
+    }
+
+    if (ticket.ticketType === 'PERIOD_PACK' && ticket.validDays === '') {
+      alert('기간을 입력해주세요.');
+      return;
+    }
+
+    const savedTicket =
+      ticket.ticketType === 'TIME_PACK'
+        ? { ...ticket, validDays: null, targetType: 'SEAT' }
+        : { ...ticket, ticketTime: null, targetType: 'SEAT' };
+
     if (selectedTicket) {
-      setTicketData((prev) =>
-        prev.map((item) => (item.ticketId === ticket.ticketId ? ticket : item)),
-      );
-
-      alert('수정되었습니다');
+      try {
+        await ticketApi.updateTicket(savedTicket.ticketId, savedTicket);
+        alert('수정되었습니다.');
+        await fetchTickets();
+      } catch (error) {
+        alert('수정에 실패했습니다.');
+        console.error(
+          '이용권 수정 실패:',
+          error.response?.data.message ?? error,
+        );
+      }
     } else {
-      setTicketData((prev) => [
-        ...prev,
-        {
-          ...ticket,
-          ticketId: prev.length + 1,
-        },
-      ]);
-
-      alert('등록되었습니다');
-      setTicket(emptyTicket);
+      try {
+        await ticketApi.createTicket(savedTicket);
+        alert('등록되었습니다.');
+        setTicket(EMPTY_TICKET);
+        await fetchTickets();
+      } catch (error) {
+        alert('등록에 실패했습니다.');
+        console.error(
+          '이용권 등록 실패:',
+          error.response?.data.message ?? error,
+        );
+      }
     }
   };
 
@@ -69,56 +115,99 @@ export default function AdminTicketDetail({
 
     if (!window.confirm('정말 삭제하시겠습니까?')) return;
 
-    setTicketData((prev) =>
-      prev.filter((item) => item.ticketId !== selectedTicket.ticketId),
-    );
-
-    setTicket(emptyTicket);
+    setTicket(EMPTY_TICKET);
     alert('삭제되었습니다');
   };
 
   return (
     <div className="admin_ticket_detail">
       <h3>{selectedTicket ? '이용권 수정' : '이용권 등록'}</h3>
+
       <div className="admin_ticket_form">
-        <label>이용권명</label>
+        <label htmlFor="ticketName">이용권명</label>
         <input
+          id="ticketName"
           name="ticketName"
           value={ticket.ticketName}
           onChange={handleChange}
         />
-        <label>종류</label>
+
+        <label htmlFor="ticketType">종류</label>
         <select
+          id="ticketType"
           name="ticketType"
           value={ticket.ticketType}
           onChange={handleChange}
         >
-          <option value="TIME">시간권</option>
-          <option value="PERIOD">기간권</option>
+          <option value="TIME_PACK">시간권</option>
+          <option value="PERIOD_PACK">기간권</option>
         </select>
-        <label>{ticket.ticketType === 'TIME' ? '시간' : '일'}</label>
+
+        {ticket.ticketType === 'TIME_PACK' ? (
+          <>
+            <label htmlFor="ticketTime">시간</label>
+            <input
+              id="ticketTime"
+              type="number"
+              name="ticketTime"
+              min="1"
+              value={ticket.ticketTime === '' ? '' : ticket.ticketTime / 60}
+              onChange={handleChange}
+            />
+          </>
+        ) : (
+          <>
+            <label htmlFor="validDays">일수</label>
+            <input
+              id="validDays"
+              type="number"
+              name="validDays"
+              min="1"
+              value={ticket.validDays ?? ''}
+              onChange={handleChange}
+            />
+          </>
+        )}
+
+        <label htmlFor="ticketPrice">가격</label>
         <input
-          type="number"
-          name="ticketTime"
-          value={
-            ticket.ticketType === 'TIME'
-              ? ticket.ticketTime / 60
-              : ticket.ticketTime / (24 * 60)
-          }
-          onChange={handleChange}
-        />
-        <label>가격</label>
-        <input
+          id="ticketPrice"
           type="number"
           name="ticketPrice"
+          min="0"
           value={ticket.ticketPrice}
           onChange={handleChange}
         />
 
+        {selectedTicket && (
+          <div className="admin_ticket_active_field">
+            <span className="admin_ticket_active_label">판매 여부</span>
+
+            <label className="admin_ticket_checkbox">
+              <input
+                type="checkbox"
+                name="isActive"
+                checked={ticket.isActive}
+                onChange={handleChange}
+              />
+
+              <span className="admin_ticket_checkbox_box" aria-hidden="true" />
+              <span className="admin_ticket_checkbox_text">
+                {ticket.isActive ? '판매 중' : '판매 중지'}
+              </span>
+            </label>
+          </div>
+        )}
+
         <div className="admin_ticket_button_group">
-          <button className="admin_ticket_save" onClick={handleSave}>
+          <button
+            type="button"
+            className="admin_ticket_save"
+            onClick={handleSave}
+          >
             {selectedTicket ? '수정' : '등록'}
           </button>
+
           {selectedTicket && (
             <button className="admin_ticket_delete" onClick={handleDelete}>
               삭제

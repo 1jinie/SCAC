@@ -2,7 +2,7 @@ import { formatTicketTime } from '../../../utils/ticket';
 
 export default function AdminTicketList({
   tickets,
-  selectedTicket,
+  selectedTicketId,
   onTicketSelect,
   tab,
 }) {
@@ -12,23 +12,44 @@ export default function AdminTicketList({
         <tr>
           <th>이용권명</th>
           <th>종류</th>
-          <th>{tab === 'TIME' ? '시간' : '일'}</th>
+          <th>{tab === 'TIME_PACK' ? '시간' : '일'}</th>
           <th>가격</th>
+          <th>판매여부</th>
         </tr>
       </thead>
       <tbody>
         {tickets.map((ticket) => (
           <tr
             key={ticket.ticketId}
-            onClick={() => onTicketSelect(ticket)}
-            className={
-              selectedTicket?.ticketId === ticket.ticketId ? 'selected' : ''
-            }
+            onClick={() => onTicketSelect(ticket.ticketId)}
+            className={selectedTicketId === ticket.ticketId ? 'selected' : ''}
           >
             <td>{ticket.ticketName}</td>
-            <td>{ticket.ticketType}</td>
-            <td>{formatTicketTime(ticket.ticketType, ticket.ticketTime)}</td>
+            {ticket.ticketType === 'TIME_PACK' ? (
+              <>
+                <td>시간권</td>
+                <td>
+                  {formatTicketTime(ticket.ticketType, ticket.ticketTime)}
+                </td>
+              </>
+            ) : (
+              <>
+                <td>기간권</td>
+                <td>{ticket.validDays}</td>
+              </>
+            )}
             <td>{ticket.ticketPrice.toLocaleString()}원</td>
+            <td>
+              <span
+                className={
+                  ticket.isActive
+                    ? 'ticket_status active'
+                    : 'ticket_status inactive'
+                }
+              >
+                {ticket.isActive ? '판매 중' : '판매 중지'}
+              </span>
+            </td>
           </tr>
         ))}
       </tbody>

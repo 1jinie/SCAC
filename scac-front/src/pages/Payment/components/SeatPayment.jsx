@@ -28,9 +28,9 @@ export default function SeatPayment() {
           <span className="payment_name">결제 상품</span>
           <span className="payment_item">
             {ticket.ticketName}{' '}
-            {ticket.ticketType === 'TIME'
+            {ticket.ticketType === 'TIME_PACK'
               ? '시간권'
-              : ticket.ticketType === 'PERIOD'
+              : ticket.ticketType === 'PERIOD_PACK'
                 ? '기간권'
                 : ''}
           </span>
