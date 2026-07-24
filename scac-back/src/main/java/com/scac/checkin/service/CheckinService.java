@@ -9,6 +9,7 @@ import com.scac.checkin.dto.CheckinRequest;
 import com.scac.checkin.dto.CheckinResponse;
 import com.scac.checkin.repository.CheckinRepository;
 import com.scac.global.enums.CheckinStatus;
+import com.scac.global.exception.BusinessException;
 import com.scac.global.exception.ResourceNotFoundException;
 import com.scac.seat.domain.Seat;
 import com.scac.seat.repository.SeatRepository;
@@ -29,11 +30,19 @@ public class CheckinService {
     // 입실 과정
     @Transactional
     public CheckinResponse checkIn(CheckinRequest request){
-        // 사용자 확인
+        // 사용자 존재 확인
         User user = userRepository.findById(request.getUserId())
             .orElseThrow(() ->
                 new ResourceNotFoundException("존재하지 않는 사용자입니다")
         );
+
+        // 기존 입실 상태 확인
+        checkinRepository.findByUserIdAndCheckinStatusNot(
+            request.getUserId(),
+            CheckinStatus.CHECKOUT    
+        ).ifPresent(checkin -> {
+            throw new BusinessException("이미 입실 중인 사용자입니다");
+        });
 
         // 이용권 확인
 
