@@ -12,7 +12,7 @@ export default function TicketPage() {
       try {
         const ticketList = await ticketApi.getTicketList();
         const activeTicketList = Array.isArray(ticketList)
-          ? ticketList.filter((ticket) => ticket.active)
+          ? ticketList.filter((ticket) => ticket.isActive)
           : [];
 
         setTickets(activeTicketList);

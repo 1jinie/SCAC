@@ -12,7 +12,7 @@ export default function PaymentProcess() {
   const paymentMethod = usePaymentStore((state) => state.paymentMethod);
   const [isProcessing, setIsProcessing] = useState(false);
   const purchaseType = useTicketStore((state) => state.purchaseType);
-  // console.log(purchaseType);
+
   const navi = useNavigate();
   const handlePay = () => {
     setIsProcessing(true);
