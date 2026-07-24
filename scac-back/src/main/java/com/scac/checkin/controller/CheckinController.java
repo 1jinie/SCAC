@@ -30,7 +30,7 @@ public class CheckinController {
         return ResponseEntity.ok(
             ApiResponse.success(
                 "입실이 완료되었습니다",
-                checkinService.checkIn(request)
+                checkinService.checkin(request)
             )
         );
     }
@@ -53,6 +53,17 @@ public class CheckinController {
             ApiResponse.success(
                 "외출 복귀 완료",
                 checkinService.comeBack(checkinId)
+            )
+        );
+    }
+
+    // 퇴실
+    @PatchMapping("/{checkinId}/checkout")
+    public ResponseEntity<ApiResponse<CheckinResponse>> checkout(@PathVariable Long checkinId){
+        return ResponseEntity.ok(
+            ApiResponse.success(
+                "퇴실 완료",
+                checkinService.checkout(checkinId)
             )
         );
     }

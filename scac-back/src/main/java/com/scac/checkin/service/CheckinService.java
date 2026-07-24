@@ -30,7 +30,7 @@ public class CheckinService {
 
     // 입실 과정
     @Transactional
-    public CheckinResponse checkIn(CheckinRequest request){
+    public CheckinResponse checkin(CheckinRequest request){
         // 사용자 존재 확인
         User user = userRepository.findById(request.getUserId())
             .orElseThrow(() ->
@@ -92,6 +92,30 @@ public class CheckinService {
         );
 
         checkin.comeBack();
+
+        return CheckinResponse.from(checkin);
+    }
+
+    // 퇴실 과정
+    @Transactional
+    public CheckinResponse checkout(Long checkinId){
+        // 입실 정보 조회
+        Checkin checkin = checkinRepository.findById(checkinId)
+            .orElseThrow(() ->
+                new ResourceNotFoundException("입실 정보가 없습니다")
+        );
+
+        // 좌석 조회
+        Seat seat = seatRepository.findById(checkin.getSeatId())
+            .orElseThrow(() ->
+                new ResourceNotFoundException("존재하지 않는 좌석입니다")
+        );
+
+        // 퇴실 처리
+        checkin.checkout();
+
+        // 좌석 반환
+        seat.releaseUser();
 
         return CheckinResponse.from(checkin);
     }

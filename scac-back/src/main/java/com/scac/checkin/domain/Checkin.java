@@ -64,4 +64,14 @@ public class Checkin {
         this.checkinStatus = CheckinStatus.USING;
         this.awayEndAt = LocalDateTime.now();
     }
+
+    // 퇴실
+    public void checkout(){
+        if(this.checkinStatus == CheckinStatus.CHECKOUT){
+            throw new BusinessException("이미 퇴실 상태입니다");
+        }
+
+        this.checkinStatus = CheckinStatus.CHECKOUT;
+        this.checkoutAt = LocalDateTime.now();
+    }
 }
