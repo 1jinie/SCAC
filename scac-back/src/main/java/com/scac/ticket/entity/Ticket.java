@@ -65,16 +65,17 @@ public class Ticket {
       Integer ticketTime,
       Integer ticketPrice,
       Integer validDays,
-      TargetType targetType
+      TargetType targetType,
+      boolean active
   ) {
-    validate(ticketName, ticketType, ticketTime, ticketPrice, validDays, targetType);
+    validate(ticketName, ticketType, ticketTime, ticketPrice, validDays,targetType,active);
     this.ticketName = ticketName;
     this.ticketType = ticketType;
     this.ticketTime = ticketTime;
     this.ticketPrice = ticketPrice;
     this.validDays = validDays;
     this.targetType = targetType;
-    this.active = true;
+    this.active =active;
   }
 
   public static Ticket create(
@@ -84,6 +85,7 @@ public class Ticket {
       Integer ticketPrice,
       Integer validDays,
       TargetType targetType
+      
   ) {
     return new Ticket(
         ticketName,
@@ -91,7 +93,8 @@ public class Ticket {
         ticketTime,
         ticketPrice,
         validDays,
-        targetType
+        targetType,
+        true
     );
   }
 
@@ -101,15 +104,17 @@ public class Ticket {
       Integer ticketTime,
       Integer ticketPrice,
       Integer validDays,
-      TargetType targetType
+      TargetType targetType,
+      boolean active
   ) {
-    validate(ticketName, ticketType, ticketTime, ticketPrice, validDays, targetType);
+    validate(ticketName, ticketType, ticketTime, ticketPrice, validDays, targetType,active);
     this.ticketName = ticketName;
     this.ticketType = ticketType;
     this.ticketTime = ticketTime;
     this.ticketPrice = ticketPrice;
     this.validDays = validDays;
     this.targetType = targetType;
+    this.active = active;
   }
 
   public void activate() {
@@ -142,7 +147,8 @@ public class Ticket {
       Integer ticketTime,
       Integer ticketPrice,
       Integer validDays,
-      TargetType targetType
+      TargetType targetType,
+      boolean active
   ) {
     if (ticketName == null || ticketName.isBlank()) {
       throw new IllegalArgumentException("이용권 이름은 필수입니다.");

@@ -1,3 +1,4 @@
+import Pagination from '../../../components/common/Pagination';
 import {
   PAYMENT_METHOD_LABELS,
   PAYMENT_STATUS_LABELS,
@@ -8,6 +9,9 @@ export default function AdminPaymentList({
   payments,
   selectedPayment,
   onPaymentSelect,
+  totalPages,
+  setCurrentPage,
+  currentPage,
 }) {
   return (
     <section className="admin_panel admin_payment_list_panel">
@@ -77,6 +81,11 @@ export default function AdminPaymentList({
           </tbody>
         </table>
       </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </section>
   );
 }

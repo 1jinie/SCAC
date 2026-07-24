@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.scac.global.response.ApiResponse;
 
+// 스프링 터미널 로그를 확인해주세요
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
