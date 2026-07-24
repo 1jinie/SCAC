@@ -35,12 +35,12 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_status", nullable = false, length = 20)
-    private UserStatus status; // ACTIVE, SUSPENDED, BANNED
+    private UserStatus userStatus; // ACTIVE, SUSPENDED, BANNED
 
     @Column(name = "penalty_end_date")
     private LocalDate penaltyEndDate; // 정지 해제 날짜 (DATE)
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false, insertable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
@@ -48,18 +48,35 @@ public class User {
         this.createdAt = LocalDateTime.now();
         if (this.isMember == null) this.isMember = false;
         if (this.role == null) this.role = UserRole.USER;
-        if (this.status == null) this.status = UserStatus.ACTIVE;
+        if (this.userStatus == null) this.userStatus = UserStatus.ACTIVE;
     }
 
     @Builder
     public User(String phoneNumber, String password, Boolean isMember,
-                UserRole role, UserStatus status, LocalDate penaltyEndDate) {
+                UserRole role, UserStatus userStatus, LocalDate penaltyEndDate) {
         this.phoneNumber = phoneNumber;
         this.password = password;
         this.isMember = isMember != null ? isMember : false;
         this.role = role != null ? role : UserRole.USER;
-        this.status = status != null ? status : UserStatus.ACTIVE;
+        this.userStatus = userStatus != null ? userStatus : UserStatus.ACTIVE;
         this.penaltyEndDate = penaltyEndDate;
+    }
+
+    public void activate() {
+    this.userStatus = UserStatus.ACTIVE;
+    this.penaltyEndDate = null;
+    }
+
+    public void ban() {
+        this.userStatus = UserStatus.BANNED;
+    }
+
+    public void changeRole(UserRole role) {
+        this.role = role;
+    }
+
+    public void completeMembership() {
+        this.isMember = true;
     }
 
     // ================= 비즈니스 로직 메서드 ================= //
@@ -68,9 +85,9 @@ public class User {
      * 패널티 정지 자동 해제 검증 (LocalDate 기준)
      */
     public boolean checkAndReleaseSuspension() {
-        if (this.status == UserStatus.SUSPENDED) {
+        if (this.userStatus == UserStatus.SUSPENDED) {
             if (this.penaltyEndDate != null && LocalDate.now().isAfter(this.penaltyEndDate)) {
-                this.status = UserStatus.ACTIVE;
+                this.userStatus = UserStatus.ACTIVE;
                 this.penaltyEndDate = null;
                 return false;
             }
@@ -83,7 +100,7 @@ public class User {
      * 관리자 정지 부여 (LocalDate 기준)
      */
     public void applyPenalty(LocalDate endDate) {
-        this.status = UserStatus.SUSPENDED;
+        this.userStatus = UserStatus.SUSPENDED;
         this.penaltyEndDate = endDate;
     }
 
