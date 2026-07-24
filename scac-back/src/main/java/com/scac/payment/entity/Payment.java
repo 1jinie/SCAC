@@ -109,13 +109,13 @@ public class Payment {
   }
 
   public void cancel(String cancelReason) {
-    if (status == PaymentStatus.CANCELLED) {
+    if (status == PaymentStatus.CANCELED) {
       throw new IllegalStateException("이미 취소된 결제입니다.");
     }
     if (status != PaymentStatus.PAID) {
     throw new IllegalStateException("결제 완료 상태에서만 취소할 수 있습니다.");
   }
-    this.status = PaymentStatus.CANCELLED;
+    this.status = PaymentStatus.CANCELED;
     this.cancelReason = cancelReason;
     this.cancelledAt = LocalDate.now();
   }

@@ -6,6 +6,7 @@ import AdminPaymentDetail from './components/AdminPaymentDetail';
 import AdminPaymentList from './components/AdminPaymentList';
 import AdminPaymentSearch from './components/AdminPaymentSearch';
 import './css/AdminPaymentPage.css';
+import { formatPrice } from '../../utils/formatter';
 
 export default function AdminPaymentPage() {
   const payments = paymentStore((state) => state.payments);
@@ -46,10 +47,10 @@ export default function AdminPaymentPage() {
 
         if (payment.status === 'PAID') {
           result.completed += 1;
-          result.totalAmount += Number(payment.paymentAmount ?? 0);
+          result.totalAmount += Number(payment.amount ?? 0);
         }
 
-        if (payment.status === 'CANCELLED') {
+        if (payment.status === 'CANCELED') {
           result.canceled += 1;
         }
 
@@ -98,7 +99,7 @@ export default function AdminPaymentPage() {
       {
         key: 'sales',
         label: '총 결제 금액',
-        value: summary.totalAmount,
+        value: formatPrice(summary.totalAmount),
         unit: '원',
         description: '완료 결제 기준',
         color: 'dark',
