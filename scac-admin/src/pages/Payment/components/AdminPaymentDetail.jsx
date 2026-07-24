@@ -85,7 +85,7 @@ export default function AdminPaymentDetail({
         </div>
       </dl>
 
-      {selectedPayment.status === 'COMPLETED' && (
+      {selectedPayment.status === 'PAID' && (
         <div className="admin_payment_actions">
           <p className="admin_payment_cancel_notice">
             결제 취소 후에는 되돌릴 수 없습니다. 결제 정보를 확인한 후 처리해

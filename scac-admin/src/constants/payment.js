@@ -6,8 +6,9 @@
 
 // 결제 상태
 export const PAYMENT_STATUS_LABELS = {
-  COMPLETED: '결제 완료',
-  CANCELED: '결제 취소',
+  PENDING: '결제 진행 중',
+  PAID: '결제 완료',
+  CANCELLED: '결제 취소',
   FAILED: '결제 실패',
 };
 

@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "payment")
+@Table(name = "payment_table")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Payment {
 
@@ -56,7 +56,7 @@ public class Payment {
   @Column(name = "payment_key", length = 100)
   private String paymentKey;
 
-  @Column(name = "cancel_reason", length = 100)
+  @Column(name = "cancel_reason", length = 255)
   private String cancelReason;
 
   @Column(name = "cancelled_at")
@@ -112,7 +112,9 @@ public class Payment {
     if (status == PaymentStatus.CANCELLED) {
       throw new IllegalStateException("이미 취소된 결제입니다.");
     }
-
+    if (status != PaymentStatus.PAID) {
+    throw new IllegalStateException("결제 완료 상태에서만 취소할 수 있습니다.");
+  }
     this.status = PaymentStatus.CANCELLED;
     this.cancelReason = cancelReason;
     this.cancelledAt = LocalDate.now();
