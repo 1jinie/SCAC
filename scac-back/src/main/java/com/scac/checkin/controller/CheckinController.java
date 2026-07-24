@@ -45,5 +45,15 @@ public class CheckinController {
             )
         );
     }
-    
+
+    // 외출 복귀
+    @PatchMapping("/{checkinId}/comeback")
+    public ResponseEntity<ApiResponse<CheckinResponse>> comeBack(@PathVariable Long checkinId){
+        return ResponseEntity.ok(
+            ApiResponse.success(
+                "외출 복귀 완료",
+                checkinService.comeBack(checkinId)
+            )
+        );
+    }
 }

@@ -72,4 +72,17 @@ public class CheckinService {
 
         return CheckinResponse.from(checkin);
     }
+
+    // 외출 복귀 과정
+    @Transactional
+    public CheckinResponse comeBack(Long checkinId){
+        Checkin checkin = checkinRepository.findById(checkinId)
+            .orElseThrow(() ->
+                new ResourceNotFoundException("외출 정보가 없습니다")
+        );
+
+        checkin.comeBack();
+
+        return CheckinResponse.from(checkin);
+    }
 }

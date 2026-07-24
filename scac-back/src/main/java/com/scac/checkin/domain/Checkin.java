@@ -54,4 +54,14 @@ public class Checkin {
         this.checkinStatus = CheckinStatus.AWAY;
         this.awayStartAt = LocalDateTime.now();
     }
+
+    // 외출 복귀
+    public void comeBack(){
+        if(this.checkinStatus != CheckinStatus.AWAY){
+            throw new BusinessException("현재 외출 상태가 아닙니다");
+        }
+
+        this.checkinStatus = CheckinStatus.USING;
+        this.awayEndAt = LocalDateTime.now();
+    }
 }
