@@ -1,5 +1,5 @@
 package com.scac.auth.dto;
 
-public class TokenRes {
+public class LoginRes {
     
 }
