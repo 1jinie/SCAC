@@ -28,11 +28,11 @@ public class Checkin {
     private Long seatId;
     private LocalDateTime checkinAt;
     private LocalDateTime awayStartAt;
+    private LocalDateTime awayEndAt;
     private LocalDateTime checkoutAt;
 
     @Enumerated(EnumType.STRING)
     private CheckinStatus checkinStatus;
-    private LocalDateTime createdAt;
 
     public Checkin(
         Long userId, Long seatId, Long usageId, LocalDateTime checkinAt, CheckinStatus checkinStatus){

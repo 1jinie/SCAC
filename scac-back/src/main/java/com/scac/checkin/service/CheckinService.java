@@ -15,10 +15,12 @@ import com.scac.seat.repository.SeatRepository;
 import com.scac.user.entity.User;
 import com.scac.user.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CheckinService {
     private final UserRepository userRepository;
     private final SeatRepository seatRepository;
@@ -52,8 +54,8 @@ public class CheckinService {
             CheckinStatus.USING
         );
 
-        checkinRepository.save(checkin);
+        Checkin savedCheckin = checkinRepository.save(checkin);
 
-        return CheckinResponse.from(checkin);
+        return CheckinResponse.from(savedCheckin);
     }
 }
