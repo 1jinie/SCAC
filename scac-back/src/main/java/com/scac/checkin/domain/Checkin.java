@@ -3,6 +3,7 @@ package com.scac.checkin.domain;
 import java.time.LocalDateTime;
 
 import com.scac.global.enums.CheckinStatus;
+import com.scac.global.exception.BusinessException;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -34,6 +35,7 @@ public class Checkin {
     @Enumerated(EnumType.STRING)
     private CheckinStatus checkinStatus;
 
+    // 입실
     public Checkin(
         Long userId, Long seatId, Long usageId, LocalDateTime checkinAt, CheckinStatus checkinStatus){
             this.userId = userId;
@@ -41,5 +43,15 @@ public class Checkin {
             this.usageId = usageId;
             this.checkinAt = checkinAt;
             this.checkinStatus = checkinStatus;
+    }
+
+    // 외출
+    public void goAway(){
+        if(this.checkinStatus != CheckinStatus.USING){
+            throw new BusinessException("현재 입실 상태가 아닙니다");
+        }
+
+        this.checkinStatus = CheckinStatus.AWAY;
+        this.awayStartAt = LocalDateTime.now();
     }
 }

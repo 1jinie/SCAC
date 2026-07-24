@@ -20,13 +20,14 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class CheckinService {
     private final UserRepository userRepository;
     private final SeatRepository seatRepository;
     // private final TicketUsageRepository ticketUsageRepository;
     private final CheckinRepository checkinRepository;
 
+    // 입실 과정
+    @Transactional
     public CheckinResponse checkIn(CheckinRequest request){
         // 사용자 확인
         User user = userRepository.findById(request.getUserId())
@@ -57,5 +58,18 @@ public class CheckinService {
         Checkin savedCheckin = checkinRepository.save(checkin);
 
         return CheckinResponse.from(savedCheckin);
+    }
+
+    // 외출 과정
+    @Transactional
+    public CheckinResponse goAway(Long checkinId){
+        Checkin checkin = checkinRepository.findById(checkinId)
+            .orElseThrow(() ->
+                new ResourceNotFoundException("입실 정보가 없습니다")
+        );
+        
+        checkin.goAway();
+
+        return CheckinResponse.from(checkin);
     }
 }

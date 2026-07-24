@@ -11,6 +11,8 @@ import com.scac.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -29,6 +31,17 @@ public class CheckinController {
             ApiResponse.success(
                 "입실이 완료되었습니다",
                 checkinService.checkIn(request)
+            )
+        );
+    }
+
+    // 외출
+    @PatchMapping("/{checkinId}/away")
+    public ResponseEntity<ApiResponse<CheckinResponse>> goAway(@PathVariable Long checkinId){
+        return ResponseEntity.ok(
+            ApiResponse.success(
+                "외출처리 완료",
+                checkinService.goAway(checkinId)
             )
         );
     }
