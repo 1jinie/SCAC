@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { seatStore } from '../../store/seatStore';
 import { checkInStore } from '../../store/checkInStore';
 import InOutModal from '../../components/modal/InOutModal';
 import '../../styles/Home.css';
+import { useResetStore } from '../../hooks/useResetStore';
 
 function HomePage() {
   const [modalType, setModalType] = useState(null);
@@ -15,6 +16,7 @@ function HomePage() {
   const updateCheckOut = checkInStore((state) => state.updateCheckOut);
   const checkOutSeat = seatStore((state) => state.checkOutSeat);
   const seats = seatStore((state) => state.seats);
+  const resetAll = useResetStore((state) => state.resetAll);
   const navigate = useNavigate();
 
   const availableSeats = seats.filter(
@@ -79,6 +81,10 @@ function HomePage() {
         break;
     }
   };
+  useEffect(() => {
+    //홈으로 갈때마다 선택좌석, 결제수단 초기화
+    resetAll();
+  }, [resetAll]);
 
   return (
     <div className="kiosk_container">
