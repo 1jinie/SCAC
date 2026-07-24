@@ -2,6 +2,7 @@ package com.scac.user.controller;
 
 import com.scac.global.response.ApiResponse;
 import com.scac.user.dto.*;
+import com.scac.user.entity.User;
 import com.scac.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class UserController {
      * 1. 일반 회원가입
      */
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<UserRes>> signUp(
+    public ResponseEntity<ApiResponse<User>> signUp(
             @Valid @RequestBody UserSignUpReq req
     ) {
         UserRes userRes = userService.signUp(req);
@@ -34,7 +35,7 @@ public class UserController {
      */
     @PostMapping("/guest")
     public ResponseEntity<ApiResponse<UserRes>> registerGuest(
-            @Valid @RequestBody GuestRegisterReq req
+            @Valid @RequestBody RegisterReq req
     ) {
         UserRes guestRes = userService.registerGuest(req);
 
@@ -77,7 +78,7 @@ public class UserController {
     @PatchMapping("/{userId}/entry-password")
     public ResponseEntity<ApiResponse<Void>> updateEntryPassword(
             @PathVariable Long userId,
-            @Valid @RequestBody EntryPasswordUpdateReq req
+            @Valid @RequestBody PasswordUpdateReq req
     ) {
         userService.updateEntryPassword(userId, req);
 

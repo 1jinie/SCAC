@@ -84,6 +84,7 @@ public class User {
     /**
      * 패널티 정지 자동 해제 검증 (LocalDate 기준)
      */
+    // 정지는 관리자가 직접 해제하거나 스케줄러가 해제한다면 삭제할 메서드
     public boolean checkAndReleaseSuspension() {
         if (this.userStatus == UserStatus.SUSPENDED) {
             if (this.penaltyEndDate != null && LocalDate.now().isAfter(this.penaltyEndDate)) {
