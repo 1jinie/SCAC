@@ -5,11 +5,11 @@ export const useTicketStore = create((set) => ({
   selectedTicketId: null,
 
   //선택한 티켓 타입('SEAT', 'MEETING_ROOM')
-  purchaseType: null,
+  targetType: null,
 
   selectTicket: (ticketId) => set({ selectedTicketId: ticketId }),
 
-  setPurchaseType: (purchaseType) => set({ purchaseType: purchaseType }),
+  setPurchaseType: (targetType) => set({ targetType: targetType }),
 
-  resetStore: () => set({ selectedTicketId: null, purchaseType: null }),
+  resetStore: () => set({ selectedTicketId: null, targetType: null }),
 }));
