@@ -48,13 +48,13 @@ public class UserController {
      * 3. 회원 프로필 조회 (마이페이지)
      */
     @GetMapping("/{userId}")
-    public ResponseEntity<ApiResponse<User>> findUser(
+    public ResponseEntity<ApiResponse<UserRes>> findUser(
             @PathVariable Long userId
     ) {
         User user = userService.findUser(userId);
 
         return ResponseEntity.ok(
-                ApiResponse.success("회원 정보 조회를 완료했습니다.", user)
+                ApiResponse.success("회원 정보 조회를 완료했습니다.", UserRes.from(user))
         );
     }
 
