@@ -73,7 +73,7 @@ export default function TossPaymentWidget({
     return () => {
       isMounted = false;
     };
-  }, [amount, customerKey, orderId, orderName]);
+  }, [amount, customerKey]);
 
   const handlePayment = async () => {
     if (!widgets || isPaying) return;
@@ -91,6 +91,7 @@ export default function TossPaymentWidget({
         customerName,
       });
     } catch (error) {
+      console.error('토스 위젯 렌더링 오류:', error);
       setErrorMessage(error.message ?? '결제를 요청하지 못했습니다.');
       setIsPaying(false);
     }
@@ -106,6 +107,8 @@ export default function TossPaymentWidget({
           {errorMessage}
         </p>
       )}
+      <p>isReady: {String(isReady)}</p>
+      <p>isPaying: {String(isPaying)}</p>
 
       <button
         type="button"

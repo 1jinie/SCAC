@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import paymentApi from '../../api/paymentApi';
+import { paymentApi } from '../../api/paymentApi';
 import ProceedPayment from './components/ProceedPayment';
 
 export default function TossPaymentResultPage() {
@@ -10,7 +10,7 @@ export default function TossPaymentResultPage() {
   useEffect(() => {
     const confirmPayment = async () => {
       try {
-        const result = await paymentApi.confirm({
+        const result = await paymentApi.confirmPayment({
           paymentKey: searchParams.get('paymentKey'),
           orderId: searchParams.get('orderId'),
           amount: Number(searchParams.get('amount')),
@@ -34,5 +34,9 @@ export default function TossPaymentResultPage() {
     confirmPayment();
   }, [navigate, searchParams]);
 
-  return <ProceedPayment />;
+  return (
+    <div>
+      <p>결제를 승인하고 있습니다...</p>
+    </div>
+  );
 }

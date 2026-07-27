@@ -15,7 +15,7 @@ Content-Type: application/json
 
 {
   "paymentKey": "{toss.secret-key입력}",
-  "orderId": "SCAC-2d237a39-d426-4d73-a6fc-adf70f98aaf6",
+  "orderId": "SCAC-c87a6f3a-2321-475c-a605-1253d4277145",
   "amount": 4000
 }
 
