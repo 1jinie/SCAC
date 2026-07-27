@@ -68,7 +68,7 @@ public class MeetingRoomReservationController {
         return ResponseEntity.ok(
             ApiResponse.success(
                 "예약 가능 시간을 조회했습니다",
-                reservationService.getAbailability(roomId, date)
+                reservationService.getAvailability(roomId, date)
             )
         );
     }

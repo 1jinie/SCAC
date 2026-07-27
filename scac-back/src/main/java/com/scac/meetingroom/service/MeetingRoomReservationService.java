@@ -102,7 +102,7 @@ public class MeetingRoomReservationService {
     }
 
     // 예약 가능 시간 조회
-    public List<MeetingRoomAvailabilityResponse> getAbailability(Long roomId, LocalDate date){
+    public List<MeetingRoomAvailabilityResponse> getAvailability(Long roomId, LocalDate date){
         // 스터디룸 존재 확인
         meetingRoomRepository.findById(roomId)
             .orElseThrow(() ->
