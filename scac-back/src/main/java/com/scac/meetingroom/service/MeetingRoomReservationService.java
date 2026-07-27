@@ -1,6 +1,7 @@
 package com.scac.meetingroom.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import com.scac.global.enums.ReservationStatus;
 import com.scac.global.exception.BusinessException;
 import com.scac.global.exception.ResourceNotFoundException;
 import com.scac.meetingroom.domain.MeetingRoomReservation;
+import com.scac.meetingroom.dto.MeetingRoomAvailabilityResponse;
 import com.scac.meetingroom.dto.MeetingRoomReservationRequest;
 import com.scac.meetingroom.dto.MeetingRoomReservationResponse;
 import com.scac.meetingroom.repository.MeetingRoomRepository;
@@ -97,5 +99,42 @@ public class MeetingRoomReservationService {
         reservation.cancel();
 
         return MeetingRoomReservationResponse.from(reservation);
+    }
+
+    // 예약 가능 시간 조회
+    public List<MeetingRoomAvailabilityResponse> getAbailability(Long roomId, LocalDate date){
+        // 스터디룸 존재 확인
+        meetingRoomRepository.findById(roomId)
+            .orElseThrow(() ->
+                new ResourceNotFoundException("없는 스터디룸입니다")
+        );
+
+        // 해당 날짜 예약 조회
+        List<MeetingRoomReservation> reservations =
+            reservationRepository.findByRoomIdAndReservationDateAndStatusIn(roomId, date, List.of(ReservationStatus.CONFIRMED, ReservationStatus.IN_USE));
+        
+        List<MeetingRoomAvailabilityResponse> result = new ArrayList<>();
+
+        // 운영시간 08 ~ 24
+        for(int hour = 8; hour < 24; hour++){
+            boolean available = true;
+
+            for(MeetingRoomReservation reservation : reservations){
+                // 예약시간이 겹치는 경우
+                if(hour >= reservation.getStartHour() && hour < reservation.getEndHour()){
+                    available = false;
+                    break;
+                }
+            }
+
+            result.add(
+                new MeetingRoomAvailabilityResponse(
+                    hour,
+                    hour + 1,
+                    available)
+            );
+        }
+
+        return result;
     }
 }

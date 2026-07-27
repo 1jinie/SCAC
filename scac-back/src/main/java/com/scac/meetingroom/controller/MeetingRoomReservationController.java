@@ -4,12 +4,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.scac.global.response.ApiResponse;
+import com.scac.meetingroom.dto.MeetingRoomAvailabilityResponse;
 import com.scac.meetingroom.dto.MeetingRoomReservationRequest;
 import com.scac.meetingroom.dto.MeetingRoomReservationResponse;
 import com.scac.meetingroom.service.MeetingRoomReservationService;
 
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -25,6 +29,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class MeetingRoomReservationController {
     private final MeetingRoomReservationService reservationService;
 
+    // 전체 예약 조회
     @GetMapping
     public ResponseEntity<ApiResponse<List<MeetingRoomReservationResponse>>> getAllReservations() {
         return ResponseEntity.ok(
@@ -35,7 +40,7 @@ public class MeetingRoomReservationController {
         );
     }
     
-
+    // 스터디룸 예약
     @PostMapping("/reservations")
     public ResponseEntity<ApiResponse<MeetingRoomReservationResponse>> reserve(@RequestBody MeetingRoomReservationRequest request) {        
         return ResponseEntity.ok(
@@ -46,6 +51,7 @@ public class MeetingRoomReservationController {
         );
     }
 
+    // 예약 취소
     @PatchMapping("/reservations/{reservationId}/cancel")
     public ResponseEntity<ApiResponse<MeetingRoomReservationResponse>> cancel(@PathVariable Long reservationId){
         return ResponseEntity.ok(
@@ -55,5 +61,17 @@ public class MeetingRoomReservationController {
             )
         );
     }
+
+    // 예약 가능 시간 조회
+    @GetMapping("/{roomId}/availability")
+    public ResponseEntity<ApiResponse<List<MeetingRoomAvailabilityResponse>>> getAvailability(@PathVariable Long roomId, @RequestParam LocalDate date) {
+        return ResponseEntity.ok(
+            ApiResponse.success(
+                "예약 가능 시간을 조회했습니다",
+                reservationService.getAbailability(roomId, date)
+            )
+        );
+    }
+    
     
 }

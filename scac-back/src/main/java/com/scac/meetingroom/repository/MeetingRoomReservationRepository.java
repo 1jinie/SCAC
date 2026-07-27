@@ -16,4 +16,11 @@ public interface MeetingRoomReservationRepository extends JpaRepository<MeetingR
             Integer endHour,
             Integer startHour
     );
+
+    // 예약된 시간 조회
+    List<MeetingRoomReservation> findByRoomIdAndReservationDateAndStatusIn(
+            Long roomId,
+            LocalDate reservationDate,
+            List<ReservationStatus> statuses
+    );
 }
