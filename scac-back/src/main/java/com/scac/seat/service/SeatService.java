@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.scac.global.exception.ResourceNotFoundException;
 import com.scac.seat.domain.Seat;
+import com.scac.seat.dto.SeatOccupiedResponse;
 import com.scac.seat.dto.SeatResponse;
 import com.scac.seat.repository.SeatRepository;
 
@@ -30,5 +31,11 @@ public class SeatService {
                 new ResourceNotFoundException("해당 좌석이 존재하지 않습니다")
             );
         return SeatResponse.from(seat);
+    }
+
+    // 사용중인 좌석 조회
+    public List<SeatOccupiedResponse> getOccupiedSeats(){
+        return seatRepository.findByCurrentUserIdIsNotNull()
+            .stream().map(SeatOccupiedResponse::from).toList();
     }
 }

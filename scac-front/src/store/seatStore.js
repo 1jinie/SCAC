@@ -1,23 +1,38 @@
 import { create } from 'zustand';
-import { seats } from '../data/Seats';
+import { seatApi } from '../api/seatApi';
 import { seatLayouts } from '../constants/SeatLayout';
 
-const seatData = seats.map((seat) => {
-  const layout = seatLayouts.find(
-    (item) => item.id === seat.id && item.type === seat.type,
-  );
-
-  return {
-    ...seat,
-    ...layout,
-  };
-});
-
 export const seatStore = create((set) => ({
-  // 현재 선택 좌석 id
-  seats: seatData,
   // 좌석 선택, 초기화
+  seats: [],
   selectedSeat: null,
+
+  // 좌석 조회
+  fetchSeats: async () => {
+    const response = await seatApi.getSeatList();
+    const statusMap = {
+      AVB: 'available',
+      USR: 'using',
+      BRK: 'repair',
+      UNA: 'unavailable',
+    };
+    const seats = response.data.data.map((seat) => {
+      const layout = seatLayouts.find(
+        (item) => item.id === seat.seatId && item.type === 'seat',
+      );
+      return {
+        id: seat.seatId,
+        name: seat.seatNumber,
+        type: 'seat',
+        status: statusMap[seat.status],
+        currentUserId: seat.currentUserId,
+        ...layout,
+      };
+    });
+    set({
+      seats,
+    });
+  },
 
   selectSeat: (seatId) =>
     set((state) => ({
