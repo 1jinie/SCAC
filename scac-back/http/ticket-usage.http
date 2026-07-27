@@ -1,0 +1,22 @@
+@baseUrl = http://localhost:8888
+
+### 사용자 이용권 발급
+POST {{baseUrl}}/api/ticket-usages
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "ticketId": 1
+}
+
+### 전체 이용권 상품 조회
+GET {{baseUrl}}/api/tickets
+
+### 이용권 상품 단건 조회
+GET {{baseUrl}}/api/tickets/1
+
+### 사용자 보유 이용권 전체 조회
+GET http://localhost:8888/api/ticket-usages/users/1
+
+### 보유 이용권 단건 조회
+GET http://localhost:8888/api/ticket-usages/1

@@ -18,4 +18,18 @@ export const paymentApi = {
     );
     return response.data.data;
   },
+
+  payPrepare: async (data) => {
+    const response = await axiosInstance.post(
+      `/api/payments/tossPrepare`,
+      data,
+    );
+    return response.data.data;
+  },
+
+  payConfirm: async (data) => {
+    const response = await axiosInstance.post('/payments/tossConfirm', data);
+
+    return response.data.data;
+  },
 };

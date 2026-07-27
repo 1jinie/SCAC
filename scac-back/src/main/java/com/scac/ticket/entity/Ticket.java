@@ -43,8 +43,6 @@ public class Ticket {
   @Column(name = "ticket_price", nullable = false)
   private Integer ticketPrice;
 
-  @Column(name = "valid_days")
-  private Integer validDays;
 
   @Column(name = "is_active", nullable = false)
   private boolean active;
@@ -73,7 +71,7 @@ public class Ticket {
     this.ticketType = ticketType;
     this.ticketTime = ticketTime;
     this.ticketPrice = ticketPrice;
-    this.validDays = validDays;
+    
     this.targetType = targetType;
     this.active =active;
   }
@@ -112,7 +110,7 @@ public class Ticket {
     this.ticketType = ticketType;
     this.ticketTime = ticketTime;
     this.ticketPrice = ticketPrice;
-    this.validDays = validDays;
+    
     this.targetType = targetType;
     this.active = active;
   }

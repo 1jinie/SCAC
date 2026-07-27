@@ -1,0 +1,40 @@
+### 결제 주문 생성
+POST http://localhost:8888/api/payments
+Content-Type: application/json
+
+{
+  "ticketId": 1,
+  "userId": 1,
+  "amount": 4000,
+  "paymentMethod": "CARD"
+}
+
+### 결제 승인
+POST http://localhost:8888/api/payments/confirm
+Content-Type: application/json
+
+{
+  "paymentKey": "{toss.secret-key입력}",
+  "orderId": "SCAC-2d237a39-d426-4d73-a6fc-adf70f98aaf6",
+  "amount": 4000
+}
+
+### 결제 단건 조회
+GET http://localhost:8888/api/payments/2
+
+### 전체 결제 내역 조회
+GET http://localhost:8888/api/payments
+
+### 사용자별 결제 내역 조회
+GET http://localhost:8888/api/payments?userId=1
+
+### 결제 취소
+POST http://localhost:8888/api/payments/1/cancel
+Content-Type: application/json
+
+{
+  "cancelReason": "사용자 요청"
+}
+
+### 결제 내역 삭제
+DELETE http://localhost:8888/api/payments/2

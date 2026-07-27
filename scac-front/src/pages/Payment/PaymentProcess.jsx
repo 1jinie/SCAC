@@ -1,18 +1,18 @@
-import { useNavigate } from 'react-router-dom';
-import { useTicketStore } from '../../store/ticketStore';
-import SeatPayment from './components/SeatPayment';
-import WaitingPayment from './components/WaitingPayment';
 import { useEffect, useState } from 'react';
-import ProceedPayment from './components/ProceedPayment';
-import './css/PaymentProcess.css';
+import { useNavigate } from 'react-router-dom';
 import { usePaymentStore } from '../../store/paymentStore';
+import { useTicketStore } from '../../store/ticketStore';
+import ProceedPayment from './components/ProceedPayment';
+import SeatPayment from './components/SeatPayment';
 import StudyRoomPayment from './components/StudyRoomPayment';
+import WaitingPayment from './components/WaitingPayment';
+import './css/PaymentProcess.css';
 
 export default function PaymentProcess() {
   const paymentMethod = usePaymentStore((state) => state.paymentMethod);
   const [isProcessing, setIsProcessing] = useState(false);
   const targetType = useTicketStore((state) => state.targetType);
-  const selectedTicketId = useTicketStore((state) => state.selectedTicketId);
+  // const selectedTicketId = useTicketStore((state) => state.selectedTicketId);
 
   const navi = useNavigate();
   const handlePay = () => {
@@ -32,12 +32,16 @@ export default function PaymentProcess() {
   }, [isProcessing, navi]);
 
   try {
-    const paymentData = {
-      ticketId: selectedTicketId,
-      paymentMethod,
-      targetType,
-    };
+    // const paymentData = {
+    //   ticketId: selectedTicketId,
+    //   paymentMethod,
+    //   targetType,
+    // };
   } catch (error) {}
+
+  // const handlePayPrepare = async () => {
+  //   await paymentApi.payPrepare();
+  // };
 
   return (
     <div className="overlay">

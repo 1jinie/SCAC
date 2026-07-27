@@ -4,33 +4,28 @@ import com.scac.global.enums.PaymentMethod;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class PaymentRequestDTO {
-    @NotNull
-    private final Long usageId;
 
-    @NotNull
-    private final Long ticketId;
+  @NotNull
+  private Long ticketId;
 
-    @NotNull
-    private final Long userId;
+  @NotNull
+  private Long userId;
 
-    @NotNull
-    @Positive
-    private final Integer amount;
+  @NotNull
+  @Positive
+  private Integer amount;
 
-    @NotNull
-    private final PaymentMethod paymentMethod;
-
-    @Size(max = 100)
-    private final String approvalNum;
-
-    @Size(max = 100)
-    private final String paymentKey;
-
+  @NotNull
+  private PaymentMethod paymentMethod;
 }
+
