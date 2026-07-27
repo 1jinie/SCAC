@@ -1,5 +1,6 @@
 package com.scac.meetingroom.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -23,6 +24,22 @@ public class MeetingRoomReservationService {
     private final MeetingRoomRepository meetingRoomRepository;
     private final MeetingRoomReservationRepository reservationRepository;
 
+    // 예약 전체 조회
+    public List<MeetingRoomReservationResponse> getAllReservations(){
+        return reservationRepository.findAll()
+            .stream().map(MeetingRoomReservationResponse::from).toList();
+    }
+
+    // 예약 단건 조회
+    public MeetingRoomReservationResponse getReservation(Long reservationId){
+        MeetingRoomReservation reservation = reservationRepository.findById(reservationId)
+            .orElseThrow(() -> 
+                new ResourceNotFoundException("존재하지 않는 예약입니다")
+        );
+        
+        return MeetingRoomReservationResponse.from(reservation);
+    }
+
     // 예약 생성
     public MeetingRoomReservationResponse reserve(
         MeetingRoomReservationRequest request
@@ -32,6 +49,11 @@ public class MeetingRoomReservationService {
             .orElseThrow(() -> 
                 new ResourceNotFoundException("없는 스터디룸입니다")    
         );
+
+        // 이전 날짜 예약 불가
+        if(request.getReservationDate().isBefore(LocalDate.now())){
+            throw new BusinessException("이전 날짜는 예약할 수 없습니다");
+        }
 
         // 예약시간 검증
         if(request.getStartHour() >= request.getEndHour()){

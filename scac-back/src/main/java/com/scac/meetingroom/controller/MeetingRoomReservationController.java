@@ -10,16 +10,29 @@ import com.scac.meetingroom.service.MeetingRoomReservationService;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
+import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/meeting-rooms")
 public class MeetingRoomReservationController {
     private final MeetingRoomReservationService reservationService;
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<MeetingRoomReservationResponse>>> getAllReservations() {
+        return ResponseEntity.ok(
+            ApiResponse.success(
+                "전체 예약을 조회했습니다",
+                reservationService.getAllReservations()
+            )
+        );
+    }
+    
 
     @PostMapping("/reservations")
     public ResponseEntity<ApiResponse<MeetingRoomReservationResponse>> reserve(@RequestBody MeetingRoomReservationRequest request) {        
