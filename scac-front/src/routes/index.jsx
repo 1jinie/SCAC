@@ -14,6 +14,7 @@ import Seat from '../pages/Seat/Seat';
 import NonmemberSignup from '../pages/Signup/NonmemberSignup';
 import SignUpPage from '../pages/Signup/Signup';
 import TicketPage from '../pages/Ticket/TicketPage';
+import TossPaymentPage from '../pages/Payment/TossPaymentPage';
 // import DevErrorPage from '../pages/Error/DevErrorPage';
 
 const router = createBrowserRouter([
@@ -51,6 +52,9 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <PaymentMethodPage /> },
           { path: 'process', element: <PaymentProcess /> },
+          { path: 'toss', element: <TossPaymentPage /> },
+          { path: 'toss/success', element: <TossPaymentPage /> },
+          { path: 'toss/fail', element: <TossPaymentPage /> },
 
           { path: 'result/:status', element: <PaymentResult /> },
         ],

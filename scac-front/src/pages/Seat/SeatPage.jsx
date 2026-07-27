@@ -8,6 +8,7 @@ import { checkInStore } from '../../store/checkInStore';
 
 function SeatPage({ mode }) {
   const seats = seatStore((state) => state.seats);
+  const fetchSeats = seatStore((state) => state.fetchSeats);
   const selected = seatStore((state) => state.selectedSeat);
   const user = checkInStore((state) => state.currentUser);
   const addCheckIn = checkInStore((state) => state.addCheckIn);
@@ -15,6 +16,10 @@ function SeatPage({ mode }) {
   const setReservation = reservationStore((state) => state.setReservation);
   const selectSeat = seatStore((state) => state.selectSeat);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchSeats();
+  }, [fetchSeats]);
 
   // 좌석 / 룸 선택 이벤트 정의
   const handleClick = (seat) => {

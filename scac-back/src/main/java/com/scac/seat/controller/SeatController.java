@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.scac.global.response.ApiResponse;
+import com.scac.seat.dto.SeatOccupiedResponse;
 import com.scac.seat.dto.SeatResponse;
 import com.scac.seat.service.SeatService;
 
@@ -14,7 +15,6 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
 
 @RestController
 @RequiredArgsConstructor
@@ -42,5 +42,14 @@ public class SeatController {
         );
     }
     
+    @GetMapping("/occupied")
+    public ResponseEntity<ApiResponse<List<SeatOccupiedResponse>>> getOccupiedSeats() {
+        return ResponseEntity.ok(
+            ApiResponse.success(
+                "현재 사용중인 좌석 조회를 완료했습니다",
+                seatService.getOccupiedSeats()
+            )
+        );
+    }
     
 }

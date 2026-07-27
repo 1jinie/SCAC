@@ -14,8 +14,10 @@ import lombok.Getter;
 @AllArgsConstructor
 public class PaymentResDTO {
     private final Long paymentId;
+    private String orderId;
     private final Long usageId;
     private final Long userId;
+    private final Long ticketId;
     private final Integer amount;
     private final PaymentMethod paymentMethod;
     private final PaymentStatus status;
@@ -29,8 +31,10 @@ public class PaymentResDTO {
   public static PaymentResDTO from(Payment payment) {
     return new PaymentResDTO(
         payment.getPaymentId(),
+        payment.getOrderId(),
         payment.getUsageId(),
         payment.getUserId(),
+        payment.getTicketId(),
         payment.getAmount(),
         payment.getPaymentMethod(),
         payment.getStatus(),

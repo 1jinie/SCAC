@@ -3,7 +3,7 @@ import axiosInstance from './axiosInstance.js';
 export const ticketApi = {
   getTicketList: async () => {
     const response = await axiosInstance.get('/api/tickets');
-    console.log(response);
+
     return response.data.data;
   },
 
