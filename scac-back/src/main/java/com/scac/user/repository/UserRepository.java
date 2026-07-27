@@ -21,9 +21,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 회원가입 중복 검사
     boolean existsByPhoneNumber(String phoneNumber);
 
-    // 회원 여부 확인
-    Optional<User> findByPhoneNumberAndIsMember(String phoneNumber, Boolean isMember);
-
     List<User> findByUserStatus(UserStatus userStatus);
 
     List<User> findByRole(UserRole role);
@@ -33,11 +30,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 정지기간 종료 회원 ACTIVE 변경
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
-        UPDATE User u
-        SET u.userStatus = com.scac.user.entity.UserStatus.ACTIVE,
-            u.penaltyEndDate = null
-        WHERE u.userStatus = com.scac.user.entity.UserStatus.SUSPENDED
-          AND u.penaltyEndDate < :today
+    UPDATE User u
+    SET u.userStatus = :active,
+        u.penaltyEndDate = null
+    WHERE u.userStatus = :suspended
+    AND u.penaltyEndDate < :today
     """)
-    int releaseExpiredSuspensions(LocalDate today);
+    int releaseExpiredSuspensions(
+            UserStatus active,
+            UserStatus suspended,
+            LocalDate today
+    );
 }
