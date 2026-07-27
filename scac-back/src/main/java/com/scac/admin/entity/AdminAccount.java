@@ -1,4 +1,4 @@
-package com.scac.auth.entity;
+package com.scac.admin.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
