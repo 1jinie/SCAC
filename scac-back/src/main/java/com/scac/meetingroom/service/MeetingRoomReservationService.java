@@ -85,4 +85,17 @@ public class MeetingRoomReservationService {
 
         return MeetingRoomReservationResponse.from(reservation);
     }
+
+    // 예약 취소
+    public MeetingRoomReservationResponse cancel(Long reservationId){
+        MeetingRoomReservation reservation =
+            reservationRepository.findById(reservationId)
+                .orElseThrow(() ->
+                    new ResourceNotFoundException("예약 정보가 없습니다")
+                );
+        
+        reservation.cancel();
+
+        return MeetingRoomReservationResponse.from(reservation);
+    }
 }

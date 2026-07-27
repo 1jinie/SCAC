@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.scac.global.enums.ReservationStatus;
+import com.scac.global.exception.BusinessException;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -52,6 +53,14 @@ public class MeetingRoomReservation {
         this.endHour = endHour;
         this.status = ReservationStatus.CONFIRMED;
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void cancel(){
+        if(this.status != ReservationStatus.CONFIRMED){
+            throw new BusinessException("취소할 수 없는 예약입니다");
+        }
+        this.status = ReservationStatus.CANCELED;
         this.updatedAt = LocalDateTime.now();
     }
 }

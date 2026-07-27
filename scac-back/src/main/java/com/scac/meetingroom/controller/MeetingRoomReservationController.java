@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,6 +42,16 @@ public class MeetingRoomReservationController {
             ApiResponse.success(
                 "스터디룸 예약이 완료되었습니다",
                 reservationService.reserve(request)
+            )
+        );
+    }
+
+    @PatchMapping("/reservations/{reservationId}/cancel")
+    public ResponseEntity<ApiResponse<MeetingRoomReservationResponse>> cancel(@PathVariable Long reservationId){
+        return ResponseEntity.ok(
+            ApiResponse.success(
+                "스터디룸 예약 취소가 완료되었습니다",
+                reservationService.cancel(reservationId)
             )
         );
     }
