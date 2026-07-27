@@ -114,6 +114,8 @@ public ResponseEntity<ApiResponse<Map<String, String>>> handleValidation(
       ));
 }
 
+
+
 // 예외처리를 아직 하지 않은 예상못한 에러 500 INTERNAL SERVER ERROR 콘솔창을 확인해주세요
 @ExceptionHandler(Exception.class)
   public ResponseEntity<ApiResponse<Void>> handleException(

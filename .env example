@@ -10,3 +10,4 @@ DB_URL=jdbc:mysql://nam3324.synology.me:33338/scac_db
 DB_USERNAME=아이디
 DB_PASSWORD=비밀번호
 JWT_SECRET=여기에_충분히_긴_랜덤_문자열
+REACT_APP_TOSS_CLIENT_KEY=토스_테스트_클라이언트_키

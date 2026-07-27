@@ -3,11 +3,11 @@ import { ticketApi } from '../../api/ticketApi';
 import SelectButton from '../../components/button/SelectButton';
 import TicketList from './TicketList';
 import './css/TicketPage.css';
-import { useTicketStore } from '../../store/ticketStore';
+// import { useTicketStore } from '../../store/ticketStore';
 
 export default function TicketPage() {
   const [tickets, setTickets] = useState([]);
-  const selectTicket = useTicketStore((state) => state.selectTicket);
+  // const selectTicket = useTicketStore((state) => state.selectTicket);
   useEffect(() => {
     const fetchTickets = async () => {
       try {

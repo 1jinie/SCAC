@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.scac.global.response.ApiResponse;
 import com.scac.payment.dto.PaymentCancelDTO;
+import com.scac.payment.dto.PaymentConfirmDTO;
 import com.scac.payment.dto.PaymentHistoryDTO;
 import com.scac.payment.dto.PaymentRequestDTO;
 import com.scac.payment.dto.PaymentResDTO;
-import com.scac.payment.dto.PaymentStatusUpdateDTO;
 import com.scac.payment.service.PaymentService;
 
 import jakarta.validation.Valid;
@@ -44,15 +44,30 @@ public class PaymentController {
             "/api/payments/" + payment.getPaymentId()
         ))
         .body(ApiResponse.success(
-            "결제를 완료했습니다.",
+            "결제를 요청을 생성했습니다.",
             payment
         ));
   }
 
+  // 결제 승인
+    @PostMapping("/confirm")
+    public ResponseEntity<ApiResponse<PaymentResDTO>> confirm(
+        @Valid @RequestBody PaymentConfirmDTO form
+    ) {
+    PaymentResDTO payment = paymentService.confirm(form);
+
+    return ResponseEntity.ok(
+        ApiResponse.success(
+            "결제 승인을 완료했습니다.",
+            payment
+        )
+    );
+    }
+
   // 특정 결제내역 조회
   @GetMapping("/{paymentId}")
   public ResponseEntity<ApiResponse<PaymentResDTO>> findById(
-      @PathVariable Long paymentId
+      @PathVariable("paymentId") Long paymentId
   ) {
     PaymentResDTO payment = paymentService.findById(paymentId);
 
@@ -67,7 +82,7 @@ public class PaymentController {
   // 모든 결제내역 조회
   @GetMapping
   public ResponseEntity<ApiResponse<List<PaymentHistoryDTO>>> findAll(
-      @RequestParam(required = false) Long userId
+      @RequestParam(name = "userId", required = false) Long userId
   ) {
     List<PaymentHistoryDTO> payments = paymentService.findAll(userId);
 
@@ -79,27 +94,10 @@ public class PaymentController {
     );
   }
 
-  // 결제 상태 변경
-  @PatchMapping("/{paymentId}/status")
-  public ResponseEntity<ApiResponse<PaymentResDTO>> updateStatus(
-      @PathVariable Long paymentId,
-      @Valid @RequestBody PaymentStatusUpdateDTO form
-  ) {
-    PaymentResDTO payment =
-        paymentService.updateStatus(paymentId, form);
-
-    return ResponseEntity.ok(
-        ApiResponse.success(
-            "결제 상태 변경을 완료했습니다.",
-            payment
-        )
-    );
-  }
-
   // 결제 취소
   @PatchMapping("/{paymentId}/cancel")
   public ResponseEntity<ApiResponse<PaymentResDTO>> cancel(
-      @PathVariable Long paymentId,
+      @PathVariable("paymentId") Long paymentId,
       @Valid @RequestBody PaymentCancelDTO form
   ) {
     PaymentResDTO payment =
@@ -116,7 +114,7 @@ public class PaymentController {
   // 결제내역 삭제
   @DeleteMapping("/{paymentId}")
   public ResponseEntity<ApiResponse<Void>> delete(
-      @PathVariable Long paymentId
+      @PathVariable("paymentId") Long paymentId
   ) {
     paymentService.delete(paymentId);
 
@@ -126,4 +124,6 @@ public class PaymentController {
         )
     );
   }
+
+  
 }
