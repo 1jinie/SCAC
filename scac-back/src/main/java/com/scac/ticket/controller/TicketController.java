@@ -46,7 +46,7 @@ public class TicketController {
 
   @GetMapping("/{ticketId}")
 public ResponseEntity<ApiResponse<TicketResDTO>> findById(
-    @PathVariable Long ticketId
+    @PathVariable("ticketId") Long ticketId
 ) {
   TicketResDTO ticket = ticketService.findById(ticketId);
 
@@ -74,7 +74,7 @@ public ResponseEntity<ApiResponse<TicketResDTO>> findById(
 
   @PutMapping("/{ticketId}")
   public ResponseEntity<ApiResponse<TicketResDTO>> update(
-      @PathVariable Long ticketId,
+      @PathVariable("ticketId") Long ticketId,
       @Valid @RequestBody TicketUpdateDTO form
   ) {
     TicketResDTO ticket = ticketService.update(ticketId, form);
@@ -90,7 +90,7 @@ public ResponseEntity<ApiResponse<TicketResDTO>> findById(
   // 이용권의 판매 여부를 변경합니다.
   @PatchMapping("/{ticketId}/status")
   public ResponseEntity<ApiResponse<TicketResDTO>> updateStatus(
-      @PathVariable Long ticketId,
+      @PathVariable("ticketId") Long ticketId,
       @Valid @RequestBody TicketStatusDTO form
   ) {
     TicketResDTO ticket = ticketService.updateStatus(ticketId, form);
@@ -105,7 +105,7 @@ public ResponseEntity<ApiResponse<TicketResDTO>> findById(
 
   @DeleteMapping("/{ticketId}")
   public ResponseEntity<ApiResponse<Void>> delete(
-      @PathVariable Long ticketId
+      @PathVariable("ticketId") Long ticketId
   ) {
     ticketService.delete(ticketId);
 
