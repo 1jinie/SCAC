@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.scac.global.enums.UserRole;
+import com.scac.global.enums.UserStatus;
+
 @Entity
 @Table(name = "user")
 @Getter

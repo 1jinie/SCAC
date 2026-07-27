@@ -1,8 +1,9 @@
 package com.scac.user.repository;
 
+import com.scac.global.enums.UserRole;
+import com.scac.global.enums.UserStatus;
 import com.scac.user.entity.User;
-import com.scac.user.entity.UserRole;
-import com.scac.user.entity.UserStatus;
+
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

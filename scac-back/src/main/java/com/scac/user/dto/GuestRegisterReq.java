@@ -1,8 +1,9 @@
 package com.scac.user.dto;
 
+import com.scac.global.enums.UserRole;
+import com.scac.global.enums.UserStatus;
 import com.scac.user.entity.User;
-import com.scac.user.entity.UserRole;
-import com.scac.user.entity.UserStatus;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 

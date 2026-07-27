@@ -1,11 +1,12 @@
 package com.scac.user.service;
 
+import com.scac.global.enums.UserStatus;
 import com.scac.user.dto.GuestRegisterReq;
 import com.scac.user.dto.PasswordUpdateReq;
 import com.scac.user.dto.PasswordVerifyReq;
 import com.scac.user.dto.UserSignUpReq;
 import com.scac.user.entity.User;
-import com.scac.user.entity.UserStatus;
+
 import com.scac.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
