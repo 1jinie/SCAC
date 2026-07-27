@@ -11,8 +11,9 @@ import StudyRoomPayment from './components/StudyRoomPayment';
 export default function PaymentProcess() {
   const paymentMethod = usePaymentStore((state) => state.paymentMethod);
   const [isProcessing, setIsProcessing] = useState(false);
-  const purchaseType = useTicketStore((state) => state.purchaseType);
-  // console.log(purchaseType);
+  const targetType = useTicketStore((state) => state.targetType);
+  const selectedTicketId = useTicketStore((state) => state.selectedTicketId);
+
   const navi = useNavigate();
   const handlePay = () => {
     setIsProcessing(true);
@@ -30,14 +31,22 @@ export default function PaymentProcess() {
     return () => clearTimeout(timer);
   }, [isProcessing, navi]);
 
+  try {
+    const paymentData = {
+      ticketId: selectedTicketId,
+      paymentMethod,
+      targetType,
+    };
+  } catch (error) {}
+
   return (
     <div className="overlay">
       <div className="payment_modal">
         <h2>결제정보 확인</h2>
         <div className="payment_process_box">
-          {purchaseType === 'SEAT' ? (
+          {targetType === 'SEAT' ? (
             <SeatPayment />
-          ) : purchaseType === 'MEETING_ROOM' ? (
+          ) : targetType === 'MEETING_ROOM' ? (
             <StudyRoomPayment />
           ) : (
             'Error'

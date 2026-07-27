@@ -1,33 +1,53 @@
 import { useEffect, useMemo, useState } from 'react';
+import { paymentApi } from '../../api/paymentApi';
 import AdminSummary from '../../components/common/Summary';
-import payment_dummy from '../../data/payment_dummy.json';
 import { paymentStore } from '../../store/paymentStore';
 import AdminPaymentDetail from './components/AdminPaymentDetail';
 import AdminPaymentList from './components/AdminPaymentList';
 import AdminPaymentSearch from './components/AdminPaymentSearch';
 import './css/AdminPaymentPage.css';
+import { formatPrice } from '../../utils/formatter';
 
 export default function AdminPaymentPage() {
   const payments = paymentStore((state) => state.payments);
   const setPayments = paymentStore((state) => state.setPayments);
-  const selectedPayment = paymentStore((state) => state.selectedPayment);
-  const selectPayment = paymentStore((state) => state.selectPayment);
-  const updatePaymentStatus = paymentStore(
-    (state) => state.updatePaymentStatus,
-  );
+  const [selectedPayment, setSelectedPayment] = useState(null);
 
   const [searchKeyword, setSearchKeyword] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
-  // const [currentPage, setCurrentPage] = useState(1);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
+  const [totalPages, setTotalPages] = useState(
+    Math.ceil(payments.length / ITEMS_PER_PAGE),
+  );
+  // const totalPages = Math.ceil(payments.length / ITEMS_PER_PAGE);
+
+  // 검색 + 상태 필터
+  const filteredPayments = useMemo(() => {
+    return payments.filter((payment) => {
+      const matchesKeyword =
+        searchKeyword === '' ||
+        String(payment.phoneNumber ?? payment.userId ?? '').includes(
+          searchKeyword,
+        ) ||
+        String(payment.paymentId).includes(searchKeyword);
+
+      const matchesStatus =
+        statusFilter === 'ALL' || payment.status === statusFilter;
+
+      return matchesKeyword && matchesStatus;
+    });
+  }, [payments, searchKeyword, statusFilter]);
 
   const summary = useMemo(() => {
     return payments.reduce(
       (result, payment) => {
         result.total += 1;
 
-        if (payment.status === 'COMPLETED') {
+        if (payment.status === 'PAID') {
           result.completed += 1;
-          result.totalAmount += Number(payment.paymentAmount ?? 0);
+          result.totalAmount += Number(payment.amount ?? 0);
         }
 
         if (payment.status === 'CANCELED') {
@@ -79,7 +99,7 @@ export default function AdminPaymentPage() {
       {
         key: 'sales',
         label: '총 결제 금액',
-        value: summary.totalAmount,
+        value: formatPrice(summary.totalAmount),
         unit: '원',
         description: '완료 결제 기준',
         color: 'dark',
@@ -89,37 +109,34 @@ export default function AdminPaymentPage() {
   );
 
   useEffect(() => {
-    // 추후 API 연결
-    // const fetchPayments = async () => {
-    //   const response = await paymentApi.getPayments();
-    //   setPayments(response.data);
-    // };
+    const fetchPayments = async () => {
+      try {
+        const payments = await paymentApi.getPayments();
+        setPayments(payments);
+      } catch (error) {
+        console.error('결제 내역 조회 실패:', error.response?.data ?? error);
+        setPayments([]);
+      }
+    };
 
-    setPayments(payment_dummy);
+    fetchPayments();
   }, [setPayments]);
 
-  // 검색 + 상태 필터
-  const filteredPayments = useMemo(() => {
-    return payments.filter((payment) => {
-      const matchesKeyword =
-        searchKeyword === '' ||
-        payment.phoneNumber.includes(searchKeyword) ||
-        String(payment.paymentId).includes(searchKeyword);
+  const paginatedPayments = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    setTotalPages(Math.ceil(filteredPayments.length / ITEMS_PER_PAGE));
 
-      const matchesStatus =
-        statusFilter === 'ALL' || payment.status === statusFilter;
-
-      return matchesKeyword && matchesStatus;
-    });
-  }, [payments, searchKeyword, statusFilter]);
+    return filteredPayments.slice(startIndex, endIndex);
+  }, [filteredPayments, currentPage]);
 
   // 결제 선택
   const handlePaymentSelect = (payment) => {
-    selectPayment(payment);
+    setSelectedPayment(payment);
   };
 
   // 결제 취소
-  const handleCancelPayment = (paymentId) => {
+  const handleCancelPayment = async (paymentId) => {
     const confirmed = window.confirm(
       '선택한 결제를 취소 처리하시겠습니까?\n취소 후에는 되돌릴 수 없습니다.',
     );
@@ -128,10 +145,26 @@ export default function AdminPaymentPage() {
       return;
     }
 
-    // 추후 API 연결
-    // await paymentApi.cancelPayment(paymentId);
+    const cancelReason = window.prompt('결제 취소 사유를 입력해 주세요.');
 
-    updatePaymentStatus(paymentId, 'CANCELED');
+    if (!cancelReason?.trim()) {
+      return;
+    }
+
+    try {
+      await paymentApi.cancelPayment(paymentId, cancelReason.trim());
+      const updatedPayments = await paymentApi.getPayments();
+      setPayments(updatedPayments);
+      const updatedPayment = updatedPayments.find(
+        (payment) => Number(payment.paymentId) === Number(paymentId),
+      );
+      setSelectedPayment(updatedPayment);
+    } catch (error) {
+      console.error('결제 취소 실패:', error.response?.data ?? error);
+      window.alert(
+        error.response?.data?.message ?? '결제 취소 처리에 실패했습니다.',
+      );
+    }
   };
 
   return (
@@ -157,9 +190,12 @@ export default function AdminPaymentPage() {
 
       <section className="admin_payment_workspace">
         <AdminPaymentList
-          payments={filteredPayments}
+          payments={paginatedPayments}
           selectedPayment={selectedPayment}
           onPaymentSelect={handlePaymentSelect}
+          totalPages={totalPages}
+          setCurrentPage={setCurrentPage}
+          currentPage={currentPage}
         />
 
         <AdminPaymentDetail

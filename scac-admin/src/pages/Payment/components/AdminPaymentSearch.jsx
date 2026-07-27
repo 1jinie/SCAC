@@ -4,12 +4,12 @@ export default function AdminPaymentSearch({
   onSearchChange,
   onStatusChange,
 }) {
-  const handleSearchChange = (event) => {
-    onSearchChange(event.target.value);
+  const handleSearchChange = (e) => {
+    onSearchChange(e.target.value);
   };
 
-  const handleStatusChange = (event) => {
-    onStatusChange(event.target.value);
+  const handleStatusChange = (e) => {
+    onStatusChange(e.target.value);
   };
 
   return (
@@ -35,7 +35,8 @@ export default function AdminPaymentSearch({
           onChange={handleStatusChange}
         >
           <option value="ALL">전체</option>
-          <option value="COMPLETED">결제 완료</option>
+          <option value="PAID">결제 완료</option>
+          <option value="PENDING">결제 진행 중</option>
           <option value="CANCELED">결제 취소</option>
           <option value="FAILED">결제 실패</option>
         </select>

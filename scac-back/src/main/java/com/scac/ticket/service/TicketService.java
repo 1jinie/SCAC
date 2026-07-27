@@ -63,7 +63,7 @@ public class TicketService {
   @Transactional
   public TicketResDTO update(Long ticketId, TicketUpdateDTO form) {
     Ticket ticket = findTicket(ticketId);
-    ticket.update(form.getTicketName(), form.getTicketType() , form.getTicketTime(), form.getTicketPrice(), form.getValidDays(), form.getTargetType());
+    ticket.update(form.getTicketName(), form.getTicketType() , form.getTicketTime(), form.getTicketPrice(), form.getValidDays(), form.getTargetType(),form.getIsActive());
     return TicketResDTO.from(ticket);
     
   }

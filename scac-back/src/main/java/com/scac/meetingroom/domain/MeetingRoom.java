@@ -1,4 +1,4 @@
-package com.scac.room.domain;
+package com.scac.meetingroom.domain;
 
 import com.scac.global.enums.SeatStatus;
 
@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "meeting_room")
 @Getter
 @NoArgsConstructor
-public class Room {
+public class MeetingRoom {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

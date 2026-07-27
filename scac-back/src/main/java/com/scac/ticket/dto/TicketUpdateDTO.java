@@ -29,6 +29,9 @@ public class TicketUpdateDTO {
     @PositiveOrZero(message = "유효기간은 0 이상이어야 합니다.")
     private final Integer validDays;
 
+    @NotNull(message = "판매여부 선택은 필수입니다.")
+  private final Boolean isActive;
+
     @NotNull(message = "이용 대상은 필수입니다.")
     private final TargetType targetType;
 

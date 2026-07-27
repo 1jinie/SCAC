@@ -3,18 +3,18 @@ import { ticketApi } from '../../api/ticketApi';
 import SelectButton from '../../components/button/SelectButton';
 import TicketList from './TicketList';
 import './css/TicketPage.css';
+import { useTicketStore } from '../../store/ticketStore';
 
 export default function TicketPage() {
   const [tickets, setTickets] = useState([]);
-
+  const selectTicket = useTicketStore((state) => state.selectTicket);
   useEffect(() => {
     const fetchTickets = async () => {
       try {
         const ticketList = await ticketApi.getTicketList();
         const activeTicketList = Array.isArray(ticketList)
-          ? ticketList.filter((ticket) => ticket.active)
+          ? ticketList.filter((ticket) => ticket.isActive)
           : [];
-
         setTickets(activeTicketList);
       } catch (error) {
         console.error('이용권 조회 실패:', error);

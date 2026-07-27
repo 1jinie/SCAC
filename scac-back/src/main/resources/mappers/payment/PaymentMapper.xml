@@ -8,4 +8,19 @@
     
   </sql>
 
+  <select id="findAllPaymentHistory"
+        resultType="com.scac.payment.dto.PaymentHistoryDTO">
+  SELECT *
+  FROM vw_payment_history
+  ORDER BY paid_at DESC, payment_id DESC
+</select>
+<select id="findByUserId"
+        parameterType="long"
+        resultType="com.scac.payment.dto.PaymentHistoryDTO">
+  SELECT *
+  FROM vw_payment_history
+  WHERE user_id = #{userId}
+  ORDER BY paid_at DESC, payment_id DESC
+</select>
+
 </mapper>
