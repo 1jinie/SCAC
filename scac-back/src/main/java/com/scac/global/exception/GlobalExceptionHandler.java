@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.scac.global.response.ApiResponse;
 
@@ -91,6 +92,16 @@ public ResponseEntity<ApiResponse<Void>> handleIllegalArgument(
     }
   }
 */
+
+@ExceptionHandler(NoResourceFoundException.class)
+public ResponseEntity<ApiResponse<Void>> handleNoResource(
+        NoResourceFoundException e
+){
+    return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(ApiResponse.error("존재하지 않는 주소입니다.", null));
+}
+
 @ExceptionHandler(MethodArgumentNotValidException.class)
 public ResponseEntity<ApiResponse<Map<String, String>>> handleValidation(
     MethodArgumentNotValidException exception

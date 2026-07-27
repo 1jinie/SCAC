@@ -50,6 +50,7 @@ public class UserService {
         if (existUser != null) {
 
             if (Boolean.FALSE.equals(existUser.getIsMember())) {
+                existUser.changePassword(passwordEncoder.encode(req.password()));
                 return existUser;
             }
 
@@ -95,6 +96,10 @@ public class UserService {
                     + user.getPenaltyEndDate());
         }
 
+        if (user.getUserStatus() == UserStatus.BANNED) {
+                throw new IllegalArgumentException("탈퇴 또는 이용이 제한된 회원입니다.");
+        }
+
         if (!passwordEncoder.matches(
                 req.password(),
                 user.getPassword())) {
@@ -121,6 +126,10 @@ public class UserService {
             throw new IllegalArgumentException(
                 "현재 이용 정지 상태입니다. 정지 종료일: "
                 + user.getPenaltyEndDate());
+        }
+
+        if (user.getUserStatus() == UserStatus.BANNED) {
+                 throw new IllegalArgumentException("탈퇴 또는 이용이 제한된 회원입니다.");
         }
 
         if (!passwordEncoder.matches(

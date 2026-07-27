@@ -1,4 +1,4 @@
-package com.scac.auth.entity;
+package com.scac.admin.entity;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

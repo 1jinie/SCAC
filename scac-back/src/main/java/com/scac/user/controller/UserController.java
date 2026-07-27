@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -20,13 +20,13 @@ public class UserController {
      * 1. 일반 회원가입
      */
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<User>> signUp(
+    public ResponseEntity<ApiResponse<UserRes>> signUp(
             @Valid @RequestBody UserSignUpReq req
     ) {
-        UserRes userRes = userService.signUp(req);
+        User user = userService.register(req);
 
         return ResponseEntity.ok(
-                ApiResponse.success("회원가입이 완료되었습니다.", userRes)
+                ApiResponse.success("회원가입이 완료되었습니다.", UserRes.from(user))
         );
     }
 
@@ -34,13 +34,13 @@ public class UserController {
      * 2. 비회원/게스트 간편 등록 (전화번호 기반)
      */
     @PostMapping("/guest")
-    public ResponseEntity<ApiResponse<UserRes>> registerGuest(
-            @Valid @RequestBody RegisterReq req
+    public ResponseEntity<ApiResponse<User>> signUpGuest(
+            @Valid @RequestBody GuestRegisterReq req
     ) {
-        UserRes guestRes = userService.registerGuest(req);
+        User guest = userService.registerGuest(req);
 
         return ResponseEntity.ok(
-                ApiResponse.success("비회원 등록이 완료되었습니다.", guestRes)
+                ApiResponse.success("비회원 등록이 완료되었습니다.", guest)
         );
     }
 
@@ -48,13 +48,13 @@ public class UserController {
      * 3. 회원 프로필 조회 (마이페이지)
      */
     @GetMapping("/{userId}")
-    public ResponseEntity<ApiResponse<UserRes>> getUserProfile(
+    public ResponseEntity<ApiResponse<UserRes>> findUser(
             @PathVariable Long userId
     ) {
-        UserRes userRes = userService.getUserProfile(userId);
+        User user = userService.findUser(userId);
 
         return ResponseEntity.ok(
-                ApiResponse.success("회원 정보 조회를 완료했습니다.", userRes)
+                ApiResponse.success("회원 정보 조회를 완료했습니다.", UserRes.from(user))
         );
     }
 
@@ -63,12 +63,12 @@ public class UserController {
      */
     @PostMapping("/entry-password/verify")
     public ResponseEntity<ApiResponse<Boolean>> verifyEntryPassword(
-            @Valid @RequestBody EntryPasswordVerifyReq req
+            @Valid @RequestBody PasswordVerifyReq req
     ) {
-        boolean isVerified = userService.verifyEntryPassword(req);
+        userService.verifyPassword(req);
 
         return ResponseEntity.ok(
-                ApiResponse.success("입실 비밀번호 검증에 성공했습니다.", isVerified)
+                ApiResponse.success("입실 비밀번호 검증에 성공했습니다.", true)
         );
     }
 
@@ -76,11 +76,11 @@ public class UserController {
      * 5. 입실 비밀번호 변경 (마이페이지용)
      */
     @PatchMapping("/{userId}/entry-password")
-    public ResponseEntity<ApiResponse<Void>> updateEntryPassword(
+    public ResponseEntity<ApiResponse<Void>> changePassword(
             @PathVariable Long userId,
             @Valid @RequestBody PasswordUpdateReq req
     ) {
-        userService.updateEntryPassword(userId, req);
+        userService.changePassword(userId, req);
 
         return ResponseEntity.ok(
                 ApiResponse.success("입실 비밀번호 변경이 완료되었습니다.")

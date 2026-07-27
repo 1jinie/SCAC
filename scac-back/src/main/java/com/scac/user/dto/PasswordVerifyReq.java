@@ -10,7 +10,7 @@ public record PasswordVerifyReq(
     String phoneNumber,
 
     @NotBlank(message = "입실 비밀번호를 입력해주세요.")
-    @Pattern(regexp = "^\\d{4,6}$", message = "입실 비밀번호는 4~6자리 숫자여야 합니다.")
+    @Pattern(regexp = "^\\d{6}$", message = "입실 비밀번호는 6자리 숫자여야 합니다.")
     String password
 ) {
 }
