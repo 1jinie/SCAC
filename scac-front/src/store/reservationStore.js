@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 export const reservationStore = create((set) => ({
   reservation: {
+    userId: null,
     roomId: null,
     date: null,
     startTime: null,
@@ -19,6 +20,7 @@ export const reservationStore = create((set) => ({
   clearReservation: () =>
     set({
       reservation: {
+        userId: null,
         roomId: null,
         date: null,
         startTime: null,

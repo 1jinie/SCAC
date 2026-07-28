@@ -35,13 +35,13 @@ export const roomStore = create((set) => ({
       );
 
       return {
+        ...layout,
         id: room.roomId,
         type: 'room',
         name: room.roomName,
         capacity: room.capacity,
         image: roomImages[room.roomId],
         status: statusMap[room.status] ?? 'available',
-        ...layout,
       };
     });
     set({ rooms });
