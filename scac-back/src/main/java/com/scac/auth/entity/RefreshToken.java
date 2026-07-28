@@ -44,7 +44,8 @@ public class RefreshToken {
 
     @Column(
             name = "expired_at",
-            nullable = false
+            nullable = false,
+            unique = true
     )
     private LocalDateTime expiredAt;
 
