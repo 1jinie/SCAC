@@ -2,6 +2,7 @@ package com.scac.auth.controller;
 
 import com.scac.auth.dto.LoginReq;
 import com.scac.auth.dto.LoginRes;
+import com.scac.auth.dto.RefreshTokenReq;
 import com.scac.auth.service.AuthService;
 import com.scac.global.response.ApiResponse;
 import jakarta.validation.Valid;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,4 +35,35 @@ public class AuthController {
                 )
         );
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<LoginRes>> refresh(
+            @Valid @RequestBody RefreshTokenReq req
+    ) {
+        LoginRes loginRes = authService.refresh(req);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "토큰을 재발급했습니다.",
+                        loginRes
+                )
+        );
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout(
+            @RequestHeader("Authorization") String authorization
+    ) {
+
+        authService.logout(authorization);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("로그아웃되었습니다.")
+        );
+    }
+
+
+
+
+
 }
