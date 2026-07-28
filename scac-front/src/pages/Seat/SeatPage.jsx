@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { seatStore } from '../../store/seatStore';
 import { reservationStore } from '../../store/reservationStore';
-import SeatList from '../../components/seat/SeatList';
+import SeatList from './components/SeatList';
 import '../../styles/seat.css';
 import { checkInStore } from '../../store/checkInStore';
 

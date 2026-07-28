@@ -1,5 +1,5 @@
-import { getSeatStyle } from '../../utils/getSeatStyle';
-import { rooms } from '../../data/RoomInfo';
+import { getSeatStyle } from '../../../utils/getSeatStyle';
+import { rooms } from '../../../data/RoomInfo';
 
 function SeatItem({ seat, isSelected, onClick, mode }) {
   const room = seat.type === 'room' ? rooms[seat.id] : null;
