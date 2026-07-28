@@ -1,0 +1,155 @@
+.kiosk_payment_modal {
+  position: relative;
+
+  width: 780px;
+  min-height: 1100px;
+
+  padding: 100px 80px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  background-color: #fff;
+  border-radius: 32px;
+
+  text-align: center;
+}
+
+.kiosk_card_icon {
+  width: 180px;
+  height: 180px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 48px;
+
+  border-radius: 50%;
+
+  background-color: var(--color-pay-mint);
+}
+
+.kiosk_card_icon img {
+  width: 100px;
+  height: 100px;
+}
+
+.kiosk_payment_modal h2 {
+  margin: 0;
+
+  font-size: 52px;
+  font-weight: 700;
+}
+
+.kiosk_payment_guide {
+  margin-top: 28px;
+
+  font-size: 32px;
+  line-height: 1.6;
+
+  color: var(--color-text-sub);
+}
+
+/* ==========================
+   Card Reader
+========================== */
+
+.kiosk_card_reader {
+  position: relative;
+
+  width: 520px;
+  height: 300px;
+
+  margin-top: 80px;
+
+  display: flex;
+  justify-content: center;
+
+  border-radius: 28px;
+
+  background-color: #f1f1f1;
+}
+
+.card_slot {
+  position: absolute;
+  top: 72px;
+
+  width: 340px;
+  height: 24px;
+  z-index: 2;
+  border-radius: 20px;
+
+  background-color: #363636;
+}
+
+.card_mock {
+  position: absolute;
+  top: 90px;
+
+  width: 280px;
+  height: 170px;
+
+  padding: 24px;
+
+  display: flex;
+  align-items: flex-end;
+
+  border-radius: 18px;
+
+  background-color: var(--color-pay-mint);
+
+  font-size: 28px;
+  font-weight: 700;
+  /* 기존 스타일 */
+  animation: card-insert 1.8s ease-in-out infinite;
+}
+
+/* 카드가 인식되면 리더기에 꽂힌 상태로 고정 */
+.card_mock.card_inserted {
+  animation: none;
+  z-index: 1;
+  transform: translateY(-15px);
+  height: 120px;
+
+  animation: card-inserted 1.8s ease-in;
+}
+
+@keyframes card-insert {
+  0% {
+    transform: translateY(100px);
+  }
+
+  50% {
+    transform: translateY(20px);
+  }
+
+  100% {
+    transform: translateY(100px);
+  }
+}
+@keyframes card-inserted {
+  0% {
+    transform: translateY(100px);
+  }
+
+  50% {
+    transform: translateY(30px);
+  }
+
+  100% {
+    transform: translateY(-15px);
+  }
+}
+
+/* ==========================
+   Waiting
+========================== */
+
+.kiosk_payment_wait {
+  margin-top: 80px;
+
+  font-size: 30px;
+  font-weight: 500;
+}

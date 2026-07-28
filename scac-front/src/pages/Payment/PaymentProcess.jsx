@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { paymentApi } from '../../api/paymentApi';
 import { ticketApi } from '../../api/ticketApi';
 import CloseButton from '../../components/button/CloseButton';
+import { PAYMENT_METHOD } from '../../constants/payment';
 import { useAuthStore } from '../../store/authStore';
 import { usePaymentStore } from '../../store/paymentStore';
 import { useTicketStore } from '../../store/ticketStore';
@@ -12,6 +14,8 @@ import './css/TossPayment.css';
 import { requestTossPayment } from './utils/requestTossPayment';
 
 export default function PaymentProcess() {
+  const navi = useNavigate();
+
   const targetType = useTicketStore((state) => state.targetType);
   const selectedTicketId = useTicketStore((state) => state.selectedTicketId);
 
@@ -23,7 +27,7 @@ export default function PaymentProcess() {
   const [isPaying, setIsPaying] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // 결제정보 확인을 위해 이용권만 조회
+  // 결제정보 확인을 위해 이용권 조회
   useEffect(() => {
     const fetchTicket = async () => {
       try {
@@ -46,7 +50,7 @@ export default function PaymentProcess() {
     }
   }, [selectedTicketId]);
 
-  // 실제 결제 시작
+  // 결제 시작
   const handlePayment = async () => {
     if (!ticket || isPaying) {
       return;
@@ -56,23 +60,50 @@ export default function PaymentProcess() {
       setIsPaying(true);
       setErrorMessage('');
 
-      // 1. 결제하기를 눌렀을 때 PENDING 주문 생성
-      const order = await paymentApi.createPayment({
-        ticketId: selectedTicketId,
-        userId: memberId,
-        amount: ticket.ticketPrice,
-        paymentMethod,
-      });
+      // 1. 카드 결제 → 키오스크 Mock 단말기
+      if (paymentMethod === PAYMENT_METHOD.CARD) {
+        navi('/payment/kiosk/card');
+        return;
+      }
 
-      // 2. 토스 결제창 호출
-      await requestTossPayment({
-        orderId: order.orderId,
-        orderName: ticket.ticketName,
-        amount: order.amount,
-        paymentMethod,
-      });
+      // 2. 네이버페이 → QR 결제 화면
+      if (paymentMethod === PAYMENT_METHOD.NAVERPAY) {
+        navi('/payment/kiosk/qr');
+        return;
+      }
+
+      // 3. 토스페이 / 카카오페이
+      if (
+        paymentMethod === PAYMENT_METHOD.TOSSPAY ||
+        paymentMethod === PAYMENT_METHOD.KAKAOPAY
+      ) {
+        // PENDING 결제 생성
+        const order = await paymentApi.createPayment({
+          ticketId: selectedTicketId,
+          userId: memberId,
+          amount: ticket.ticketPrice,
+          paymentMethod,
+        });
+
+        // Toss Payments 간편결제 직접 호출
+        await requestTossPayment({
+          orderId: order.orderId,
+          orderName: ticket.ticketName,
+          amount: order.amount,
+          paymentMethod,
+        });
+
+        return;
+      }
+
+      // 4. 계좌이체는 현재 미구현
+      if (paymentMethod === PAYMENT_METHOD.TRANSFER) {
+        throw new Error('계좌이체 결제는 현재 준비 중입니다.');
+      }
+
+      throw new Error('지원하지 않는 결제 수단입니다.');
     } catch (error) {
-      console.error('토스 결제 요청 오류:', error);
+      console.error('결제 요청 오류:', error);
 
       setErrorMessage(
         error.response?.data?.message ??
@@ -103,7 +134,8 @@ export default function PaymentProcess() {
   return (
     <div className="overlay">
       <div className="payment_modal">
-        <CloseButton nextPage={'/ticket'} text="결제취소" />
+        <CloseButton nextPage="/ticket" text="결제취소" />
+
         <h2>결제정보 확인</h2>
 
         <div className="payment_process_box">
@@ -115,6 +147,7 @@ export default function PaymentProcess() {
             <p>결제 정보를 확인할 수 없습니다.</p>
           )}
         </div>
+
         <div className="payment_action_area">
           {errorMessage && (
             <p className="toss_payment_error" role="alert">
@@ -129,7 +162,7 @@ export default function PaymentProcess() {
             disabled={isPaying || !ticket}
           >
             {isPaying
-              ? '결제창을 여는 중입니다'
+              ? '결제를 준비하고 있습니다'
               : `${ticket?.ticketPrice?.toLocaleString()}원 결제하기`}
           </button>
         </div>
