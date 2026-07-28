@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.scac.auth.dto.JwtTokenRes;
 import com.scac.auth.dto.LoginReq;
 import com.scac.auth.dto.LoginRes;
 import com.scac.auth.entity.RefreshToken;
@@ -62,10 +63,12 @@ public class AuthService {
 
         saveRefreshToken(user, refreshToken);
 
-        return new LoginRes(
-                accessToken,
-                refreshToken
-        );
+        JwtTokenRes token = new JwtTokenRes(
+        accessToken,
+        refreshToken
+);
+
+return LoginRes.from(token, user);
     }
 
     private void saveRefreshToken(
