@@ -55,16 +55,19 @@ public class CheckinService {
                 request.getUserId(), 
                 List.of(TicketUsageStatus.READY, TicketUsageStatus.ACTIVE))
                 .orElseThrow(() -> new ResourceNotFoundException("사용 가능한 이용권이 없습니다"));
+        if(!ticketUsage.isAvailable()){
+            throw new BusinessException("사용 가능한 이용권이 없습니다");
+        }
 
         // READY일 경우 시작 처리
         if(ticketUsage.getStatus() == TicketUsageStatus.READY){
             ticketUsage.start();
-        }
+        };
 
         // 남은 시간 확인
-        if(ticketUsage.getRemainingTime() <= 0){
+        if(ticketUsage.getTicketType() == TicketType.TIME_PACK && ticketUsage.getRemainingTime() <= 0){
             throw new BusinessException("남은 이용 시간이 없습니다");
-        }
+        };
 
         // 좌석 확인
         Seat seat = seatRepository.findById(request.getSeatId())
