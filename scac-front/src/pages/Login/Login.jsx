@@ -37,7 +37,7 @@ function LoginPage() {
       }
     } else {
       // 로그인 실패 시 에러 핸들링
-      setErrorMessage('전화번호 또는 입실 비밀번호가 일치하지 않습니다.');
+      setErrorMessage(result.message);
     }
   };
 
