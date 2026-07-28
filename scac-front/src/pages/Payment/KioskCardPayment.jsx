@@ -13,7 +13,8 @@ export default function KioskCardPayment() {
     }
 
     setStatus('PROCESSING');
-
+    // 실제 서비스에서는 카드 단말기/VAN 승인 결과를 받아
+    // Payment 승인 및 이용권 발급 로직을 호출
     // setTimeout(() => {
     //   navi('/payment/result/success');
     // }, 2000);

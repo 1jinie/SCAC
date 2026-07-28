@@ -68,7 +68,20 @@ export default function PaymentProcess() {
 
       // 2. 네이버페이 → QR 결제 화면
       if (paymentMethod === PAYMENT_METHOD.NAVERPAY) {
-        navi('/payment/kiosk/qr');
+        const order = await paymentApi.createPayment({
+          ticketId: selectedTicketId,
+          userId: memberId,
+          amount: ticket.ticketPrice,
+          paymentMethod,
+        });
+
+        navi('/payment/kiosk/qr', {
+          state: {
+            paymentId: order.paymentId,
+            amount: order.amount,
+          },
+        });
+
         return;
       }
 
