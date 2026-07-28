@@ -19,7 +19,9 @@
 
   color: var(--color-text);
 }
-
+/* ==========================
+   close btn
+========================== */
 .payment_method_box .btn_close {
   position: absolute;
   top: 32px;
@@ -39,7 +41,7 @@
 
   color: var(--color-btn-cancel-text);
 
-  font-size: 62px;
+  font-size: 108px;
   line-height: 1;
 
   cursor: pointer;

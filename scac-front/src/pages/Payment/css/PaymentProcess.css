@@ -30,6 +30,10 @@
   text-align: center;
 }
 
+/* ==========================
+   close btn
+========================== */
+
 .payment_modal .btn_close {
   position: absolute;
   top: 36px;
@@ -51,7 +55,7 @@
 
   color: var(--color-btn-cancel-text);
 
-  font-size: 62px;
+  font-size: 108px;
   font-weight: 400;
   line-height: 1;
 
