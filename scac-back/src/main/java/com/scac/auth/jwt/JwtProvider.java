@@ -1,0 +1,127 @@
+package com.scac.auth.jwt;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+
+import javax.crypto.SecretKey;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import com.scac.global.enums.UserRole;
+import com.scac.user.entity.User;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+
+@Component
+public class JwtProvider {
+
+    @Value("${jwt.secret}")
+    private String secret;
+
+    @Value("${jwt.access-expiration}")
+    private long accessExpiration;
+
+    @Value("${jwt.refresh-expiration}")
+    private long refreshExpiration;
+
+private SecretKey getSigningKey() {
+    return Keys.hmacShaKeyFor(
+            secret.getBytes(StandardCharsets.UTF_8)
+    );
+}
+
+private Claims createClaims(User user) {
+
+    return Jwts.claims()
+            .add("userId", user.getId())
+            .add("role", user.getRole().name())
+            .add("phoneNumber", user.getPhoneNumber())
+            .build();
+}
+
+public String generateAccessToken(User user) {
+
+    Date now = new Date();
+
+    Date expiry =
+            new Date(now.getTime() + accessExpiration);
+
+    return Jwts.builder()
+            .claims(createClaims(user))
+            .issuedAt(now)
+            .expiration(expiry)
+            .signWith(getSigningKey())
+            .compact();
+}
+
+public String generateRefreshToken(User user) {
+
+    Date now = new Date();
+
+    Date expiry =
+            new Date(now.getTime() + refreshExpiration);
+
+    return Jwts.builder()
+            .claims(createClaims(user))
+            .issuedAt(now)
+            .expiration(expiry)
+            .signWith(getSigningKey())
+            .compact();
+}
+
+public boolean validateToken(String token) {
+
+    try {
+
+        Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token);
+
+        return true;
+
+    } catch (Exception e) {
+
+        return false;
+    }
+}
+
+public Claims getClaims(String token) {
+
+    return Jwts.parser()
+            .verifyWith(getSigningKey())
+            .build()
+            .parseSignedClaims(token)
+            .getPayload();
+}
+
+public Long getUserId(String token) {
+
+    return getClaims(token)
+            .get("userId", Long.class);
+}
+
+public String getPhoneNumber(String token) {
+
+    return getClaims(token)
+            .get("phoneNumber", String.class);
+}
+
+public UserRole getRole(String token) {
+
+    String role =
+            getClaims(token)
+                    .get("role", String.class);
+
+    return UserRole.valueOf(role);
+}
+
+
+
+
+
+
+}

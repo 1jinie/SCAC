@@ -1,5 +1,8 @@
 package com.scac.auth.dto;
 
-public class JwtTokenRes {
-    
-}
+public record JwtTokenRes(
+
+    String accessToken,
+    String refreshToken
+
+) {}
