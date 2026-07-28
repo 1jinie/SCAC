@@ -1,34 +1,91 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { reservations } from '../../data/Reservations';
 import { formatDate, addOneHour } from '../../utils/date';
+import { reservationApi } from '../../api/reservationApi';
+import { roomStore } from '../../store/roomStore';
+import { useAuthStore } from '../../store/authStore';
+import { reservationStore } from '../../store/reservationStore';
+import { useTicketStore } from '../../store/ticketStore';
 import {
   getSelectionRange,
   hasUnavailableTime,
   isTimeSelected,
 } from '../../utils/reservationUtils';
-import { roomStore } from '../../store/roomStore';
-import { reservationStore } from '../../store/reservationStore';
 import '../../styles/reservation.css';
-import { useTicketStore } from '../../store/ticketStore';
 
 const Reservation = () => {
+  const memberId = useAuthStore((state) => state.memberId);
   const roomId = reservationStore((state) => state.reservation.roomId);
   const setReservation = reservationStore((state) => state.setReservation);
   const rooms = roomStore((state) => state.rooms);
   const room = rooms.find((room) => room.id === roomId);
-  const roomReservations = reservations[roomId];
-  const dates = Object.keys(roomReservations);
   const setPurchaseType = useTicketStore((state) => state.setPurchaseType);
 
-  const [selectedDate, setSelectedDate] = useState(dates[0]);
+  const [dates, setDates] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedTimes, setSelectedTimes] = useState([]);
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
 
   const navigate = useNavigate();
 
-  // 현재 선택 날짜의 시간 목록
-  const selectedTimes = roomReservations[selectedDate];
+  // 예약 날짜 생성 (오늘부터 14일)
+  const createDates = () => {
+    const result = [];
+
+    for (let i = 0; i < 14; i++) {
+      const date = new Date();
+
+      date.setDate(date.getDate() + i);
+
+      result.push(date.toISOString().split('T')[0]);
+    }
+
+    return result;
+  };
+
+  // 날짜 목록 생성
+  useEffect(() => {
+    const dateList = createDates();
+
+    setDates(dateList);
+    setSelectedDate(dateList[0]);
+  }, []);
+
+  // 현재 선택 날짜의 예약 가능 시간 조회
+  useEffect(() => {
+    if (!roomId || !selectedDate) return;
+
+    const fetchAvailableTime = async () => {
+      try {
+        const response = await reservationApi.getAvailableTime(
+          roomId,
+          selectedDate,
+        );
+
+        console.log('전체 응답', response);
+        console.log('data', response.data);
+        console.log('data.data', response.data.data);
+
+        const times = response.data.data.map((item) => ({
+          time: `${String(item.startHour).padStart(2, '0')}:00`,
+          available: item.available,
+        }));
+
+        console.log('변환 시간', times);
+
+        setSelectedTimes(times);
+      } catch (error) {
+        console.error('예약 가능 시간 조회 실패', error);
+      }
+    };
+
+    fetchAvailableTime();
+
+    // 날짜 변경 시 기존 선택 초기화
+    setStartTime(null);
+    setEndTime(null);
+  }, [roomId, selectedDate]);
 
   // 날짜 클릭 이벤트
   const handleDateClick = (date) => {
@@ -41,8 +98,16 @@ const Reservation = () => {
   const handleTimeClick = (time) => {
     if (!time.available) return;
 
+    // 처음 선택
     if (!startTime) {
       setStartTime(time.time);
+      return;
+    }
+
+    // 범위 선택 완료 상태에서 재클릭
+    if (endTime) {
+      setStartTime(time.time);
+      setEndTime(null);
       return;
     }
 
@@ -76,6 +141,7 @@ const Reservation = () => {
     const finalEndTime = addOneHour(endTime ?? startTime);
 
     setReservation({
+      userId: memberId,
       roomId,
       date: selectedDate,
       startTime,
