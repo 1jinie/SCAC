@@ -15,6 +15,9 @@ import Seat from '../pages/Seat/Seat';
 import NonmemberSignup from '../pages/Signup/NonmemberSignup';
 import SignUpPage from '../pages/Signup/Signup';
 import TicketPage from '../pages/Ticket/TicketPage';
+import KioskCardPayment from '../pages/Payment/KioskCardPayment';
+import KioskQrPayment from '../pages/Payment/KioskQrPayment';
+import MobileMockPayment from '../pages/Payment/MobileMockPayment';
 // import DevErrorPage from '../pages/Error/DevErrorPage';
 
 const router = createBrowserRouter([
@@ -50,13 +53,38 @@ const router = createBrowserRouter([
       {
         path: 'payment',
         children: [
-          { index: true, element: <PaymentMethodPage /> },
-          { path: 'process', element: <PaymentProcess /> },
-
-          { path: 'toss/success', element: <TossPaymentResultPage /> },
-          { path: 'toss/fail', element: <TossPaymentResultPage /> },
-
-          { path: 'result/:status', element: <PaymentResult /> },
+          {
+            index: true,
+            element: <PaymentMethodPage />,
+          },
+          {
+            path: 'process',
+            element: <PaymentProcess />,
+          },
+          {
+            path: 'kiosk/card',
+            element: <KioskCardPayment />,
+          },
+          {
+            path: 'kiosk/qr',
+            element: <KioskQrPayment />,
+          },
+          {
+            path: 'mobile/mock',
+            element: <MobileMockPayment />,
+          },
+          {
+            path: 'toss/success',
+            element: <TossPaymentResultPage />,
+          },
+          {
+            path: 'toss/fail',
+            element: <TossPaymentResultPage />,
+          },
+          {
+            path: 'result/:status',
+            element: <PaymentResult />,
+          },
         ],
       },
     ],

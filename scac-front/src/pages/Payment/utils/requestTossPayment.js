@@ -1,6 +1,11 @@
-import { loadTossPayments } from '@tosspayments/tosspayments-sdk';
+import { ANONYMOUS, loadTossPayments } from '@tosspayments/tosspayments-sdk';
 
 const clientKey = process.env.REACT_APP_TOSS_CLIENT_KEY;
+
+const EASY_PAY_PROVIDER = {
+  TOSSPAY: 'TOSSPAY',
+  KAKAOPAY: 'KAKAOPAY',
+};
 
 export const requestTossPayment = async ({
   orderId,
@@ -11,11 +16,17 @@ export const requestTossPayment = async ({
   const tossPayments = await loadTossPayments(clientKey);
 
   const payment = tossPayments.payment({
-    customerKey: 'ANONYMOUS',
+    customerKey: ANONYMOUS,
   });
 
+  const easyPay = EASY_PAY_PROVIDER[paymentMethod];
+
+  if (!easyPay) {
+    throw new Error('지원하지 않는 간편결제 수단입니다.');
+  }
+
   await payment.requestPayment({
-    method: paymentMethod,
+    method: 'CARD',
 
     amount: {
       currency: 'KRW',
@@ -28,6 +39,12 @@ export const requestTossPayment = async ({
     successUrl: `${window.location.origin}/payment/toss/success`,
 
     failUrl: `${window.location.origin}/payment/toss/fail`,
-    windowTarget: 'self',
+    card: {
+      useEscrow: false,
+      flowMode: 'DIRECT',
+      easyPay,
+      useCardPoint: false,
+      useAppCardOnly: false,
+    },
   });
 };
