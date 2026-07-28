@@ -10,12 +10,16 @@ import com.scac.checkin.dto.CheckinRequest;
 import com.scac.checkin.dto.CheckinResponse;
 import com.scac.checkin.repository.CheckinRepository;
 import com.scac.global.enums.CheckinStatus;
+import com.scac.global.enums.TicketType;
+import com.scac.global.enums.TicketUsageStatus;
 import com.scac.global.exception.BusinessException;
 import com.scac.global.exception.ResourceNotFoundException;
 import com.scac.seat.domain.Seat;
 import com.scac.seat.repository.SeatRepository;
-// import com.scac.user.entity.User;
-// import com.scac.user.repository.UserRepository;
+import com.scac.ticketusage.entity.TicketUsage;
+import com.scac.ticketusage.repository.TicketUsageRepository;
+import com.scac.user.entity.User;
+import com.scac.user.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,19 +27,19 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class CheckinService {
-    // private final UserRepository userRepository;
+    private final UserRepository userRepository;
     private final SeatRepository seatRepository;
-    // private final TicketUsageRepository ticketUsageRepository;
+    private final TicketUsageRepository ticketUsageRepository;
     private final CheckinRepository checkinRepository;
 
     // 입실 과정
     @Transactional
     public CheckinResponse checkin(CheckinRequest request){
         // 사용자 존재 확인
-        /* User user = userRepository.findById(request.getUserId())
+        User user = userRepository.findById(request.getUserId())
             .orElseThrow(() ->
                 new ResourceNotFoundException("존재하지 않는 사용자입니다")
-        ); */
+        );
 
         // 기존 입실 상태 확인
         if(checkinRepository.existsByUserIdAndCheckinStatusIn(
@@ -46,6 +50,24 @@ public class CheckinService {
         }
     
         // 이용권 확인
+        TicketUsage ticketUsage =
+            ticketUsageRepository.findFirstByUserIdAndStatusInOrderByCreatedAtDesc(
+                request.getUserId(), 
+                List.of(TicketUsageStatus.READY, TicketUsageStatus.ACTIVE))
+                .orElseThrow(() -> new ResourceNotFoundException("사용 가능한 이용권이 없습니다"));
+        if(!ticketUsage.isAvailable()){
+            throw new BusinessException("사용 가능한 이용권이 없습니다");
+        }
+
+        // READY일 경우 시작 처리
+        if(ticketUsage.getStatus() == TicketUsageStatus.READY){
+            ticketUsage.start();
+        };
+
+        // 남은 시간 확인
+        if(ticketUsage.getTicketType() == TicketType.TIME_PACK && ticketUsage.getRemainingTime() <= 0){
+            throw new BusinessException("남은 이용 시간이 없습니다");
+        };
 
         // 좌석 확인
         Seat seat = seatRepository.findById(request.getSeatId())
@@ -60,7 +82,7 @@ public class CheckinService {
         Checkin checkin = new Checkin(
             request.getUserId(), 
             request.getSeatId(), 
-            request.getUsageId(), 
+            ticketUsage.getUsageId(), 
             LocalDateTime.now(), 
             CheckinStatus.USING
         );
@@ -105,11 +127,28 @@ public class CheckinService {
                 new ResourceNotFoundException("입실 정보가 없습니다")
         );
 
+        // 이용권 조회
+        TicketUsage ticketUsage = ticketUsageRepository.findById(checkin.getUsageId())
+            .orElseThrow(() -> 
+                new ResourceNotFoundException("이용권 정보가 없습니다")    
+        );
+
         // 좌석 조회
         Seat seat = seatRepository.findById(checkin.getSeatId())
             .orElseThrow(() ->
                 new ResourceNotFoundException("존재하지 않는 좌석입니다")
         );
+
+        // 사용 시간 계산
+        LocalDateTime now = LocalDateTime.now();
+        
+        if(ticketUsage.getTicketType() == TicketType.TIME_PACK){
+            long usedMinutes = java.time.Duration.between(checkin.getCheckinAt(), now).toMinutes();
+
+            if(usedMinutes > 0){
+                ticketUsage.deductTime((int) usedMinutes);
+            }
+        }
 
         // 퇴실 처리
         checkin.checkout();

@@ -29,7 +29,9 @@ export const seatLayouts = [
   { id: 23, type: 'seat', x: 310, y: 710 },
   { id: 24, type: 'seat', x: 450, y: 710 },
   { id: 25, type: 'seat', x: 590, y: 710 },
+];
 
+export const roomLayouts = [
   // 스터디룸
   {
     id: 101,
