@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useUserStore } from '../../store/userStore';
@@ -13,6 +13,7 @@ function LoginHomePage() {
   const checkOutSeat = seatStore((state) => state.checkOutSeat);
   const updateCheckOut = checkInStore((state) => state.updateCheckOut);
   const seats = seatStore((state) => state.seats);
+  const fetchSeats = seatStore((state) => state.fetchSeats);
   const logout = useAuthStore((state) => state.logout);
   const clearUserData = useUserStore((state) => state.clearUserData);
 
@@ -27,6 +28,10 @@ function LoginHomePage() {
     checkOutSeat(data.seatId);
     setShowCheckOutModal(false);
   };
+
+  useEffect(() => {
+    fetchSeats();
+  }, [fetchSeats]);
 
   // 로그아웃 공통 로직 처리
   const handleLogoutClick = () => {

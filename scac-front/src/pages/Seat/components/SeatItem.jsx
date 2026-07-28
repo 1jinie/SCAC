@@ -1,8 +1,7 @@
 import { getSeatStyle } from '../../../utils/getSeatStyle';
-import { rooms } from '../../../data/RoomInfo';
 
 function SeatItem({ seat, isSelected, onClick, mode }) {
-  const room = seat.type === 'room' ? rooms[seat.id] : null;
+  const room = seat.type === 'room' ? seat : null;
   let effectiveStatus = seat.status;
 
   // 좌석 모드일 경우 스터디룸 비활성화

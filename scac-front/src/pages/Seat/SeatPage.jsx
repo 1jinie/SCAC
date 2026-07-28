@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { seatStore } from '../../store/seatStore';
+import { roomStore } from '../../store/roomStore';
 import { reservationStore } from '../../store/reservationStore';
 import SeatList from './components/SeatList';
 import '../../styles/seat.css';
@@ -9,6 +10,8 @@ import { checkInStore } from '../../store/checkInStore';
 function SeatPage({ mode }) {
   const seats = seatStore((state) => state.seats);
   const fetchSeats = seatStore((state) => state.fetchSeats);
+  const rooms = roomStore((state) => state.rooms);
+  const fetchRooms = roomStore((state) => state.fetchRooms);
   const selected = seatStore((state) => state.selectedSeat);
   const user = checkInStore((state) => state.currentUser);
   const addCheckIn = checkInStore((state) => state.addCheckIn);
@@ -19,7 +22,8 @@ function SeatPage({ mode }) {
 
   useEffect(() => {
     fetchSeats();
-  }, [fetchSeats]);
+    fetchRooms();
+  }, [fetchSeats, fetchRooms]);
 
   // 좌석 / 룸 선택 이벤트 정의
   const handleClick = (seat) => {
@@ -72,10 +76,15 @@ function SeatPage({ mode }) {
     clearSelected();
   }, [mode, clearSelected]);
 
+  const items = [...seats, ...rooms];
+
   return (
     <div className="seat_page">
       <div className="seat_header">
-        <div className="back_btn" onClick={() => navigate(-1)}>
+        <div
+          className="back_btn"
+          onClick={() => navigate(mode === 'seat' ? '/' : '/loginhome')}
+        >
           <img
             src="/icons/common/next_black.svg"
             alt="뒤로가기"
@@ -87,7 +96,7 @@ function SeatPage({ mode }) {
       </div>
 
       <SeatList
-        seats={seats}
+        seats={items}
         selected={selected}
         mode={mode}
         onClick={handleClick}

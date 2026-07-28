@@ -7,15 +7,16 @@ import {
   hasUnavailableTime,
   isTimeSelected,
 } from '../../utils/reservationUtils';
+import { roomStore } from '../../store/roomStore';
 import { reservationStore } from '../../store/reservationStore';
-import { rooms } from '../../data/RoomInfo';
 import '../../styles/reservation.css';
 import { useTicketStore } from '../../store/ticketStore';
 
 const Reservation = () => {
   const roomId = reservationStore((state) => state.reservation.roomId);
   const setReservation = reservationStore((state) => state.setReservation);
-  const room = rooms[roomId];
+  const rooms = roomStore((state) => state.rooms);
+  const room = rooms.find((room) => room.id === roomId);
   const roomReservations = reservations[roomId];
   const dates = Object.keys(roomReservations);
   const setPurchaseType = useTicketStore((state) => state.setPurchaseType);
@@ -133,10 +134,10 @@ const Reservation = () => {
       </div>
       <div className="room_info">
         <div className="preview_img">
-          <img src={room.image} alt="" />
+          <img src={room?.image} alt="" />
         </div>
         <div className="room_badge">
-          ROOM {room.name} 👥 {room.capacity}인실
+          ROOM {room?.name} 👥 {room?.capacity}인실
         </div>
       </div>
       <button className="confirm_button" onClick={handleConfirm}>
