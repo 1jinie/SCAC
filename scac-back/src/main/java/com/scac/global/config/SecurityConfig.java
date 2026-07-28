@@ -10,15 +10,25 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.scac.auth.jwt.JwtAuthenticationFilter;
+import com.scac.auth.jwt.JwtAuthenticationEntryPoint;
+
+import lombok.RequiredArgsConstructor;
+
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
   @Value("${app.frontend-url}")
   private List<String> frontendUrls;
@@ -29,32 +39,47 @@ public class SecurityConfig {
     }
 
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http)
-      throws Exception {
+public SecurityFilterChain securityFilterChain(HttpSecurity http)
+        throws Exception {
 
     http
+
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
         .csrf(csrf -> csrf.disable())
+
         .sessionManagement(session ->
-            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         )
-        // 추후 이걸로 변경
-//         .authorizeHttpRequests(auth -> auth
-//     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-//     .requestMatchers(
-//         "/api/auth/**",
-//         "/api/tickets/**",
-//         "/error"
-//     ).permitAll()
-//     .anyRequest().authenticated()
-// )
+
+        .exceptionHandling(exception ->
+                exception.authenticationEntryPoint(
+                        jwtAuthenticationEntryPoint
+                )
+        )
+
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-            .anyRequest().permitAll()
+
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                .requestMatchers(
+                        "/api/auth/login",
+                        "/api/auth/refresh",
+                        "/api/admin/login",
+                        "/api/users/signup",
+                        "/api/users/guest"
+                ).permitAll()
+
+                .anyRequest().authenticated()
+        )
+
+        .addFilterBefore(
+                jwtAuthenticationFilter,
+                UsernamePasswordAuthenticationFilter.class
         );
 
     return http.build();
-  }
+}
 
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
