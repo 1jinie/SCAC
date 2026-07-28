@@ -24,14 +24,18 @@ public class JwtProvider {
     @Value("${jwt.access-expiration}")
     private long accessExpiration;
 
+    public long getRefreshExpirationSeconds() {
+    return refreshExpiration / 1000;
+    }
+
     @Value("${jwt.refresh-expiration}")
     private long refreshExpiration;
 
-private SecretKey getSigningKey() {
-    return Keys.hmacShaKeyFor(
-            secret.getBytes(StandardCharsets.UTF_8)
-    );
-}
+    private SecretKey getSigningKey() {
+        return Keys.hmacShaKeyFor(
+                secret.getBytes(StandardCharsets.UTF_8)
+        );
+    }
 
 private Claims createClaims(User user) {
 
