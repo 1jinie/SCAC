@@ -1,35 +1,37 @@
-import React, { useEffect, useState } from 'react';
-import { useTicketStore } from '../../../store/ticketStore';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { paymentApi } from '../../../api/paymentApi';
 import { ticketApi } from '../../../api/ticketApi';
 import SelectButton from '../../../components/button/SelectButton';
-import { useNavigate } from 'react-router-dom';
 import { useResetStore } from '../../../hooks/useResetStore';
 
 export default function PaymentResultCard({ isSuccess, errorMessage }) {
-  const ticketId = useTicketStore((state) => state.selectedTicketId);
-  const [ticket, setTicket] = useState();
+  const [ticket, setTicket] = useState(null);
+  // const [payment, setPayment] = useState(null);
   const navi = useNavigate();
   const resetAll = useResetStore();
+  const { state } = useLocation();
+  const paymentId = state?.paymentId;
 
   useEffect(() => {
-    if (ticketId == null) {
+    if (!isSuccess || paymentId == null) {
       return;
     }
 
-    const fetchTicket = async () => {
+    const fetchPayment = async () => {
       try {
-        const ticketData = await ticketApi.getById(ticketId);
-        setTicket(ticketData);
+        const payment = await paymentApi.getPayment(paymentId);
+        const ticket = await ticketApi.getById(payment.ticketId);
+        // setPayment(payment);
+        setTicket(ticket);
+        // console.log(payment);
       } catch (error) {
-        console.error(
-          '이용권 조회 실패:',
-          error.response?.data ?? error.message,
-        );
+        console.error('결제 조회 실패:', error.response?.data ?? error.message);
       }
     };
 
-    fetchTicket();
-  }, [ticketId]);
+    fetchPayment();
+  }, [isSuccess, paymentId]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -62,10 +64,7 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
         {isSuccess ? (
           <div className="payment_status_row">
             <span>선택한 이용권</span>
-            <span>
-              {ticket?.ticketName}
-              {/* &nbsp;{ticket?.ticketType === 'TIME' ? '시간권' : '기간권'} */}
-            </span>
+            <span>{ticket?.ticketName}</span>
           </div>
         ) : (
           <div className="payment_status_row">

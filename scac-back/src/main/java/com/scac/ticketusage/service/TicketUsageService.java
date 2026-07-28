@@ -23,7 +23,8 @@ public class TicketUsageService {
   @Transactional
   public TicketUsageResDTO issue(Long userId, Long ticketId) {
     Ticket ticket = ticketService.findTicket(ticketId);
-
+System.out.println("issue userId = " + userId);
+System.out.println("issue ticketId = " + ticketId);
     
     return TicketUsageResDTO.from(
       ticketUsageRepository.save(TicketUsage.create(userId, ticket)));

@@ -3,6 +3,7 @@ import { useTicketStore } from '../../../store/ticketStore';
 import { usePaymentStore } from '../../../store/paymentStore';
 import { ticketApi } from '../../../api/ticketApi';
 import { formatPrice } from '../../../utils/formatter';
+import { PAYMENT_METHOD_LABEL } from '../../../constants/payment';
 
 export default function SeatPayment() {
   const selectTicketId = useTicketStore((state) => state.selectedTicketId);
@@ -26,18 +27,13 @@ export default function SeatPayment() {
       <ul>
         <li>
           <span className="payment_name">결제 상품</span>
-          <span className="payment_item">
-            {ticket.ticketName}{' '}
-            {ticket.ticketType === 'TIME_PACK'
-              ? '시간권'
-              : ticket.ticketType === 'PERIOD_PACK'
-                ? '기간권'
-                : ''}
-          </span>
+          <span className="payment_item">{ticket.ticketName}</span>
         </li>
         <li>
           <span className="payment_name">결제 수단</span>
-          <span className="payment_item">{paymentMethod}</span>
+          <span className="payment_item">
+            {PAYMENT_METHOD_LABEL[paymentMethod]}
+          </span>
         </li>
         <li>
           <span className="payment_name">최종 가격</span>

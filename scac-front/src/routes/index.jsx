@@ -8,14 +8,13 @@ import MyPage from '../pages/MyPage/MyPage';
 import PaymentMethodPage from '../pages/Payment/PaymentMethodPage';
 import PaymentProcess from '../pages/Payment/PaymentProcess';
 import PaymentResult from '../pages/Payment/PaymentResult';
+import TossPaymentResultPage from '../pages/Payment/TossPaymentResultPage';
 import Reservation from '../pages/Reservation/Reservation';
 import Room from '../pages/Seat/Room';
 import Seat from '../pages/Seat/Seat';
 import NonmemberSignup from '../pages/Signup/NonmemberSignup';
 import SignUpPage from '../pages/Signup/Signup';
 import TicketPage from '../pages/Ticket/TicketPage';
-import TossPaymentPage from '../pages/Payment/TossPaymentPage';
-import TossPaymentResultPage from '../pages/Payment/TossPaymentReseultPage';
 // import DevErrorPage from '../pages/Error/DevErrorPage';
 
 const router = createBrowserRouter([
@@ -53,7 +52,7 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <PaymentMethodPage /> },
           { path: 'process', element: <PaymentProcess /> },
-          { path: 'toss', element: <TossPaymentPage /> },
+
           { path: 'toss/success', element: <TossPaymentResultPage /> },
           { path: 'toss/fail', element: <TossPaymentResultPage /> },
 
