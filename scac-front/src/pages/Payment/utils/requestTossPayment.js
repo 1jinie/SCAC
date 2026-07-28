@@ -28,5 +28,6 @@ export const requestTossPayment = async ({
     successUrl: `${window.location.origin}/payment/toss/success`,
 
     failUrl: `${window.location.origin}/payment/toss/fail`,
+    windowTarget: 'self',
   });
 };
