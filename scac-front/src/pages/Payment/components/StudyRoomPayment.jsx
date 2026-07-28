@@ -1,6 +1,7 @@
 import React from 'react';
 import { usePaymentStore } from '../../../store/paymentStore';
 import { formatPrice } from '../../../utils/formatter';
+import { PAYMENT_METHOD_LABEL } from '../../../constants/payment';
 
 export default function StudyRoomPayment() {
   const reserv = {
@@ -31,7 +32,9 @@ export default function StudyRoomPayment() {
         </li>
         <li>
           <span className="payment_name">결제 수단</span>
-          <span className="payment_item">{paymentMethod}</span>
+          <span className="payment_item">
+            {PAYMENT_METHOD_LABEL[paymentMethod]}
+          </span>
         </li>
         <li>
           <span className="payment_name">최종 가격</span>

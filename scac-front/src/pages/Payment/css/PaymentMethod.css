@@ -19,6 +19,41 @@
 
   color: var(--color-text);
 }
+/* ==========================
+   close btn
+========================== */
+.payment_method_box .btn_close {
+  position: absolute;
+  top: 32px;
+  right: 32px;
+
+  width: 72px;
+  height: 72px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+
+  background: transparent;
+
+  color: var(--color-btn-cancel-text);
+
+  font-size: 108px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.payment_method_box .btn_close:hover {
+  background-color: var(--color-normal);
+}
+
+.payment_method_box .btn_close:active {
+  transform: scale(0.94);
+}
 
 /* ==========================
    Title
