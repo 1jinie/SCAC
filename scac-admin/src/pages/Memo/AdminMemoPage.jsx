@@ -1,16 +1,25 @@
-import { useEffect, useState } from "react";
-import memoJson from "../../data/admin_memo.json";
-import AdminMemoList from "./components/AdminMemoList";
-import AdminMemoDetail from "./components/AdminMemoDetail";
-import "./css/AdminMemoPage.css";
+import { useCallback, useEffect, useState } from 'react';
+import { memoApi } from '../../api/memoApi';
+import AdminMemoDetail from './components/AdminMemoDetail';
+import AdminMemoList from './components/AdminMemoList';
+import './css/AdminMemoPage.css';
 
 export default function AdminMemoPage() {
   const [memoData, setMemoData] = useState([]);
   const [selectedMemo, setSelectedMemo] = useState(null);
 
-  useEffect(() => {
-    setMemoData(memoJson);
+  const fetchMemos = useCallback(async () => {
+    try {
+      const memos = await memoApi.getMemos();
+      setMemoData(memos);
+    } catch (error) {
+      console.error('메모 목록 조회 실패:', error.response?.data ?? error);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchMemos();
+  }, [fetchMemos]);
 
   const handleMemoSelect = (memo) => {
     setSelectedMemo(memo);
@@ -18,6 +27,27 @@ export default function AdminMemoPage() {
 
   const handleAddMemo = () => {
     setSelectedMemo(null);
+  };
+
+  const handleCreateMemo = async (content) => {
+    const createdMemo = await memoApi.createMemo(content);
+
+    await fetchMemos();
+    setSelectedMemo(createdMemo);
+  };
+
+  const handleUpdateMemo = async (memoId, content) => {
+    const updatedMemo = await memoApi.updateMemo(memoId, content);
+
+    await fetchMemos();
+    setSelectedMemo(updatedMemo);
+  };
+
+  const handleDeleteMemo = async (memoId) => {
+    await memoApi.deleteMemo(memoId);
+
+    setSelectedMemo(null);
+    await fetchMemos();
   };
 
   return (
@@ -31,8 +61,8 @@ export default function AdminMemoPage() {
           <p>관리자 간 전달사항을 기록하고 관리합니다.</p>
         </div>
       </div>
+
       <section className="admin_memo_workspace">
-        {/* 왼쪽 */}
         <div className="admin_memo_list_section">
           <div className="admin_section_header">
             <button className="admin_memo_add" onClick={handleAddMemo}>
@@ -47,11 +77,11 @@ export default function AdminMemoPage() {
           />
         </div>
 
-        {/* 오른쪽 */}
         <AdminMemoDetail
           selectedMemo={selectedMemo}
-          memoData={memoData}
-          setMemoData={setMemoData}
+          onCreateMemo={handleCreateMemo}
+          onUpdateMemo={handleUpdateMemo}
+          onDeleteMemo={handleDeleteMemo}
         />
       </section>
     </div>

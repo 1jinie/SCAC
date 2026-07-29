@@ -1,0 +1,57 @@
+@baseUrl = http://localhost:8888
+
+### 관리자 메모 전체 조회
+GET {{baseUrl}}/api/admin/memos
+
+
+### 관리자 메모 등록
+POST {{baseUrl}}/api/admin/memos
+Content-Type: application/json
+
+{
+  "content": "3번 좌석 스탠드 점검 필요"
+}
+
+
+### 관리자 메모 수정
+PUT {{baseUrl}}/api/admin/memos/1
+Content-Type: application/json
+
+{
+  "content": "3번 좌석 스탠드 점검 완료"
+}
+
+
+### 관리자 메모 삭제
+DELETE {{baseUrl}}/api/admin/memos/1
+
+
+### 존재하지 않는 메모 수정
+PUT {{baseUrl}}/api/admin/memos/99999
+Content-Type: application/json
+
+{
+  "content": "존재하지 않는 메모 수정 테스트"
+}
+
+
+### 존재하지 않는 메모 삭제
+DELETE {{baseUrl}}/api/admin/memos/99999
+
+
+### 빈 내용으로 메모 등록
+POST {{baseUrl}}/api/admin/memos
+Content-Type: application/json
+
+{
+  "content": ""
+}
+
+
+### 공백만 있는 내용으로 메모 수정
+PUT {{baseUrl}}/api/admin/memos/1
+Content-Type: application/json
+
+{
+  "content": "   "
+}
