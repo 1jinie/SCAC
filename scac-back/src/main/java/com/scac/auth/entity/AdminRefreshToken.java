@@ -2,7 +2,7 @@ package com.scac.auth.entity;
 
 import java.time.LocalDateTime;
 
-import com.scac.user.entity.User;
+import com.scac.admin.entity.AdminAccount;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -12,79 +12,59 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(
-    name = "refresh_token",
+    name = "admin_refresh_token",
     uniqueConstraints = {
         @UniqueConstraint(
-            name = "uq_refresh_user",
-            columnNames = "user_id"
+            name = "uq_admin_refresh_user",
+            columnNames = "admin_id"
         ),
         @UniqueConstraint(
-            name = "uq_refresh_token",
+            name = "uq_admin_refresh_token",
             columnNames = "refresh_token"
         )
     },
     indexes = {
         @Index(
-            name = "idx_expired_at",
+            name = "idx_admin_refresh_expired",
             columnList = "expired_at"
         )
     }
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RefreshToken {
+public class AdminRefreshToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "user_id",
-            nullable = false
-    )
-    private User user;
+    @JoinColumn(name = "admin_id", nullable = false)
+    private AdminAccount admin;
 
-    @Column(
-            name = "refresh_token",
-            nullable = false,
-            length = 512
-    )
+    @Column(name = "refresh_token", nullable = false, length = 512)
     private String refreshToken;
 
-    @Column(
-            name = "expired_at",
-            nullable = false
-    )
+    @Column(name = "expired_at", nullable = false)
     private LocalDateTime expiredAt;
 
-    @Column(
-            name = "created_at",
-            nullable = false,
-            updatable = false,
-            insertable = false
-    )
+    @Column(name = "created_at", nullable = false, updatable = false, insertable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    public RefreshToken(
-            User user,
+    public AdminRefreshToken(
+            AdminAccount admin,
             String refreshToken,
             LocalDateTime expiredAt
     ) {
-        this.user = user;
+        this.admin = admin;
         this.refreshToken = refreshToken;
         this.expiredAt = expiredAt;
     }
 
-    /**
-     * Refresh Token 재발급 시 토큰 갱신
-     */
-    public void update(
-            String refreshToken,
-            LocalDateTime expiredAt
-    ) {
+    public void update(String refreshToken, LocalDateTime expiredAt) {
         this.refreshToken = refreshToken;
         this.expiredAt = expiredAt;
     }
+
 }

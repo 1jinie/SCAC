@@ -1,5 +1,9 @@
 import { create } from 'zustand';
-import { users as mockUsers } from '../data/User';
+import {
+  getUserProfile,
+  updateUserProfile,
+  getUserByPhone,
+} from '../api/userApi';
 
 export const useUserStore = create((set, get) => ({
   userProfile: null, // 마이페이지에 표시할 유저 상세 정보 객체
@@ -11,16 +15,15 @@ export const useUserStore = create((set, get) => ({
   getUserProfile: async (memberId) => {
     set({ isLoading: true, errorMessage: '' });
     try {
-      const user = mockUsers.find((item) => item.id === memberId);
-      if (!user) {
-        throw new Error('회원 정보를 찾을 수 없습니다.');
+      const response = await getUserProfile(memberId);
+      const result = response.data;
+
+      if (!result.success) {
+        throw new Error(result.message);
       }
 
       set({
-        userProfile: {
-          ...user,
-          phoneNumber: user.phone,
-        },
+        userProfile: result.data,
       });
       return { success: true };
     } catch (error) {
@@ -35,15 +38,12 @@ export const useUserStore = create((set, get) => ({
   modifyUserProfile: async (memberId, updatedData) => {
     set({ isLoading: true, errorMessage: '' });
     try {
-      const userIndex = mockUsers.findIndex((item) => item.id === memberId);
-      if (userIndex < 0) {
-        throw new Error('회원 정보를 찾을 수 없습니다.');
-      }
+      const response = await updateUserProfile(memberId, updatedData);
+      const result = response.data;
 
-      mockUsers[userIndex] = {
-        ...mockUsers[userIndex],
-        ...updatedData,
-      };
+      if (!result.success) {
+        throw new Error(result.message);
+      }
 
       const currentProfile = get().userProfile;
       set({
@@ -66,12 +66,15 @@ export const useUserStore = create((set, get) => ({
   searchUserByPhone: async (phoneNumber) => {
     set({ isLoading: true, errorMessage: '', searchResult: null });
     try {
-      const user = mockUsers.find((item) => item.phone === phoneNumber);
-      if (!user) {
-        throw new Error('존재하지 않는 회원 번호입니다.');
+      const response = await getUserByPhone(phoneNumber);
+      const result = response.data;
+
+      if (!result.success) {
+        throw new Error(result.message);
       }
-      set({ searchResult: user });
-      return { success: true, data: user };
+
+      set({ searchResult: result.data });
+      return { success: true, data: result.data };
     } catch (error) {
       console.error('Store Search User Error:', error);
       set({ errorMessage: '존재하지 않는 회원 번호입니다.' });

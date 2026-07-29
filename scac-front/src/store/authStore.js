@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { users as mockUsers } from '../data/User';
+import { postLogin, postSignUp, postGuestSignUp, postLogout } from '../api/authApi';
 
 export const useAuthStore = create((set) => ({
   // --- 상태 (State) ---
@@ -7,87 +7,118 @@ export const useAuthStore = create((set) => ({
   userRole: 'GUEST',
   memberId: null,
   userPhone: null,
-  users: mockUsers,
+  accessToken: null,
+  refreshToken: null,
 
   // --- 액션 (Actions) ---
   login: async (phoneNumber, password) => {
     try {
-      const user = mockUsers.find(
-        (item) => item.phone === phoneNumber && item.password === password,
-      );
+      const response = await postLogin(phoneNumber, password);
+      const result = response.data;
 
-      if (!user) {
-        return {
-          success: false,
-          error: '전화번호 또는 비밀번호가 일치하지 않습니다.',
-        };
+      if (!result.success) {
+        return { success: false, message: result.message };
       }
 
+      const user = result.data;
       set({
         isLoggedIn: true,
-        userRole: 'USER',
-        memberId: user.id,
-        userPhone: user.phone,
-        users: mockUsers,
+        userRole: user.role,
+        memberId: user.userId,
+        userPhone: user.phoneNumber,
+        accessToken: user.accessToken,
+        refreshToken: user.refreshToken,
       });
 
-      return { success: true, role: 'USER' };
+      localStorage.setItem('accessToken', user.accessToken);
+      localStorage.setItem('refreshToken', user.refreshToken);
+
+      return { success: true, role: user.role };
     } catch (error) {
       console.error('Store Login Error:', error);
-      return { success: false, error };
+      return {
+        success: false,
+        message:
+          error?.response?.data?.message ||
+          '로그인 처리 중 오류가 발생했습니다.',
+      };
     }
   },
 
   logout: async () => {
+    try {
+      await postLogout();
+    } catch (error) {
+      console.error('Store Logout Error:', error);
+    }
+
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+
     set({
       isLoggedIn: false,
       userRole: 'GUEST',
       memberId: null,
       userPhone: null,
+      accessToken: null,
+      refreshToken: null,
     });
   },
 
   signUp: async (userData) => {
     try {
-      const existingUser = mockUsers.find(
-        (item) => item.phone === userData.phoneNumber,
-      );
+      const response = await postSignUp(userData);
+      const result = response.data;
 
-      if (existingUser) {
+      if (!result.success) {
         return {
           success: false,
-          errorMessage: '이미 등록된 전화번호입니다.',
+          errorMessage: result.message,
         };
       }
 
-      const nextId =
-        mockUsers.length > 0
-          ? Math.max(...mockUsers.map((item) => item.id)) + 1
-          : 1;
-
-      const newUser = {
-        id: nextId,
-        phone: userData.phoneNumber,
-        password: userData.password,
-        timeLeft: 120,
+      const user = result.data;
+      return {
+        success: true,
+        memberId: user.userId,
+        phoneNumber: user.phoneNumber,
       };
-
-      mockUsers.push(newUser);
-
-      set({
-        isLoggedIn: true,
-        userRole: 'USER',
-        memberId: nextId,
-        userPhone: userData.phoneNumber,
-        users: mockUsers,
-      });
-
-      return { success: true, memberId: nextId };
     } catch (error) {
       console.error('Store SignUp Error:', error);
       return {
         success: false,
-        errorMessage: error.message || '회원가입 처리 중 오류가 발생했습니다.',
+        errorMessage:
+          error?.response?.data?.message ||
+          '회원가입 처리 중 오류가 발생했습니다.',
+      };
+    }
+  },
+
+  guestSignUp: async (userData) => {
+    try {
+      const response = await postGuestSignUp(userData);
+      const result = response.data;
+
+      if (!result.success) {
+        return {
+          success: false,
+          errorMessage: result.message,
+        };
+      }
+
+      const user = result.data;
+      return {
+        success: true,
+        memberId: user.userId,
+        phoneNumber: user.phoneNumber,
+      };
+    } catch (error) {
+      console.error('Store GuestSignUp Error:', error);
+      return {
+        success: false,
+        errorMessage:
+          error?.response?.data?.message ||
+          '비회원 등록 처리 중 오류가 발생했습니다.',
       };
     }
   },
