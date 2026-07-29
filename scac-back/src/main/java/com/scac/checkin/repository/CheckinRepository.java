@@ -1,6 +1,7 @@
 package com.scac.checkin.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -12,4 +13,7 @@ public interface CheckinRepository extends JpaRepository<Checkin, Long>{
         Long userId,
         List<CheckinStatus> checkinStatuses
     );
+
+    // 현재 입실 중인 기록 조회
+    Optional<Checkin> findByUserIdAndCheckoutAtIsNull(Long userId);
 }

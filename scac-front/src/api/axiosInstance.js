@@ -10,19 +10,19 @@ const axiosInstance = axios.create({
   },
 });
 
-/*
-=========================================
- JWT 인증(Spring Security + JWT) 적용 예정
-=========================================
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const accessToken = localStorage.getItem('accessToken');
 
-1. Request Interceptor
-   - localStorage의 accessToken 조회
-   - Authorization 헤더 자동 추가
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
 
-2. Response Interceptor
-   - 401, 403 응답 처리
-   - 토큰 만료 시 로그아웃 및 로그인 페이지 이동
-
-*/
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
 
 export default axiosInstance;

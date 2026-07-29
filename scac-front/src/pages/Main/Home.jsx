@@ -8,13 +8,13 @@ import { useResetStore } from '../../hooks/useResetStore';
 
 function HomePage() {
   const [modalType, setModalType] = useState(null);
-  const verifyCheckIn = checkInStore((state) => state.verifyCheckIn);
-  const verifyGoOut = checkInStore((state) => state.verifyGoOut);
-  const verifyCheckOut = checkInStore((state) => state.verifyCheckOut);
+  const verifyEntryPassword = checkInStore(
+    (state) => state.verifyEntryPassword,
+  );
+  const checkIn = checkInStore((state) => state.checkIn);
   const goOut = checkInStore((state) => state.goOut);
   const comeBack = checkInStore((state) => state.comeBack);
-  const updateCheckOut = checkInStore((state) => state.updateCheckOut);
-  const checkOutSeat = seatStore((state) => state.checkOutSeat);
+  const checkOut = checkInStore((state) => state.checkOut);
   const seats = seatStore((state) => state.seats);
   const fetchSeats = seatStore((state) => state.fetchSeats);
   const resetAll = useResetStore((state) => state.resetAll);
@@ -27,56 +27,53 @@ function HomePage() {
   const totalSeats = seats.filter((seat) => seat.type === 'seat').length;
 
   // 입실 관리
-  const handleCheckIn = (phone, password) => {
-    const result = verifyCheckIn(phone, password);
+  const handleCheckIn = async (phoneNumber, password) => {
+    const result = await verifyEntryPassword(phoneNumber, password);
+
     alert(result.message);
 
     if (!result.success) return;
 
-    if (result.comeback) {
-      comeBack(result.user.id);
-      setModalType(null);
-      return;
-    }
-
     setModalType(null);
+
     navigate('/seat');
   };
 
   // 외출 관리
-  const handleGoOut = (phone, password) => {
-    const result = verifyGoOut(phone, password);
+  const handleGoOut = async (phoneNumber, password) => {
+    const result = await goOut(phoneNumber, password);
+
     alert(result.message);
 
     if (!result.success) return;
 
-    goOut(result.user.id);
     setModalType(null);
   };
 
   // 퇴실 관리
-  const handleCheckOut = (phone, password) => {
-    const result = verifyCheckOut(phone, password);
+  const handleCheckOut = async (phoneNumber, password) => {
+    const result = await checkOut(phoneNumber, password);
+
     alert(result.message);
 
     if (!result.success) return;
 
-    updateCheckOut(result.checkIn.id);
-    checkOutSeat(result.checkIn.seatId);
     setModalType(null);
+
+    fetchSeats();
   };
 
   // 버튼 관리
-  const handleSubmit = (phone, password) => {
+  const handleSubmit = (phoneNumber, password) => {
     switch (modalType) {
       case '입실':
-        handleCheckIn(phone, password);
+        handleCheckIn(phoneNumber, password);
         break;
       case '외출':
-        handleGoOut(phone, password);
+        handleGoOut(phoneNumber, password);
         break;
       case '퇴실':
-        handleCheckOut(phone, password);
+        handleCheckOut(phoneNumber, password);
         break;
       default:
         break;
