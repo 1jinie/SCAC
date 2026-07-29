@@ -8,6 +8,7 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.scac.admin.entity.AdminAccount;
 import com.scac.global.enums.UserRole;
 import com.scac.user.entity.User;
 
@@ -76,6 +77,45 @@ public String generateRefreshToken(User user) {
             .compact();
 }
 
+private Claims createClaims(AdminAccount admin) {
+
+    return Jwts.claims()
+            .add("adminId", admin.getId())
+            .add("loginId", admin.getLoginId())
+            .add("role", admin.getRole().name())
+            .build();
+}
+
+public String generateAccessToken(AdminAccount admin) {
+
+    Date now = new Date();
+
+    Date expiry =
+            new Date(now.getTime() + accessExpiration);
+
+    return Jwts.builder()
+            .claims(createClaims(admin))
+            .issuedAt(now)
+            .expiration(expiry)
+            .signWith(getSigningKey())
+            .compact();
+}
+
+public String generateRefreshToken(AdminAccount admin) {
+
+    Date now = new Date();
+
+    Date expiry =
+            new Date(now.getTime() + refreshExpiration);
+
+    return Jwts.builder()
+            .claims(createClaims(admin))
+            .issuedAt(now)
+            .expiration(expiry)
+            .signWith(getSigningKey())
+            .compact();
+}
+
 public boolean validateToken(String token) {
 
     try {
@@ -123,9 +163,42 @@ public UserRole getRole(String token) {
     return UserRole.valueOf(role);
 }
 
+public Long getAdminId(String token) {
 
+    return getClaims(token)
+            .get("adminId", Long.class);
+}
 
+public String getLoginId(String token) {
 
+    return getClaims(token)
+            .get("loginId", String.class);
+}
 
+public String getPrincipalType(String token) {
+
+    Claims claims = getClaims(token);
+
+    if (claims.get("userId") != null) {
+        return "user";
+    } else if (claims.get("adminId") != null) {
+        return "admin";
+    }
+
+    return null;
+}
+
+public String getRole(String token, String principalType) {
+
+    Claims claims = getClaims(token);
+
+    if (principalType.equals("user")) {
+        return claims.get("role", String.class);
+    } else if (principalType.equals("admin")) {
+        return claims.get("role", String.class);
+    }
+
+    return null;
+}
 
 }
