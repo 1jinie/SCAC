@@ -15,8 +15,18 @@ import lombok.NoArgsConstructor;
     name = "refresh_token",
     uniqueConstraints = {
         @UniqueConstraint(
-            name = "uq_refresh_token_user",
+            name = "uq_refresh_user",
             columnNames = "user_id"
+        ),
+        @UniqueConstraint(
+            name = "uq_refresh_token",
+            columnNames = "refresh_token"
+        )
+    },
+    indexes = {
+        @Index(
+            name = "idx_expired_at",
+            columnList = "expired_at"
         )
     }
 )
@@ -44,8 +54,7 @@ public class RefreshToken {
 
     @Column(
             name = "expired_at",
-            nullable = false,
-            unique = true
+            nullable = false
     )
     private LocalDateTime expiredAt;
 
