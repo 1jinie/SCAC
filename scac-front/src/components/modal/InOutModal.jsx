@@ -2,16 +2,16 @@ import { useState } from 'react';
 import '../../styles/inOutModal.css';
 
 function InOutModal({ title, onClose, onConfirm }) {
-  const [phone, setPhone] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = () => {
-    if (!phone || !password) {
+    if (!phoneNumber || !password) {
       alert('정보를 입력하세요');
       return;
     }
 
-    onConfirm(phone, password);
+    onConfirm(phoneNumber, password);
   };
 
   return (
@@ -29,8 +29,8 @@ function InOutModal({ title, onClose, onConfirm }) {
           <input
             type="text"
             placeholder="휴대폰 번호"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
           />
           <input
             type="password"

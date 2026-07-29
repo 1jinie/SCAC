@@ -3,6 +3,7 @@ package com.scac.checkin.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.scac.checkin.domain.Checkin;
@@ -31,19 +32,25 @@ public class CheckinService {
     private final SeatRepository seatRepository;
     private final TicketUsageRepository ticketUsageRepository;
     private final CheckinRepository checkinRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // 입실 과정
     @Transactional
     public CheckinResponse checkin(CheckinRequest request){
+
         // 사용자 존재 확인
-        User user = userRepository.findById(request.getUserId())
+        User user = userRepository.findByPhoneNumber(request.getPhoneNumber())
             .orElseThrow(() ->
                 new ResourceNotFoundException("존재하지 않는 사용자입니다")
         );
+        // 비밀번호 확인
+        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
+            throw new BusinessException("비밀번호가 일치하지 않습니다");
+        } 
 
         // 기존 입실 상태 확인
         if(checkinRepository.existsByUserIdAndCheckinStatusIn(
-            request.getUserId(),
+            user.getId(),
             List.of(CheckinStatus.USING, CheckinStatus.AWAY)   
         )){
             throw new BusinessException("이미 입실 중인 사용자입니다");
@@ -52,7 +59,7 @@ public class CheckinService {
         // 이용권 확인
         TicketUsage ticketUsage =
             ticketUsageRepository.findFirstByUserIdAndStatusInOrderByCreatedAtDesc(
-                request.getUserId(), 
+                user.getId(), 
                 List.of(TicketUsageStatus.READY, TicketUsageStatus.ACTIVE))
                 .orElseThrow(() -> new ResourceNotFoundException("사용 가능한 이용권이 없습니다"));
         if(!ticketUsage.isAvailable()){
@@ -76,11 +83,11 @@ public class CheckinService {
         );
 
         // 좌석 사용 가능 여부 확인
-        seat.assignUser(request.getUserId());
+        seat.assignUser(user.getId());
 
         // 입실 저장
         Checkin checkin = new Checkin(
-            request.getUserId(), 
+            user.getId(), 
             request.getSeatId(), 
             ticketUsage.getUsageId(), 
             LocalDateTime.now(), 

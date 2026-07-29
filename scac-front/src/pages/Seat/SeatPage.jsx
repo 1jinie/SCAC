@@ -10,14 +10,14 @@ import { checkInStore } from '../../store/checkInStore';
 function SeatPage({ mode }) {
   const seats = seatStore((state) => state.seats);
   const fetchSeats = seatStore((state) => state.fetchSeats);
+  const selected = seatStore((state) => state.selectedSeat);
+  const selectSeat = seatStore((state) => state.selectSeat);
+  const checkInSeat = seatStore((state) => state.checkInSeat);
   const rooms = roomStore((state) => state.rooms);
   const fetchRooms = roomStore((state) => state.fetchRooms);
-  const selected = seatStore((state) => state.selectedSeat);
-  const user = checkInStore((state) => state.currentUser);
-  const addCheckIn = checkInStore((state) => state.addCheckIn);
-  const checkInSeat = seatStore((state) => state.checkInSeat);
+  const currentUser = checkInStore((state) => state.currentUser);
+  const completeCheckIn = checkInStore((state) => state.completeCheckIn);
   const setReservation = reservationStore((state) => state.setReservation);
-  const selectSeat = seatStore((state) => state.selectSeat);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,7 +40,7 @@ function SeatPage({ mode }) {
     selectSeat(seat.id);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!selected) {
       alert(
         mode === 'seat' ? '좌석을 선택해주세요' : '스터디룸을 선택해주세요',
@@ -48,6 +48,7 @@ function SeatPage({ mode }) {
       return;
     }
 
+    // 스터디룸 예약
     if (mode === 'room') {
       setReservation({
         roomId: selected,
@@ -56,15 +57,16 @@ function SeatPage({ mode }) {
       return;
     }
 
-    checkInSeat(selected);
+    // 좌석 입실 처리
+    const result = await completeCheckIn(selected);
 
-    addCheckIn({
-      userId: user.id,
-      seatId: selected,
-      status: 'using',
-      checkInTime: new Date(),
-      checkOutTime: null,
-    });
+    if (!result.success) {
+      alert(result.message);
+      return;
+    }
+
+    // 좌석 상태 변경
+    checkInSeat(selected);
 
     navigate('/');
     alert('입실되었습니다');
