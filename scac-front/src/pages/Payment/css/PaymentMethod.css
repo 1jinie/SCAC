@@ -13,7 +13,7 @@
 
   box-sizing: border-box;
 
-  background-color: var(--color-text-admin-call);
+  background-color: var(--color-pay-white);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-md);
 
@@ -85,54 +85,6 @@
 }
 
 /* ==========================
-   Payment Button Common
-========================== */
-
-.payment_btn {
-  position: relative;
-
-  width: 100%;
-  height: 260px;
-
-  display: grid;
-  grid-template-columns: 126px 1fr 64px;
-  grid-template-rows: auto auto;
-  align-items: center;
-  column-gap: 28px;
-
-  padding: 36px 42px;
-
-  box-sizing: border-box;
-
-  border: none;
-  border-radius: 18px;
-
-  text-align: left;
-
-  cursor: pointer;
-
-  box-shadow: var(--shadow-md);
-
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.payment_btn + .payment_btn {
-  margin-top: 90px;
-}
-
-.payment_btn:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-}
-
-.payment_btn:active {
-  transform: translateY(0);
-  box-shadow: var(--shadow-sm);
-}
-
-/* ==========================
    Payment Icon Circle
 ========================== */
 
@@ -144,6 +96,7 @@
   height: 126px;
 
   padding: 28px;
+  background: #91c6bc;
 
   box-sizing: border-box;
 
@@ -201,86 +154,73 @@
 }
 
 /* ==========================
-   Credit Card
+   Payment Button Common
 ========================== */
 
-.credit_card {
-  background-color: var(--color-highlight);
-  color: var(--color-text-brown);
-}
+.payment_btn {
+  position: relative;
 
-.credit_card .payment_method_icon {
-  background-color: #ffb574;
-}
+  width: 100%;
+  height: 260px;
 
-.credit_card .payment_card,
-.credit_card .payment_detail {
-  color: var(--color-text-brown);
-}
+  display: grid;
+  grid-template-columns: 126px 1fr 64px;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 28px;
 
-/*
-SVG 내부 색상이 이미 지정되어 있다면
-CSS에서 img 색상은 바로 바뀌지 않습니다.
-카드 아이콘과 화살표 SVG의 fill/stroke를
-#f8f8f8 또는 currentColor로 설정해야 합니다.
-*/
+  padding: 36px 42px;
 
-/* ==========================
-   Simple Pay
-========================== */
+  box-sizing: border-box;
 
-.simple_pay {
-  background-color: var(--color-sub);
+  border: 1px solid rgb(75 157 169 / 15%);
+  border-radius: 18px;
+
+  /* background-color: #e3f2ef; */
+
+  background: #f2f9f7;
+  border: 2px solid #d9ebe7;
+
   color: var(--color-text);
-}
 
-.simple_pay .payment_method_icon {
-  background-color: var(--color-pay-mint);
-}
-
-.simple_pay .payment_card,
-.simple_pay .payment_detail {
-  color: var(--color-text);
-}
-
-/* ==========================
-   Cancel Button
-========================== */
-
-.payment_method_box .btn_cancel {
-  position: absolute;
-  bottom: 56px;
-  left: 50%;
-
-  width: 420px;
-  height: 100px;
-
-  transform: translateX(-50%);
-
-  border: 3px solid var(--color-btn-cancel-text);
-  border-radius: var(--radius-button);
-
-  background-color: var(--color-btn-cancel-fill);
-
-  color: var(--color-btn-cancel-text);
-
-  font-size: 36px;
-  font-weight: var(--font-medium);
+  text-align: left;
+  cursor: pointer;
 
   box-shadow: var(--shadow-md);
 
-  cursor: pointer;
-
   transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
     background-color 0.2s ease,
-    transform 0.2s ease;
+    box-shadow 0.2s ease;
 }
 
-.payment_method_box .btn_cancel:hover {
-  background-color: var(--color-normal);
+.payment_btn + .payment_btn {
+  margin-top: 60px;
 }
 
-.payment_method_box .btn_cancel:active {
-  transform: translateX(-50%) translateY(2px);
+.payment_btn:hover {
+  transform: translateY(-4px);
+
+  border-color: var(--color-primary);
+  background-color: #cfe7e2;
+
+  box-shadow: var(--shadow-lg);
+}
+
+.payment_btn:active {
+  transform: translateY(0);
+
+  background-color: var(--color-sub);
+
   box-shadow: var(--shadow-sm);
+}
+
+.payment_btn .payment_method_icon {
+  background-color: var(--color-pay-mint);
+}
+
+.payment_btn .payment_card,
+.payment_btn .payment_detail {
+  color: var(--color-text);
 }
