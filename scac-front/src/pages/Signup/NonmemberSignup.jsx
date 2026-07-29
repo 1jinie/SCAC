@@ -28,8 +28,7 @@ function NonmemberSignup() {
   const [verificationCode, setVerificationCode] = useState('');
   const [isVerified, setIsVerified] = useState(false);
   const [timer, setTimer] = useState(180);
-  // signup action from authStore (adds to local mock users)
-  const signUp = useAuthStore((state) => state.signUp);
+  const guestSignUp = useAuthStore((state) => state.guestSignUp);
 
   useEffect(() => {
     let interval = null;
@@ -124,7 +123,7 @@ function NonmemberSignup() {
     if (!validateForm()) return;
 
     Promise.resolve(
-      signUp({ phoneNumber: formData.phone, password: formData.password }),
+      guestSignUp({ phoneNumber: formData.phone, password: formData.password }),
     )
       .then((res) => {
         if (!res || !res.success) {
@@ -145,12 +144,12 @@ function NonmemberSignup() {
           checkInTime: new Date(),
         });
 
-        const users = useAuthStore.getState().users || [];
-        const createdUser = users.find((u) => u.id === memberId) || {
-          id: memberId,
-          phone: formData.phone,
-        };
-        checkInStore.setState({ currentUser: createdUser });
+        checkInStore.setState({
+          currentUser: {
+            id: memberId,
+            phone: formData.phone,
+          },
+        });
 
         setSuccessMessage('입실 준비가 완료되었습니다!');
         setTimeout(() => navigate('/loginhome'), 800);

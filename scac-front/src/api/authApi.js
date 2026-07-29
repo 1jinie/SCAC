@@ -5,8 +5,8 @@ import axiosInstance from './axiosInstance.js';
 export const postLogin = async (phoneNumber, password) => {
   try {
     const response = await axiosInstance.post('/api/auth/login', {
-      phone_number: phoneNumber,
-      password: password,
+      phoneNumber,
+      password,
     });
     return response.data;
   } catch (error) {
@@ -18,9 +18,9 @@ export const postLogin = async (phoneNumber, password) => {
 /* 관리자 로그인 */
 export const postAdminLogin = async (adminId, password) => {
   try {
-    const response = await axiosInstance.post('/api/auth/admin/login', {
-      admin_id: adminId,
-      password: password,
+    const response = await axiosInstance.post('/api/admin/auth/login', {
+      loginId: adminId,
+      password,
     });
     return response.data;
   } catch (error) {
@@ -32,8 +32,8 @@ export const postAdminLogin = async (adminId, password) => {
 /* 회원가입 */
 export const postSignUp = async (userData) => {
   try {
-    const response = await axiosInstance.post('/api/auth/signup', {
-      phone_number: userData.phoneNumber,
+    const response = await axiosInstance.post('/api/users/signup', {
+      phoneNumber: userData.phoneNumber,
       password: userData.password,
     });
     return response.data;
@@ -42,6 +42,21 @@ export const postSignUp = async (userData) => {
     throw error;
   }
 };
+
+/* 비회원/게스트 등록 */
+export const postGuestSignUp = async (userData) => {
+  try {
+    const response = await axiosInstance.post('/api/users/guest', {
+      phoneNumber: userData.phoneNumber,
+      password: userData.password,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Guest Sign Up Error:', error);
+    throw error;
+  }
+};
+
 /* 로그아웃 */
 export const postLogout = async () => {
   try {

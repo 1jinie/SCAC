@@ -11,6 +11,20 @@ export const getUserProfile = async (memberId) => {
   }
 };
 
+/* 비회원/게스트 등록 */
+export const postGuestSignUp = async (userData) => {
+  try {
+    const response = await axiosInstance.post('/api/users/guest', {
+      phoneNumber: userData.phoneNumber,
+      password: userData.password,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Guest Sign Up Error:', error);
+    throw error;
+  }
+};
+
 /* 회원이 보유한 활성화된 이용권 목록 조회 */
 export const getUserActiveTickets = async (memberId) => {
   try {
