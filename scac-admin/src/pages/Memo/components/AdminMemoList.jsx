@@ -1,4 +1,4 @@
-import AdminMemoCard from "./AdminMemoCard";
+import AdminMemoCard from './AdminMemoCard';
 
 export default function AdminMemoList({ memos, selectedMemo, onMemoSelect }) {
   if (memos.length === 0) {
@@ -9,9 +9,9 @@ export default function AdminMemoList({ memos, selectedMemo, onMemoSelect }) {
     <div className="admin_memo_grid">
       {memos.map((memo) => (
         <AdminMemoCard
-          key={memo.memo_id}
+          key={memo.memoId}
           memo={memo}
-          selected={selectedMemo?.memo_id === memo.memo_id}
+          selected={selectedMemo?.memoId === memo.memoId}
           onClick={() => onMemoSelect(memo)}
         />
       ))}

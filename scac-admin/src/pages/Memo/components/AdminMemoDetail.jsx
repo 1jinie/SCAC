@@ -1,28 +1,28 @@
-import { useEffect, useState } from "react";
-import { formatAdminMemoDate } from "../../../utils/date";
+import { useEffect, useState } from 'react';
+import { formatAdminMemoDate } from '../../../utils/date';
+
+const EMPTY_MEMO = {
+  memoId: null,
+  adminId: null,
+  content: '',
+  createdAt: null,
+  updatedAt: null,
+};
 
 export default function AdminMemoDetail({
   selectedMemo,
-  memoData,
-  setMemoData,
+  onCreateMemo,
+  onUpdateMemo,
+  onDeleteMemo,
 }) {
-  const emptyMemo = {
-    memo_id: "",
-    user_id: 1,
-    content: "",
-    created_at: "",
-  };
-
-  const [memo, setMemo] = useState(emptyMemo);
+  const [memo, setMemo] = useState(EMPTY_MEMO);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (selectedMemo) {
       setMemo(selectedMemo);
     } else {
-      setMemo({
-        ...emptyMemo,
-        created_at: new Date(),
-      });
+      setMemo(EMPTY_MEMO);
     }
   }, [selectedMemo]);
 
@@ -35,62 +35,90 @@ export default function AdminMemoDetail({
     }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!memo.content.trim()) {
-      alert("내용을 입력하세요");
+      window.alert('내용을 입력하세요.');
       return;
     }
-    if (selectedMemo) {
-      setMemoData((prev) =>
-        prev.map((item) => (item.memo_id === memo.memo_id ? memo : item)),
-      );
-      alert("수정되었습니다");
-    } else {
-      setMemoData((prev) => [
-        ...prev,
-        {
-          ...memo,
-          memo_id:
-            prev.length > 0 ? Math.max(...prev.map((m) => m.memo_id)) + 1 : 1,
-          created_at: new Date(),
-        },
-      ]);
-      alert("등록되었습니다");
 
-      setMemo({
-        ...emptyMemo,
-        created_at: new Date(),
-      });
+    try {
+      setIsSaving(true);
+
+      if (selectedMemo) {
+        await onUpdateMemo(memo.memoId, memo.content.trim());
+
+        window.alert('수정되었습니다.');
+      } else {
+        await onCreateMemo(memo.content.trim());
+
+        window.alert('등록되었습니다.');
+      }
+    } catch (error) {
+      console.error('메모 저장 실패:', error.response?.data ?? error);
+
+      window.alert(
+        error.response?.data?.message ?? '메모 저장에 실패했습니다.',
+      );
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  const handleDelete = () => {
-    if (!selectedMemo) return;
+  const handleDelete = async () => {
+    if (!selectedMemo) {
+      return;
+    }
 
-    if (!window.confirm("정말 삭제하시겠습니까?")) return;
+    const confirmed = window.confirm('정말 삭제하시겠습니까?');
 
-    setMemoData((prev) =>
-      prev.filter((item) => item.memo_id !== selectedMemo.memo_id),
-    );
+    if (!confirmed) {
+      return;
+    }
 
-    setMemo({
-      ...emptyMemo,
-      created_at: new Date(),
-    });
+    try {
+      await onDeleteMemo(selectedMemo.memoId);
 
-    alert("삭제되었습니다.");
+      window.alert('삭제되었습니다.');
+    } catch (error) {
+      console.error('메모 삭제 실패:', error.response?.data ?? error);
+
+      window.alert(
+        error.response?.data?.message ?? '메모 삭제에 실패했습니다.',
+      );
+    }
   };
 
   return (
     <div className="admin_memo_detail">
-      <h3>{selectedMemo ? "메모 수정" : "메모 등록"}</h3>
+      <h3>{selectedMemo ? '메모 수정' : '메모 등록'}</h3>
 
       <div className="admin_memo_form">
         <label>작성자</label>
-        <input value={`관리자 #${memo.user_id}`} disabled />
+        <input
+          value={
+            memo.adminId ? `관리자 #${memo.adminId}` : '관리자 정보 연동 전'
+          }
+          disabled
+        />
 
         <label>작성일</label>
-        <input value={formatAdminMemoDate(memo.created_at)} disabled />
+        <input
+          value={
+            memo.createdAt
+              ? formatAdminMemoDate(memo.createdAt)
+              : '등록 시 자동 생성'
+          }
+          disabled
+        />
+        <label>수정일</label>
+        <span>
+          {memo.updatedAt &&
+          memo.createdAt &&
+          new Date(memo.createdAt).getTime() !==
+            new Date(memo.updatedAt).getTime()
+            ? formatAdminMemoDate(memo.updatedAt)
+            : '-'}
+        </span>
 
         <label>메모 내용</label>
         <textarea
@@ -102,12 +130,20 @@ export default function AdminMemoDetail({
         />
 
         <div className="admin_memo_button_group">
-          <button className="admin_memo_save" onClick={handleSave}>
-            {selectedMemo ? "수정" : "등록"}
+          <button
+            className="admin_memo_save"
+            onClick={handleSave}
+            disabled={isSaving}
+          >
+            {isSaving ? '처리 중...' : selectedMemo ? '수정' : '등록'}
           </button>
 
           {selectedMemo && (
-            <button className="admin_memo_delete" onClick={handleDelete}>
+            <button
+              className="admin_memo_delete"
+              onClick={handleDelete}
+              disabled={isSaving}
+            >
               삭제
             </button>
           )}
