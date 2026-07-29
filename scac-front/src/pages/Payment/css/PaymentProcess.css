@@ -277,13 +277,15 @@
 
   border: 10px solid transparent;
   border-top: 10px solid var(--color-highlight);
-  border-right: 10px solid var(--color-pay-mint);
+  border-right: 10px solid var(--color-sub);
 
   border-radius: 50%;
 
   animation: payment-spin 1s linear infinite;
 
   z-index: 2;
+  position: relative;
+  top: -400px;
 
   pointer-events: none;
 }

@@ -19,6 +19,7 @@
 
   color: var(--color-text);
 }
+
 /* ==========================
    close btn
 ========================== */
@@ -149,6 +150,10 @@
   border-radius: 50%;
 
   object-fit: contain;
+}
+.toss {
+  font-size: 64px;
+  text-align: center;
 }
 
 /* ==========================

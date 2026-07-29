@@ -41,7 +41,7 @@ export default function PaymentMethodPage() {
         className="payment_btn simple_pay"
         onClick={() => handleMethod(PAYMENT_METHOD.TOSSPAY)}
       >
-        <span className="payment_method_icon">T</span>
+        <span className="payment_method_icon toss">T</span>
 
         <span className="payment_card">토스페이</span>
 
