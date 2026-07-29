@@ -11,12 +11,8 @@ public class SeatOccupiedResponse {
     private String zoneType;
     private Long currentUserId;
 
-    public SeatOccupiedResponse(
-        Long seatId,
-        String seatNumber,
-        String zoneType,
-        Long currentUserId
-    ) {
+    public SeatOccupiedResponse(Long seatId, String seatNumber, String zoneType,
+            Long currentUserId) {
         this.seatId = seatId;
         this.seatNumber = seatNumber;
         this.zoneType = zoneType;
@@ -24,11 +20,7 @@ public class SeatOccupiedResponse {
     }
 
     public static SeatOccupiedResponse from(Seat seat) {
-        return new SeatOccupiedResponse(
-            seat.getSeatId(),
-            seat.getSeatNumber(),
-            seat.getZoneType(),
-            seat.getCurrentUserId()
-        );
+        return new SeatOccupiedResponse(seat.getSeatId(), seat.getSeatNumber(), seat.getZoneType(),
+                seat.getCurrentUserId());
     }
 }

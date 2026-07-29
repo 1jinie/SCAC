@@ -69,59 +69,37 @@ public class Payment {
   @Column(name = "cancelled_at")
   private LocalDate cancelledAt;
 
-  private Payment(
-    Long userId,
-    Long ticketId,
-    Integer amount,
-    PaymentMethod paymentMethod
-  ) {
-  this.usageId = null;
-  this.userId = userId;
-  this.ticketId = ticketId;
-  this.amount = amount;
-  this.paymentMethod = paymentMethod;
-  this.status = PaymentStatus.PENDING;
+  private Payment(Long userId, Long ticketId, Integer amount, PaymentMethod paymentMethod) {
+    this.usageId = null;
+    this.userId = userId;
+    this.ticketId = ticketId;
+    this.amount = amount;
+    this.paymentMethod = paymentMethod;
+    this.status = PaymentStatus.PENDING;
   }
 
   // 결제데이터 생성
-  public static Payment create(
-    Long userId,
-    Long ticketId,
-    Integer amount,
-    PaymentMethod paymentMethod
-  ) {
-  return new Payment(
-      userId,
-      ticketId,
-      amount,
-      paymentMethod
-    );
+  public static Payment create(Long userId, Long ticketId, Integer amount,
+      PaymentMethod paymentMethod) {
+    return new Payment(userId, ticketId, amount, paymentMethod);
   }
 
   // 결제 취소
   public void cancel(String cancelReason) {
     if (status == PaymentStatus.CANCELED) {
-      throw new IllegalStateException(
-          "이미 취소된 결제입니다."
-      );
+      throw new IllegalStateException("이미 취소된 결제입니다.");
     }
 
     if (status != PaymentStatus.PAID) {
-      throw new IllegalStateException(
-          "결제 완료 상태에서만 취소할 수 있습니다."
-      );
+      throw new IllegalStateException("결제 완료 상태에서만 취소할 수 있습니다.");
     }
 
     if (cancelReason == null || cancelReason.isBlank()) {
-      throw new IllegalArgumentException(
-          "결제 취소 사유는 필수입니다."
-      );
+      throw new IllegalArgumentException("결제 취소 사유는 필수입니다.");
     }
 
     if (cancelReason.length() > 200) {
-      throw new IllegalArgumentException(
-          "결제 취소 사유는 200자 이하여야 합니다."
-      );
+      throw new IllegalArgumentException("결제 취소 사유는 200자 이하여야 합니다.");
     }
 
     this.status = PaymentStatus.CANCELED;
@@ -131,23 +109,19 @@ public class Payment {
 
   // 결제 완료 후 usageId 할당
   public void assignUsage(Long usageId) {
-  if (usageId == null) {
-    throw new IllegalArgumentException("사용자 이용권 ID는 필수입니다.");
-  }
+    if (usageId == null) {
+      throw new IllegalArgumentException("사용자 이용권 ID는 필수입니다.");
+    }
 
-  if (this.usageId != null) {
-    throw new IllegalStateException("이미 사용자 이용권이 연결된 결제입니다.");
-  }
+    if (this.usageId != null) {
+      throw new IllegalStateException("이미 사용자 이용권이 연결된 결제입니다.");
+    }
 
-  this.usageId = usageId;
+    this.usageId = usageId;
   }
 
   // 토스 페이먼트 승인 성공 시 결체 데이터에 추가 데이터 할당
-  public void approve(
-      String paymentKey,
-      String approvalNum,
-      LocalDateTime paidAt
-  ) {
+  public void approve(String paymentKey, String approvalNum, LocalDateTime paidAt) {
     if (status != PaymentStatus.PENDING) {
       throw new IllegalStateException("결제 대기 상태에서만 승인할 수 있습니다.");
     }
@@ -156,5 +130,12 @@ public class Payment {
     this.approvalNum = approvalNum;
     this.paidAt = paidAt != null ? paidAt : LocalDateTime.now();
     this.status = PaymentStatus.PAID;
+  }
+
+  // 일반 카드 결제 Mock 승인
+  public void approveMock(String approvalNum2, LocalDateTime paidAt) {
+    this.status = PaymentStatus.PAID;
+    this.approvalNum = approvalNum2;
+    this.paidAt = paidAt;
   }
 }

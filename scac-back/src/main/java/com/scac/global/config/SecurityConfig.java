@@ -27,78 +27,71 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+        private final JwtAuthenticationFilter jwtAuthenticationFilter;
+        private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-  @Value("${app.frontend-url}")
-  private List<String> frontendUrls;
+        @Value("${app.frontend-url}")
+        private List<String> frontendUrls;
 
-  @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 
-  @Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http)
-        throws Exception {
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-    http
+                http
 
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-        .csrf(csrf -> csrf.disable())
+                                .csrf(csrf -> csrf.disable())
 
-        .sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        )
+                                .sessionManagement(session -> session.sessionCreationPolicy(
+                                                SessionCreationPolicy.STATELESS))
 
-        .exceptionHandling(exception ->
-                exception.authenticationEntryPoint(
-                        jwtAuthenticationEntryPoint
-                )
-        )
+                                .exceptionHandling(exception -> exception.authenticationEntryPoint(
+                                                jwtAuthenticationEntryPoint))
 
-        .authorizeHttpRequests(auth -> auth
+                                .authorizeHttpRequests(auth -> auth
 
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                                .requestMatchers(HttpMethod.OPTIONS, "/**")
+                                                .permitAll()
 
-                .requestMatchers(
-                        "/api/auth/login",
-                        "/api/auth/refresh",
-                        "/api/admin/login",
-                        "/api/users/signup",
-                        "/api/users/guest"
-                ).permitAll()
+                                                .requestMatchers("/api/auth/login",
+                                                                "/api/auth/refresh",
+                                                                "/api/admin/login",
+                                                                "/api/users/signup",
+                                                                "/api/users/guest", "/api/seats/**")
+                                                .permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/tickets",
+                                                                "/api/tickets/**")
+                                                .permitAll()
 
-                .anyRequest().authenticated()
-        )
+                                                .anyRequest().authenticated())
 
-        .addFilterBefore(
-                jwtAuthenticationFilter,
-                UsernamePasswordAuthenticationFilter.class
-        );
+                                .addFilterBefore(jwtAuthenticationFilter,
+                                                UsernamePasswordAuthenticationFilter.class);
 
-    return http.build();
-}
+                return http.build();
+        }
 
-  @Bean
-  public CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration configuration = new CorsConfiguration();
+        @Bean
+        public CorsConfigurationSource corsConfigurationSource() {
+                CorsConfiguration configuration = new CorsConfiguration();
 
-    configuration.setAllowedOrigins(frontendUrls);
-    configuration.setAllowedMethods(
-        List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-    );
-    configuration.setAllowedHeaders(List.of("*"));
-    configuration.setExposedHeaders(List.of("Authorization"));
-    configuration.setAllowCredentials(true);
-    configuration.setMaxAge(3600L);
+                configuration.setAllowedOrigins(frontendUrls);
+                configuration.setAllowedMethods(
+                                List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+                configuration.setAllowedHeaders(List.of("*"));
+                configuration.setExposedHeaders(List.of("Authorization"));
+                configuration.setAllowCredentials(true);
+                configuration.setMaxAge(3600L);
 
-    UrlBasedCorsConfigurationSource source =
-        new UrlBasedCorsConfigurationSource();
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-    source.registerCorsConfiguration("/**", configuration);
+                source.registerCorsConfiguration("/**", configuration);
 
-    return source;
-  }
+                return source;
+        }
 }

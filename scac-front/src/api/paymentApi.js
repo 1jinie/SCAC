@@ -31,4 +31,11 @@ export const paymentApi = {
 
     return response.data.data;
   },
+
+  mockConfirmPayment: async (paymentId) => {
+    const response = await axiosInstance.post(
+      `/api/payments/${paymentId}/mock-confirm`,
+    );
+    return response.data.data;
+  },
 };

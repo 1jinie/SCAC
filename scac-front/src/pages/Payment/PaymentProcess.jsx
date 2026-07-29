@@ -62,7 +62,13 @@ export default function PaymentProcess() {
 
       // 1. 카드 결제 → 키오스크 Mock 단말기
       if (paymentMethod === PAYMENT_METHOD.CARD) {
-        navi('/payment/kiosk/card');
+        const order = await paymentApi.createPayment({
+          ticketId: selectedTicketId,
+          userId: memberId,
+          amount: ticket.ticketPrice,
+          paymentMethod,
+        });
+        navi('/payment/kiosk/card', { state: { paymentId: order.paymentId } });
         return;
       }
 

@@ -29,90 +29,54 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/tickets")
 public class TicketController {
 
-  private final TicketService ticketService;
+    private final TicketService ticketService;
 
-  // SEAT 이용권 조회
-  @GetMapping
-  public ResponseEntity<ApiResponse<List<TicketResDTO>>> findAll() {
-    List<TicketResDTO> tickets = ticketService.findSeatTicket();
+    // SEAT 이용권 조회
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<TicketResDTO>>> findAll() {
+        List<TicketResDTO> tickets = ticketService.findSeatTicket();
+        System.out.println("sdf" + tickets);
+        return ResponseEntity.ok(ApiResponse.success("이용권 목록 조회를 완료했습니다.", tickets));
+    }
 
-    return ResponseEntity.ok(
-        ApiResponse.success(
-            "이용권 목록 조회를 완료했습니다.",
-            tickets
-        )
-    );
-  }
+    @GetMapping("/{ticketId}")
+    public ResponseEntity<ApiResponse<TicketResDTO>> findById(
+            @PathVariable("ticketId") Long ticketId) {
+        TicketResDTO ticket = ticketService.findById(ticketId);
 
-  @GetMapping("/{ticketId}")
-public ResponseEntity<ApiResponse<TicketResDTO>> findById(
-    @PathVariable("ticketId") Long ticketId
-) {
-  TicketResDTO ticket = ticketService.findById(ticketId);
+        return ResponseEntity.ok(ApiResponse.success("이용권 조회를 완료했습니다.", ticket));
+    }
 
-  return ResponseEntity.ok(
-      ApiResponse.success(
-          "이용권 조회를 완료했습니다.",
-          ticket
-      )
-  );
-}
+    @PostMapping
+    public ResponseEntity<ApiResponse<TicketResDTO>> create(
+            @Valid @RequestBody TicketCreateDTO form) {
+        TicketResDTO ticket = ticketService.create(form);
 
-  @PostMapping
-  public ResponseEntity<ApiResponse<TicketResDTO>> create(
-      @Valid @RequestBody TicketCreateDTO form
-  ) {
-    TicketResDTO ticket = ticketService.create(form);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("이용권 생성을 완료했습니다.", ticket));
+    }
 
-    return ResponseEntity
-        .status(HttpStatus.CREATED)
-        .body(ApiResponse.success(
-            "이용권 생성을 완료했습니다.",
-            ticket
-        ));
-  }
+    @PutMapping("/{ticketId}")
+    public ResponseEntity<ApiResponse<TicketResDTO>> update(@PathVariable("ticketId") Long ticketId,
+            @Valid @RequestBody TicketUpdateDTO form) {
+        TicketResDTO ticket = ticketService.update(ticketId, form);
 
-  @PutMapping("/{ticketId}")
-  public ResponseEntity<ApiResponse<TicketResDTO>> update(
-      @PathVariable("ticketId") Long ticketId,
-      @Valid @RequestBody TicketUpdateDTO form
-  ) {
-    TicketResDTO ticket = ticketService.update(ticketId, form);
+        return ResponseEntity.ok(ApiResponse.success("이용권 수정을 완료했습니다.", ticket));
+    }
 
-    return ResponseEntity.ok(
-        ApiResponse.success(
-            "이용권 수정을 완료했습니다.",
-            ticket
-        )
-    );
-  }
+    // 이용권의 판매 여부를 변경합니다.
+    @PatchMapping("/{ticketId}/status")
+    public ResponseEntity<ApiResponse<TicketResDTO>> updateStatus(
+            @PathVariable("ticketId") Long ticketId, @Valid @RequestBody TicketStatusDTO form) {
+        TicketResDTO ticket = ticketService.updateStatus(ticketId, form);
 
-  // 이용권의 판매 여부를 변경합니다.
-  @PatchMapping("/{ticketId}/status")
-  public ResponseEntity<ApiResponse<TicketResDTO>> updateStatus(
-      @PathVariable("ticketId") Long ticketId,
-      @Valid @RequestBody TicketStatusDTO form
-  ) {
-    TicketResDTO ticket = ticketService.updateStatus(ticketId, form);
+        return ResponseEntity.ok(ApiResponse.success("이용권 판매 상태 변경을 완료했습니다.", ticket));
+    }
 
-    return ResponseEntity.ok(
-        ApiResponse.success(
-            "이용권 판매 상태 변경을 완료했습니다.",
-            ticket
-        )
-    );
-  }
+    @DeleteMapping("/{ticketId}")
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable("ticketId") Long ticketId) {
+        ticketService.delete(ticketId);
 
-  @DeleteMapping("/{ticketId}")
-  public ResponseEntity<ApiResponse<Void>> delete(
-      @PathVariable("ticketId") Long ticketId
-  ) {
-    ticketService.delete(ticketId);
-
-    return ResponseEntity.ok(
-        ApiResponse.success(
-            "이용권 삭제를 완료했습니다."
-        )
-    );
-  }
+        return ResponseEntity.ok(ApiResponse.success("이용권 삭제를 완료했습니다."));
+    }
 }
