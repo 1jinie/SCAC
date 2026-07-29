@@ -1,4 +1,4 @@
-import { QRCodeSVG } from 'qrcode.react';
+// import { QRCodeSVG } from 'qrcode.react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const PUBLIC_ORIGIN =
@@ -40,9 +40,9 @@ export default function KioskQrPayment() {
           결제를 진행해 주세요.
         </p>
 
-        <div className="kiosk_qr_box">
+        {/* <div className="kiosk_qr_box">
           <QRCodeSVG value={mobilePayUrl} size={320} level="H" />
-        </div>
+        </div> */}
 
         <div className="kiosk_qr_amount">
           <span>결제 금액</span>

@@ -67,7 +67,10 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http)
                         "/api/auth/refresh",
                         "/api/admin/login",
                         "/api/users/signup",
-                        "/api/users/guest"
+                        "/api/users/guest",
+                        "/api/seats/**",
+                        "/api/rooms/**",
+                        "/api/meeting-rooms/**"
                 ).permitAll()
 
                 .anyRequest().authenticated()
