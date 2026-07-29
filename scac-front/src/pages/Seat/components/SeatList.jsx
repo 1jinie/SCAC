@@ -6,7 +6,7 @@ function SeatList({ seats, selected, mode, onClick }) {
     <div className="seat_wrapper">
       {seats.map((seat) => (
         <SeatItem
-          key={seat.id}
+          key={`${seat.type}-${seat.id}`}
           seat={seat}
           isSelected={selected === seat.id}
           onClick={() => onClick(seat)}
