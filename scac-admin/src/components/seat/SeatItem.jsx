@@ -1,8 +1,7 @@
 import { getSeatStyle } from "../../utils/getSeatStyle";
 
-function SeatItem({ seat, isSelected, onClick, mode, rooms }) {
-  const room =
-    seat.type === "room" ? rooms.find((room) => room.id === seat.id) : null;
+function SeatItem({ seat, isSelected, onClick, mode }) {
+  const room = seat.type === "room" ? seat : null;
   let effectiveStatus = seat.status;
 
   // 좌석 모드일 경우 스터디룸 비활성화
@@ -49,8 +48,8 @@ function SeatItem({ seat, isSelected, onClick, mode, rooms }) {
         <>
           <div className="room_header">STUDY ROOM</div>
           <div className="room_title">
-            <span className="room_code">{room.name}</span>
-            <span className="room_capacity">{room.capacity}인실</span>
+            <span className="room_code">{room?.name ?? "ROOM"}</span>
+            <span className="room_capacity">{room?.capacity ?? 0}인실</span>
           </div>
           <img src={roomIcon} alt="" className="room_icon" />
         </>

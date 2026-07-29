@@ -1,12 +1,38 @@
 import { create } from "zustand";
-import { seats as initialSeats } from "../data/Seats";
+import { seatApi } from "../api/seatApi";
+import { seatLayouts } from "../constants/SeatLayout";
 
 export const seatStore = create((set) => ({
-  seats: initialSeats,
-
-  // 현재 선택 좌석 id
-  selectedSeat: null,
   // 좌석 선택, 초기화
+  seats: [],
+  selectedSeat: null,
+
+  // 좌석 조회
+  fetchSeats: async () => {
+    const response = await seatApi.getSeatList();
+    const statusMap = {
+      AVB: "available",
+      USR: "using",
+      BRK: "repair",
+      UNA: "unavailable",
+    };
+    const seats = response.data.data.map((seat) => {
+      const layout = seatLayouts.find(
+        (item) => item.id === seat.seatId && item.type === "seat",
+      );
+      return {
+        id: seat.seatId,
+        name: seat.seatNumber,
+        type: "seat",
+        status: statusMap[seat.status],
+        currentUserId: seat.currentUserId,
+        ...layout,
+      };
+    });
+    set({
+      seats,
+    });
+  },
 
   selectSeat: (seatId) =>
     set((state) => ({
@@ -20,10 +46,10 @@ export const seatStore = create((set) => ({
     }),
 
   // 체크인 성공시 좌석 사용중 변경
-  checkInSeat: () =>
+  checkInSeat: (seatId) =>
     set((state) => ({
       seats: state.seats.map((seat) =>
-        seat.id === state.selectedSeat
+        seat.id === seatId
           ? {
               ...seat,
               status: "using",
@@ -51,19 +77,6 @@ export const seatStore = create((set) => ({
     set((state) => ({
       seats: state.seats.map((seat) =>
         seat.id === seatId
-          ? {
-              ...seat,
-              status,
-            }
-          : seat,
-      ),
-    })),
-
-  // 특정 좌석 상태 변경(관리자용) - seatId가 문자열로 들어오는 경우 처리
-  updateSeatStatus: (seatId, status) =>
-    set((state) => ({
-      seats: state.seats.map((seat) =>
-        Number(seat.id) === Number(seatId)
           ? {
               ...seat,
               status,

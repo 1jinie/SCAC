@@ -1,12 +1,12 @@
-import SeatItem from './SeatItem';
-import './css/seat.css';
+import SeatItem from "./SeatItem";
+import "./css/seat.css";
 
 function SeatList({ seats, selected, mode, onClick }) {
   return (
     <div className="seat_wrapper">
       {seats.map((seat) => (
         <SeatItem
-          key={seat.id}
+          key={`${seat.type}-${seat.id}`}
           seat={seat}
           isSelected={selected === seat.id}
           onClick={() => onClick(seat)}
