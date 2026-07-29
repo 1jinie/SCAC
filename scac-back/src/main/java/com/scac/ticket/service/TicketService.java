@@ -27,6 +27,7 @@ public class TicketService {
   public List<TicketResDTO> findAll() {
     return ticketRepository.findAll().stream().map(ticket -> TicketResDTO.from(ticket)).toList();
   }
+
   // 전체 좌석 이용권 조회
   public List<TicketResDTO> findSeatTicket() {
     return ticketRepository.findByTargetTypeIs(TargetType.SEAT).stream().map(TicketResDTO::from).toList();
@@ -34,7 +35,8 @@ public class TicketService {
 
   // 전체 미팅룸 이용권 조회
   public List<TicketResDTO> findRoomTicket() {
-    return ticketRepository.findByTargetTypeIs(TargetType.MEETING_ROOM).stream().map(TicketResDTO::from).toList();
+    return ticketRepository.findByTargetTypeIs(TargetType.MEETING_ROOM).stream().map(TicketResDTO::from)
+      .toList();
   }
 
   // DB 외에서 자유롭게 이용권 데이터 가져오는 용도
@@ -43,29 +45,27 @@ public class TicketService {
   }
 
   // DB의 데이터가 직접적으로 수정될때 데이터 가져오는 용도
-  public Ticket findTicket(Long ticketId){
+  public Ticket findTicket(Long ticketId) {
     return ticketRepository.findById(ticketId)
-        .orElseThrow(() ->
-            new ResourceNotFoundException(
-              "존재하지 않는 이용권입니다."
-          ));
+      .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 이용권입니다."));
   }
 
   // TicketCreateDTO로 데이터 form을 받고 form을 Ticket으로 변환 후 DB에 저장
-  // DB에 저장 후 DB에서 직접 꺼낸 데이터가 아닌 Response용 DTO에 데이터를 담아서 반환 
+  // DB에 저장 후 DB에서 직접 꺼낸 데이터가 아닌 Response용 DTO에 데이터를 담아서 반환
   @Transactional
   public TicketResDTO create(TicketCreateDTO form) {
-    Ticket ticket = Ticket.create(form.getTicketName(),form.getTicketType() , form.getTicketTime(), 
-    form.getTicketPrice(), form.getValidDays(), form.getTargetType());
-   return TicketResDTO.from(ticketRepository.save(ticket));
+    Ticket ticket = Ticket.create(form.getTicketName(), form.getTicketType(), form.getTicketTime(),
+      form.getTicketPrice(), form.getTargetType());
+    return TicketResDTO.from(ticketRepository.save(ticket));
   }
 
   @Transactional
   public TicketResDTO update(Long ticketId, TicketUpdateDTO form) {
     Ticket ticket = findTicket(ticketId);
-    ticket.update(form.getTicketName(), form.getTicketType() , form.getTicketTime(), form.getTicketPrice(), form.getValidDays(), form.getTargetType(),form.getIsActive());
+    ticket.update(form.getTicketName(), form.getTicketType(), form.getTicketTime(), form.getTicketPrice(),
+      form.getTargetType(), form.getIsActive());
     return TicketResDTO.from(ticket);
-    
+
   }
 
   @Transactional
@@ -76,10 +76,9 @@ public class TicketService {
   }
 
   @Transactional
-  public void delete(Long ticketId){
+  public void delete(Long ticketId) {
     Ticket ticket = findTicket(ticketId);
-  ticketRepository.delete(ticket);
+    ticketRepository.delete(ticket);
   }
-
 
 }
