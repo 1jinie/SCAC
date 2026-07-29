@@ -15,7 +15,9 @@ export const PAYMENT_STATUS_LABELS = {
 // 결제 수단
 export const PAYMENT_METHOD_LABELS = {
   CARD: '카드',
-  EASY_PAY: '간편 결제',
+  TOSSPAY: '토스페이',
+  NAVERPAY: '네이버페이',
+  KAKAOPAY: '카카오페이',
 };
 
 // 결제 상품 유형

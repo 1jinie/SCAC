@@ -18,40 +18,48 @@ export default function AdminTicketList({
         </tr>
       </thead>
       <tbody>
-        {tickets.map((ticket) => (
-          <tr
-            key={ticket.ticketId}
-            onClick={() => onTicketSelect(ticket.ticketId)}
-            className={selectedTicketId === ticket.ticketId ? 'selected' : ''}
-          >
-            <td>{ticket.ticketName}</td>
-            {ticket.ticketType === 'TIME_PACK' ? (
-              <>
-                <td>시간권</td>
-                <td>
-                  {formatTicketTime(ticket.ticketType, ticket.ticketTime)}
-                </td>
-              </>
-            ) : (
-              <>
-                <td>기간권</td>
-                <td>{ticket.validDays}</td>
-              </>
-            )}
-            <td>{ticket.ticketPrice.toLocaleString()}원</td>
-            <td>
-              <span
-                className={
-                  ticket.isActive
-                    ? 'ticket_status active'
-                    : 'ticket_status inactive'
-                }
-              >
-                {ticket.isActive ? '판매 중' : '판매 중지'}
-              </span>
+        {tickets.length === 0 ? (
+          <tr>
+            <td colSpan="5" className="admin_ticket_empty">
+              등록된 이용권이 없습니다.
             </td>
           </tr>
-        ))}
+        ) : (
+          tickets.map((ticket) => (
+            <tr
+              key={ticket.ticketId}
+              onClick={() => onTicketSelect(ticket.ticketId)}
+              className={selectedTicketId === ticket.ticketId ? 'selected' : ''}
+            >
+              <td>{ticket.ticketName}</td>
+              {ticket.ticketType === 'TIME_PACK' ? (
+                <>
+                  <td>시간권</td>
+                  <td>
+                    {formatTicketTime(ticket.ticketType, ticket.ticketTime)}
+                  </td>
+                </>
+              ) : (
+                <>
+                  <td>기간권</td>
+                  <td>{ticket.validDays}</td>
+                </>
+              )}
+              <td>{ticket.ticketPrice.toLocaleString()}원</td>
+              <td>
+                <span
+                  className={
+                    ticket.isActive
+                      ? 'ticket_status active'
+                      : 'ticket_status inactive'
+                  }
+                >
+                  {ticket.isActive ? '판매 중' : '판매 중지'}
+                </span>
+              </td>
+            </tr>
+          ))
+        )}
       </tbody>
     </table>
   );

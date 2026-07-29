@@ -115,11 +115,6 @@ export default function PaymentProcess() {
         return;
       }
 
-      // 4. 계좌이체는 현재 미구현
-      if (paymentMethod === PAYMENT_METHOD.TRANSFER) {
-        throw new Error('계좌이체 결제는 현재 준비 중입니다.');
-      }
-
       throw new Error('지원하지 않는 결제 수단입니다.');
     } catch (error) {
       console.error('결제 요청 오류:', error);

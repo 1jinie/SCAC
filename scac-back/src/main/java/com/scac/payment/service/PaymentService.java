@@ -151,7 +151,7 @@ public class PaymentService {
       case NAVERPAY -> throw new IllegalStateException("현재 네이버페이 결제 취소는 지원하지 않습니다");
 
     }
-
+    ticketUsageService.cancel(payment.getUsageId());
     return PaymentResDTO.from(payment);
   }
 

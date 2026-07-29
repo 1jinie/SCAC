@@ -23,4 +23,10 @@ export const ticketApi = {
     const response = await axiosInstance.post(`/api/tickets`, ticket);
     return response.data.data;
   },
+
+  deleteTicket: async (ticketId) => {
+    const response = await axiosInstance.delete(`/api/tickets/${ticketId}`);
+
+    return response.data;
+  },
 };
