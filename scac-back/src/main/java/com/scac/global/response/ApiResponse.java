@@ -3,6 +3,7 @@ package com.scac.global.response;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
 /*
 사용 예시
 
@@ -90,14 +91,11 @@ GlobalExceptionHandler를 참고해 주세요.
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ApiResponse<T> {
 
-  private boolean success;
+  private boolean isSuccess;
   private String message;
   private T data;
 
-  public static <T> ApiResponse<T> success(
-      String message,
-      T data
-  ) {
+  public static <T> ApiResponse<T> success(String message, T data) {
     return new ApiResponse<>(true, message, data);
   }
 
@@ -105,10 +103,13 @@ public class ApiResponse<T> {
     return new ApiResponse<>(true, message, null);
   }
 
-  public static <T> ApiResponse<T> error(
-      String message,
-      T data
-  ) {
+  public static <T> ApiResponse<T> error(String message, T data) {
     return new ApiResponse<>(false, message, data);
+  }
+
+  public static <T> ApiResponse<T> fail(String message, T data
+
+  ) {
+    return new ApiResponse<>(false, message, null);
   }
 }

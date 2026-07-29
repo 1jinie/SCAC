@@ -79,8 +79,7 @@ public class Payment {
   }
 
   // 결제데이터 생성
-  public static Payment create(Long userId, Long ticketId, Integer amount,
-      PaymentMethod paymentMethod) {
+  public static Payment create(Long userId, Long ticketId, Integer amount, PaymentMethod paymentMethod) {
     return new Payment(userId, ticketId, amount, paymentMethod);
   }
 
@@ -134,8 +133,11 @@ public class Payment {
 
   // 일반 카드 결제 Mock 승인
   public void approveMock(String approvalNum2, LocalDateTime paidAt) {
+    if (status != PaymentStatus.PENDING) {
+      throw new IllegalStateException("결제 대기 상태에서만 승인할 수 있습니다.");
+    }
     this.status = PaymentStatus.PAID;
     this.approvalNum = approvalNum2;
-    this.paidAt = paidAt;
+    this.paidAt = paidAt != null ? paidAt : LocalDateTime.now();
   }
 }

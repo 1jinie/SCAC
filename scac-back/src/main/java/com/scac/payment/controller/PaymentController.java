@@ -34,18 +34,16 @@ public class PaymentController {
 
     // 결제 요청
     @PostMapping
-    public ResponseEntity<ApiResponse<PaymentResDTO>> create(
-            @Valid @RequestBody PaymentRequestDTO form) {
+    public ResponseEntity<ApiResponse<PaymentResDTO>> create(@Valid @RequestBody PaymentRequestDTO form) {
         PaymentResDTO payment = paymentService.create(form);
 
         return ResponseEntity.created(URI.create("/api/payments/" + payment.getPaymentId()))
-                .body(ApiResponse.success("결제를 요청을 생성했습니다.", payment));
+            .body(ApiResponse.success("결제를 요청을 생성했습니다.", payment));
     }
 
     // 결제 승인
     @PostMapping("/confirm")
-    public ResponseEntity<ApiResponse<PaymentResDTO>> confirm(
-            @Valid @RequestBody PaymentConfirmDTO form) {
+    public ResponseEntity<ApiResponse<PaymentResDTO>> confirm(@Valid @RequestBody PaymentConfirmDTO form) {
         PaymentResDTO payment = paymentService.confirm(form);
 
         return ResponseEntity.ok(ApiResponse.success("결제 승인을 완료했습니다.", payment));
@@ -53,16 +51,14 @@ public class PaymentController {
 
     // 일반결제 모크 승인
     @PostMapping("/{paymentId}/mock-confirm")
-    public ResponseEntity<ApiResponse<PaymentResDTO>> mockConfirm(
-            @PathVariable("paymentId") Long paymentId) {
-        PaymentResDTO result = paymentService.mockConfirm(paymentId);
-        return ResponseEntity.ok(ApiResponse.success("Mock 카드 결제가 승인되었습니다.", result));
+    public ResponseEntity<ApiResponse<PaymentResDTO>> mockConfirm(@PathVariable("paymentId") Long paymentId) {
+        PaymentResDTO payment = paymentService.mockConfirm(paymentId);
+        return ResponseEntity.ok(ApiResponse.success("Mock 카드 결제가 승인되었습니다.", payment));
     }
 
     // 특정 결제내역 조회
     @GetMapping("/{paymentId}")
-    public ResponseEntity<ApiResponse<PaymentResDTO>> findById(
-            @PathVariable("paymentId") Long paymentId) {
+    public ResponseEntity<ApiResponse<PaymentResDTO>> findById(@PathVariable("paymentId") Long paymentId) {
         PaymentResDTO payment = paymentService.findById(paymentId);
 
         return ResponseEntity.ok(ApiResponse.success("결제 내역 조회를 완료했습니다.", payment));
@@ -71,7 +67,7 @@ public class PaymentController {
     // 모든 결제내역 조회
     @GetMapping
     public ResponseEntity<ApiResponse<List<PaymentHistoryDTO>>> findAll(
-            @RequestParam(name = "userId", required = false) Long userId) {
+        @RequestParam(name = "userId", required = false) Long userId) {
         List<PaymentHistoryDTO> payments = paymentService.findAll(userId);
 
         return ResponseEntity.ok(ApiResponse.success("결제 내역 목록 조회를 완료했습니다.", payments));
@@ -79,8 +75,8 @@ public class PaymentController {
 
     // 결제 취소
     @PatchMapping("/{paymentId}/cancel")
-    public ResponseEntity<ApiResponse<PaymentResDTO>> cancel(
-            @PathVariable("paymentId") Long paymentId, @Valid @RequestBody PaymentCancelDTO form) {
+    public ResponseEntity<ApiResponse<PaymentResDTO>> cancel(@PathVariable("paymentId") Long paymentId,
+        @Valid @RequestBody PaymentCancelDTO form) {
         PaymentResDTO payment = paymentService.cancel(paymentId, form);
 
         return ResponseEntity.ok(ApiResponse.success("결제 취소를 완료했습니다.", payment));

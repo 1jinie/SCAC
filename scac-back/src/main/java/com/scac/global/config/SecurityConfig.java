@@ -43,35 +43,29 @@ public class SecurityConfig {
 
                 http
 
-                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                                .csrf(csrf -> csrf.disable())
+                        .csrf(csrf -> csrf.disable())
 
-                                .sessionManagement(session -> session.sessionCreationPolicy(
-                                                SessionCreationPolicy.STATELESS))
+                        .sessionManagement(
+                                session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                                .exceptionHandling(exception -> exception.authenticationEntryPoint(
-                                                jwtAuthenticationEntryPoint))
+                        .exceptionHandling(
+                                exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
 
-                                .authorizeHttpRequests(auth -> auth
+                        .authorizeHttpRequests(auth -> auth
 
-                                                .requestMatchers(HttpMethod.OPTIONS, "/**")
-                                                .permitAll()
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                                                .requestMatchers("/api/auth/login",
-                                                                "/api/auth/refresh",
-                                                                "/api/admin/login",
-                                                                "/api/users/signup",
-                                                                "/api/users/guest", "/api/seats/**")
-                                                .permitAll()
-                                                .requestMatchers(HttpMethod.GET, "/api/tickets",
-                                                                "/api/tickets/**")
-                                                .permitAll()
+                                .requestMatchers("/api/auth/login", "/api/auth/refresh", "/api/admin/login",
+                                        "/api/users/signup", "/api/users/guest", "/api/seats/**")
+                                .permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/tickets", "/api/tickets/**")
+                                .permitAll()
 
-                                                .anyRequest().authenticated())
+                                .anyRequest().authenticated())
 
-                                .addFilterBefore(jwtAuthenticationFilter,
-                                                UsernamePasswordAuthenticationFilter.class);
+                        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
                 return http.build();
         }
@@ -81,8 +75,7 @@ public class SecurityConfig {
                 CorsConfiguration configuration = new CorsConfiguration();
 
                 configuration.setAllowedOrigins(frontendUrls);
-                configuration.setAllowedMethods(
-                                List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+                configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
                 configuration.setAllowedHeaders(List.of("*"));
                 configuration.setExposedHeaders(List.of("Authorization"));
                 configuration.setAllowCredentials(true);
