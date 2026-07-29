@@ -1,27 +1,57 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { paymentApi } from '../../api/paymentApi';
 import AdminSummary from '../../components/common/Summary';
 import { paymentStore } from '../../store/paymentStore';
+import { formatPrice } from '../../utils/formatter';
 import AdminPaymentDetail from './components/AdminPaymentDetail';
 import AdminPaymentList from './components/AdminPaymentList';
 import AdminPaymentSearch from './components/AdminPaymentSearch';
 import './css/AdminPaymentPage.css';
-import { formatPrice } from '../../utils/formatter';
+
+const ITEMS_PER_PAGE = 10;
 
 export default function AdminPaymentPage() {
   const payments = paymentStore((state) => state.payments);
   const setPayments = paymentStore((state) => state.setPayments);
+
   const [selectedPayment, setSelectedPayment] = useState(null);
 
   const [searchKeyword, setSearchKeyword] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
 
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 10;
-  const [totalPages, setTotalPages] = useState(
-    Math.ceil(payments.length / ITEMS_PER_PAGE),
-  );
-  // const totalPages = Math.ceil(payments.length / ITEMS_PER_PAGE);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  // 결제 내역 조회
+  const fetchPayments = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setErrorMessage('');
+
+      const data = await paymentApi.getPayments();
+
+      setPayments(data);
+
+      return data;
+    } catch (error) {
+      console.error('결제 내역 조회 실패:', error.response?.data ?? error);
+
+      setErrorMessage(
+        error.response?.data?.message ?? '결제 내역을 불러오지 못했습니다.',
+      );
+
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [setPayments]);
+
+  // 최초 결제 내역 조회
+  useEffect(() => {
+    fetchPayments();
+  }, [fetchPayments]);
 
   // 검색 + 상태 필터
   const filteredPayments = useMemo(() => {
@@ -40,6 +70,31 @@ export default function AdminPaymentPage() {
     });
   }, [payments, searchKeyword, statusFilter]);
 
+  // 전체 페이지 수
+  const totalPages = useMemo(() => {
+    return Math.max(1, Math.ceil(filteredPayments.length / ITEMS_PER_PAGE));
+  }, [filteredPayments]);
+
+  // 검색 / 필터가 변경되면 첫 페이지로 이동
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchKeyword, statusFilter]);
+
+  // 데이터 변경으로 현재 페이지가 사라진 경우 보정
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  // 현재 페이지 데이터
+  const paginatedPayments = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+
+    return filteredPayments.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredPayments, currentPage]);
+
+  // 요약
   const summary = useMemo(() => {
     return payments.reduce(
       (result, payment) => {
@@ -47,7 +102,7 @@ export default function AdminPaymentPage() {
 
         if (payment.status === 'PAID') {
           result.completed += 1;
-          result.totalAmount += Number(payment.amount ?? 0);
+          result.totalAmount += Number(payment.paymentAmount ?? 0);
         }
 
         if (payment.status === 'CANCELED') {
@@ -108,28 +163,6 @@ export default function AdminPaymentPage() {
     [summary],
   );
 
-  useEffect(() => {
-    const fetchPayments = async () => {
-      try {
-        const payments = await paymentApi.getPayments();
-        setPayments(payments);
-      } catch (error) {
-        console.error('결제 내역 조회 실패:', error.response?.data ?? error);
-        setPayments([]);
-      }
-    };
-
-    fetchPayments();
-  }, [setPayments]);
-
-  const paginatedPayments = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-    setTotalPages(Math.ceil(filteredPayments.length / ITEMS_PER_PAGE));
-
-    return filteredPayments.slice(startIndex, endIndex);
-  }, [filteredPayments, currentPage]);
-
   // 결제 선택
   const handlePaymentSelect = (payment) => {
     setSelectedPayment(payment);
@@ -153,14 +186,21 @@ export default function AdminPaymentPage() {
 
     try {
       await paymentApi.cancelPayment(paymentId, cancelReason.trim());
-      const updatedPayments = await paymentApi.getPayments();
-      setPayments(updatedPayments);
+
+      const updatedPayments = await fetchPayments();
+
+      if (!updatedPayments) {
+        return;
+      }
+
       const updatedPayment = updatedPayments.find(
         (payment) => Number(payment.paymentId) === Number(paymentId),
       );
-      setSelectedPayment(updatedPayment);
+
+      setSelectedPayment(updatedPayment ?? null);
     } catch (error) {
       console.error('결제 취소 실패:', error.response?.data ?? error);
+
       window.alert(
         error.response?.data?.message ?? '결제 취소 처리에 실패했습니다.',
       );
@@ -188,14 +228,24 @@ export default function AdminPaymentPage() {
         onStatusChange={setStatusFilter}
       />
 
+      {isLoading && (
+        <p className="admin_payment_message">결제 내역을 불러오고 있습니다.</p>
+      )}
+
+      {errorMessage && (
+        <p className="admin_payment_error" role="alert">
+          {errorMessage}
+        </p>
+      )}
+
       <section className="admin_payment_workspace">
         <AdminPaymentList
           payments={paginatedPayments}
           selectedPayment={selectedPayment}
           onPaymentSelect={handlePaymentSelect}
           totalPages={totalPages}
-          setCurrentPage={setCurrentPage}
           currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
         />
 
         <AdminPaymentDetail

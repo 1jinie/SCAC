@@ -6,7 +6,7 @@ import './css/AdminTicketManagePage.css';
 
 export default function AdminTicketManagePage() {
   const [selectedTicketId, setSelectedTicketId] = useState(null);
-  const [isResister, setIsResister] = useState(false);
+  const [isCreateMode, setIsCreateMode] = useState(false);
   const [tab, setTab] = useState('TIME_PACK');
 
   const [tickets, setTickets] = useState([]);
@@ -29,11 +29,18 @@ export default function AdminTicketManagePage() {
     tickets.find((ticket) => ticket.ticketId === selectedTicketId) ?? null;
   const handleTicketSelect = (ticketId) => {
     setSelectedTicketId(ticketId);
+    setIsCreateMode(false);
   };
 
   const handleReset = () => {
     setSelectedTicketId(null);
-    setIsResister(true);
+    setIsCreateMode(true);
+  };
+
+  const handleTicketDeleted = async () => {
+    setSelectedTicketId(null);
+    setIsCreateMode(false);
+    await fetchTickets();
   };
 
   return (
@@ -85,10 +92,11 @@ export default function AdminTicketManagePage() {
             tab={tab}
           />
         </div>
-        {selectedTicketId || isResister ? (
+        {selectedTicketId || isCreateMode ? (
           <AdminTicketDetail
             selectedTicket={selectedTicket}
             fetchTickets={fetchTickets}
+            onTicketDeleted={handleTicketDeleted}
           />
         ) : (
           ''

@@ -15,6 +15,7 @@ export default function AdminTicketDetail({
   selectedTicket,
 
   fetchTickets,
+  onTicketDeleted,
 }) {
   const [ticket, setTicket] = useState(EMPTY_TICKET);
 
@@ -110,13 +111,28 @@ export default function AdminTicketDetail({
     }
   };
 
-  const handleDelete = () => {
-    if (!selectedTicket) return;
+  const handleDelete = async () => {
+    if (!selectedTicket) {
+      return;
+    }
 
-    if (!window.confirm('정말 삭제하시겠습니까?')) return;
+    const confirmed = window.confirm('정말 삭제하시겠습니까?');
 
-    setTicket(EMPTY_TICKET);
-    alert('삭제되었습니다');
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await ticketApi.deleteTicket(selectedTicket.ticketId);
+
+      alert('삭제되었습니다.');
+
+      await onTicketDeleted();
+    } catch (error) {
+      console.error('이용권 삭제 실패:', error.response?.data ?? error);
+
+      alert(error.response?.data?.message ?? '이용권 삭제에 실패했습니다.');
+    }
   };
 
   return (

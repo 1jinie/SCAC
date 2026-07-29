@@ -62,7 +62,13 @@ export default function PaymentProcess() {
 
       // 1. 카드 결제 → 키오스크 Mock 단말기
       if (paymentMethod === PAYMENT_METHOD.CARD) {
-        navi('/payment/kiosk/card');
+        const order = await paymentApi.createPayment({
+          ticketId: selectedTicketId,
+          userId: memberId,
+          amount: ticket.ticketPrice,
+          paymentMethod,
+        });
+        navi('/payment/kiosk/card', { state: { paymentId: order.paymentId } });
         return;
       }
 
@@ -107,11 +113,6 @@ export default function PaymentProcess() {
         });
 
         return;
-      }
-
-      // 4. 계좌이체는 현재 미구현
-      if (paymentMethod === PAYMENT_METHOD.TRANSFER) {
-        throw new Error('계좌이체 결제는 현재 준비 중입니다.');
       }
 
       throw new Error('지원하지 않는 결제 수단입니다.');

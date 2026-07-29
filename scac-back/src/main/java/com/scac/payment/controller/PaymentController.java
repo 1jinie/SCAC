@@ -30,100 +30,64 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PaymentController {
 
-  private final PaymentService paymentService;
+    private final PaymentService paymentService;
 
-  // 결제 요청
-  @PostMapping
-  public ResponseEntity<ApiResponse<PaymentResDTO>> create(
-      @Valid @RequestBody PaymentRequestDTO form
-  ) {
-    PaymentResDTO payment = paymentService.create(form);
+    // 결제 요청
+    @PostMapping
+    public ResponseEntity<ApiResponse<PaymentResDTO>> create(@Valid @RequestBody PaymentRequestDTO form) {
+        PaymentResDTO payment = paymentService.create(form);
 
-    return ResponseEntity
-        .created(URI.create(
-            "/api/payments/" + payment.getPaymentId()
-        ))
-        .body(ApiResponse.success(
-            "결제를 요청을 생성했습니다.",
-            payment
-        ));
-  }
-
-  // 결제 승인
-    @PostMapping("/confirm")
-    public ResponseEntity<ApiResponse<PaymentResDTO>> confirm(
-        @Valid @RequestBody PaymentConfirmDTO form
-    ) {
-    PaymentResDTO payment = paymentService.confirm(form);
-
-    return ResponseEntity.ok(
-        ApiResponse.success(
-            "결제 승인을 완료했습니다.",
-            payment
-        )
-    );
+        return ResponseEntity.created(URI.create("/api/payments/" + payment.getPaymentId()))
+            .body(ApiResponse.success("결제를 요청을 생성했습니다.", payment));
     }
 
-  // 특정 결제내역 조회
-  @GetMapping("/{paymentId}")
-  public ResponseEntity<ApiResponse<PaymentResDTO>> findById(
-      @PathVariable("paymentId") Long paymentId
-  ) {
-    PaymentResDTO payment = paymentService.findById(paymentId);
+    // 결제 승인
+    @PostMapping("/confirm")
+    public ResponseEntity<ApiResponse<PaymentResDTO>> confirm(@Valid @RequestBody PaymentConfirmDTO form) {
+        PaymentResDTO payment = paymentService.confirm(form);
 
-    return ResponseEntity.ok(
-        ApiResponse.success(
-            "결제 내역 조회를 완료했습니다.",
-            payment
-        )
-    );
-  }
+        return ResponseEntity.ok(ApiResponse.success("결제 승인을 완료했습니다.", payment));
+    }
 
-  // 모든 결제내역 조회
-  @GetMapping
-  public ResponseEntity<ApiResponse<List<PaymentHistoryDTO>>> findAll(
-      @RequestParam(name = "userId", required = false) Long userId
-  ) {
-    List<PaymentHistoryDTO> payments = paymentService.findAll(userId);
+    // 일반결제 모크 승인
+    @PostMapping("/{paymentId}/mock-confirm")
+    public ResponseEntity<ApiResponse<PaymentResDTO>> mockConfirm(@PathVariable("paymentId") Long paymentId) {
+        PaymentResDTO payment = paymentService.mockConfirm(paymentId);
+        return ResponseEntity.ok(ApiResponse.success("Mock 카드 결제가 승인되었습니다.", payment));
+    }
 
-    return ResponseEntity.ok(
-        ApiResponse.success(
-            "결제 내역 목록 조회를 완료했습니다.",
-            payments
-        )
-    );
-  }
+    // 특정 결제내역 조회
+    @GetMapping("/{paymentId}")
+    public ResponseEntity<ApiResponse<PaymentResDTO>> findById(@PathVariable("paymentId") Long paymentId) {
+        PaymentResDTO payment = paymentService.findById(paymentId);
 
-  // 결제 취소
-  @PatchMapping("/{paymentId}/cancel")
-  public ResponseEntity<ApiResponse<PaymentResDTO>> cancel(
-      @PathVariable("paymentId") Long paymentId,
-      @Valid @RequestBody PaymentCancelDTO form
-  ) {
-    PaymentResDTO payment =
-        paymentService.cancel(paymentId, form);
+        return ResponseEntity.ok(ApiResponse.success("결제 내역 조회를 완료했습니다.", payment));
+    }
 
-    return ResponseEntity.ok(
-        ApiResponse.success(
-            "결제 취소를 완료했습니다.",
-            payment
-        )
-    );
-  }
+    // 모든 결제내역 조회
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<PaymentHistoryDTO>>> findAll(
+        @RequestParam(name = "userId", required = false) Long userId) {
+        List<PaymentHistoryDTO> payments = paymentService.findAll(userId);
 
-  // 결제내역 삭제
-  @DeleteMapping("/{paymentId}")
-  public ResponseEntity<ApiResponse<Void>> delete(
-      @PathVariable("paymentId") Long paymentId
-  ) {
-    paymentService.delete(paymentId);
+        return ResponseEntity.ok(ApiResponse.success("결제 내역 목록 조회를 완료했습니다.", payments));
+    }
 
-    return ResponseEntity.ok(
-        ApiResponse.success(
-            "결제 내역 삭제를 완료했습니다."
-        )
-    );
-  }
+    // 결제 취소
+    @PatchMapping("/{paymentId}/cancel")
+    public ResponseEntity<ApiResponse<PaymentResDTO>> cancel(@PathVariable("paymentId") Long paymentId,
+        @Valid @RequestBody PaymentCancelDTO form) {
+        PaymentResDTO payment = paymentService.cancel(paymentId, form);
 
-  
+        return ResponseEntity.ok(ApiResponse.success("결제 취소를 완료했습니다.", payment));
+    }
+
+    // 결제내역 삭제
+    @DeleteMapping("/{paymentId}")
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable("paymentId") Long paymentId) {
+        paymentService.delete(paymentId);
+
+        return ResponseEntity.ok(ApiResponse.success("결제 내역 삭제를 완료했습니다."));
+    }
+
 }

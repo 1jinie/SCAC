@@ -1,23 +1,38 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './css/KioskCardPayment.css';
+import { paymentApi } from '../../api/paymentApi';
 
 export default function KioskCardPayment() {
   const navi = useNavigate();
+  const { state } = useLocation();
+
+  const paymentId = state?.paymentId;
 
   const [status, setStatus] = useState('WAITING');
 
-  const handleMockCardInsert = () => {
+  const handleMockCardInsert = async () => {
     if (status !== 'WAITING') {
       return;
     }
 
-    setStatus('PROCESSING');
-    // 실제 서비스에서는 카드 단말기/VAN 승인 결과를 받아
-    // Payment 승인 및 이용권 발급 로직을 호출
-    // setTimeout(() => {
-    //   navi('/payment/result/success');
-    // }, 2000);
+    try {
+      setStatus('PROCESSING');
+      const result = await paymentApi.mockConfirmPayment(paymentId);
+      navi('/payment/result/success', {
+        replace: true,
+        state: {
+          paymentId: result.paymentId,
+        },
+      });
+    } catch (error) {
+      navi('/payment/result/fail', {
+        replace: true,
+        state: {
+          message: error.response?.data?.message ?? '카드 결제에 실패했습니다.',
+        },
+      });
+    }
   };
 
   return (
