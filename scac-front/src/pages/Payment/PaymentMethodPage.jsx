@@ -32,7 +32,7 @@ export default function PaymentMethodPage() {
           실물 카드를 단말기에 삽입하여 결제
         </span>
         <img
-          src="/icons/common/next_white.svg"
+          src="/icons/common/next_black.svg"
           alt="카드결제 선택"
           className="payment_method_next"
         />
