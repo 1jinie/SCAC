@@ -3,7 +3,9 @@ package com.scac.seat.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.scac.global.enums.SeatStatus;
 import com.scac.global.exception.ResourceNotFoundException;
 import com.scac.seat.domain.Seat;
 import com.scac.seat.dto.SeatOccupiedResponse;
@@ -37,5 +39,16 @@ public class SeatService {
     public List<SeatOccupiedResponse> getOccupiedSeats(){
         return seatRepository.findByCurrentUserIdIsNotNull()
             .stream().map(SeatOccupiedResponse::from).toList();
+    }
+
+    // 좌석 상태 변경(관리자)
+    @Transactional
+    public void updateStatus(Long seatId, SeatStatus status){
+        Seat seat = seatRepository.findById(seatId)
+            .orElseThrow(() ->
+                new ResourceNotFoundException("존재하지 않는 좌석입니다")
+        );
+
+        seat.changeStatus(status);
     }
 }

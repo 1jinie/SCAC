@@ -47,4 +47,9 @@ public class Seat{
         this.status = SeatStatus.AVB;
         this.currentUserId = null;
     }
+
+    // 자리 상태 변경(관리자)
+    public void changeStatus(SeatStatus status){
+        this.status = status;
+    }
 }
