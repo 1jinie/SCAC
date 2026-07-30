@@ -11,6 +11,9 @@ export default function AdminDevicePage() {
   const [selectedDevice, setSelectedDevice] = useState(null);
   const [deviceLogs, setDeviceLogs] = useState([]);
 
+  // 테스트할땐 백엔드 global/config/SecurityConfig.java에
+  // .requestMatchers("/api/devices/**").permitAll() 를 추가하세요
+
   // 전체 장치 조회
   const fetchDevices = useCallback(async () => {
     try {
@@ -18,7 +21,10 @@ export default function AdminDevicePage() {
 
       setDevices(data);
     } catch (error) {
-      console.error('장치 목록 조회 실패:', error.response?.data ?? error);
+      console.error(
+        '장치 목록 조회 실패:',
+        error.response?.data.message ?? error,
+      );
     }
   }, []);
 
@@ -35,7 +41,10 @@ export default function AdminDevicePage() {
 
       setDeviceLogs(logs);
     } catch (error) {
-      console.error('장치 로그 조회 실패:', error.response?.data ?? error);
+      console.error(
+        '장치 로그 조회 실패:',
+        error.response?.data.message ?? error,
+      );
       setDeviceLogs([]);
     }
   };
