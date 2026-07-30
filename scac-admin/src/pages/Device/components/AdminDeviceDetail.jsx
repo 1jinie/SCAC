@@ -3,12 +3,12 @@ import {
   DEVICE_TYPE_LABELS,
 } from '../../../constants/device';
 import { formatfullDateTime } from '../../../utils/date';
-import AdminDeviceLogList from './AdminDeviceLogList';
 
 export default function AdminDeviceDetail({
   selectedDevice,
   deviceLogs,
   onStatusChange,
+  isUpdatingStatus,
 }) {
   if (!selectedDevice) {
     return (
@@ -93,8 +93,9 @@ export default function AdminDeviceDetail({
           type="button"
           className="admin_device_normal_button"
           onClick={() => onStatusChange('NORMAL')}
+          disabled={isUpdatingStatus}
         >
-          정상 처리
+          {isUpdatingStatus ? '처리 중...' : '정상 처리'}
         </button>
       )}
     </aside>

@@ -431,6 +431,13 @@
   outline-offset: 2px;
 }
 
+.admin_device_normal_button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 /* =========================
    Responsive
 ========================= */
@@ -467,5 +474,13 @@
 
   .admin_device_info_list > div {
     grid-template-columns: 80px minmax(0, 1fr);
+  }
+  .admin_device_log_item {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .admin_device_log_item small {
+    text-align: left;
   }
 }

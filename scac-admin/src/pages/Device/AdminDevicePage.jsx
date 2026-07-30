@@ -10,6 +10,10 @@ export default function AdminDevicePage() {
   const [devices, setDevices] = useState([]);
   const [selectedDevice, setSelectedDevice] = useState(null);
   const [deviceLogs, setDeviceLogs] = useState([]);
+  const [isDeviceLoading, setIsDeviceLoading] = useState(false);
+  const [isLogLoading, setIsLogLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
   // 테스트할땐 백엔드 global/config/SecurityConfig.java에
   // .requestMatchers("/api/devices/**").permitAll() 를 추가하세요
@@ -17,14 +21,22 @@ export default function AdminDevicePage() {
   // 전체 장치 조회
   const fetchDevices = useCallback(async () => {
     try {
+      setIsDeviceLoading(true);
+      setErrorMessage('');
       const data = await deviceApi.getDevices();
-
       setDevices(data);
     } catch (error) {
       console.error(
         '장치 목록 조회 실패:',
-        error.response?.data.message ?? error,
+        error.response?.data?.message ?? error,
       );
+
+      setErrorMessage(
+        `장치 목록 조회 실패:
+        ${error.response?.data?.message ?? error}`,
+      );
+    } finally {
+      setIsDeviceLoading(false);
     }
   }, []);
 
@@ -35,7 +47,9 @@ export default function AdminDevicePage() {
   // 장치 선택 + 해당 장치 로그 조회
   const handleDeviceSelect = async (device) => {
     setSelectedDevice(device);
+    setDeviceLogs([]);
 
+    setIsLogLoading(true);
     try {
       const logs = await deviceApi.getDeviceLogs(device.deviceId);
 
@@ -43,18 +57,21 @@ export default function AdminDevicePage() {
     } catch (error) {
       console.error(
         '장치 로그 조회 실패:',
-        error.response?.data.message ?? error,
+        error.response?.data?.message ?? error,
       );
       setDeviceLogs([]);
+    } finally {
+      setIsLogLoading(false);
     }
   };
 
   // 관리자 장치 상태 변경
   const handleStatusChange = async (status) => {
-    if (!selectedDevice) {
+    if (!selectedDevice || isUpdatingStatus) {
       return;
     }
-    console.log(status);
+
+    setIsUpdatingStatus(true);
     const message =
       status === 'NORMAL'
         ? '관리자 확인 후 정상 처리되었습니다.'
@@ -77,7 +94,12 @@ export default function AdminDevicePage() {
       const logs = await deviceApi.getDeviceLogs(selectedDevice.deviceId);
       setDeviceLogs(logs);
     } catch (error) {
-      console.error('장치 상태 업데이트 실패:', error.response?.data ?? error);
+      console.error(
+        '장치 상태 업데이트 실패:',
+        error.response?.data?.message ?? error,
+      );
+    } finally {
+      setIsUpdatingStatus(false);
     }
   };
 
@@ -171,15 +193,27 @@ export default function AdminDevicePage() {
           devices={devices}
           selectedDevice={selectedDevice}
           onDeviceSelect={handleDeviceSelect}
+          isDeviceLoading={isDeviceLoading}
+          errorMessage={errorMessage}
         />
 
         <AdminDeviceDetail
           selectedDevice={selectedDevice}
           deviceLogs={deviceLogs}
           onStatusChange={handleStatusChange}
+          isUpdatingStatus={isUpdatingStatus}
         />
 
-        <AdminDeviceLogList logs={deviceLogs} />
+        {selectedDevice &&
+          (isLogLoading ? (
+            <div className="admin_device_log_section">
+              <p className="admin_device_log_empty">
+                로그를 불러오는 중입니다.
+              </p>
+            </div>
+          ) : (
+            <AdminDeviceLogList logs={deviceLogs} />
+          ))}
       </section>
     </div>
   );
