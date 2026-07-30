@@ -1,5 +1,7 @@
+@baseUrl = http://localhost:8888
+
 ### 결제 주문 생성
-POST http://localhost:8888/api/payments
+POST {{baseUrl}}/api/payments
 Content-Type: application/json
 
 {
@@ -10,7 +12,7 @@ Content-Type: application/json
 }
 
 ### 결제 승인 프론트에서 토스페이 결제화면을 거쳐야 승인되기 때문에 여기서하면 결제실패됩니다
-POST http://localhost:8888/api/payments/confirm
+POST {{baseUrl}}/api/payments/confirm
 Content-Type: application/json
 
 {
@@ -20,16 +22,16 @@ Content-Type: application/json
 }
 
 ### 결제 단건 조회
-GET http://localhost:8888/api/payments/2
+GET {{baseUrl}}/api/payments/3
 
 ### 전체 결제 내역 조회
-GET http://localhost:8888/api/payments
+GET {{baseUrl}}/api/payments
 
 ### 사용자별 결제 내역 조회
-GET http://localhost:8888/api/payments?userId=1
+GET {{baseUrl}}/api/payments?userId=1
 
 ### 결제 취소
-POST http://localhost:8888/api/payments/1/cancel
+POST {{baseUrl}}/api/payments/1/cancel
 Content-Type: application/json
 
 {
@@ -37,4 +39,12 @@ Content-Type: application/json
 }
 
 ### 결제 내역 삭제
-DELETE http://localhost:8888/api/payments/2
+DELETE {{baseUrl}}/api/payments/2
+
+### 긴 취소 사유 테스트
+PATCH {{baseUrl}}/api/payments/3/cancel
+Content-Type: application/json
+
+{
+  "cancelReason": "고객 요청으로 결제를 취소합니다. 이용권 선택 과정에서 상품을 잘못 선택하였으며 결제 직후 관리자에게 취소를 요청했습니다. 결제 내역과 이용권 발급 여부를 확인한 뒤 관리자 승인으로 취소 처리한 테스트 데이터입니다."
+}

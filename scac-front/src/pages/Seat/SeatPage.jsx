@@ -16,7 +16,7 @@ function SeatPage({ mode }) {
   const rooms = roomStore((state) => state.rooms);
   const fetchRooms = roomStore((state) => state.fetchRooms);
   const currentUser = checkInStore((state) => state.currentUser);
-  const completeCheckIn = checkInStore((state) => state.completeCheckIn);
+  const checkIn = checkInStore((state) => state.checkIn);
   const setReservation = reservationStore((state) => state.setReservation);
   const navigate = useNavigate();
 
@@ -58,7 +58,7 @@ function SeatPage({ mode }) {
     }
 
     // 좌석 입실 처리
-    const result = await completeCheckIn(selected);
+    const result = await checkIn(selected);
 
     if (!result.success) {
       alert(result.message);

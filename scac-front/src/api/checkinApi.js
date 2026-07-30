@@ -1,16 +1,13 @@
 import axiosInstance from './axiosInstance';
 
 export const checkinApi = {
-  verifyEntryPassword: (data) =>
-    axiosInstance.post('/api/users/entry-password/verify', data),
+  prepare: (data) => axiosInstance.post('/api/checkin/prepare', data),
 
   checkin: (data) => axiosInstance.post('/api/checkin', data),
 
-  goOut: (checkinId) => axiosInstance.patch(`/api/checkin/${checkinId}/away`),
+  goOut: (data) => axiosInstance.patch('/api/checkin/away', data),
 
-  comeBack: (checkinId) =>
-    axiosInstance.patch(`/api/checkin/${checkinId}/comeback`),
+  comeBack: (data) => axiosInstance.patch('/api/checkin/comeback', data),
 
-  checkout: (checkinId) =>
-    axiosInstance.patch(`/api/checkin/${checkinId}/checkout`),
+  checkout: (data) => axiosInstance.patch('/api/checkin/checkout', data),
 };
