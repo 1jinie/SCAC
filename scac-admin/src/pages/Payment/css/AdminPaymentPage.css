@@ -165,6 +165,15 @@
   text-align: center !important;
 }
 
+.admin_payment_product_name {
+  max-width: 220px;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* =========================
    Payment Status Badge
 ========================= */

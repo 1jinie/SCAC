@@ -72,7 +72,8 @@ export default function AdminPaymentList({
 
                     <td>
                       {PAYMENT_METHOD_LABELS[payment.paymentMethod] ??
-                        payment.paymentMethod}
+                        payment.paymentMethod ??
+                        '-'}
                     </td>
 
                     <td>{formatAdminMemoDate(payment.paidAt)}</td>
@@ -82,7 +83,8 @@ export default function AdminPaymentList({
                         className={`admin_payment_status status_${payment.status.toLowerCase()}`}
                       >
                         {PAYMENT_STATUS_LABELS[payment.status] ??
-                          payment.status}
+                          payment.status ??
+                          '-'}
                       </span>
                     </td>
                   </tr>
