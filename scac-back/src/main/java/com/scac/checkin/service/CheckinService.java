@@ -37,23 +37,30 @@ public class CheckinService {
     private final CheckinRepository checkinRepository;
     private final PasswordEncoder passwordEncoder;
 
+    // 사용자 검증 함수
+    private User authenticateUser(String phoneNumber, String password){
+        // 사용자 조회
+        User user = userRepository.findByPhoneNumber(phoneNumber)
+            .orElseThrow(() ->
+                new ResourceNotFoundException("존재하지 않는 사용자입니다")
+        );
+
+        // 비밀번호 검증
+        if(!passwordEncoder.matches(password, user.getPassword())){
+            throw new BusinessException("비밀번호가 일치하지 않습니다");
+        }
+
+        return user;
+    }
+
     // 입실 준비(사용자, 이용권 확인)
     @Transactional(readOnly = true)
     public CheckinPrepareResponse prepare(CheckinPrepareRequest request) {
         
-        // 사용자 조회
-        User user = userRepository.findByPhoneNumber(request.getPhoneNumber())
-        .orElseThrow(() ->
-        new ResourceNotFoundException("존재하지 않는 사용자입니다")
-        );
+        User user = authenticateUser(request.getPhoneNumber(), request.getPassword());
     
         Checkin awayCheckin = checkinRepository.findByUserIdAndCheckinStatus(user.getId(), CheckinStatus.AWAY).orElse(null);
         
-        // 비밀번호 검증
-        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
-            throw new BusinessException("비밀번호가 일치하지 않습니다");
-        }
-
         // 기존 입실 상태 확인
         if(checkinRepository.existsByUserIdAndCheckinStatus(
             user.getId(), CheckinStatus.USING)   
@@ -130,16 +137,8 @@ public class CheckinService {
     // 외출 과정
     @Transactional
     public CheckinResponse goAway(CheckinPrepareRequest request){
-        // 사용자 조회
-        User user = userRepository.findByPhoneNumber(request.getPhoneNumber())
-            .orElseThrow(() ->
-                new ResourceNotFoundException("존재하지 않는 사용자입니다")
-        );
-
-        // 비밀번호 검증
-        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
-            throw new BusinessException("비밀번호가 일치하지 않습니다");
-        }
+        
+        User user = authenticateUser(request.getPhoneNumber(), request.getPassword());
 
         // 외출
         Checkin checkin = checkinRepository.findByUserIdAndCheckinStatus(user.getId(), CheckinStatus.USING)
@@ -155,16 +154,8 @@ public class CheckinService {
     // 외출 복귀 과정
     @Transactional
     public CheckinResponse comeBack(CheckinPrepareRequest request){
-        // 사용자 조회
-        User user = userRepository.findByPhoneNumber(request.getPhoneNumber())
-            .orElseThrow(() ->
-                new ResourceNotFoundException("존재하지 않는 사용자입니다")
-        );
-
-        // 비밀번호 검증
-        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
-            throw new BusinessException("비밀번호가 일치하지 않습니다");
-        }
+        
+        User user = authenticateUser(request.getPhoneNumber(), request.getPassword());
 
         // 복귀
         Checkin checkin = checkinRepository.findByUserIdAndCheckinStatus(user.getId(), CheckinStatus.AWAY)
@@ -180,16 +171,8 @@ public class CheckinService {
     // 퇴실 과정
     @Transactional
     public CheckinResponse checkout(CheckinPrepareRequest request){
-        // 사용자 조회
-        User user = userRepository.findByPhoneNumber(request.getPhoneNumber())
-            .orElseThrow(() ->
-                new ResourceNotFoundException("존재하지 않는 사용자입니다")
-        );
-
-        // 비밀번호 검증
-        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
-            throw new BusinessException("비밀번호가 일치하지 않습니다");
-        }
+        
+        User user = authenticateUser(request.getPhoneNumber(), request.getPassword());
 
         // 입실 정보 조회
         Checkin checkin = checkinRepository.findByUserIdAndCheckinStatusIn(user.getId(), List.of(CheckinStatus.USING, CheckinStatus.AWAY))
@@ -228,6 +211,5 @@ public class CheckinService {
 
         return CheckinResponse.from(checkin);
     }
-
     
 }
