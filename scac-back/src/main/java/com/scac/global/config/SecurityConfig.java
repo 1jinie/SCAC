@@ -65,7 +65,8 @@ public class SecurityConfig {
                                 "/api/seats/**",
                                 "/api/rooms/**",
                                 "/api/meeting-rooms/**",
-                                "/api/checkin/**"
+                                "/api/checkin/**",
+                                "api/users/{userId}"
                         ).permitAll()
 
                         // 2. PUBLIC POST 요청 (회원가입, 게스트 등록, 비밀번호 검증 등)
@@ -80,6 +81,12 @@ public class SecurityConfig {
                                 "/api/users/signup",                  // <--- POST로 이동
                                 "/api/users/guest",                   // <--- POST로 이동
                                 "/api/users/entry-password/verify"    // <--- POST로 이동
+                        ).permitAll()
+
+                        .requestMatchers(
+                                HttpMethod.PATCH,
+                                "/api/users/{userId}/entry-password"
+                                
                         ).permitAll()
 
                         .anyRequest().authenticated())
