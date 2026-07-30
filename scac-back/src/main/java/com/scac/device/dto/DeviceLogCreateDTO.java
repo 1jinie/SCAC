@@ -15,9 +15,7 @@ RTOS에서 받을 데이터 DTO
 @NoArgsConstructor
 public class DeviceLogCreateDTO {
 
-  @NotBlank(message = "장치명은 필수입니다.")
-  @Size(max = 50)
-  private String deviceName;
+  private Long deviceId;
 
   @NotBlank(message = "이벤트 유형은 필수입니다.")
   @Size(max = 50)

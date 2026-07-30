@@ -14,15 +14,13 @@ public interface DeviceLogRepository extends JpaRepository<DeviceLog, Long> {
   // 전체 로그 최신순 조회
   List<DeviceLog> findAllByOrderByCreatedAtDescLogIdDesc();
 
-  // 특정 장치 로그 최신순 조회
-  List<DeviceLog> findByDeviceNameOrderByCreatedAtDescLogIdDesc(String deviceName);
-
-  // 특정 장치의 가장 최신 상태
-  Optional<DeviceLog> findFirstByDeviceNameOrderByCreatedAtDescLogIdDesc(String deviceName);
-
   // Page<DeviceLog> findByDeviceNameOrderByCreatedAtDescLogIdDesc(String
   // deviceName, Pageable pageable);
 
-  boolean existsByDeviceName(String deviceName);
+  // 특정 장치 로그 최신순 조회
+  List<DeviceLog> findByDeviceDeviceIdOrderByCreatedAtDescLogIdDesc(Long deviceId);
+
+  // 특정 장치 로그 최신 한건
+  Optional<DeviceLog> findFirstByDeviceDeviceIdOrderByCreatedAtDescLogIdDesc(Long deviceId);
 
 }
