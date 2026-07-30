@@ -56,12 +56,25 @@ public class SecurityConfig {
                         .authorizeHttpRequests(auth -> auth
 
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/auth/login", "/api/auth/refresh",
-                                        "/api/admin/login", "/api/users/signup", "/api/users/guest",
-                                        "/api/tickets", "/api/tickets/**", "/api/seats/**", "/api/rooms/**",
-                                        "/api/meeting-rooms/**", "/api/checkin/**",
-                                        "/api/users/entry-password/**")
-                                .permitAll().anyRequest().authenticated())
+                                .requestMatchers(
+                                        HttpMethod.GET,
+                                        "/api/auth/login",
+                                        "/api/users/guest",
+                                        "/api/tickets/**",
+                                        "/api/seats/**",
+                                        "/api/rooms/**",
+                                        "/api/meeting-rooms/**"
+                                ).permitAll()
+                                .requestMatchers(
+                                        "/api/auth/refresh",
+                                        "/api/admin/**",
+                                        "/api/auth/login",
+                                        "/api/users/signup",
+                                        "/api/checkin/**",
+                                        "/api/users/entry-password/**"
+                                ).permitAll()
+
+                                .anyRequest().authenticated())
 
                         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
