@@ -1,125 +1,47 @@
 import { create } from 'zustand';
-import { postLogin, postSignUp, postGuestSignUp, postLogout } from '../api/authApi';
+import { postLogin, postAdminLogin, postLogout } from '../api/authApi';
 
 export const useAuthStore = create((set) => ({
-  // --- 상태 (State) ---
-  isLoggedIn: false,
-  userRole: 'GUEST',
-  memberId: null,
-  userPhone: null,
-  accessToken: null,
-  refreshToken: null,
+  accessToken: localStorage.getItem('accessToken') || null,
+  user: JSON.parse(localStorage.getItem('userInfo')) || null,
+  isAuthenticated: !!localStorage.getItem('accessToken'),
+  isLoading: false,
 
-  // --- 액션 (Actions) ---
   login: async (phoneNumber, password) => {
+    set({ isLoading: true });
     try {
-      const response = await postLogin(phoneNumber, password);
-      const result = response.data;
+      const res = await postLogin(phoneNumber, password); // ApiResponse
+      if (res.isSuccess && res.data) {
+        const { accessToken, refreshToken, user } = res.data;
 
-      if (!result.success) {
-        return { success: false, message: result.message };
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('userInfo', JSON.stringify(user));
+
+        set({
+          accessToken,
+          user,
+          isAuthenticated: true,
+          isLoading: false,
+        });
+        return { success: true };
       }
-
-      const user = result.data;
-      set({
-        isLoggedIn: true,
-        userRole: user.role,
-        memberId: user.userId,
-        userPhone: user.phoneNumber,
-        accessToken: user.accessToken,
-        refreshToken: user.refreshToken,
-      });
-
-      localStorage.setItem('accessToken', user.accessToken);
-      localStorage.setItem('refreshToken', user.refreshToken);
-
-      return { success: true, role: user.role };
+      return { success: false, message: res.message };
     } catch (error) {
-      console.error('Store Login Error:', error);
-      return {
-        success: false,
-        message:
-          error?.response?.data?.message ||
-          '로그인 처리 중 오류가 발생했습니다.',
-      };
+      set({ isLoading: false });
+      const message = error.response?.data?.message || '로그인에 실패했습니다.';
+      return { success: false, message };
     }
   },
 
   logout: async () => {
     try {
       await postLogout();
-    } catch (error) {
-      console.error('Store Logout Error:', error);
-    }
-
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-
-    set({
-      isLoggedIn: false,
-      userRole: 'GUEST',
-      memberId: null,
-      userPhone: null,
-      accessToken: null,
-      refreshToken: null,
-    });
-  },
-
-  signUp: async (userData) => {
-    try {
-      const response = await postSignUp(userData);
-      const result = response.data;
-
-      if (!result.success) {
-        return {
-          success: false,
-          errorMessage: result.message,
-        };
-      }
-
-      const user = result.data;
-      return {
-        success: true,
-        memberId: user.userId,
-        phoneNumber: user.phoneNumber,
-      };
-    } catch (error) {
-      console.error('Store SignUp Error:', error);
-      return {
-        success: false,
-        errorMessage:
-          error?.response?.data?.message ||
-          '회원가입 처리 중 오류가 발생했습니다.',
-      };
-    }
-  },
-
-  guestSignUp: async (userData) => {
-    try {
-      const response = await postGuestSignUp(userData);
-      const result = response.data;
-
-      if (!result.success) {
-        return {
-          success: false,
-          errorMessage: result.message,
-        };
-      }
-
-      const user = result.data;
-      return {
-        success: true,
-        memberId: user.userId,
-        phoneNumber: user.phoneNumber,
-      };
-    } catch (error) {
-      console.error('Store GuestSignUp Error:', error);
-      return {
-        success: false,
-        errorMessage:
-          error?.response?.data?.message ||
-          '비회원 등록 처리 중 오류가 발생했습니다.',
-      };
+    } catch (e) {
+      console.warn('Logout API Failed:', e);
+    } finally {
+      localStorage.clear();
+      set({ accessToken: null, user: null, isAuthenticated: false });
     }
   },
 }));
