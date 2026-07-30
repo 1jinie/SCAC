@@ -59,15 +59,17 @@ public class SecurityConfig {
                                 .requestMatchers(
                                         HttpMethod.GET,
                                         "/api/auth/login",
-                                        "/api/auth/refresh",
-                                        "/api/admin/login",
-                                        "/api/users/signup",
                                         "/api/users/guest",
-                                        "/api/tickets",
                                         "/api/tickets/**",
                                         "/api/seats/**",
                                         "/api/rooms/**",
-                                        "/api/meeting-rooms/**",
+                                        "/api/meeting-rooms/**"
+                                ).permitAll()
+                                .requestMatchers(
+                                        "/api/auth/refresh",
+                                        "/api/admin/**",
+                                        "/api/auth/login",
+                                        "/api/users/signup",
                                         "/api/checkin/**",
                                         "/api/users/entry-password/**"
                                 ).permitAll()

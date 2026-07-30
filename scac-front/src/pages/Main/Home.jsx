@@ -11,6 +11,8 @@ function HomePage() {
   const verifyEntryPassword = checkInStore(
     (state) => state.verifyEntryPassword,
   );
+  const prepareCheckIn = checkInStore((state) => state.prepareCheckIn);
+  const setPreparedInfo = checkInStore((state) => state.setPreparedInfo);
   const checkIn = checkInStore((state) => state.checkIn);
   const goOut = checkInStore((state) => state.goOut);
   const comeBack = checkInStore((state) => state.comeBack);
@@ -28,13 +30,29 @@ function HomePage() {
 
   // 입실 관리
   const handleCheckIn = async (phoneNumber, password) => {
-    const result = await verifyEntryPassword(phoneNumber, password);
+    const result = await prepareCheckIn(phoneNumber, password);
 
-    alert(result.message);
+    if (!result.success) {
+      alert(result.message);
+      return;
+    }
 
-    if (!result.success) return;
+    setPreparedInfo(result.data.userId, result.data.usageId);
 
     setModalType(null);
+
+    // 외출 상태면 좌석 선택 없이 복귀
+    if (result.data.away) {
+      const comebackResult = await comeBack(phoneNumber, password);
+
+      if (!comebackResult.success) {
+        alert(comebackResult.message);
+        return;
+      }
+
+      alert('재입실되었습니다');
+      return;
+    }
 
     navigate('/seat');
   };
