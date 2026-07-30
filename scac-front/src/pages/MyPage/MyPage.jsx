@@ -7,13 +7,13 @@ import '../../styles/Mypage.css';
 function MyPage() {
   const navigate = useNavigate();
 
-  const memberId = useAuthStore((state) => state.memberId);
+  const userId = useAuthStore((state) => state.userId);
   const logout = useAuthStore((state) => state.logout);
 
   const {
     userProfile,
     getUserProfile,
-    modifyUserProfile,
+    modifyUserPassword,
     clearUserData,
     isLoading,
     errorMessage,
@@ -28,16 +28,16 @@ function MyPage() {
 
   /* 내 정보 및 이용권 정보 조회 */
   useEffect(() => {
-    if (memberId) {
-      getUserProfile(memberId);
+    if (userId) {
+      getUserProfile(userId);
     }
-  }, [memberId, getUserProfile, navigate]);
+  }, [userId, getUserProfile, navigate]);
 
   // 프로필 데이터 로드 상태 확인
   useEffect(() => {
-    console.log('📊 userProfile:', userProfile);
-    console.log('📊 isLoading:', isLoading);
-    console.log('📊 errorMessage:', errorMessage);
+    console.log(' userProfile:', userProfile);
+    console.log(' isLoading:', isLoading);
+    console.log(' errorMessage:', errorMessage);
   }, [userProfile, isLoading, errorMessage]);
 
   /* 로그아웃 핸들러 */
@@ -62,11 +62,11 @@ function MyPage() {
       return;
     }
 
-    // 현재 비밀번호 검증
-    if (userProfile && currentPassword !== userProfile.password) {
-      setLocalError('현재 입실 비밀번호가 일치하지 않습니다.');
-      return;
-    }
+    // // 현재 비밀번호 검증
+    // if (userProfile && currentPassword !== userProfile.password) {
+    //   setLocalError('현재 입실 비밀번호가 일치하지 않습니다.');
+    //   return;
+    // }
 
     // 새 비밀번호 확인 일치 검증
     if (newPassword !== passwordConfirm) {
@@ -81,17 +81,16 @@ function MyPage() {
     }
 
     // 서버로 수정 요청 보낼 데이터 객체
-    const updateData = {
-      password: newPassword,
-    };
-
-    const result = await modifyUserProfile(memberId, updateData);
+    const result = await modifyUserPassword(memberId, {
+      currentPassword,
+      newPassword,
+    });
 
     if (result.success) {
-      setSuccessMessage('비밀번호가 성공적으로 변경되었습니다!');
-      setCurrentPassword('');
-      setNewPassword('');
-      setPasswordConfirm('');
+      // setSuccessMessage('비밀번호가 성공적으로 변경되었습니다!');
+      // setCurrentPassword('');
+      // setNewPassword('');
+      // setPasswordConfirm('');
 
       // 보안을 위해 비밀번호 변경 후 자동 로그아웃
       alert(
