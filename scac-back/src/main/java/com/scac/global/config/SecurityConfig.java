@@ -61,9 +61,7 @@ public class SecurityConfig {
                                         "/api/tickets", "/api/tickets/**", "/api/seats/**", "/api/rooms/**",
                                         "/api/meeting-rooms/**", "/api/checkin/**",
                                         "/api/users/entry-password/**")
-                                .permitAll()
-
-                                .anyRequest().authenticated())
+                                .permitAll().anyRequest().authenticated())
 
                         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

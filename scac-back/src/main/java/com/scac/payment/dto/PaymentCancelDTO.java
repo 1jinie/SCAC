@@ -2,12 +2,14 @@ package com.scac.payment.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 // 결제 취소 요청 받을경우 DTO
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
 public class PaymentCancelDTO {
 
     @NotBlank(message = "취소 사유는 필수입니다.")

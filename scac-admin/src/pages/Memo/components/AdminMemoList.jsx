@@ -1,4 +1,3 @@
-import Pagination from '../../../components/common/Pagination';
 import AdminMemoCard from './AdminMemoCard';
 
 export default function AdminMemoList({ memos, selectedMemo, onMemoSelect }) {
