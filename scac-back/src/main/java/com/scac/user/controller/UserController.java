@@ -76,13 +76,14 @@ public class UserController {
      * 4. 입실 비밀번호 검증 (키오스크 / 출입문 단말기용)
      */
     @PostMapping("/entry-password/verify")
-    public ResponseEntity<ApiResponse<Boolean>> verifyEntryPassword(
+    public ResponseEntity<ApiResponse<UserRes>> verifyEntryPassword(
             @Valid @RequestBody PasswordVerifyReq req
     ) {
-        userService.verifyPassword(req);
+        
+        User user = userService.verifyPassword(req);
 
         return ResponseEntity.ok(
-                ApiResponse.success("입실 비밀번호 검증에 성공했습니다.", true)
+                ApiResponse.success("입실 비밀번호 검증에 성공했습니다 .", UserRes.from(user))
         );
     }
 

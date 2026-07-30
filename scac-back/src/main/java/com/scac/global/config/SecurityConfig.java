@@ -27,73 +27,80 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-        private final JwtAuthenticationFilter jwtAuthenticationFilter;
-        private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-        @Value("${app.frontend-url}")
-        private List<String> frontendUrls;
+    @Value("${app.frontend-url}")
+    private List<String> frontendUrls;
 
-        @Bean
-        public PasswordEncoder passwordEncoder() {
-                return new BCryptPasswordEncoder();
-        }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-        @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-                http
+        http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
 
-                        .csrf(csrf -> csrf.disable())
+                .sessionManagement(
+                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                        .sessionManagement(
-                                session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(
+                        exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
 
-                        .exceptionHandling(
-                                exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .authorizeHttpRequests(auth -> auth
 
-                        .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                .requestMatchers(
-                                        HttpMethod.GET,
-                                        "/api/auth/login",
-                                        "/api/auth/refresh",
-                                        "/api/admin/login",
-                                        "/api/users/signup",
-                                        "/api/users/guest",
-                                        "/api/tickets",
-                                        "/api/tickets/**",
-                                        "/api/seats/**",
-                                        "/api/rooms/**",
-                                        "/api/meeting-rooms/**",
-                                        "/api/checkin/**",
-                                        "/api/users/entry-password/**"
-                                ).permitAll()
+                        // 1. PUBLIC GET 요청 (전화번호 중복 확인 포함)
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/auth/login",
+                                "/api/auth/refresh",
+                                "/api/admin/login",
+                                "/api/users/check-phone", // <--- 추가: 전화번호 중복/존재 확인 API
+                                "/api/tickets",
+                                "/api/tickets/**",
+                                "/api/seats/**",
+                                "/api/rooms/**",
+                                "/api/meeting-rooms/**",
+                                "/api/checkin/**"
+                        ).permitAll()
 
-                                .anyRequest().authenticated())
+                        // 2. PUBLIC POST 요청 (회원가입, 게스트 등록, 비밀번호 검증 등)
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/users/signup",                  // <--- POST로 이동
+                                "/api/users/guest",                   // <--- POST로 이동
+                                "/api/users/entry-password/verify"    // <--- POST로 이동
+                        ).permitAll()
 
-                        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                        .anyRequest().authenticated())
 
-                return http.build();
-        }
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-        @Bean
-        public CorsConfigurationSource corsConfigurationSource() {
-                CorsConfiguration configuration = new CorsConfiguration();
+        return http.build();
+    }
 
-                configuration.setAllowedOrigins(frontendUrls);
-                configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-                configuration.setAllowedHeaders(List.of("*"));
-                configuration.setExposedHeaders(List.of("Authorization"));
-                configuration.setAllowCredentials(true);
-                configuration.setMaxAge(3600L);
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
 
-                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        configuration.setAllowedOrigins(frontendUrls);
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(List.of("Authorization"));
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
 
-                source.registerCorsConfiguration("/**", configuration);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-                return source;
-        }
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    }
 }
