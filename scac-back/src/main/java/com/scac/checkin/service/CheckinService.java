@@ -43,20 +43,21 @@ public class CheckinService {
         
         // 사용자 조회
         User user = userRepository.findByPhoneNumber(request.getPhoneNumber())
-            .orElseThrow(() ->
-                new ResourceNotFoundException("존재하지 않는 사용자입니다")
+        .orElseThrow(() ->
+        new ResourceNotFoundException("존재하지 않는 사용자입니다")
         );
-
+    
+        Checkin awayCheckin = checkinRepository.findByUserIdAndCheckinStatus(user.getId(), CheckinStatus.AWAY).orElse(null);
+        
         // 비밀번호 검증
         if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
             throw new BusinessException("비밀번호가 일치하지 않습니다");
         }
 
         // 기존 입실 상태 확인
-        if(checkinRepository.existsByUserIdAndCheckinStatusIn(
-            user.getId(),
-            List.of(CheckinStatus.USING, CheckinStatus.AWAY)   
-        )){
+        if(checkinRepository.existsByUserIdAndCheckinStatus(
+            user.getId(), CheckinStatus.USING)   
+        ){
             throw new BusinessException("이미 입실 중인 사용자입니다");
         }
 
@@ -77,7 +78,12 @@ public class CheckinService {
             throw new BusinessException("남은 이용 시간이 없습니다");
         };
 
-        return CheckinPrepareResponse.from(ticketUsage);
+        return new CheckinPrepareResponse(
+            ticketUsage.getUserId(), 
+            ticketUsage.getUsageId(), 
+            ticketUsage.getTicketType().name(), 
+            ticketUsage.getRemainingTime(), 
+            awayCheckin != null);
     }
 
     // 입실
@@ -123,8 +129,20 @@ public class CheckinService {
 
     // 외출 과정
     @Transactional
-    public CheckinResponse goAway(Long checkinId){
-        Checkin checkin = checkinRepository.findById(checkinId)
+    public CheckinResponse goAway(CheckinPrepareRequest request){
+        // 사용자 조회
+        User user = userRepository.findByPhoneNumber(request.getPhoneNumber())
+            .orElseThrow(() ->
+                new ResourceNotFoundException("존재하지 않는 사용자입니다")
+        );
+
+        // 비밀번호 검증
+        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
+            throw new BusinessException("비밀번호가 일치하지 않습니다");
+        }
+
+        // 외출
+        Checkin checkin = checkinRepository.findByUserIdAndCheckinStatus(user.getId(), CheckinStatus.USING)
             .orElseThrow(() ->
                 new ResourceNotFoundException("입실 정보가 없습니다")
         );
@@ -136,8 +154,20 @@ public class CheckinService {
 
     // 외출 복귀 과정
     @Transactional
-    public CheckinResponse comeBack(Long checkinId){
-        Checkin checkin = checkinRepository.findById(checkinId)
+    public CheckinResponse comeBack(CheckinPrepareRequest request){
+        // 사용자 조회
+        User user = userRepository.findByPhoneNumber(request.getPhoneNumber())
+            .orElseThrow(() ->
+                new ResourceNotFoundException("존재하지 않는 사용자입니다")
+        );
+
+        // 비밀번호 검증
+        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
+            throw new BusinessException("비밀번호가 일치하지 않습니다");
+        }
+
+        // 복귀
+        Checkin checkin = checkinRepository.findByUserIdAndCheckinStatus(user.getId(), CheckinStatus.AWAY)
             .orElseThrow(() ->
                 new ResourceNotFoundException("외출 정보가 없습니다")
         );
@@ -149,9 +179,20 @@ public class CheckinService {
 
     // 퇴실 과정
     @Transactional
-    public CheckinResponse checkout(Long checkinId){
+    public CheckinResponse checkout(CheckinPrepareRequest request){
+        // 사용자 조회
+        User user = userRepository.findByPhoneNumber(request.getPhoneNumber())
+            .orElseThrow(() ->
+                new ResourceNotFoundException("존재하지 않는 사용자입니다")
+        );
+
+        // 비밀번호 검증
+        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
+            throw new BusinessException("비밀번호가 일치하지 않습니다");
+        }
+
         // 입실 정보 조회
-        Checkin checkin = checkinRepository.findById(checkinId)
+        Checkin checkin = checkinRepository.findByUserIdAndCheckinStatusIn(user.getId(), List.of(CheckinStatus.USING, CheckinStatus.AWAY))
             .orElseThrow(() ->
                 new ResourceNotFoundException("입실 정보가 없습니다")
         );

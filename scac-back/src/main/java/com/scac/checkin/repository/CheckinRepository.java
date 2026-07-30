@@ -9,11 +9,14 @@ import com.scac.checkin.domain.Checkin;
 import com.scac.global.enums.CheckinStatus;
 
 public interface CheckinRepository extends JpaRepository<Checkin, Long>{
-    boolean existsByUserIdAndCheckinStatusIn(
+    boolean existsByUserIdAndCheckinStatus(
         Long userId,
-        List<CheckinStatus> checkinStatuses
+        CheckinStatus checkinStatuses
     );
 
-    // 현재 입실 중인 기록 조회
-    Optional<Checkin> findByUserIdAndCheckoutAtIsNull(Long userId);
+    // 현재 입실 중인 기록 조회(입실, 외출, 복귀)
+    Optional<Checkin> findByUserIdAndCheckinStatus(Long userId, CheckinStatus checkinStatus);
+    
+    // 현재 입실 중인 기록 조회(퇴실)
+    Optional<Checkin> findByUserIdAndCheckinStatusIn(Long userId, List<CheckinStatus> statuses);
 }

@@ -36,9 +36,23 @@ function HomePage() {
       alert(result.message);
       return;
     }
+
     setPreparedInfo(result.data.userId, result.data.usageId);
 
     setModalType(null);
+
+    // 외출 상태면 좌석 선택 없이 복귀
+    if (result.data.away) {
+      const comebackResult = await comeBack(phoneNumber, password);
+
+      if (!comebackResult.success) {
+        alert(comebackResult.message);
+        return;
+      }
+
+      alert('재입실되었습니다');
+      return;
+    }
 
     navigate('/seat');
   };

@@ -5,11 +5,9 @@ export const checkinApi = {
 
   checkin: (data) => axiosInstance.post('/api/checkin', data),
 
-  goOut: (checkinId) => axiosInstance.patch(`/api/checkin/${checkinId}/away`),
+  goOut: (data) => axiosInstance.patch('/api/checkin/away', data),
 
-  comeBack: (checkinId) =>
-    axiosInstance.patch(`/api/checkin/${checkinId}/comeback`),
+  comeBack: (data) => axiosInstance.patch('/api/checkin/comeback', data),
 
-  checkout: (checkinId) =>
-    axiosInstance.patch(`/api/checkin/${checkinId}/checkout`),
+  checkout: (data) => axiosInstance.patch('/api/checkin/checkout', data),
 };
