@@ -19,4 +19,10 @@ public record LoginReq(
     )
     String password
 
-) {}
+) {
+    public LoginReq {
+        if (phoneNumber != null) {
+            phoneNumber = phoneNumber.replaceAll("-", "");
+        }
+    }
+}

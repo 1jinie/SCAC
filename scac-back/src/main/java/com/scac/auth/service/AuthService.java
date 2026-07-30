@@ -123,21 +123,23 @@ public class AuthService {
     /**
      * 로그아웃
      */
-    public void logout(String authorization) {
-
-        if (authorization == null ||
-                !authorization.startsWith("Bearer ")) {
-            throw new IllegalArgumentException("Authorization 헤더가 올바르지 않습니다.");
+    // AuthService.java
+        public void logout(String authorization) {
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
+                return; // 예외를 던지지 않고 무시하거나 정상 처리 응답
         }
 
-        String accessToken =
-                authorization.substring(7);
+        String accessToken = authorization.substring(7);
 
-        Long userId =
-                jwtProvider.getUserId(accessToken);
-
-        refreshTokenRepository.deleteByUserId(userId);
-    }
+        try {
+                Long userId = jwtProvider.getUserId(accessToken);
+                if (userId != null) {
+                refreshTokenRepository.deleteByUserId(userId);
+                }
+        } catch (Exception e) {
+                // 이미 만료되었거나 손상된 토큰 로그아웃 요청 시 무시
+        }
+        }
 
     /**
      * Refresh Token 저장/갱신

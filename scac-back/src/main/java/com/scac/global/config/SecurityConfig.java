@@ -59,9 +59,6 @@ public class SecurityConfig {
                         // 1. PUBLIC GET 요청 (전화번호 중복 확인 포함)
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/api/auth/login",
-                                "/api/auth/refresh",
-                                "/api/admin/login",
                                 "/api/users/check-phone", // <--- 추가: 전화번호 중복/존재 확인 API
                                 "/api/tickets",
                                 "/api/tickets/**",
@@ -74,6 +71,12 @@ public class SecurityConfig {
                         // 2. PUBLIC POST 요청 (회원가입, 게스트 등록, 비밀번호 검증 등)
                         .requestMatchers(
                                 HttpMethod.POST,
+                                "/api/auth/login",
+                                "/api/auth/refresh",
+                                "/api/auth/logout",
+                                "/api/admin/auth/login",
+                                "/api/admin/auth/refresh",
+                                "/api/admin/auth/logout",
                                 "/api/users/signup",                  // <--- POST로 이동
                                 "/api/users/guest",                   // <--- POST로 이동
                                 "/api/users/entry-password/verify"    // <--- POST로 이동
