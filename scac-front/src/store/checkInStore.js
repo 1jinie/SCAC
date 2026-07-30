@@ -4,33 +4,62 @@ import { checkinApi } from '../api/checkinApi';
 export const checkInStore = create((set, get) => ({
   currentUser: null,
   currentCheckIn: null,
-  // 임시 인증정보
-  tempAuth: {
-    phoneNumber: null,
-    password: null,
-  },
+  prepareUserId: null,
+  prepareUsageId: null,
   isLoading: false,
   errorMessage: '',
 
-  // 입실 검증
-  verifyEntryPassword: async (phoneNumber, password, seatId = null) => {
+  // 입실 준비
+  prepareCheckIn: async (phoneNumber, password) => {
     try {
-      const response = await checkinApi.verifyEntryPassword({
+      const response = await checkinApi.prepare({
         phoneNumber,
         password,
       });
 
+      return {
+        success: true,
+        data: response.data.data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || '입실 준비 실패',
+      };
+    }
+  },
+
+  setPreparedInfo: (userId, usageId) =>
+    set({
+      prepareUserId: userId,
+      prepareUsageId: usageId,
+    }),
+
+  // 입실
+  checkIn: async (seatId) => {
+    const { prepareUserId, prepareUsageId } = get();
+
+    if (!prepareUserId || !prepareUsageId) {
+      return {
+        success: false,
+        message: '입실 준비가 완료되지 않았습니다',
+      };
+    }
+
+    try {
+      const response = await checkinApi.checkin({
+        userId: prepareUserId,
+        seatId,
+        usageId: prepareUsageId,
+      });
+
       set({
-        currentUser: response.data.data,
-        tempAuth: {
-          phoneNumber,
-          password,
-        },
+        currentCheckIn: response.data.data,
       });
 
       return {
         success: true,
-        message: '인증되었습니다',
+        message: '입실되었습니다',
       };
     } catch (error) {
       return {
@@ -118,44 +147,8 @@ export const checkInStore = create((set, get) => ({
     set({
       currentUser: null,
       currentCheckIn: null,
-      tempAuth: {
-        phoneNumber: null,
-        password: null,
-      },
+      prepareUserId: null,
+      prepareUsageId: null,
     });
-  },
-
-  // 입실 요청
-  completeCheckIn: async (seatId) => {
-    const { tempAuth } = get();
-
-    if (!tempAuth.phoneNumber || !tempAuth.password) {
-      return {
-        success: false,
-        message: '인증 정보가 없습니다',
-      };
-    }
-
-    try {
-      const response = await checkinApi.checkin({
-        phoneNumber: tempAuth.phoneNumber,
-        password: tempAuth.password,
-        seatId,
-      });
-
-      set({
-        currentCheckIn: response.data.data.checkIn,
-      });
-
-      return {
-        success: true,
-        message: '입실되었습니다',
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: error.response?.data?.message ?? '입실 실패',
-      };
-    }
   },
 }));

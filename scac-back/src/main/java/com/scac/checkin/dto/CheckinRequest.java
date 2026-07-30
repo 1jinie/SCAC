@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class CheckinRequest {
-    private String phoneNumber;
-    private String password;
+    private Long userId;
+    private Long usageId;
     private Long seatId;
 }
