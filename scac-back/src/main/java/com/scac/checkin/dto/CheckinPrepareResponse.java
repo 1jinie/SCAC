@@ -1,7 +1,5 @@
 package com.scac.checkin.dto;
 
-import com.scac.ticketusage.entity.TicketUsage;
-
 import lombok.Getter;
 
 @Getter
