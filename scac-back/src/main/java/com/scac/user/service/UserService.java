@@ -22,6 +22,14 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     /**
+     * 전화번호 등록 여부 검증
+     */
+    @Transactional(readOnly = true)
+    public boolean existsByPhoneNumber(String phoneNumber) {
+        return userRepository.existsByPhoneNumber(phoneNumber);
+    }
+
+    /**
      * 일반 회원가입
      */
     public User register(UserSignUpReq req) {

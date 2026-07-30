@@ -17,6 +17,20 @@ public class UserController {
     private final UserService userService;
 
     /**
+     * 0. 전화번호 중복 / 등록 여부 검증
+     */
+    @GetMapping("/check-phone")
+    public ResponseEntity<ApiResponse<Boolean>> checkPhoneExists(
+            @RequestParam String phoneNumber
+    ) {
+        boolean exists = userService.existsByPhoneNumber(phoneNumber);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("전화번호 중복 확인을 완료했습니다.", exists)
+        );
+    }
+
+    /**
      * 1. 일반 회원가입
      */
     @PostMapping("/signup")
@@ -34,13 +48,13 @@ public class UserController {
      * 2. 비회원/게스트 간편 등록 (전화번호 기반)
      */
     @PostMapping("/guest")
-    public ResponseEntity<ApiResponse<User>> signUpGuest(
+    public ResponseEntity<ApiResponse<UserRes>> signUpGuest(
             @Valid @RequestBody GuestRegisterReq req
     ) {
         User guest = userService.registerGuest(req);
 
         return ResponseEntity.ok(
-                ApiResponse.success("비회원 등록이 완료되었습니다.", guest)
+                ApiResponse.success("비회원 등록이 완료되었습니다.", UserRes.from(guest))
         );
     }
 
@@ -86,4 +100,5 @@ public class UserController {
                 ApiResponse.success("입실 비밀번호 변경이 완료되었습니다.")
         );
     }
+
 }
