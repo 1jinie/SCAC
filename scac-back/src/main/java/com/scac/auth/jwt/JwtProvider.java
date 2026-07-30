@@ -201,4 +201,17 @@ public String getRole(String token, String principalType) {
     return null;
 }
 
+// JwtProvider.java 개선
+public Claims getClaimsIgnoreExpiration(String token) {
+    try {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    } catch (io.jsonwebtoken.ExpiredJwtException e) {
+        return e.getClaims(); // 만료된 토큰이라도 Claims 추출
+    }
+}
+
 }
