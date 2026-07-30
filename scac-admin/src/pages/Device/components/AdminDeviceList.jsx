@@ -4,6 +4,8 @@ export default function AdminDeviceList({
   devices,
   selectedDevice,
   onDeviceSelect,
+  isDeviceLoading,
+  errorMessage,
 }) {
   return (
     <div className="admin_panel">
@@ -15,6 +17,11 @@ export default function AdminDeviceList({
       </div>
 
       <div className="admin_device_manage_list">
+        {isDeviceLoading && <p>장치 목록을 불러오는 중입니다.</p>}
+        {errorMessage && <p>{errorMessage}</p>}
+        {!isDeviceLoading && !errorMessage && devices.length === 0 && (
+          <p className="admin_device_list_empty">등록된 장치가 없습니다.</p>
+        )}
         {devices.map((device) => (
           <AdminDevice
             key={device.deviceId}
