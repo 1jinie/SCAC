@@ -13,6 +13,7 @@ import com.scac.global.enums.UserRole;
 import com.scac.user.entity.User;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
@@ -133,13 +134,17 @@ public boolean validateToken(String token) {
     }
 }
 
+// JwtProvider.java
 public Claims getClaims(String token) {
-
-    return Jwts.parser()
-            .verifyWith(getSigningKey())
-            .build()
-            .parseSignedClaims(token)
-            .getPayload();
+    try {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    } catch (ExpiredJwtException e) {
+        return e.getClaims(); // 만료된 토큰의 Claim도 꺼낼 수 있도록 예외 캐치
+    }
 }
 
 public Long getUserId(String token) {
