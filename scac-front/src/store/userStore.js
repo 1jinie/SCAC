@@ -11,20 +11,14 @@ export const useUserStore = create((set, get) => ({
   isLoading: false,
   errorMessage: '',
 
-  /* 1. 내 프로필 정보 조회 (마이페이지용) */
+  // 프로필 조회
   getUserProfile: async (userId) => {
     set({ isLoading: true, errorMessage: '' });
     try {
       const result = await getUserProfile(userId);
-
-      if (!result.success) {
-        throw new Error(result.message);
-      }
-
       set({ userProfile: result.data });
       return { success: true, data: result.data };
     } catch (error) {
-      console.error('Store Get Profile Error:', error);
       set({ errorMessage: '프로필 정보를 불러오지 못했습니다.' });
       return { success: false, error };
     } finally {
@@ -32,21 +26,17 @@ export const useUserStore = create((set, get) => ({
     }
   },
 
-  /* 2. 입실 비밀번호 변경 (마이페이지용) */
-  modifyUserPassword: async (userId, newPassword) => {
+  // 입실 비밀번호 변경 (modifyUserPassword 이름으로 제공)
+  modifyUserPassword: async (userId, passwordData) => {
     set({ isLoading: true, errorMessage: '' });
     try {
-      const result = await updateUserPassword(userId, newPassword);
-
-      if (!result.success) {
-        throw new Error(result.message);
-      }
-
+      await updateUserPassword(userId, passwordData);
       return { success: true };
     } catch (error) {
-      console.error('Store Modify Password Error:', error);
-      set({ errorMessage: '비밀번호 변경에 실패했습니다.' });
-      return { success: false, error };
+      const message =
+        error.response?.data?.message || '비밀번호 변경에 실패했습니다.';
+      set({ errorMessage: message });
+      return { success: false, message };
     } finally {
       set({ isLoading: false });
     }
@@ -92,11 +82,6 @@ export const useUserStore = create((set, get) => ({
     }
   },
 
-  /* 초기화 */
-  clearUserData: () => {
-    set({
-      userProfile: null,
-      errorMessage: '',
-    });
-  },
+  // 데이터 초기화
+  clearUserData: () => set({ userProfile: null, errorMessage: '' }),
 }));
