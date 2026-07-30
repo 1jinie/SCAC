@@ -19,4 +19,6 @@ public interface CheckinRepository extends JpaRepository<Checkin, Long>{
     
     // 현재 입실 중인 기록 조회(퇴실)
     Optional<Checkin> findByUserIdAndCheckinStatusIn(Long userId, List<CheckinStatus> statuses);
+
+    Optional<Checkin> findBySeatIdAndCheckinStatusIn(Long seatId, List<CheckinStatus> statuses);
 }

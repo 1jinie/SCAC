@@ -12,6 +12,8 @@ import com.scac.global.response.ApiResponse;
 import com.scac.seat.service.SeatService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -19,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminSeatController {
     private final SeatService seatService;
 
+    // 좌석 상태 변경
     @PatchMapping("/{seatId}/status")
     public ResponseEntity<ApiResponse<Void>> updateSeatStatus(
         @PathVariable Long seatId,
@@ -30,4 +33,15 @@ public class AdminSeatController {
             ApiResponse.success(null)
         );
     }
+
+    // 강제 퇴실 조치
+    @PostMapping("/{seatId}/force-checkout")
+    public ResponseEntity<ApiResponse<Void>> forceCheckout(@PathVariable Long seatId) {
+        seatService.forceCheckout(seatId);
+
+        return ResponseEntity.ok(
+            ApiResponse.success(null)
+        );
+    }
+    
 }
