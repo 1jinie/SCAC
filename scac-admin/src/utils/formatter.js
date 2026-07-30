@@ -3,7 +3,7 @@
 // 숫자 천 단위로 , 찍는 형태
 // import 하시고 formatPrice(ticket.ticketPrice) 이런식으로 쓰시면 됩니다
 export const formatPrice = (value) => {
-  if (value === null || value === undefined) return '';
+  if (value === null || value === undefined) return '-';
 
   return Number(value).toLocaleString('ko-KR');
 };

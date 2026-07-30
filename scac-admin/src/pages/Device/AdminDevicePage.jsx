@@ -1,39 +1,106 @@
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { deviceApi } from '../../api/deviceApi';
 import AdminSummary from '../../components/common/Summary';
-import admin_device from '../../data/admin_device.json';
-import { deviceStore } from '../../store/deviceStore';
 import AdminDeviceDetail from './components/AdminDeviceDetail';
 import AdminDeviceList from './components/AdminDeviceList';
 import './css/AdminDevicePage.css';
+import AdminDeviceLogList from './components/AdminDeviceLogList';
 
 export default function AdminDevicePage() {
-  const devices = deviceStore((state) => state.devices);
-  const selectedDevice = deviceStore((state) => state.selectedDevice);
-  const setDevices = deviceStore((state) => state.setDevices);
-  const updateDeviceStatus = deviceStore((state) => state.updateDeviceStatus);
+  const [devices, setDevices] = useState([]);
+  const [selectedDevice, setSelectedDevice] = useState(null);
+  const [deviceLogs, setDeviceLogs] = useState([]);
+  const [isDeviceLoading, setIsDeviceLoading] = useState(false);
+  const [isLogLoading, setIsLogLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+
+  // 테스트할땐 백엔드 global/config/SecurityConfig.java에
+  // .requestMatchers("/api/devices/**").permitAll() 를 추가하세요
+
+  // 전체 장치 조회
+  const fetchDevices = useCallback(async () => {
+    try {
+      setIsDeviceLoading(true);
+      setErrorMessage('');
+      const data = await deviceApi.getDevices();
+      setDevices(data);
+    } catch (error) {
+      console.error(
+        '장치 목록 조회 실패:',
+        error.response?.data?.message ?? error,
+      );
+
+      setErrorMessage(
+        `장치 목록 조회 실패:
+        ${error.response?.data?.message ?? error}`,
+      );
+    } finally {
+      setIsDeviceLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const loadDevices = async () => {
-      // 현재
-      setDevices(admin_device);
+    fetchDevices();
+  }, [fetchDevices]);
 
-      // API 연결 후
-      // const response = await deviceApi.getDevices();
-      // setDevices(response.data);
-    };
+  // 장치 선택 + 해당 장치 로그 조회
+  const handleDeviceSelect = async (device) => {
+    setSelectedDevice(device);
+    setDeviceLogs([]);
 
-    loadDevices();
-  }, [setDevices]);
+    setIsLogLoading(true);
+    try {
+      const logs = await deviceApi.getDeviceLogs(device.deviceId);
 
-  const handleStatusChange = (status) => {
-    if (!selectedDevice) return;
+      setDeviceLogs(logs);
+    } catch (error) {
+      console.error(
+        '장치 로그 조회 실패:',
+        error.response?.data?.message ?? error,
+      );
+      setDeviceLogs([]);
+    } finally {
+      setIsLogLoading(false);
+    }
+  };
 
+  // 관리자 장치 상태 변경
+  const handleStatusChange = async (status) => {
+    if (!selectedDevice || isUpdatingStatus) {
+      return;
+    }
+
+    setIsUpdatingStatus(true);
     const message =
       status === 'NORMAL'
         ? '관리자 확인 후 정상 처리되었습니다.'
-        : selectedDevice.message;
+        : '관리자에 의해 장치 상태가 변경되었습니다.';
 
-    updateDeviceStatus(selectedDevice.deviceId, status, message);
+    try {
+      const updatedDevice = await deviceApi.updateDeviceStatus(
+        selectedDevice.deviceId,
+        status,
+        message,
+      );
+
+      // 상세 화면 즉시 갱신
+      setSelectedDevice(updatedDevice);
+
+      // 장치 목록 갱신
+      await fetchDevices();
+
+      // 로그 다시 조회
+      const logs = await deviceApi.getDeviceLogs(selectedDevice.deviceId);
+      setDeviceLogs(logs);
+    } catch (error) {
+      console.error(
+        '장치 상태 업데이트 실패:',
+        error.response?.data?.message ?? error,
+      );
+    } finally {
+      setIsUpdatingStatus(false);
+    }
   };
 
   const deviceSummary = useMemo(() => {
@@ -46,8 +113,8 @@ export default function AdminDevicePage() {
             result.normal += 1;
             break;
 
-          case 'WARNING':
-            result.warning += 1;
+          case 'OFFLINE':
+            result.offline += 1;
             break;
 
           case 'ERROR':
@@ -63,7 +130,7 @@ export default function AdminDevicePage() {
       {
         total: 0,
         normal: 0,
-        warning: 0,
+        offline: 0,
         error: 0,
       },
     );
@@ -88,11 +155,11 @@ export default function AdminDevicePage() {
         color: 'mint',
       },
       {
-        key: 'warning',
-        label: '점검 필요',
-        value: deviceSummary.warning,
+        key: 'offline',
+        label: '오프라인',
+        value: deviceSummary.offline,
         unit: '대',
-        description: '점검 권장 장치',
+        description: '현재 연결되지 않은 장치',
         color: 'orange',
       },
       {
@@ -107,15 +174,6 @@ export default function AdminDevicePage() {
     [deviceSummary],
   );
 
-  const lastCheckedAt = useMemo(() => {
-    if (devices.length === 0) return '-';
-
-    return devices
-      .map((device) => device.lastCheckedAt)
-      .sort()
-      .reverse()[0];
-  }, [devices]);
-
   return (
     <div className="admin_device_page">
       <div className="admin_page_heading">
@@ -129,14 +187,33 @@ export default function AdminDevicePage() {
       </div>
 
       <AdminSummary items={summaryItems} />
-      <p className="admin_page_sub_info">마지막 장치 점검 : {lastCheckedAt}</p>
 
       <section className="admin_device_workspace">
-        <AdminDeviceList devices={devices} />
-        <AdminDeviceDetail
-          onStatusChange={handleStatusChange}
+        <AdminDeviceList
+          devices={devices}
           selectedDevice={selectedDevice}
+          onDeviceSelect={handleDeviceSelect}
+          isDeviceLoading={isDeviceLoading}
+          errorMessage={errorMessage}
         />
+
+        <AdminDeviceDetail
+          selectedDevice={selectedDevice}
+          deviceLogs={deviceLogs}
+          onStatusChange={handleStatusChange}
+          isUpdatingStatus={isUpdatingStatus}
+        />
+
+        {selectedDevice &&
+          (isLogLoading ? (
+            <div className="admin_device_log_section">
+              <p className="admin_device_log_empty">
+                로그를 불러오는 중입니다.
+              </p>
+            </div>
+          ) : (
+            <AdminDeviceLogList logs={deviceLogs} />
+          ))}
       </section>
     </div>
   );

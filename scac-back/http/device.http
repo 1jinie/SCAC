@@ -1,0 +1,106 @@
+@baseUrl = http://localhost:8888
+
+### 전체 장치 현재 상태 조회
+GET {{baseUrl}}/api/devices
+
+
+### 특정 장치 현재 상태 조회
+GET {{baseUrl}}/api/devices/1
+
+
+### 특정 장치 로그 조회
+GET {{baseUrl}}/api/devices/1/logs
+
+
+### 관리자 장치 상태 변경 - 정상
+PATCH {{baseUrl}}/api/devices/1/status
+Content-Type: application/json
+
+{
+  "status": "NORMAL",
+  "message": "관리자 상태 정상 변경 테스트"
+}
+
+
+### 관리자 장치 상태 변경 - 장애
+PATCH {{baseUrl}}/api/devices/1/status
+Content-Type: application/json
+
+{
+  "status": "ERROR",
+  "message": "관리자 상태 장애 변경 테스트"
+}
+
+
+### 관리자 장치 상태 변경 - 오프라인
+PATCH {{baseUrl}}/api/devices/1/status
+Content-Type: application/json
+
+{
+  "status": "OFFLINE",
+  "message": "관리자 상태 오프라인 변경 테스트"
+}
+
+
+### RTOS 장치 이벤트 수신 - PAPER_JAM
+POST {{baseUrl}}/api/devices/events
+Content-Type: application/json
+
+{
+  "deviceId": 1,
+  "eventType": "PAPER_JAM",
+  "status": "ERROR",
+  "message": "프린터 용지 걸림 발생"
+}
+
+
+### RTOS 장치 이벤트 수신 - DISCONNECT
+POST {{baseUrl}}/api/devices/events
+Content-Type: application/json
+
+{
+  "deviceId": 1,
+  "eventType": "DISCONNECT",
+  "status": "OFFLINE",
+  "message": "장치 연결 끊김"
+}
+
+
+### 존재하지 않는 장치 조회
+GET {{baseUrl}}/api/devices/99999
+
+
+### 존재하지 않는 장치 로그 조회
+GET {{baseUrl}}/api/devices/99999/logs
+
+
+### 존재하지 않는 장치 상태 변경
+PATCH {{baseUrl}}/api/devices/99999/status
+Content-Type: application/json
+
+{
+  "status": "ERROR",
+  "message": "존재하지 않는 장치 상태 변경 테스트"
+}
+
+
+### 존재하지 않는 장치 RTOS 이벤트
+POST {{baseUrl}}/api/devices/events
+Content-Type: application/json
+
+{
+  "deviceId": 99999,
+  "eventType": "HEARTBEAT",
+  "status": "NORMAL",
+  "message": "존재하지 않는 장치 이벤트 테스트"
+}
+
+
+### 잘못된 장치 상태 변경
+PATCH {{baseUrl}}/api/devices/1/status
+Content-Type: application/json
+
+{
+  "status": "BROKEN",
+  "message": "잘못된 상태값 테스트"
+}

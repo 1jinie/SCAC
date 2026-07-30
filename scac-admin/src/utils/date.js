@@ -24,6 +24,9 @@ export const formatfullClock = (time) => {
 
 // 스터디룸에서 화 7/27 형식으로 출력
 export const formatDate = (fullDate) => {
+  if (!fullDate) {
+    return '-';
+  }
   const date = new Date(fullDate);
 
   return {
@@ -46,6 +49,9 @@ export const addOneHour = (time) => {
 
 // 2023-01-01 형태
 export const toDateString = (date) => {
+  if (!date) {
+    return '-';
+  }
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
@@ -55,7 +61,7 @@ export const toDateString = (date) => {
 
 // 메모장 날짜 형식 2026-07-21 10:42
 export function formatAdminMemoDate(date) {
-  if (!date) return '';
+  if (!date) return '-';
 
   const d = new Date(date);
 

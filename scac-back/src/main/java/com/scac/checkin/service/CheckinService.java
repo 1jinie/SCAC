@@ -81,9 +81,10 @@ public class CheckinService {
         }
 
         // 남은 시간 확인
-        if(ticketUsage.getTicketType() == TicketType.TIME_PACK && ticketUsage.getRemainingTime() <= 0){
+        if (ticketUsage.getTicketType() == TicketType.TIME_PACK && ticketUsage.getRemainingTime() <= 0) {
             throw new BusinessException("남은 이용 시간이 없습니다");
-        };
+        }
+        ;
 
         return new CheckinPrepareResponse(
             ticketUsage.getUserId(), 
@@ -134,13 +135,12 @@ public class CheckinService {
         return CheckinResponse.from(savedCheckin);
     }
 
-    // 외출 과정
+    // 외출
     @Transactional
     public CheckinResponse goAway(CheckinPrepareRequest request){
         
         User user = authenticateUser(request.getPhoneNumber(), request.getPassword());
-
-        // 외출
+      
         Checkin checkin = checkinRepository.findByUserIdAndCheckinStatus(user.getId(), CheckinStatus.USING)
             .orElseThrow(() ->
                 new ResourceNotFoundException("입실 정보가 없습니다")
@@ -151,13 +151,12 @@ public class CheckinService {
         return CheckinResponse.from(checkin);
     }
 
-    // 외출 복귀 과정
+    // 외출 복귀
     @Transactional
     public CheckinResponse comeBack(CheckinPrepareRequest request){
         
         User user = authenticateUser(request.getPhoneNumber(), request.getPassword());
 
-        // 복귀
         Checkin checkin = checkinRepository.findByUserIdAndCheckinStatus(user.getId(), CheckinStatus.AWAY)
             .orElseThrow(() ->
                 new ResourceNotFoundException("외출 정보가 없습니다")
@@ -168,7 +167,7 @@ public class CheckinService {
         return CheckinResponse.from(checkin);
     }
 
-    // 퇴실 과정
+    // 퇴실
     @Transactional
     public CheckinResponse checkout(CheckinPrepareRequest request){
         
@@ -182,23 +181,19 @@ public class CheckinService {
 
         // 이용권 조회
         TicketUsage ticketUsage = ticketUsageRepository.findById(checkin.getUsageId())
-            .orElseThrow(() -> 
-                new ResourceNotFoundException("이용권 정보가 없습니다")    
-        );
+            .orElseThrow(() -> new ResourceNotFoundException("이용권 정보가 없습니다"));
 
         // 좌석 조회
         Seat seat = seatRepository.findById(checkin.getSeatId())
-            .orElseThrow(() ->
-                new ResourceNotFoundException("존재하지 않는 좌석입니다")
-        );
+            .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 좌석입니다"));
 
         // 사용 시간 계산
         LocalDateTime now = LocalDateTime.now();
-        
-        if(ticketUsage.getTicketType() == TicketType.TIME_PACK){
+
+        if (ticketUsage.getTicketType() == TicketType.TIME_PACK) {
             long usedMinutes = java.time.Duration.between(checkin.getCheckinAt(), now).toMinutes();
 
-            if(usedMinutes > 0){
+            if (usedMinutes > 0) {
                 ticketUsage.deductTime((int) usedMinutes);
             }
         }

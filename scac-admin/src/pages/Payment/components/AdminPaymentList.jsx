@@ -13,6 +13,7 @@ export default function AdminPaymentList({
   totalPages,
   setCurrentPage,
   currentPage,
+  isLoading,
 }) {
   return (
     <section className="admin_panel admin_payment_list_panel">
@@ -38,7 +39,13 @@ export default function AdminPaymentList({
           </thead>
 
           <tbody>
-            {payments.length === 0 ? (
+            {isLoading ? (
+              <tr>
+                <td className="admin_payment_message">
+                  결제 내역을 불러오고 있습니다.
+                </td>
+              </tr>
+            ) : payments.length === 0 ? (
               <tr>
                 <td colSpan="7" className="admin_payment_empty">
                   조회된 결제 내역이 없습니다.
@@ -65,7 +72,8 @@ export default function AdminPaymentList({
 
                     <td>
                       {PAYMENT_METHOD_LABELS[payment.paymentMethod] ??
-                        payment.paymentMethod}
+                        payment.paymentMethod ??
+                        '-'}
                     </td>
 
                     <td>{formatAdminMemoDate(payment.paidAt)}</td>
@@ -75,7 +83,8 @@ export default function AdminPaymentList({
                         className={`admin_payment_status status_${payment.status.toLowerCase()}`}
                       >
                         {PAYMENT_STATUS_LABELS[payment.status] ??
-                          payment.status}
+                          payment.status ??
+                          '-'}
                       </span>
                     </td>
                   </tr>
@@ -85,11 +94,13 @@ export default function AdminPaymentList({
           </tbody>
         </table>
       </div>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-      />
+      {!isLoading && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      )}
     </section>
   );
 }
