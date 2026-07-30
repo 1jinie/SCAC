@@ -8,12 +8,8 @@ import { useResetStore } from '../../hooks/useResetStore';
 
 function HomePage() {
   const [modalType, setModalType] = useState(null);
-  const verifyEntryPassword = checkInStore(
-    (state) => state.verifyEntryPassword,
-  );
   const prepareCheckIn = checkInStore((state) => state.prepareCheckIn);
   const setPreparedInfo = checkInStore((state) => state.setPreparedInfo);
-  const checkIn = checkInStore((state) => state.checkIn);
   const goOut = checkInStore((state) => state.goOut);
   const comeBack = checkInStore((state) => state.comeBack);
   const checkOut = checkInStore((state) => state.checkOut);
