@@ -23,6 +23,7 @@ export default function AdminPaymentPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isCanceling, setIsCanceling] = useState(false);
 
   // 결제 내역 조회
   const fetchPayments = useCallback(async () => {
@@ -55,13 +56,14 @@ export default function AdminPaymentPage() {
 
   // 검색 + 상태 필터
   const filteredPayments = useMemo(() => {
+    const refacKeyword = searchKeyword.trim().replace(/\D/g, '');
+
     return payments.filter((payment) => {
+      const phoneNumber = String(payment.phoneNumber ?? '').replace(/\D/g, '');
       const matchesKeyword =
         searchKeyword === '' ||
-        String(payment.phoneNumber ?? payment.userId ?? '').includes(
-          searchKeyword,
-        ) ||
-        String(payment.paymentId).includes(searchKeyword);
+        String(phoneNumber).includes(refacKeyword) ||
+        String(payment.paymentId).includes(refacKeyword);
 
       const matchesStatus =
         statusFilter === 'ALL' || payment.status === statusFilter;
@@ -75,9 +77,10 @@ export default function AdminPaymentPage() {
     return Math.max(1, Math.ceil(filteredPayments.length / ITEMS_PER_PAGE));
   }, [filteredPayments]);
 
-  // 검색 / 필터가 변경되면 첫 페이지로 이동
+  // 검색 / 필터가 변경되면 첫 페이지로 이동, 선택한 결제내역 초기화
   useEffect(() => {
     setCurrentPage(1);
+    setSelectedPayment(null);
   }, [searchKeyword, statusFilter]);
 
   // 데이터 변경으로 현재 페이지가 사라진 경우 보정
@@ -94,6 +97,12 @@ export default function AdminPaymentPage() {
     return filteredPayments.slice(startIndex, startIndex + ITEMS_PER_PAGE);
   }, [filteredPayments, currentPage]);
 
+  // 다른 페이지 선택시 선택한 결제내역 초기화
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    setSelectedPayment(null);
+  };
+
   // 요약
   const summary = useMemo(() => {
     return payments.reduce(
@@ -109,17 +118,12 @@ export default function AdminPaymentPage() {
           result.canceled += 1;
         }
 
-        if (payment.status === 'FAILED') {
-          result.failed += 1;
-        }
-
         return result;
       },
       {
         total: 0,
         completed: 0,
         canceled: 0,
-        failed: 0,
         totalAmount: 0,
       },
     );
@@ -170,6 +174,7 @@ export default function AdminPaymentPage() {
 
   // 결제 취소
   const handleCancelPayment = async (paymentId) => {
+    if (isCanceling) return;
     const confirmed = window.confirm(
       '선택한 결제를 취소 처리하시겠습니까?\n취소 후에는 되돌릴 수 없습니다.',
     );
@@ -185,6 +190,7 @@ export default function AdminPaymentPage() {
     }
 
     try {
+      setIsCanceling(true);
       await paymentApi.cancelPayment(paymentId, cancelReason.trim());
 
       const updatedPayments = await fetchPayments();
@@ -199,11 +205,13 @@ export default function AdminPaymentPage() {
 
       setSelectedPayment(updatedPayment ?? null);
     } catch (error) {
-      console.error('결제 취소 실패:', error.response?.data ?? error);
+      console.error('결제 취소 실패:', error.response?.data?.message ?? error);
 
       window.alert(
         error.response?.data?.message ?? '결제 취소 처리에 실패했습니다.',
       );
+    } finally {
+      setIsCanceling(false);
     }
   };
 
@@ -228,10 +236,6 @@ export default function AdminPaymentPage() {
         onStatusChange={setStatusFilter}
       />
 
-      {isLoading && (
-        <p className="admin_payment_message">결제 내역을 불러오고 있습니다.</p>
-      )}
-
       {errorMessage && (
         <p className="admin_payment_error" role="alert">
           {errorMessage}
@@ -245,12 +249,14 @@ export default function AdminPaymentPage() {
           onPaymentSelect={handlePaymentSelect}
           totalPages={totalPages}
           currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
+          setCurrentPage={handlePageChange}
+          isLoading={isLoading}
         />
 
         <AdminPaymentDetail
           selectedPayment={selectedPayment}
           onCancelPayment={handleCancelPayment}
+          isCanceling={isCanceling}
         />
       </section>
     </div>

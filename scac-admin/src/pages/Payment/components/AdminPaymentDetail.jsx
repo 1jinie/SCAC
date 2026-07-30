@@ -9,6 +9,7 @@ import { formatPhoneNumber, formatPrice } from '../../../utils/formatter';
 export default function AdminPaymentDetail({
   selectedPayment,
   onCancelPayment,
+  isCanceling,
 }) {
   if (!selectedPayment) {
     return (
@@ -58,7 +59,7 @@ export default function AdminPaymentDetail({
           <dt>상품 유형</dt>
           <dd>
             {PAYMENT_PRODUCT_TYPE_LABELS[selectedPayment.targetType] ??
-              selectedPayment.productType}
+              selectedPayment.targetType}
           </dd>
         </div>
 
@@ -80,10 +81,17 @@ export default function AdminPaymentDetail({
           <dd>{formatfullDateTime(selectedPayment.paidAt)}</dd>
         </div>
         {selectedPayment.status === 'CANCELED' && (
-          <div className="payment_detail_item">
-            <dt>취소 일시</dt>
-            <dd>{formatfullDateTime(selectedPayment.cancelledAt)}</dd>
-          </div>
+          <>
+            <div>
+              <dt>취소 일시</dt>
+              <dd>{formatfullDateTime(selectedPayment.cancelledAt)}</dd>
+            </div>
+
+            <div className="admin_payment_cancel_reason">
+              <dt>취소 사유</dt>
+              <dd>{selectedPayment.cancelReason ?? '-'}</dd>
+            </div>
+          </>
         )}
 
         <div>
@@ -103,8 +111,9 @@ export default function AdminPaymentDetail({
             type="button"
             className="admin_payment_cancel_button"
             onClick={() => onCancelPayment(selectedPayment.paymentId)}
+            disabled={isCanceling}
           >
-            결제 취소
+            {isCanceling ? '취소 처리 중...' : '결제 취소'}
           </button>
         </div>
       )}
