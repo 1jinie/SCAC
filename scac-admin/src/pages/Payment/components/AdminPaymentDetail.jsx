@@ -59,7 +59,8 @@ export default function AdminPaymentDetail({
           <dt>상품 유형</dt>
           <dd>
             {PAYMENT_PRODUCT_TYPE_LABELS[selectedPayment.targetType] ??
-              selectedPayment.targetType}
+              selectedPayment.targetType ??
+              '-'}
           </dd>
         </div>
 
@@ -72,7 +73,8 @@ export default function AdminPaymentDetail({
           <dt>결제 수단</dt>
           <dd>
             {PAYMENT_METHOD_LABELS[selectedPayment.paymentMethod] ??
-              selectedPayment.paymentMethod}
+              selectedPayment.paymentMethod ??
+              '-'}
           </dd>
         </div>
 
@@ -96,7 +98,7 @@ export default function AdminPaymentDetail({
 
         <div>
           <dt>결제 상태</dt>
-          <dd>{PAYMENT_STATUS_LABELS[selectedPayment.status]}</dd>
+          <dd>{PAYMENT_STATUS_LABELS[selectedPayment.status] ?? '-'}</dd>
         </div>
       </dl>
 

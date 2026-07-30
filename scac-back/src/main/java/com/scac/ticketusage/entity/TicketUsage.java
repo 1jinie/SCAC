@@ -92,13 +92,13 @@ public class TicketUsage {
       throw new IllegalStateException("사용할 수 없는 이용권입니다.");
     }
 
-    if (status == TicketUsageStatus.ACTIVE) {
+    if (status == TicketUsageStatus.USING) {
       return;
     }
 
     LocalDateTime now = LocalDateTime.now();
 
-    this.status = TicketUsageStatus.ACTIVE;
+    this.status = TicketUsageStatus.USING;
     this.startAt = now;
 
   }

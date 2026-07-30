@@ -2,7 +2,7 @@ package com.scac.global.enums;
 
 public enum TicketUsageStatus {
     READY, // 이용권 결제 후 대기상태
-    ACTIVE, // 이용권 사용 시작
+    USING, // 이용권 사용 시작
     CANCELED, // 결제 취소
     EXPIRED, // 시간 소진 또는 기간 만료
 }
