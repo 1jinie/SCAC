@@ -1,12 +1,19 @@
 package com.scac.global.enums;
 
-// 외부 기기 종류
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public enum DeviceType {
-  KIOSK, // 키오스크
-  CARD_READER, // 카드리더기
-  PRINTER, // 영수증 프린터기
-  DOOR, // 자동출입문
-  QR_SCANNER, // QR 스캐너
-  SEAT_TERMINAL, // 좌석 단말기
-  NETWORK
+
+    PRINTER("영수증 프린터"),
+
+    CARD_READER("카드 단말기"),
+
+    DOOR("출입문"),
+
+    NETWORK("네트워크");
+
+    private final String description;
 }

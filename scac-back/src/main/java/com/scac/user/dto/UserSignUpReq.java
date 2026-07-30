@@ -4,14 +4,13 @@ import com.scac.global.enums.UserRole;
 import com.scac.global.enums.UserStatus;
 import com.scac.user.entity.User;
 
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 public record UserSignUpReq(
 
     @NotBlank(message = "전화번호는 필수 입력 값입니다.")
-    @Pattern(regexp = "^01[016789]-?\\d{3,4}-?\\d{4}$", message = "올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)")
+    @Pattern(regexp = "^01[016789]-?\\d{3,4}-?\\d{4}$", message = "올바른 전화번호 형식이 아닙니다.")
     String phoneNumber,
 
     @NotBlank(message = "입실 비밀번호는 필수 입력 값입니다.")
@@ -19,9 +18,12 @@ public record UserSignUpReq(
     String password
 
 ) {
-    /**
-     * DTO -> Entity 변환 메서드 (비밀번호 암호화는 Service 계층에서 수행 후 전달)
-     */
+    public UserSignUpReq {
+        if (phoneNumber != null) {
+            phoneNumber = phoneNumber.replaceAll("-", "");
+        }
+    }
+
     public User toEntity(String encodedPassword) {
         return User.builder()
             .phoneNumber(phoneNumber)

@@ -1,8 +1,17 @@
 package com.scac.global.enums;
 
-// 장치 상태
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public enum DeviceStatus {
-  NORMAL, // 정상
-  ERROR, // 오류
-  OFFLINE // 오프라인
+
+    NORMAL("정상"),
+
+    ERROR("장애"),
+
+    OFFLINE("오프라인");
+
+    private final String description;
 }
