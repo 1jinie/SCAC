@@ -3,6 +3,8 @@ package com.scac.checkin.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.scac.checkin.dto.CheckinPrepareRequest;
+import com.scac.checkin.dto.CheckinPrepareResponse;
 import com.scac.checkin.dto.CheckinRequest;
 import com.scac.checkin.dto.CheckinResponse;
 import com.scac.checkin.service.CheckinService;
@@ -22,6 +24,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/api/checkin")
 public class CheckinController {
     private final CheckinService checkinService;
+    // 입실 준비
+    @PostMapping("/prepare")
+    public ResponseEntity<ApiResponse<CheckinPrepareResponse>> prepare(@RequestBody CheckinPrepareRequest request) {
+        return ResponseEntity.ok(
+            ApiResponse.success(
+                "입실 준비 완료",
+                checkinService.prepare(request)
+            )
+        );
+    }
+    
 
     // 입실
     @PostMapping

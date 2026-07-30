@@ -11,6 +11,8 @@ function HomePage() {
   const verifyEntryPassword = checkInStore(
     (state) => state.verifyEntryPassword,
   );
+  const prepareCheckIn = checkInStore((state) => state.prepareCheckIn);
+  const setPreparedInfo = checkInStore((state) => state.setPreparedInfo);
   const checkIn = checkInStore((state) => state.checkIn);
   const goOut = checkInStore((state) => state.goOut);
   const comeBack = checkInStore((state) => state.comeBack);
@@ -28,11 +30,13 @@ function HomePage() {
 
   // 입실 관리
   const handleCheckIn = async (phoneNumber, password) => {
-    const result = await verifyEntryPassword(phoneNumber, password);
+    const result = await prepareCheckIn(phoneNumber, password);
 
-    alert(result.message);
-
-    if (!result.success) return;
+    if (!result.success) {
+      alert(result.message);
+      return;
+    }
+    setPreparedInfo(result.data.userId, result.data.usageId);
 
     setModalType(null);
 

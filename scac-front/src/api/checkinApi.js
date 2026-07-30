@@ -1,8 +1,7 @@
 import axiosInstance from './axiosInstance';
 
 export const checkinApi = {
-  verifyEntryPassword: (data) =>
-    axiosInstance.post('/api/users/entry-password/verify', data),
+  prepare: (data) => axiosInstance.post('/api/checkin/prepare', data),
 
   checkin: (data) => axiosInstance.post('/api/checkin', data),
 
