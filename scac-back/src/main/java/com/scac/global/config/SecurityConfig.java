@@ -56,20 +56,11 @@ public class SecurityConfig {
                         .authorizeHttpRequests(auth -> auth
 
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                .requestMatchers(
-                                        HttpMethod.GET,
-                                        "/api/auth/login",
-                                        "/api/auth/refresh",
-                                        "/api/admin/login",
-                                        "/api/users/signup",
-                                        "/api/users/guest",
-                                        "/api/tickets",
-                                        "/api/tickets/**",
-                                        "/api/seats/**",
-                                        "/api/rooms/**",
-                                        "/api/meeting-rooms/**",
-                                        "/api/checkin/**",
-                                        "/api/users/entry-password/**"
+                                .requestMatchers(HttpMethod.GET, "/api/auth/login", "/api/auth/refresh",
+                                        "/api/admin/login", "/api/users/signup", "/api/users/guest",
+                                        "/api/tickets", "/api/tickets/**", "/api/seats/**", "/api/rooms/**",
+                                        "/api/meeting-rooms/**", "/api/checkin/**",
+                                        "/api/users/entry-password/**", "/api/admin/memos/**" // 임시 허용
                                 ).permitAll()
 
                                 .anyRequest().authenticated())
