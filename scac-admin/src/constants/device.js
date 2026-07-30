@@ -7,8 +7,8 @@
 // 장치 상태
 export const DEVICE_STATUS_LABELS = {
   NORMAL: '정상',
-  WARNING: '점검 필요',
   ERROR: '오류',
+  OFFLINE: '오프라인',
 };
 
 // 장치 상태 색상
@@ -20,10 +20,8 @@ export const DEVICE_STATUS_COLORS = {
 
 // 장치 유형
 export const DEVICE_TYPE_LABELS = {
-  KIOSK: '키오스크',
-  CARD_READER: '카드 리더기',
-  RECEIPT_PRINTER: '영수증 프린터',
-  DOOR: '출입문 장치',
-  QR_SCANNER: 'QR 스캐너',
-  SEAT_TERMINAL: '좌석 단말기',
+  PRINTER: '영수증 프린터',
+  CARD_READER: '카드 단말기',
+  DOOR: '출입문',
+  NETWORK: '네트워크',
 };

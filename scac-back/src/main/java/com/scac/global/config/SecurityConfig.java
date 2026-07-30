@@ -60,9 +60,8 @@ public class SecurityConfig {
                                         "/api/admin/login", "/api/users/signup", "/api/users/guest",
                                         "/api/tickets", "/api/tickets/**", "/api/seats/**", "/api/rooms/**",
                                         "/api/meeting-rooms/**", "/api/checkin/**",
-                                        "/api/users/entry-password/**"
-
-                                ).permitAll()
+                                        "/api/users/entry-password/**")
+                                .permitAll()
 
                                 .anyRequest().authenticated())
 

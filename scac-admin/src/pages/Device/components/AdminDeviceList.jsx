@@ -1,9 +1,10 @@
-import { deviceStore } from '../../../store/deviceStore';
 import AdminDevice from './AdminDevice';
 
-export default function AdminDeviceList({ devices }) {
-  const selectDevice = deviceStore((state) => state.selectDevice);
-
+export default function AdminDeviceList({
+  devices,
+  selectedDevice,
+  onDeviceSelect,
+}) {
   return (
     <div className="admin_panel">
       <div className="admin_panel_header">
@@ -18,7 +19,8 @@ export default function AdminDeviceList({ devices }) {
           <AdminDevice
             key={device.deviceId}
             device={device}
-            selectDevice={selectDevice}
+            isSelected={selectedDevice?.deviceId === device.deviceId}
+            onDeviceSelect={onDeviceSelect}
           />
         ))}
       </div>
