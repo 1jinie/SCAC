@@ -12,6 +12,7 @@ import StudyRoomPayment from './components/StudyRoomPayment';
 import './css/PaymentProcess.css';
 import './css/TossPayment.css';
 import { requestTossPayment } from './utils/requestTossPayment';
+import KioskErrorState from '../../components/common/KioskErrorState';
 
 export default function PaymentProcess() {
   const navi = useNavigate();
@@ -130,15 +131,33 @@ export default function PaymentProcess() {
   };
 
   if (!selectedTicketId) {
-    return <p>선택된 이용권이 없습니다.</p>;
+    return (
+      <KioskErrorState
+        title="선택된 이용권이 없습니다."
+        message="네트워크 상태를 확인한 후 다시 시도해 주세요."
+        onHome={() => navi('/')}
+      />
+    );
   }
 
   if (!paymentMethod) {
-    return <p>선택된 결제 수단이 없습니다.</p>;
+    return (
+      <KioskErrorState
+        title="선택된 결제 수단이 없습니다."
+        message="네트워크 상태를 확인한 후 다시 시도해 주세요."
+        onHome={() => navi('/')}
+      />
+    );
   }
 
   if (!memberId) {
-    return <p>사용자 정보를 확인할 수 없습니다.</p>;
+    return (
+      <KioskErrorState
+        title="사용자 정보를 불러오지 못했습니다."
+        message="네트워크 상태를 확인한 후 다시 시도해 주세요."
+        onHome={() => navi('/')}
+      />
+    );
   }
 
   if (!ticket && !errorMessage) {
