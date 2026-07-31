@@ -1,11 +1,13 @@
-import axiosInstance from './axiosInstance.js';
+import axiosInstance from "./axiosInstance.js";
 
 export const adminApi = {
-  login: (data) => axiosInstance.post('/api/admin/login', data),
+  login: (data) => axiosInstance.post("/api/admin/login", data),
 
-  logout: () => axiosInstance.post('/api/admin/logout'),
+  //refresh () 작성 예정
 
-  getDashboardSummary: () => axiosInstance.get('/api/admin/dashboard'),
+  logout: () => axiosInstance.post("/api/admin/logout"),
 
-  getAdminProfile: () => axiosInstance.get('/api/admin/profile'),
+  getDashboardSummary: () => axiosInstance.get("/api/admin/dashboard"),
+
+  getAdminProfile: () => axiosInstance.get("/api/admin/profile"),
 };
