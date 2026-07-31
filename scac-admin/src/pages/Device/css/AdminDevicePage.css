@@ -71,7 +71,7 @@
 
 .admin_device_workspace {
   display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(360px, 0.8fr);
+  grid-template-columns: minmax(0, 1.7fr) minmax(380px, 1fr);
   gap: 24px;
 
   align-items: start;
@@ -93,7 +93,7 @@
 
 .admin_device_manage_item {
   width: 100%;
-  min-height: 78px;
+  min-height: 76px;
 
   display: flex;
   justify-content: space-between;
@@ -115,13 +115,12 @@
   transition:
     border-color 0.2s ease,
     background-color 0.2s ease,
-    transform 0.2s ease,
+    transform 0.15s ease,
     box-shadow 0.2s ease;
 }
 
 .admin_device_manage_item:hover {
   border-color: var(--color-sub);
-
   background: var(--color-pay-white);
 
   transform: translateY(-1px);
@@ -176,14 +175,30 @@
 /* =========================
    Device Status Badge
 ========================= */
+.admin_status_badge {
+  min-width: 42px;
+  height: 24px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 9px;
+
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
 
 .admin_status_badge.is_normal {
   background: #e7f5ed;
   color: var(--color-using);
 }
 
-.admin_status_badge.is_warning {
-  background: #fff0e6;
+.admin_status_badge.is_offline {
+  background: #fff4df;
   color: var(--color-highlight);
 }
 
@@ -201,6 +216,12 @@
   top: 120px;
 
   min-height: 360px;
+}
+.admin_device_detail .admin_panel_header {
+  padding-bottom: 18px;
+  margin-bottom: 4px;
+
+  border-bottom: 1px solid var(--color-reserv-time-disavailable);
 }
 
 .admin_device_detail_empty {
@@ -224,44 +245,143 @@
 }
 
 .admin_device_info_list > div {
-  min-height: 56px;
+  min-height: 54px;
 
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr);
+  gap: 18px;
   align-items: center;
-  gap: 24px;
 
   border-bottom: 1px solid var(--color-reserv-time-disavailable);
 }
 
 .admin_device_info_list dt {
-  flex-shrink: 0;
-
   color: var(--color-text-light);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
 }
 
 .admin_device_info_list dd {
+  min-width: 0;
+  margin: 0;
+
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 700;
+
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+/* =========================
+   Device Log
+========================= */
+
+.admin_device_log_section {
+  margin-top: 0;
+  padding: 20px;
+
+  border: 1px solid var(--color-reserv-time-disavailable);
+  border-radius: 16px;
+
+  background: var(--color-white);
+
+  box-shadow: 0 8px 24px rgb(28 46 55 / 5%);
+}
+
+.admin_device_log_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 12px;
+}
+
+.admin_device_log_header h4 {
   margin: 0;
 
   color: var(--color-text);
   font-size: 14px;
   font-weight: 700;
+}
+
+.admin_device_log_list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+}
+
+.admin_device_log_item {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+
+  padding: 14px 16px;
+
+  border: 1px solid var(--color-reserv-time-disavailable);
+  border-radius: 10px;
+
+  background: var(--color-white);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.admin_device_log_item:hover {
+  border-color: var(--color-reserv-stroke);
+
+  box-shadow: 0 2px 8px rgb(28 46 55 / 5%);
+}
+
+.admin_device_log_info {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+.admin_device_log_info strong {
+  color: var(--color-text);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin_device_log_item p {
+  min-width: 0;
+  margin: 0;
+
+  color: var(--color-text-light);
+  font-size: 12px;
+  line-height: 1.5;
+
+  overflow-wrap: anywhere;
+}
+
+.admin_device_log_item small {
+  display: block;
+
+  color: var(--color-text-light);
+  font-size: 11px;
 
   text-align: right;
+  white-space: nowrap;
 }
 
-/* 상태 메시지는 길어질 수 있으므로 마지막 행 */
+.admin_device_log_empty {
+  margin: 0;
+  padding: 24px 12px;
 
-.admin_device_info_list > div:last-child {
-  align-items: flex-start;
+  color: var(--color-text-light);
+  font-size: 12px;
 
-  padding: 16px 0;
-}
-
-.admin_device_info_list > div:last-child dd {
-  line-height: 1.5;
+  text-align: center;
 }
 
 /* =========================
@@ -272,7 +392,8 @@
   width: 100%;
   min-height: 46px;
 
-  margin-top: 24px;
+  margin-top: 20px;
+  margin-bottom: 4px;
 
   border: 1px solid var(--color-primary);
   border-radius: 10px;
@@ -310,6 +431,13 @@
   outline-offset: 2px;
 }
 
+.admin_device_normal_button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 /* =========================
    Responsive
 ========================= */
@@ -335,7 +463,6 @@
 
   .admin_device_manage_item {
     align-items: flex-start;
-
     flex-direction: column;
   }
 
@@ -343,5 +470,17 @@
     width: 100%;
 
     justify-content: space-between;
+  }
+
+  .admin_device_info_list > div {
+    grid-template-columns: 80px minmax(0, 1fr);
+  }
+  .admin_device_log_item {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .admin_device_log_item small {
+    text-align: left;
   }
 }

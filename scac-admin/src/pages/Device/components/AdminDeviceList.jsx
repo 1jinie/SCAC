@@ -1,9 +1,12 @@
-import { deviceStore } from '../../../store/deviceStore';
 import AdminDevice from './AdminDevice';
 
-export default function AdminDeviceList({ devices }) {
-  const selectDevice = deviceStore((state) => state.selectDevice);
-
+export default function AdminDeviceList({
+  devices,
+  selectedDevice,
+  onDeviceSelect,
+  isDeviceLoading,
+  errorMessage,
+}) {
   return (
     <div className="admin_panel">
       <div className="admin_panel_header">
@@ -14,11 +17,17 @@ export default function AdminDeviceList({ devices }) {
       </div>
 
       <div className="admin_device_manage_list">
+        {isDeviceLoading && <p>장치 목록을 불러오는 중입니다.</p>}
+        {errorMessage && <p>{errorMessage}</p>}
+        {!isDeviceLoading && !errorMessage && devices.length === 0 && (
+          <p className="admin_device_list_empty">등록된 장치가 없습니다.</p>
+        )}
         {devices.map((device) => (
           <AdminDevice
             key={device.deviceId}
             device={device}
-            selectDevice={selectDevice}
+            isSelected={selectedDevice?.deviceId === device.deviceId}
+            onDeviceSelect={onDeviceSelect}
           />
         ))}
       </div>

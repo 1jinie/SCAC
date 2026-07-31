@@ -44,7 +44,6 @@ public class TicketUsage {
   @Column(name = "remaining_time")
   private Integer remainingTime;
 
-
   @Enumerated(EnumType.STRING)
   @Column(name = "status", nullable = false, length = 50)
   private TicketUsageStatus status;
@@ -61,18 +60,14 @@ public class TicketUsage {
   @Column(name = "updated_at", nullable = false)
   private LocalDateTime updatedAt;
 
-  private TicketUsage(
-      Long userId,
-      Long ticketId,
-      TicketType ticketType,
-      Integer remainingTime
-      
+  private TicketUsage(Long userId, Long ticketId, TicketType ticketType, Integer remainingTime
+
   ) {
     this.userId = userId;
     this.ticketId = ticketId;
     this.ticketType = ticketType;
     this.remainingTime = remainingTime;
-   
+
     this.status = TicketUsageStatus.READY;
   }
 
@@ -87,31 +82,25 @@ public class TicketUsage {
       throw new IllegalArgumentException("판매 중인 이용권이 아닙니다.");
     }
 
-    return new TicketUsage(
-        userId,
-        ticket.getTicketId(),
-        ticket.getTicketType(),
-        ticket.getTicketTime()
-       
+    return new TicketUsage(userId, ticket.getTicketId(), ticket.getTicketType(), ticket.getTicketTime()
+
     );
   }
 
   public void start() {
-    if (status == TicketUsageStatus.EXPIRED
-      || status == TicketUsageStatus.CANCELED) {
-    throw new IllegalStateException("사용할 수 없는 이용권입니다.");
-  }
+    if (status == TicketUsageStatus.EXPIRED || status == TicketUsageStatus.CANCELED) {
+      throw new IllegalStateException("사용할 수 없는 이용권입니다.");
+    }
 
-  if (status == TicketUsageStatus.ACTIVE) {
+  if (status == TicketUsageStatus.USING) {
     return;
   }
 
-  LocalDateTime now = LocalDateTime.now();
+    LocalDateTime now = LocalDateTime.now();
 
-  this.status = TicketUsageStatus.ACTIVE;
+  this.status = TicketUsageStatus.USING;
   this.startAt = now;
 
-  
   }
 
   public void deductTime(int usedMinutes) {
@@ -142,25 +131,22 @@ public class TicketUsage {
 
   public void cancel() {
     if (status != TicketUsageStatus.READY) {
-      throw new IllegalStateException(
-          "사용하지 않은 이용권만 취소할 수 있습니다."
-      );
+      throw new IllegalStateException("사용하지 않은 이용권만 취소할 수 있습니다.");
     }
 
     this.status = TicketUsageStatus.CANCELED;
   }
 
   public boolean isAvailable() {
-    if (status == TicketUsageStatus.CANCELED
-      || status == TicketUsageStatus.EXPIRED) {
-    return false;
-  }
+    if (status == TicketUsageStatus.CANCELED || status == TicketUsageStatus.EXPIRED) {
+      return false;
+    }
 
-  if (ticketType == TicketType.TIME_PACK) {
-    return remainingTime != null && remainingTime > 0;
-  }
+    if (ticketType == TicketType.TIME_PACK) {
+      return remainingTime != null && remainingTime > 0;
+    }
 
-  return endAt == null || endAt.isAfter(LocalDateTime.now());
+    return endAt == null || endAt.isAfter(LocalDateTime.now());
   }
 
   @PrePersist

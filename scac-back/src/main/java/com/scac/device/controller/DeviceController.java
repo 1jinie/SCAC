@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.scac.device.dto.DeviceLogCreateDTO;
 import com.scac.device.dto.DeviceLogResDTO;
 import com.scac.device.dto.DeviceResDTO;
 import com.scac.device.dto.DeviceStatusDTO;
@@ -18,6 +19,7 @@ import com.scac.global.response.ApiResponse;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,32 +38,41 @@ public class DeviceController {
   }
 
   // 특정 장치 현재 상태 조회
-  @GetMapping("/{deviceName}")
-  public ResponseEntity<ApiResponse<DeviceResDTO>> findByDeviceName(
-    @PathVariable("deviceName") String deviceName) {
+  @GetMapping("/{deviceId}")
+  public ResponseEntity<ApiResponse<DeviceResDTO>> findByDeviceId(@PathVariable("deviceId") Long deviceId) {
 
-    DeviceResDTO device = deviceService.findCurrentStatus(deviceName);
+    DeviceResDTO device = deviceService.findCurrentStatus(deviceId);
 
     return ResponseEntity.ok(ApiResponse.success("장치 상태 조회를 완료했습니다.", device));
   }
 
   // 특정 장치 로그 조회
-  @GetMapping("/{deviceName}/logs")
+  @GetMapping("/{deviceId}/logs")
   public ResponseEntity<ApiResponse<List<DeviceLogResDTO>>> findLogs(
-    @PathVariable("deviceName") String deviceName) {
+    @PathVariable("deviceId") Long deviceId) {
 
-    List<DeviceLogResDTO> logs = deviceService.findLogs(deviceName);
+    List<DeviceLogResDTO> logs = deviceService.findLogs(deviceId);
 
     return ResponseEntity.ok(ApiResponse.success("장치 로그 조회를 완료했습니다.", logs));
   }
 
   // 관리자 장치 상태 변경
-  @PatchMapping("/{deviceName}/status")
-  public ResponseEntity<ApiResponse<DeviceResDTO>> updateStatus(@PathVariable("deviceName") String deviceName,
+  @PatchMapping("/{deviceId}/status")
+  public ResponseEntity<ApiResponse<DeviceResDTO>> updateStatus(@PathVariable("deviceId") Long deviceId,
     @Valid @RequestBody DeviceStatusDTO form) {
 
-    DeviceResDTO device = deviceService.updateStatus(deviceName, form);
+    DeviceResDTO device = deviceService.updateStatus(deviceId, form);
 
     return ResponseEntity.ok(ApiResponse.success("장치 상태 변경을 완료했습니다.", device));
   }
+
+  // RTOS 이벤트 수신
+  @PostMapping("/events")
+  public ResponseEntity<ApiResponse<DeviceLogResDTO>> handleDeviceEvent(
+    @Valid @RequestBody DeviceLogCreateDTO form) {
+    DeviceLogResDTO log = deviceService.handleDeviceEvent(form);
+
+    return ResponseEntity.ok(ApiResponse.success("장치 이벤트 처리를 완료했습니다.", log));
+  }
+
 }

@@ -56,6 +56,7 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
+<<<<<<< HEAD
                         // 1. PUBLIC GET 요청 (전화번호 중복 확인 포함)
                         .requestMatchers(
                                 HttpMethod.GET,
@@ -68,6 +69,27 @@ public class SecurityConfig {
                                 "/api/checkin/**",
                                 "api/users/{userId}"
                         ).permitAll()
+=======
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                .requestMatchers(
+                                        HttpMethod.GET,
+                                        "/api/auth/login",
+                                        "/api/users/guest",
+                                        "/api/users/check-phone", // <--- 추가: 전화번호 중복/존재 확인 API
+                                        "/api/tickets/**",
+                                        "/api/seats/**",
+                                        "/api/rooms/**",
+                                        "/api/meeting-rooms/**"
+                                ).permitAll()
+                                .requestMatchers(
+                                        "/api/auth/refresh",
+                                        "/api/admin/**",
+                                        "/api/auth/login",
+                                        "/api/users/signup",
+                                        "/api/checkin/**",
+                                        "/api/users/entry-password/**"
+                                ).permitAll()
+>>>>>>> 4f4b5b8c3486316e4194782b34c6ccf2695c1f51
 
                         // 2. PUBLIC POST 요청 (회원가입, 게스트 등록, 비밀번호 검증 등)
                         .requestMatchers(
