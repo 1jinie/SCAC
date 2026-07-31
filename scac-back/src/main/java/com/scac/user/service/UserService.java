@@ -22,24 +22,26 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public boolean existsByPhoneNumber(String phoneNumber) {
-        String cleanPhone = sanitizePhoneNumber(phoneNumber);
-        return userRepository.existsByPhoneNumber(cleanPhone);
+        return userRepository.existsByPhoneNumber(sanitizePhoneNumber(phoneNumber));
     }
 
     public User register(UserSignUpReq req) {
-
-        if (userRepository.existsByPhoneNumber(req.phoneNumber())) {
+        String cleanPhone = sanitizePhoneNumber(req.phoneNumber());
+        if (userRepository.existsByPhoneNumber(cleanPhone)) {
             throw new IllegalArgumentException("이미 등록된 전화번호입니다.");
         }
 
         String encodedPassword = passwordEncoder.encode(req.password());
-        User user = req.toEntity(encodedPassword);
+        // 전화번호가 정제된 DTO 기반으로 Entity 생성
+        UserSignUpReq cleanReq = new UserSignUpReq(cleanPhone, req.password());
+        User user = cleanReq.toEntity(encodedPassword);
 
         return userRepository.save(user);
     }
 
     public User registerGuest(GuestRegisterReq req) {
-        User existUser = userRepository.findByPhoneNumber(req.phoneNumber()).orElse(null);
+        String cleanPhone = sanitizePhoneNumber(req.phoneNumber());
+        User existUser = userRepository.findByPhoneNumber(cleanPhone).orElse(null);
 
         if (existUser != null) {
             if (Boolean.FALSE.equals(existUser.getIsMember())) {
@@ -50,9 +52,14 @@ public class UserService {
         }
 
         String encodedPassword = passwordEncoder.encode(req.password());
-        User newGuest = req.toEntity(encodedPassword);
+        GuestRegisterReq cleanReq = new GuestRegisterReq(cleanPhone, req.password());
+        User newGuest = cleanReq.toEntity(encodedPassword);
 
         return userRepository.save(newGuest);
+    }
+
+    private String sanitizePhoneNumber(String rawPhone) {
+        return rawPhone != null ? rawPhone.replaceAll("-", "").trim() : "";
     }
 
     @Transactional(readOnly = true)
@@ -104,9 +111,5 @@ public class UserService {
         }
 
         user.changePassword(passwordEncoder.encode(req.newPassword()));
-    }
-
-    private String sanitizePhoneNumber(String rawPhone) {
-        return rawPhone != null ? rawPhone.replaceAll("-", "") : null;
     }
 }
