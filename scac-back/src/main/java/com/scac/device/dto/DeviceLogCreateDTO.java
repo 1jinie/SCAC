@@ -14,7 +14,8 @@ RTOS에서 받을 데이터 DTO
 @Getter
 @NoArgsConstructor
 public class DeviceLogCreateDTO {
-
+  
+  @NotNull
   private Long deviceId;
 
   @NotBlank(message = "이벤트 유형은 필수입니다.")
