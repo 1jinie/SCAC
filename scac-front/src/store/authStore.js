@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { postLogin, postAdminLogin, postLogout } from '../api/authApi';
+import { postSignUp, postGuestSignUp } from '../api/userApi';
 
 export const useAuthStore = create((set) => ({
   accessToken: localStorage.getItem('accessToken') || null,
@@ -7,7 +8,7 @@ export const useAuthStore = create((set) => ({
   isAuthenticated: !!localStorage.getItem('accessToken'),
   isLoading: false,
 
-  // 1. 일반 사용자 로그인 (phoneNumber, password)
+  // 1. 일반 사용자 로그인
   login: async (phoneNumber, password) => {
     set({ isLoading: true });
     try {
@@ -25,7 +26,7 @@ export const useAuthStore = create((set) => ({
           isAuthenticated: true,
           isLoading: false,
         });
-        return { success: true };
+        return { success: true, role: user?.role }; // 👈 role 리턴 추가
       }
       set({ isLoading: false });
       return {
@@ -40,15 +41,13 @@ export const useAuthStore = create((set) => ({
     }
   },
 
-  // 2. 관리자 로그인 (loginId, password) 👈 [추가됨]
+  // 2. 관리자 로그인
   adminLogin: async (loginId, password) => {
     set({ isLoading: true });
     try {
       const res = await postAdminLogin(loginId, password);
       if (res.isSuccess && res.data) {
         const { accessToken, refreshToken, adminInfo } = res.data;
-
-        // 관리자 정보를 user 상태에 동일 규격으로 저장
         const userObj = adminInfo || { loginId, role: 'ROLE_ADMIN' };
 
         localStorage.setItem('accessToken', accessToken);
@@ -61,7 +60,7 @@ export const useAuthStore = create((set) => ({
           isAuthenticated: true,
           isLoading: false,
         });
-        return { success: true };
+        return { success: true, role: userObj.role };
       }
       set({ isLoading: false });
       return {
@@ -77,7 +76,51 @@ export const useAuthStore = create((set) => ({
     }
   },
 
-  // 3. 로그아웃
+  // 3. 일반 회원가입 👈 [추가됨]
+  signUp: async (userData) => {
+    set({ isLoading: true });
+    try {
+      const res = await postSignUp(userData);
+      set({ isLoading: false });
+      if (res.isSuccess) {
+        return { success: true, memberId: res.data?.userId };
+      }
+      return {
+        success: false,
+        errorMessage: res.message || '회원가입에 실패했습니다.',
+      };
+    } catch (error) {
+      set({ isLoading: false });
+      const errorMessage =
+        error.response?.data?.message ||
+        '회원가입 처리 중 오류가 발생했습니다.';
+      return { success: false, errorMessage };
+    }
+  },
+
+  // 4. 비회원/게스트 등록 👈 [추가됨]
+  guestSignUp: async (userData) => {
+    set({ isLoading: true });
+    try {
+      const res = await postGuestSignUp(userData);
+      set({ isLoading: false });
+      if (res.isSuccess) {
+        return { success: true, memberId: res.data?.userId };
+      }
+      return {
+        success: false,
+        errorMessage: res.message || '비회원 등록에 실패했습니다.',
+      };
+    } catch (error) {
+      set({ isLoading: false });
+      const errorMessage =
+        error.response?.data?.message ||
+        '비회원 등록 처리 중 오류가 발생했습니다.';
+      return { success: false, errorMessage };
+    }
+  },
+
+  // 5. 로그아웃
   logout: async () => {
     try {
       await postLogout();

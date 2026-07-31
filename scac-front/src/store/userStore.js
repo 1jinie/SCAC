@@ -6,7 +6,7 @@ import {
   verifyEntryPassword,
 } from '../api/userApi';
 
-export const useUserStore = create((set, get) => ({
+export const useUserStore = create((set) => ({
   userProfile: null,
   isLoading: false,
   errorMessage: '',
@@ -16,8 +16,9 @@ export const useUserStore = create((set, get) => ({
     set({ isLoading: true, errorMessage: '' });
     try {
       const result = await getUserProfile(userId);
-      set({ userProfile: result.data });
-      return { success: true, data: result.data };
+      const profileData = result.data || result;
+      set({ userProfile: profileData });
+      return { success: true, data: profileData };
     } catch (error) {
       set({ errorMessage: '프로필 정보를 불러오지 못했습니다.' });
       return { success: false, error };
@@ -47,12 +48,8 @@ export const useUserStore = create((set, get) => ({
     set({ isLoading: true, errorMessage: '' });
     try {
       const result = await checkPhoneExists(phoneNumber);
-
-      if (!result.success) {
-        throw new Error(result.message);
-      }
-
-      return { success: true, exists: result.data };
+      const exists = result.data !== undefined ? result.data : result;
+      return { success: true, exists };
     } catch (error) {
       console.error('Store Check Phone Error:', error);
       set({ errorMessage: '전화번호 확인 중 오류가 발생했습니다.' });
@@ -62,21 +59,20 @@ export const useUserStore = create((set, get) => ({
     }
   },
 
-  /* 4. 입실 비밀번호 검증 (키오스크용) */
+  // 입실 비밀번호 검증 (키오스크용)
   verifyEntryPassword: async (phoneNumber, password) => {
     set({ isLoading: true, errorMessage: '' });
     try {
       const result = await verifyEntryPassword(phoneNumber, password);
-
-      if (!result.success) {
-        throw new Error(result.message);
-      }
-
-      return { success: true, user: result.data };
+      const userData = result.data || result;
+      return { success: true, user: userData };
     } catch (error) {
       console.error('Store Verify Password Error:', error);
-      set({ errorMessage: '비밀번호가 일치하지 않거나 오류가 발생했습니다.' });
-      return { success: false, error };
+      const message =
+        error.response?.data?.message ||
+        '비밀번호가 일치하지 않거나 오류가 발생했습니다.';
+      set({ errorMessage: message });
+      return { success: false, message };
     } finally {
       set({ isLoading: false });
     }
