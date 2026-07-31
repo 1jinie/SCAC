@@ -14,9 +14,10 @@ public record UserRes(
     UserRole role,
     UserStatus userStatus,
     LocalDate penaltyEndDate,
-    LocalDateTime createdAt
+    LocalDateTime createdAt,
+    String currentTicketName
 ) {
-    public static UserRes from(User user) {
+    public static UserRes from(User user, String currentTicketName) {
         return new UserRes(
             user.getId(),
             user.getPhoneNumber(),
@@ -24,7 +25,8 @@ public record UserRes(
             user.getRole(),
             user.getUserStatus(),
             user.getPenaltyEndDate(),
-            user.getCreatedAt()
+            user.getCreatedAt(),
+            currentTicketName
         );
     }
 }
