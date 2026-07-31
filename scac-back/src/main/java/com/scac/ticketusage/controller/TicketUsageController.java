@@ -19,19 +19,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("api/ticket-usages")
 public class TicketUsageController {
-  private final TicketUsageService ticketUsageService;
+    private final TicketUsageService ticketUsageService;
 
-  @PostMapping
-  public ResponseEntity<ApiResponse<TicketUsageResDTO>> issue(
-      @Valid @RequestBody TicketUsageCreateDTO form
-  ) {
-    TicketUsageResDTO response = ticketUsageService.issue(
-        form.getUserId(),
-        form.getTicketId()
-    );
+    // 추후 관리자 수동 이용권 발급 API로 전환
+    // - 경로: POST /api/admin/ticket-usages
+    // - 관리자 권한 검증 추가
+    // - 발급 사유 저장 여부 검토
 
-    return ResponseEntity
-        .status(HttpStatus.CREATED)
-        .body(ApiResponse.success("이용권이 발급되었습니다.", response));
-  }
+    @PostMapping
+    public ResponseEntity<ApiResponse<TicketUsageResDTO>> issue(
+        @Valid @RequestBody TicketUsageCreateDTO form) {
+        TicketUsageResDTO response = ticketUsageService.issue(form.getUserId(), form.getTicketId());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("이용권이 발급되었습니다.", response));
+    }
 }
