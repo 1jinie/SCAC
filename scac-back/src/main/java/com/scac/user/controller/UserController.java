@@ -65,10 +65,10 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserRes>> findUser(
             @PathVariable Long userId
     ) {
-        User user = userService.findUser(userId);
+        UserRes userRes = userService.getUserProfile(userId);
 
         return ResponseEntity.ok(
-                ApiResponse.success("회원 정보 조회를 완료했습니다.", UserRes.from(user))
+                ApiResponse.success("회원 정보 조회를 완료했습니다.", userRes)
         );
     }
 

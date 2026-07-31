@@ -1,5 +1,7 @@
 package com.scac.global.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -91,6 +93,7 @@ GlobalExceptionHandler를 참고해 주세요.
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ApiResponse<T> {
 
+  @JsonProperty("isSuccess") // 👈 프론트엔드 authStore.js의 res.isSuccess 조건문과 명확히 매칭[cite: 30, 36]
   private boolean isSuccess;
   private String message;
   private T data;
@@ -107,9 +110,7 @@ public class ApiResponse<T> {
     return new ApiResponse<>(false, message, data);
   }
 
-  public static <T> ApiResponse<T> fail(String message, T data
-
-  ) {
+  public static ApiResponse<Void> fail(String message) {
     return new ApiResponse<>(false, message, null);
   }
 }

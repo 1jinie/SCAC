@@ -7,13 +7,13 @@ import './css/NonSignup.css';
 function NonmemberSignup() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: '',
     phone: '',
     password: '',
     confirmPassword: '',
   });
 
   const [errors, setErrors] = useState({});
+  const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
   const handleChange = (event) => {
@@ -32,32 +32,46 @@ function NonmemberSignup() {
 
   useEffect(() => {
     let interval = null;
+
     if (isVerificationSent && timer > 0 && !isVerified) {
       interval = setInterval(() => {
-        setTimer((prevTime) => prevTime - 1);
+        setTimer((prev) => prev - 1);
       }, 1000);
-    } else if (timer === 0) {
-      clearInterval(interval);
+    }
+
+    if (timer === 0) {
       setErrors((prev) => ({
         ...prev,
         verification: '인증 시간이 만료되었습니다. 다시 발송해주세요.',
       }));
     }
+
     return () => clearInterval(interval);
   }, [isVerificationSent, timer, isVerified]);
 
+  // 시간 표시
   const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+
+    return `${String(minutes).padStart(2, '0')}:${String(
+      remainingSeconds,
+    ).padStart(2, '0')}`;
   };
 
-  const handleSendVerification = () => {
-    if (!formData.phone.trim()) {
-      setErrors((prev) => ({ ...prev, phone: '전화번호를 입력해주세요.' }));
+  // 인증번호 발송
+  const handleSendVerification = async () => {
+    const phone = formData.phone.replace(/-/g, '');
+
+    if (!phone.trim()) {
+      setErrors((prev) => ({
+        ...prev,
+        phone: '전화번호를 입력해주세요.',
+      }));
       return;
     }
-    if (!/^01\d{8,9}$/.test(formData.phone.replace(/-/g, ''))) {
+
+    if (!/^01\d{8,9}$/.test(phone)) {
       setErrors((prev) => ({
         ...prev,
         phone: '전화번호 형식이 올바르지 않습니다.',
@@ -65,34 +79,95 @@ function NonmemberSignup() {
       return;
     }
 
-    setErrors((prev) => ({ ...prev, phone: '', verification: '' }));
-    setIsVerificationSent(true);
-    setTimer(180);
-    alert('인증번호 6자리가 발송되었습니다. (테스트용: 123456)');
-  };
+    try {
+      /*
+      추후 백엔드 연결
 
-  const handleConfirmVerification = () => {
-    if (verificationCode === '123456') {
-      setIsVerified(true);
-      setErrors((prev) => ({ ...prev, verification: '' }));
-    } else {
+      await axios.post(
+        '/api/auth/send-code',
+        {
+          phoneNumber: phone
+        }
+      );
+    */
+
       setErrors((prev) => ({
         ...prev,
-        verification: '인증번호가 일치하지 않습니다.',
+        phone: '',
+        verification: '',
+      }));
+
+      setIsVerificationSent(true);
+      setTimer(180);
+
+      alert('인증번호가 발송되었습니다. (테스트번호: 123456)');
+    } catch (error) {
+      setErrors((prev) => ({
+        ...prev,
+        phone: '인증번호 발송에 실패했습니다.',
       }));
     }
   };
 
+  // 인증번호 확인
+  const handleVerifyCode = async () => {
+    if (timer === 0) {
+      setErrors((prev) => ({
+        ...prev,
+        verification: '인증 시간이 만료되었습니다.',
+      }));
+
+      return;
+    }
+
+    try {
+      /*
+      추후 백엔드 연결
+
+      await axios.post(
+        '/api/auth/verify-code',
+        {
+          phoneNumber: formData.phone,
+          code: verificationCode
+        }
+      );
+
+    */
+
+      if (verificationCode !== '123456') {
+        setErrors((prev) => ({
+          ...prev,
+          verification: '인증번호가 일치하지 않습니다.',
+        }));
+
+        return;
+      }
+
+      setIsVerified(true);
+
+      setErrors((prev) => ({
+        ...prev,
+        verification: '',
+      }));
+    } catch (error) {
+      setErrors((prev) => ({
+        ...prev,
+        verification: '인증 확인 중 오류가 발생했습니다.',
+      }));
+    }
+  };
+
+  // 전체 입력 검증
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.name.trim()) {
-      newErrors.name = '이름을 입력해주세요.';
-    }
-
     if (!formData.phone.trim()) {
       newErrors.phone = '전화번호를 입력해주세요.';
-    } else if (!/^01\d{8,9}$/.test(formData.phone.replace(/-/g, ''))) {
+    }
+
+    const phone = formData.phone.replace(/-/g, '');
+
+    if (!/^01\d{8,9}$/.test(phone)) {
       newErrors.phone = '전화번호 형식이 올바르지 않습니다.';
     }
 
@@ -113,54 +188,88 @@ function NonmemberSignup() {
     }
 
     setErrors(newErrors);
+
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (event) => {
+  // 회원가입 + 입실 처리
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    setSuccessMessage('');
 
     if (!validateForm()) return;
 
-    Promise.resolve(
-      guestSignUp({ phoneNumber: formData.phone, password: formData.password }),
-    )
-      .then((res) => {
-        if (!res || !res.success) {
-          setErrors((prev) => ({
-            ...prev,
-            general: res?.errorMessage || '회원가입에 실패했습니다.',
-          }));
-          return;
-        }
+    try {
+      /*
+      POST /api/users/guest-signup
 
-        const memberId = res.memberId;
+      요청
 
-        const addCheckIn = checkInStore.getState().addCheckIn;
-        addCheckIn({
-          userId: memberId,
-          seatId: null,
-          status: 'using',
-          checkInTime: new Date(),
-        });
+      {
+        phoneNumber,
+        password
+      }
 
-        checkInStore.setState({
-          currentUser: {
-            id: memberId,
-            phone: formData.phone,
-          },
-        });
+    */
 
-        setSuccessMessage('입실 준비가 완료되었습니다!');
-        setTimeout(() => navigate('/loginhome'), 800);
-      })
-      .catch((err) => {
-        console.error('Nonmember signUp error:', err);
+      const result = await guestSignUp({
+        phoneNumber: formData.phone,
+
+        password: formData.password,
+      });
+
+      if (!result.success) {
         setErrors((prev) => ({
           ...prev,
-          general: '회원가입 처리 중 오류가 발생했습니다.',
+          general: result.errorMessage || '비회원 등록 실패',
         }));
+
+        return;
+      }
+
+      const userId = result.userId;
+
+      /*
+       checkIn 생성
+
+       추후 백엔드에서는:
+
+       POST /api/usages/check-in
+
+       처리 가능
+    */
+
+      const addCheckIn = checkInStore.getState().addCheckIn;
+
+      addCheckIn({
+        userId: userId,
+
+        seatId: null,
+
+        status: 'USING',
+
+        checkInTime: new Date(),
       });
+
+      checkInStore.setState({
+        currentUser: {
+          id: userId,
+
+          phone: formData.phone,
+        },
+      });
+
+      alert('비회원 입실 등록이 완료되었습니다.');
+
+      navigate('/loginhome');
+    } catch (error) {
+      console.error('guest signup error', error);
+
+      setErrors((prev) => ({
+        ...prev,
+
+        general: '회원가입 처리 중 오류가 발생했습니다.',
+      }));
+    }
   };
 
   return (
@@ -193,23 +302,6 @@ function NonmemberSignup() {
         )}
 
         <form className="signup_form" onSubmit={handleSubmit}>
-          {/* 이름 입력 
-          <div className="form_group">
-            <label className="form_label" htmlFor="name">
-              이름
-            </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              className={`form_input ${errors.name ? 'input_error' : ''}`}
-              placeholder="이름을 입력하세요"
-              value={formData.name}
-              onChange={handleChange}
-            />
-            {errors.name && <span className="error_text">{errors.name}</span>}
-          </div> */}
-
           {/* 전화번호 입력 (인증번호 발송 포함) */}
           <div className="form_group">
             <label className="form_label" htmlFor="phone">
@@ -268,7 +360,7 @@ function NonmemberSignup() {
                     <button
                       type="button"
                       className="btn_inner_verify static_btn"
-                      onClick={handleConfirmVerification}
+                      onClick={handleVerifyCode}
                     >
                       인증확인
                     </button>

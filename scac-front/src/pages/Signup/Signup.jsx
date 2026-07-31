@@ -36,9 +36,9 @@ function SignUpPage() {
 
   // 초단위를 MM:SS 형식으로 변환
   const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
   };
 
   // 🎯 [기능] 인증번호 발송 클릭 핸들러
@@ -61,13 +61,15 @@ function SignUpPage() {
   };
 
   // 🎯 [기능] 인증번호 확인 클릭 핸들러
-  const handleConfirmVerification = () => {
+  const handleVerifyCode = () => {
     setErrorMessage('');
-
-    // 테스트용 하드코딩 인증번호 (추후 API 연동 시 백엔드 요청으로 변경 가능)
+    if (timer === 0) {
+      setErrorMessage('인증 시간이 만료되었습니다. 다시 시도해 주세요.');
+      return;
+    }
     if (verificationCode === '123456') {
       setIsVerified(true);
-      alert('인증이 완료되었습니다.');
+      alert('전화번호 인증이 완료되었습니다.');
     } else {
       setErrorMessage('인증번호가 일치하지 않습니다.');
     }
@@ -93,6 +95,11 @@ function SignUpPage() {
     // 비밀번호와 비밀번호 확인 일치 검사
     if (password !== confirmPassword) {
       setErrorMessage('비밀번호가 일치하지 않습니다. 다시 확인해 주세요.');
+      return;
+    }
+
+    if (!/^\d{6}$/.test(password)) {
+      setErrorMessage('비밀번호는 숫자 6자리로 입력해 주세요.');
       return;
     }
 
@@ -185,7 +192,7 @@ function SignUpPage() {
                     <button
                       type="button"
                       className="btn_inner_verify"
-                      onClick={handleConfirmVerification}
+                      onClick={handleVerifyCode}
                     >
                       인증확인
                     </button>

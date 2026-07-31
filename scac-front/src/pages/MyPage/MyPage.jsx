@@ -7,13 +7,14 @@ import '../../styles/Mypage.css';
 function MyPage() {
   const navigate = useNavigate();
 
-  const memberId = useAuthStore((state) => state.memberId);
+  const user = useAuthStore((state) => state.user);
+  const userId = user?.userId || user?.id;
   const logout = useAuthStore((state) => state.logout);
 
   const {
     userProfile,
     getUserProfile,
-    modifyUserProfile,
+    modifyUserPassword,
     clearUserData,
     isLoading,
     errorMessage,
@@ -26,19 +27,19 @@ function MyPage() {
   const [successMessage, setSuccessMessage] = useState('');
   const [localError, setLocalError] = useState('');
 
-  /* 내 정보 및 이용권 정보 조회 */
-  useEffect(() => {
-    if (memberId) {
-      getUserProfile(memberId);
-    }
-  }, [memberId, getUserProfile, navigate]);
-
   // 프로필 데이터 로드 상태 확인
   useEffect(() => {
-    console.log('📊 userProfile:', userProfile);
-    console.log('📊 isLoading:', isLoading);
-    console.log('📊 errorMessage:', errorMessage);
+    console.log(' userProfile:', userProfile);
+    console.log(' isLoading:', isLoading);
+    console.log(' errorMessage:', errorMessage);
   }, [userProfile, isLoading, errorMessage]);
+
+  /* 내 정보 및 이용권 정보 조회 */
+  useEffect(() => {
+    if (userId) {
+      getUserProfile(userId);
+    }
+  }, [userId, getUserProfile, navigate]);
 
   /* 로그아웃 핸들러 */
   const handleLogoutClick = () => {
@@ -62,12 +63,6 @@ function MyPage() {
       return;
     }
 
-    // 현재 비밀번호 검증
-    if (userProfile && currentPassword !== userProfile.password) {
-      setLocalError('현재 입실 비밀번호가 일치하지 않습니다.');
-      return;
-    }
-
     // 새 비밀번호 확인 일치 검증
     if (newPassword !== passwordConfirm) {
       setLocalError('새 비밀번호가 일치하지 않습니다.');
@@ -80,26 +75,24 @@ function MyPage() {
       return;
     }
 
-    // 서버로 수정 요청 보낼 데이터 객체
-    const updateData = {
-      password: newPassword,
-    };
+    if (!userId) {
+      setLocalError('사용자 정보가 유효하지 않습니다. 다시 로그인해 주세요.');
+      return;
+    }
 
-    const result = await modifyUserProfile(memberId, updateData);
+    // 서버로 수정 요청 보낼 데이터 객체
+    const result = await modifyUserPassword(userId, {
+      currentPassword,
+      newPassword,
+    });
 
     if (result.success) {
-      setSuccessMessage('비밀번호가 성공적으로 변경되었습니다!');
-      setCurrentPassword('');
-      setNewPassword('');
-      setPasswordConfirm('');
-
-      // 보안을 위해 비밀번호 변경 후 자동 로그아웃
       alert(
         '비밀번호가 변경되어 안전하게 로그아웃됩니다. 다시 로그인해 주세요.',
       );
       clearUserData();
       logout();
-      navigate('/');
+      navigate('/login');
     }
   };
 

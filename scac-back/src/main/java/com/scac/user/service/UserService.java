@@ -4,9 +4,11 @@ import com.scac.global.enums.UserStatus;
 import com.scac.user.dto.GuestRegisterReq;
 import com.scac.user.dto.PasswordUpdateReq;
 import com.scac.user.dto.PasswordVerifyReq;
+import com.scac.user.dto.UserRes;
 import com.scac.user.dto.UserSignUpReq;
 import com.scac.user.entity.User;
 import com.scac.user.repository.UserRepository;
+// import com.scac.ticket.repository.UserTicketRepository; // 💡 이용권 리포지토리 예시
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,27 +21,30 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    //private final UserTicketRepository userTicketRepository; 이용권 조회를 위해 주입
 
     @Transactional(readOnly = true)
     public boolean existsByPhoneNumber(String phoneNumber) {
-        String cleanPhone = sanitizePhoneNumber(phoneNumber);
-        return userRepository.existsByPhoneNumber(cleanPhone);
+        return userRepository.existsByPhoneNumber(sanitizePhoneNumber(phoneNumber));
     }
 
     public User register(UserSignUpReq req) {
-
-        if (userRepository.existsByPhoneNumber(req.phoneNumber())) {
+        String cleanPhone = sanitizePhoneNumber(req.phoneNumber());
+        if (userRepository.existsByPhoneNumber(cleanPhone)) {
             throw new IllegalArgumentException("이미 등록된 전화번호입니다.");
         }
 
         String encodedPassword = passwordEncoder.encode(req.password());
-        User user = req.toEntity(encodedPassword);
+        // 전화번호가 정제된 DTO 기반으로 Entity 생성
+        UserSignUpReq cleanReq = new UserSignUpReq(cleanPhone, req.password());
+        User user = cleanReq.toEntity(encodedPassword);
 
         return userRepository.save(user);
     }
 
     public User registerGuest(GuestRegisterReq req) {
-        User existUser = userRepository.findByPhoneNumber(req.phoneNumber()).orElse(null);
+        String cleanPhone = sanitizePhoneNumber(req.phoneNumber());
+        User existUser = userRepository.findByPhoneNumber(cleanPhone).orElse(null);
 
         if (existUser != null) {
             if (Boolean.FALSE.equals(existUser.getIsMember())) {
@@ -50,9 +55,14 @@ public class UserService {
         }
 
         String encodedPassword = passwordEncoder.encode(req.password());
-        User newGuest = req.toEntity(encodedPassword);
+        GuestRegisterReq cleanReq = new GuestRegisterReq(cleanPhone, req.password());
+        User newGuest = cleanReq.toEntity(encodedPassword);
 
         return userRepository.save(newGuest);
+    }
+
+    private String sanitizePhoneNumber(String rawPhone) {
+        return rawPhone != null ? rawPhone.replaceAll("-", "").trim() : "";
     }
 
     @Transactional(readOnly = true)
@@ -60,6 +70,18 @@ public class UserService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
     }
+
+    @Transactional(readOnly = true)
+    public UserRes getUserProfile(Long userId) {
+        User user = findUser(userId);
+
+        // 💡 실제 이용권 엔티티/리포지토리 연동 시 활성화된 이용권명 조회
+        // String activeTicketName = userTicketRepository.findActiveTicketNameByUserId(userId).orElse(null);
+        String activeTicketName = null; // 이용권 엔티티 연동 후 적용 예정
+
+        return UserRes.from(user, activeTicketName);
+    }
+
 
     public User verifyPassword(PasswordVerifyReq req) {
         User user = userRepository.findByPhoneNumber(req.phoneNumber())
@@ -104,9 +126,5 @@ public class UserService {
         }
 
         user.changePassword(passwordEncoder.encode(req.newPassword()));
-    }
-
-    private String sanitizePhoneNumber(String rawPhone) {
-        return rawPhone != null ? rawPhone.replaceAll("-", "") : null;
     }
 }
