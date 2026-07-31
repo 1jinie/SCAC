@@ -1,0 +1,56 @@
+.kiosk_error_state {
+  min-height: calc(100dvh - 160px);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 60px;
+  text-align: center;
+}
+
+.kiosk_error_icon {
+  width: 120px;
+  height: 120px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 32px;
+  border-radius: 50%;
+
+  background-color: #fff1ec;
+  color: #e66f51;
+
+  font-size: 72px;
+  font-weight: 700;
+}
+
+.kiosk_error_state h2 {
+  margin: 0 0 18px;
+  font-size: 42px;
+}
+
+.kiosk_error_state p {
+  margin: 0 0 48px;
+  color: var(--color-text-light);
+  font-size: 28px;
+}
+
+.kiosk_error_actions {
+  display: flex;
+  gap: 20px;
+}
+
+.kiosk_error_actions button {
+  min-width: 260px;
+  min-height: 88px;
+
+  border: 0;
+  border-radius: 16px;
+
+  font-size: 28px;
+  font-weight: 700;
+}

@@ -120,13 +120,12 @@ export const checkInStore = create((set, get) => ({
   // 퇴실
   checkOut: async (phoneNumber, password) => {
     try {
-      const response = await checkinApi.checkout({
+      await checkinApi.checkout({
         phoneNumber,
         password,
       });
 
       set({
-        currentUser: null,
         currentUser: null,
       });
 

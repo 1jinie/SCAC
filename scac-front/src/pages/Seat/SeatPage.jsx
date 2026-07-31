@@ -15,7 +15,6 @@ function SeatPage({ mode }) {
   const checkInSeat = seatStore((state) => state.checkInSeat);
   const rooms = roomStore((state) => state.rooms);
   const fetchRooms = roomStore((state) => state.fetchRooms);
-  const currentUser = checkInStore((state) => state.currentUser);
   const checkIn = checkInStore((state) => state.checkIn);
   const setReservation = reservationStore((state) => state.setReservation);
   const navigate = useNavigate();
