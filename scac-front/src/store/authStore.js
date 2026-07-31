@@ -1,5 +1,10 @@
 import { create } from 'zustand';
-import { postLogin, postSignUp, postGuestSignUp, postLogout } from '../api/authApi';
+import {
+  postLogin,
+  postSignUp,
+  postGuestSignUp,
+  postLogout,
+} from '../api/authApi';
 
 export const useAuthStore = create((set) => ({
   // --- 상태 (State) ---

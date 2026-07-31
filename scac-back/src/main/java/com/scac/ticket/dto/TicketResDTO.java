@@ -27,7 +27,7 @@ public class TicketResDTO {
     // Ticket 엔티티를 TicketResDTO로 변환하는 메서드
     public static TicketResDTO from(Ticket ticket) {
         return new TicketResDTO(ticket.getTicketId(), ticket.getTicketName(), ticket.getTicketType(),
-            ticket.getTicketTime(), ticket.getValidDays(), ticket.getTicketPrice(), ticket.isActive(),
+            ticket.getTicketTime(), ticket.getTicketPrice(), ticket.getValidDays(), ticket.isActive(),
             ticket.getTargetType(), ticket.getCreatedAt(), ticket.getUpdatedAt());
 
     }
