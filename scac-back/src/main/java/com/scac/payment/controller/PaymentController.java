@@ -38,7 +38,7 @@ public class PaymentController {
         PaymentResDTO payment = paymentService.create(form);
 
         return ResponseEntity.created(URI.create("/api/payments/" + payment.getPaymentId()))
-            .body(ApiResponse.success("결제를 요청을 생성했습니다.", payment));
+            .body(ApiResponse.success("결제 요청을 생성했습니다.", payment));
     }
 
     // 결제 승인

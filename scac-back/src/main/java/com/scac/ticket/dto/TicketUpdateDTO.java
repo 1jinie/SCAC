@@ -11,28 +11,28 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class TicketUpdateDTO {  
+public class TicketUpdateDTO {
 
-    @NotBlank(message = "이용권명은 필수입니다.")
-    private final String ticketName;
+  @NotBlank(message = "이용권명은 필수입니다.")
+  private final String ticketName;
 
-    @NotNull(message = "이용권 유형은 필수입니다.")
-    private final TicketType ticketType;
+  @NotNull(message = "이용권 유형은 필수입니다.")
+  private final TicketType ticketType;
 
-    @PositiveOrZero(message = "이용 시간은 0 이상이어야 합니다.")
-    private final Integer ticketTime;
+  @PositiveOrZero(message = "이용 시간은 0 이상이어야 합니다.")
+  private final Integer ticketTime;
 
-    @NotNull(message = "가격은 필수입니다.")
-    @PositiveOrZero(message = "가격은 0 이상이어야 합니다.")
-    private final Integer ticketPrice;
+  @NotNull(message = "가격은 필수입니다.")
+  @PositiveOrZero(message = "가격은 0 이상이어야 합니다.")
+  private final Integer ticketPrice;
 
-    @PositiveOrZero(message = "유효기간은 0 이상이어야 합니다.")
-    private final Integer validDays;
+  @PositiveOrZero(message = "유효기간은 0 이상이어야 합니다.")
+  private final Integer validDays;
 
-    @NotNull(message = "판매여부 선택은 필수입니다.")
+  @NotNull(message = "판매여부 선택은 필수입니다.")
   private final Boolean isActive;
 
-    @NotNull(message = "이용 대상은 필수입니다.")
-    private final TargetType targetType;
+  @NotNull(message = "이용 대상은 필수입니다.")
+  private final TargetType targetType;
 
 }
