@@ -4,9 +4,11 @@ import com.scac.global.enums.UserStatus;
 import com.scac.user.dto.GuestRegisterReq;
 import com.scac.user.dto.PasswordUpdateReq;
 import com.scac.user.dto.PasswordVerifyReq;
+import com.scac.user.dto.UserRes;
 import com.scac.user.dto.UserSignUpReq;
 import com.scac.user.entity.User;
 import com.scac.user.repository.UserRepository;
+// import com.scac.ticket.repository.UserTicketRepository; // 💡 이용권 리포지토리 예시
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    //private final UserTicketRepository userTicketRepository; 이용권 조회를 위해 주입
 
     @Transactional(readOnly = true)
     public boolean existsByPhoneNumber(String phoneNumber) {
@@ -67,6 +70,18 @@ public class UserService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
     }
+
+    @Transactional(readOnly = true)
+    public UserRes getUserProfile(Long userId) {
+        User user = findUser(userId);
+
+        // 💡 실제 이용권 엔티티/리포지토리 연동 시 활성화된 이용권명 조회
+        // String activeTicketName = userTicketRepository.findActiveTicketNameByUserId(userId).orElse(null);
+        String activeTicketName = null; // 이용권 엔티티 연동 후 적용 예정
+
+        return UserRes.from(user, activeTicketName);
+    }
+
 
     public User verifyPassword(PasswordVerifyReq req) {
         User user = userRepository.findByPhoneNumber(req.phoneNumber())
