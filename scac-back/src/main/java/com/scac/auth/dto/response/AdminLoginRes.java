@@ -1,7 +1,8 @@
-package com.scac.auth.dto;
+package com.scac.auth.dto.response;
 
 import com.scac.admin.entity.AdminAccount;
-import com.scac.admin.entity.AdminRole;
+import com.scac.auth.dto.JwtTokenRes;
+import com.scac.global.enums.AdminRole;
 
 public record AdminLoginRes(
         String accessToken,

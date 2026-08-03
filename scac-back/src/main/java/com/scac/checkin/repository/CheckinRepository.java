@@ -21,4 +21,6 @@ public interface CheckinRepository extends JpaRepository<Checkin, Long>{
     Optional<Checkin> findByUserIdAndCheckinStatusIn(Long userId, List<CheckinStatus> statuses);
 
     Optional<Checkin> findBySeatIdAndCheckinStatusIn(Long seatId, List<CheckinStatus> statuses);
+
+    List<Checkin> findAllByCheckinStatusIn(List<CheckinStatus> statuses);
 }

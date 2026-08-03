@@ -2,6 +2,8 @@ package com.scac.admin.entity;
 
 import java.time.LocalDateTime;
 
+import com.scac.global.enums.AdminRole;
+
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;

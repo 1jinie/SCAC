@@ -9,7 +9,7 @@ export const checkInStore = create((set, get) => ({
   isLoading: false,
   errorMessage: '',
 
-  // 입실 준비
+  // 입실 준비(비로그인)
   prepareCheckIn: async (phoneNumber, password) => {
     try {
       const response = await checkinApi.prepare({
@@ -25,6 +25,30 @@ export const checkInStore = create((set, get) => ({
       return {
         success: false,
         message: error.response?.data?.message || '입실 준비 실패',
+      };
+    }
+  },
+
+  // 입실 준비(로그인)
+  prepareMemberCheckIn: async () => {
+    try {
+      const response = await checkinApi.prepareMember();
+
+      const data = response.data.data;
+
+      set({
+        prepareUserId: data.userId,
+        prepareUsageId: data.usageId,
+      });
+
+      return {
+        success: true,
+        data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message ?? '입실 준비 실패',
       };
     }
   },

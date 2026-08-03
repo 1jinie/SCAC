@@ -1,5 +1,6 @@
-package com.scac.auth.dto;
+package com.scac.auth.dto.response;
 
+import com.scac.auth.dto.JwtTokenRes;
 import com.scac.global.enums.UserRole;
 import com.scac.user.entity.User;
 

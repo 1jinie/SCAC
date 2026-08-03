@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 
 import com.scac.admin.entity.AdminAccount;
 import com.scac.admin.repository.AdminAccountRepository;
-import com.scac.auth.dto.AdminLoginReq;
-import com.scac.auth.dto.AdminLoginRes;
 import com.scac.auth.dto.JwtTokenRes;
 import com.scac.auth.dto.RefreshTokenReq;
+import com.scac.auth.dto.request.AdminLoginReq;
+import com.scac.auth.dto.response.AdminLoginRes;
 import com.scac.auth.entity.AdminRefreshToken;
 import com.scac.auth.jwt.JwtProvider;
 import com.scac.auth.repository.AdminRefreshTokenRepository;
