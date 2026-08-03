@@ -2,8 +2,10 @@ package com.scac.payment.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,15 +42,38 @@ public class PaymentService {
   private final TicketUsageService ticketUsageService;
   private final TossPaymentClient tossPaymentClient;
 
+  // 공통 메서드 -----------------------------------------------
+  // id로 paymentDTO 가져오기
+  public PaymentResDTO findById(Long paymentId) {
+    return PaymentResDTO.from(getPayment(paymentId));
+  }
+
   // id로 Payment 찾기
   private Payment getPayment(Long paymentId) {
     return paymentRepository.findById(paymentId)
       .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 결제 내역입니다."));
   }
 
+  // 키오스크 사용자관련 메서드 -----------------------------------------------
+  // 결제 소유자 검증
+  private void validatePaymentOwner(Payment payment, Long currentUserId) {
+    if (!Objects.equals(payment.getUserId(), currentUserId)) {
+      throw new AccessDeniedException("본인의 결제만 처리할 수 있습니다.");
+    }
+  }
+
+  // 결제 수단 검증
+  private void validateTossPaymentMethod(Payment payment) {
+    if (payment.getPaymentMethod() != PaymentMethod.TOSSPAY
+      && payment.getPaymentMethod() != PaymentMethod.KAKAOPAY
+      && payment.getPaymentMethod() != PaymentMethod.NAVERPAY) {
+      throw new IllegalStateException("토스 결제 승인 대상이 아닌 결제수단입니다.");
+    }
+  }
+
   // 결제 요청
   @Transactional
-  public PaymentResDTO create(PaymentRequestDTO dto) {
+  public PaymentResDTO create(PaymentRequestDTO dto, Long currentUserId) {
     Ticket ticket = ticketService.findTicket(dto.getTicketId());
 
     if (!ticket.isActive()) {
@@ -61,26 +86,79 @@ public class PaymentService {
 
     Payment payment = Payment.create(
 
-      dto.getUserId(), ticket.getTicketId(), ticket.getTicketPrice(), dto.getPaymentMethod()
+      currentUserId, ticket.getTicketId(), ticket.getTicketPrice(), dto.getPaymentMethod()
 
     );
 
     paymentRepository.save(payment);
 
-    // 기존 이용권 발급 코드
-    // TicketUsageResDTO ticketUsage =
-    // ticketUsageService.issue(dto.getUserId(), dto.getTicketId());
+    return PaymentResDTO.from(payment);
+  }
 
-    // payment.assignUsage(ticketUsage.getUsageId());
+  // 토스 결제 확인
+  @Transactional
+  public PaymentResDTO confirm(PaymentConfirmDTO request, Long currentUserId) {
+    Payment payment = paymentRepository.findByOrderId(request.getOrderId())
+      .orElseThrow(() -> new ResourceNotFoundException("주문 정보를 찾을 수 없습니다."));
+
+    validatePaymentOwner(payment, currentUserId);
+    validateTossPaymentMethod(payment);
+
+    if (payment.getStatus() != PaymentStatus.PENDING) {
+      throw new IllegalStateException("결제 대기 상태의 주문만 승인할 수 있습니다.");
+    }
+
+    if (!payment.getAmount().equals(request.getAmount())) {
+      throw new IllegalArgumentException("주문 금액과 승인 요청 금액이 일치하지 않습니다.");
+    }
+
+    TossPaymentResponse tossResponse = tossPaymentClient.confirm(request.getPaymentKey(),
+      request.getOrderId(), request.getAmount());
+
+    if (!"DONE".equals(tossResponse.getStatus())) {
+      throw new IllegalStateException("결제가 정상적으로 승인되지 않았습니다.");
+    }
+
+    if (!payment.getOrderId().equals(tossResponse.getOrderId())
+      || !payment.getAmount().equals(tossResponse.getTotalAmount())) {
+      throw new IllegalStateException("토스 승인 결과가 주문 정보와 일치하지 않습니다.");
+    }
+
+    payment.approve(tossResponse.getPaymentKey(), tossResponse.getApproveNo(),
+      tossResponse.getApprovedAt() != null ? tossResponse.getApprovedAt().toLocalDateTime() : null);
+
+    TicketUsageResDTO ticketUsage = ticketUsageService.issue(payment.getUserId(), payment.getTicketId());
+
+    payment.assignUsage(ticketUsage.getUsageId());
 
     return PaymentResDTO.from(payment);
   }
 
-  // id로 paymentDTO 가져오기
-  public PaymentResDTO findById(Long paymentId) {
-    return PaymentResDTO.from(getPayment(paymentId));
+  // 일반 카드 결제 Mock 승인
+  @Transactional
+  public PaymentResDTO mockConfirm(Long paymentId, Long currentUserId) {
+    Payment payment = getPayment(paymentId);
+
+    validatePaymentOwner(payment, currentUserId);
+
+    if (payment.getStatus() != PaymentStatus.PENDING) {
+      throw new IllegalArgumentException("승인 대기 중인 결제만 처리할 수 있습니다");
+    }
+    if (payment.getPaymentMethod() != PaymentMethod.CARD) {
+      throw new IllegalArgumentException("카드 결제만 Mock 승인할 수 있습니다.");
+    }
+    String approvalNum = "MOCK-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+
+    payment.approveMock(approvalNum, LocalDateTime.now());
+
+    TicketUsageResDTO ticketUsage = ticketUsageService.issue(payment.getUserId(), payment.getTicketId());
+    payment.assignUsage(ticketUsage.getUsageId());
+
+    return PaymentResDTO.from(payment);
   }
 
+  // 관리자 결제내역 관리 관련 메서드 -----------------------------------------------
+  // (추후 AdminPrincipal 사용자 인증 구현 시 추가)
   // 모든 결제내역 가져오기
   public List<PaymentHistoryDTO> findAll(Long userId) {
     List<PaymentHistoryDTO> payments = userId == null ? paymentMapper.findAllPaymentHistory()
@@ -137,7 +215,7 @@ public class PaymentService {
   @Transactional
   public PaymentResDTO cancel(Long paymentId, PaymentCancelDTO form) {
     Payment payment = getPayment(paymentId);
-    String cancelReason = form.getCancelReason();
+    String cancelReason = form.getCancelReason().trim();
     validateCancel(payment, cancelReason);
     if (payment.getUsageId() == null) {
       throw new IllegalStateException("결제에 연결된 이용권 정보가 없습니다.");
@@ -162,76 +240,4 @@ public class PaymentService {
     paymentRepository.delete(payment);
   }
 
-  // 토스 결제 확인
-  @Transactional
-  public PaymentResDTO confirm(PaymentConfirmDTO request) {
-    Payment payment = paymentRepository.findByOrderId(request.getOrderId())
-      .orElseThrow(() -> new ResourceNotFoundException("주문 정보를 찾을 수 없습니다."));
-
-    if (payment.getStatus() != PaymentStatus.PENDING) {
-      throw new IllegalStateException("결제 대기 상태의 주문만 승인할 수 있습니다.");
-    }
-
-    if (!payment.getAmount().equals(request.getAmount())) {
-      throw new IllegalArgumentException("주문 금액과 승인 요청 금액이 일치하지 않습니다.");
-    }
-
-    TossPaymentResponse tossResponse = tossPaymentClient.confirm(request.getPaymentKey(),
-      request.getOrderId(), request.getAmount());
-
-    if (!"DONE".equals(tossResponse.getStatus())) {
-      throw new IllegalStateException("결제가 정상적으로 승인되지 않았습니다.");
-    }
-
-    if (!payment.getOrderId().equals(tossResponse.getOrderId())
-      || !payment.getAmount().equals(tossResponse.getTotalAmount())) {
-      throw new IllegalStateException("토스 승인 결과가 주문 정보와 일치하지 않습니다.");
-    }
-
-    payment.approve(tossResponse.getPaymentKey(), tossResponse.getApproveNo(),
-      tossResponse.getApprovedAt() != null ? tossResponse.getApprovedAt().toLocalDateTime() : null);
-
-    TicketUsageResDTO ticketUsage = ticketUsageService.issue(payment.getUserId(), payment.getTicketId());
-
-    payment.assignUsage(ticketUsage.getUsageId());
-
-    return PaymentResDTO.from(payment);
-  }
-
-  // 일반 카드 결제 Mock 승인
-  @Transactional
-  public PaymentResDTO mockConfirm(Long paymentId) {
-    Payment payment = getPayment(paymentId);
-
-    if (payment.getStatus() != PaymentStatus.PENDING) {
-      throw new IllegalArgumentException("승인 대기 중인 결제만 처리할 수 있습니다");
-    }
-    if (payment.getPaymentMethod() != PaymentMethod.CARD) {
-      throw new IllegalArgumentException("카드 결제만 Mock 승인할 수 있습니다.");
-    }
-    String approvalNum = "MOCK-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-
-    payment.approveMock(approvalNum, LocalDateTime.now());
-
-    TicketUsageResDTO ticketUsage = ticketUsageService.issue(payment.getUserId(), payment.getTicketId());
-    payment.assignUsage(ticketUsage.getUsageId());
-
-    return PaymentResDTO.from(payment);
-  }
-
-  // ==========================================
-    // 💡 [관리자 대시보드 연동] 금일 누적 매출액 집계
-    // ==========================================
-    public long getTodayRevenue() {
-        LocalDateTime startOfToday = java.time.LocalDate.now().atStartOfDay();
-        LocalDateTime endOfToday = java.time.LocalDate.now().atTime(java.time.LocalTime.MAX);
-
-        return paymentRepository.findAll().stream()
-            .filter(payment -> payment.getStatus() == PaymentStatus.PAID)
-            .filter(payment -> payment.getPaidAt() != null && 
-                    !payment.getPaidAt().isBefore(startOfToday) && 
-                    !payment.getPaidAt().isAfter(endOfToday))
-            .mapToLong(Payment::getAmount)
-            .sum();
-    }
 }

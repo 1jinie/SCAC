@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,7 +22,7 @@ public class GlobalExceptionHandler {
   private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
   /*
-   * 존재하지 않는 데이터를 조회시 사용하는 예외입니다. 404 NOT FOUND[cite: 37]
+   * 존재하지 않는 데이터를 조회시 사용하는 예외입니다. 404 NOT FOUND
    */
   @ExceptionHandler(ResourceNotFoundException.class)
   public ResponseEntity<ApiResponse<Void>> handleResourceNotFound(ResourceNotFoundException exception) {
@@ -29,7 +30,7 @@ public class GlobalExceptionHandler {
   }
 
   /*
-   * 엔티티나 서비스에서 생성·수정 값 등 잘못된 입력값을 검증할 때 사용하는 예외입니다. 400 BAD REQUEST[cite: 37]
+   * 엔티티나 서비스에서 생성·수정 값 등 잘못된 입력값을 검증할 때 사용하는 예외입니다. 400 BAD REQUEST
    */
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<ApiResponse<Void>> handleIllegalArgument(IllegalArgumentException exception) {
@@ -37,7 +38,7 @@ public class GlobalExceptionHandler {
   }
 
   /*
-   * 존재하지 않는 URL 경로 요청 시 처리합니다. 404 NOT FOUND[cite: 37]
+   * 존재하지 않는 URL 경로 요청 시 처리합니다. 404 NOT FOUND
    */
   @ExceptionHandler(NoResourceFoundException.class)
   public ResponseEntity<ApiResponse<Void>> handleNoResource(NoResourceFoundException e) {
@@ -45,7 +46,7 @@ public class GlobalExceptionHandler {
   }
 
   /*
-   * @RequestBody DTO의 @Valid 검증 실패를 처리합니다. 400 BAD REQUEST[cite: 37]
+   * @RequestBody DTO의 @Valid 검증 실패를 처리합니다. 400 BAD REQUEST
    */
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ApiResponse<Map<String, String>>> handleValidation(
@@ -59,15 +60,7 @@ public class GlobalExceptionHandler {
   }
 
   /*
-   * 현재 데이터 상태에서는 요청을 처리할 수 없을 때 사용하는 예외입니다. 400 BAD REQUEST[cite: 37]
-   */
-  @ExceptionHandler(IllegalStateException.class)
-  public ResponseEntity<ApiResponse<Void>> handleIllegalStateException(IllegalStateException e) {
-    return ResponseEntity.badRequest().body(ApiResponse.fail(e.getMessage()));
-  }
-
-  /*
-   * 비즈니스 로직 수행 중 발생하는 예외를 처리합니다. 400 BAD REQUEST[cite: 37]
+   * 비즈니스 로직 수행 중 발생하는 예외를 처리합니다. 400 BAD REQUEST
    */
   @ExceptionHandler(BusinessException.class)
   public ResponseEntity<ApiResponse<Void>> handleBusinessException(BusinessException exception) {
@@ -75,16 +68,34 @@ public class GlobalExceptionHandler {
   }
 
   /*
-   * 권한이 없는 접근 시 발생하는 예외를 처리합니다. 403 FORBIDDEN 👈 [추가됨]
+   * 요청 JSON의 형식이 잘못되었거나 DTO 변환에 실패한 경우 처리합니다. 400 BAD REQUEST
    */
-  @ExceptionHandler(AccessDeniedException.class)
-  public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException exception) {
-    return ResponseEntity.status(HttpStatus.FORBIDDEN)
-      .body(ApiResponse.error("접근 권한이 없습니다.", null));
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  public ResponseEntity<ApiResponse<Void>> handleMessageNotReadable(
+    HttpMessageNotReadableException exception) {
+    log.warn("요청 본문을 읽을 수 없습니다.", exception);
+
+    return ResponseEntity.badRequest().body(ApiResponse.error("요청 데이터의 형식을 확인해 주세요.", null));
   }
 
   /*
-   * 예외처리를 하지 않은 예상치 못한 에러 500 INTERNAL SERVER ERROR[cite: 37]
+   * 권한이 없는 접근 시 발생하는 예외를 처리합니다. 403 FORBIDDEN
+   */
+  @ExceptionHandler(AccessDeniedException.class)
+  public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException exception) {
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.error("접근 권한이 없습니다.", null));
+  }
+
+  /*
+   * 현재 데이터 상태에서는 요청을 처리할 수 없을 때 사용하는 예외입니다. 409 CONFLICT
+   */
+  @ExceptionHandler(IllegalStateException.class)
+  public ResponseEntity<ApiResponse<Void>> handleIllegalStateException(IllegalStateException exception) {
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.error(exception.getMessage(), null));
+  }
+
+  /*
+   * 예외처리를 하지 않은 예상치 못한 에러 500 INTERNAL SERVER ERROR
    */
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ApiResponse<Void>> handleException(Exception exception) {

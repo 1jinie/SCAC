@@ -1,9 +1,11 @@
 package com.scac.payment.controller;
 
 import java.net.URI;
+
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.scac.auth.jwt.UserPrincipal;
 import com.scac.global.response.ApiResponse;
 import com.scac.payment.dto.PaymentCancelDTO;
 import com.scac.payment.dto.PaymentConfirmDTO;
@@ -32,10 +35,12 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
+    // 키오스크
     // 결제 요청
     @PostMapping
-    public ResponseEntity<ApiResponse<PaymentResDTO>> create(@Valid @RequestBody PaymentRequestDTO form) {
-        PaymentResDTO payment = paymentService.create(form);
+    public ResponseEntity<ApiResponse<PaymentResDTO>> create(@Valid @RequestBody PaymentRequestDTO form,
+        @AuthenticationPrincipal UserPrincipal currentUser) {
+        PaymentResDTO payment = paymentService.create(form, currentUser.id());
 
         return ResponseEntity.created(URI.create("/api/payments/" + payment.getPaymentId()))
             .body(ApiResponse.success("결제 요청을 생성했습니다.", payment));
@@ -43,19 +48,22 @@ public class PaymentController {
 
     // 결제 승인
     @PostMapping("/confirm")
-    public ResponseEntity<ApiResponse<PaymentResDTO>> confirm(@Valid @RequestBody PaymentConfirmDTO form) {
-        PaymentResDTO payment = paymentService.confirm(form);
+    public ResponseEntity<ApiResponse<PaymentResDTO>> confirm(@Valid @RequestBody PaymentConfirmDTO form,
+        @AuthenticationPrincipal UserPrincipal currentUser) {
+        PaymentResDTO payment = paymentService.confirm(form, currentUser.id());
 
         return ResponseEntity.ok(ApiResponse.success("결제 승인을 완료했습니다.", payment));
     }
 
     // 일반결제 모크 승인
     @PostMapping("/{paymentId}/mock-confirm")
-    public ResponseEntity<ApiResponse<PaymentResDTO>> mockConfirm(@PathVariable("paymentId") Long paymentId) {
-        PaymentResDTO payment = paymentService.mockConfirm(paymentId);
+    public ResponseEntity<ApiResponse<PaymentResDTO>> mockConfirm(@PathVariable("paymentId") Long paymentId,
+        @AuthenticationPrincipal UserPrincipal currentUser) {
+        PaymentResDTO payment = paymentService.mockConfirm(paymentId, currentUser.id());
         return ResponseEntity.ok(ApiResponse.success("Mock 카드 결제가 승인되었습니다.", payment));
     }
 
+    // 관리자
     // 특정 결제내역 조회
     @GetMapping("/{paymentId}")
     public ResponseEntity<ApiResponse<PaymentResDTO>> findById(@PathVariable("paymentId") Long paymentId) {
