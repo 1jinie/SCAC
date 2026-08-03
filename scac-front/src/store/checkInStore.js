@@ -62,7 +62,6 @@ export const checkInStore = create((set, get) => ({
   // 입실
   checkIn: async (seatId) => {
     const { prepareUserId, prepareUsageId } = get();
-    console.log(prepareUserId);
 
     if (!prepareUserId || !prepareUsageId) {
       return {
