@@ -70,11 +70,11 @@ public class SecurityConfig {
                                         "/api/admin/auth/refresh", "/api/admin/auth/logout",
                                         "/api/users/signup", // <--- POST로 이동
                                         "/api/users/guest", // <--- POST로 이동
-                                        "/api/users/entry-password/verify" // <--- POST로 이동
+                                        "/api/users/entry-password/verify", // <--- POST로 이동
                                         "/api/admin/seats/**",
                                         "/api/checkin",
                                         "/api/checkin/prepare",
-                                        "/api/checkin/prepare/member",
+                                        "/api/checkin/prepare/member"
                                 ).permitAll()
                                 // 3. PUBLIC PATCH 요청
                                 .requestMatchers(HttpMethod.PATCH, "/api/users/*/entry-password",
