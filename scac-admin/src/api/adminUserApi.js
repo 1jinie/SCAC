@@ -23,13 +23,3 @@ export const updateAdminUserPenalty = async (userId, penaltyData) => {
   );
   return response.data.data;
 };
-
-/* 사용자 권한 변경 */
-export const updateAdminUserRole = async (userId, roleData) => {
-  const response = await axiosInstance.patch(
-    `/api/admin/users/${userId}/role`,
-    roleData,
-  );
-
-  return response.data.data;
-};
