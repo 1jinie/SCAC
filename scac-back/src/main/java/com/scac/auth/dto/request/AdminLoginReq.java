@@ -1,4 +1,4 @@
-package com.scac.auth.dto;
+package com.scac.auth.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 

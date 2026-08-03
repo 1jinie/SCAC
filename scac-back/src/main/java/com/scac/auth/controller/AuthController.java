@@ -1,8 +1,8 @@
 package com.scac.auth.controller;
 
-import com.scac.auth.dto.LoginReq;
-import com.scac.auth.dto.LoginRes;
 import com.scac.auth.dto.RefreshTokenReq;
+import com.scac.auth.dto.request.LoginReq;
+import com.scac.auth.dto.response.LoginRes;
 import com.scac.auth.service.AuthService;
 import com.scac.global.response.ApiResponse;
 import jakarta.validation.Valid;

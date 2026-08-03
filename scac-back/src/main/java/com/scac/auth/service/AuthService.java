@@ -6,9 +6,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.scac.auth.dto.JwtTokenRes;
-import com.scac.auth.dto.LoginReq;
-import com.scac.auth.dto.LoginRes;
 import com.scac.auth.dto.RefreshTokenReq;
+import com.scac.auth.dto.request.LoginReq;
+import com.scac.auth.dto.response.LoginRes;
 import com.scac.auth.entity.RefreshToken;
 import com.scac.auth.jwt.JwtProvider;
 import com.scac.auth.repository.RefreshTokenRepository;
