@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,13 +25,25 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/api/checkin")
 public class CheckinController {
     private final CheckinService checkinService;
-    // 입실 준비
+
+    // 비회원 입실 준비
     @PostMapping("/prepare")
     public ResponseEntity<ApiResponse<CheckinPrepareResponse>> prepare(@RequestBody CheckinPrepareRequest request) {
         return ResponseEntity.ok(
             ApiResponse.success(
                 "입실 준비 완료",
                 checkinService.prepare(request)
+            )
+        );
+    }
+
+    // 회원 입실 준비
+    @PostMapping("/prepare/member")
+    public ResponseEntity<ApiResponse<CheckinPrepareResponse>> prepareMember(Authentication authentication) {
+        return ResponseEntity.ok(
+            ApiResponse.success(
+                "입실 준비 완료",
+                checkinService.prepareMember(authentication)
             )
         );
     }

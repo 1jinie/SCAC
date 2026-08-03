@@ -87,19 +87,31 @@ public class TicketUsage {
     );
   }
 
-  public void start() {
+  public void start(Ticket ticket) {
     if (status == TicketUsageStatus.EXPIRED || status == TicketUsageStatus.CANCELED) {
       throw new IllegalStateException("사용할 수 없는 이용권입니다.");
     }
 
-  if (status == TicketUsageStatus.USING) {
-    return;
-  }
+    if (status == TicketUsageStatus.USING) {
+      return;
+    }
+
+    if (ticket == null || !ticketId.equals(ticket.getTicketId())) {
+      throw new IllegalArgumentException("이용권 정보가 일치하지 않습니다.");
+    }
 
     LocalDateTime now = LocalDateTime.now();
 
-  this.status = TicketUsageStatus.USING;
-  this.startAt = now;
+    this.status = TicketUsageStatus.USING;
+    this.startAt = now;
+
+    if (ticketType == TicketType.PERIOD_PACK) {
+      Integer validDays = ticket.getValidDays();
+      if (validDays == null || validDays <= 0) {
+        throw new IllegalStateException("기간권의 유효기간 정보가 올바르지 않습니다.");
+      }
+      this.endAt = now.plusDays(validDays);
+    }
 
   }
 

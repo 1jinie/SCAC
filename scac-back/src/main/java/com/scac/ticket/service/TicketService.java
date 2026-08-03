@@ -55,15 +55,15 @@ public class TicketService {
   @Transactional
   public TicketResDTO create(TicketCreateDTO form) {
     Ticket ticket = Ticket.create(form.getTicketName(), form.getTicketType(), form.getTicketTime(),
-      form.getTicketPrice(), form.getTargetType());
+      form.getValidDays(), form.getTicketPrice(), form.getTargetType());
     return TicketResDTO.from(ticketRepository.save(ticket));
   }
 
   @Transactional
   public TicketResDTO update(Long ticketId, TicketUpdateDTO form) {
     Ticket ticket = findTicket(ticketId);
-    ticket.update(form.getTicketName(), form.getTicketType(), form.getTicketTime(), form.getTicketPrice(),
-      form.getTargetType(), form.getIsActive());
+    ticket.update(form.getTicketName(), form.getTicketType(), form.getTicketTime(), form.getValidDays(),
+      form.getTicketPrice(), form.getTargetType(), form.getIsActive());
     return TicketResDTO.from(ticket);
 
   }
