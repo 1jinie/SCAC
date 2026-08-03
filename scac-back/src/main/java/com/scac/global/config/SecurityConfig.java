@@ -27,91 +27,85 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+        private final JwtAuthenticationFilter jwtAuthenticationFilter;
+        private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    @Value("${app.frontend-url}")
-    private List<String> frontendUrls;
+        @Value("${app.frontend-url}")
+        private List<String> frontendUrls;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                .csrf(csrf -> csrf.disable())
+                        .csrf(csrf -> csrf.disable())
 
-                .sessionManagement(
-                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .sessionManagement(
+                                session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                .exceptionHandling(
-                        exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                        .exceptionHandling(
+                                exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
 
-                .authorizeHttpRequests(auth -> auth
+                        .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // 1. PUBLIC GET 요청 (전화번호 중복 확인 포함)
-                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                .requestMatchers(
-                                        HttpMethod.GET,
-                                        "/api/users/check-phone", // <--- 추가: 전화번호 중복/존재 확인 API
-                                        "/api/tickets/**",
-                                        "/api/seats/**",
-                                        "/api/rooms/**",
-                                        "/api/meeting-rooms/**",
-                                        "/api/admin/**",
-                                        "/api/checkin/**",
-                                        "/api/users/*"
+                                // 1. PUBLIC GET 요청 (전화번호 중복 확인 포함)
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/users/check-phone", // <--- 추가: 전화번호
+                                                                                           // 중복/존재 확인 API
+                                        "/api/tickets/**", "/api/seats/**", "/api/rooms/**",
+                                        "/api/meeting-rooms/**", "/api/admin/**", "/api/checkin/**",
+                                        "/api/users/*")
+                                .permitAll()
+
+                                // 2. PUBLIC POST 요청 (회원가입, 게스트 등록, 비밀번호 검증 등)
+                                .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/refresh",
+                                        "/api/auth/logout", "/api/admin/auth/login",
+                                        "/api/admin/auth/refresh", "/api/admin/auth/logout",
+                                        "/api/users/signup", // <--- POST로 이동
+                                        "/api/users/guest", // <--- POST로 이동
+                                        "/api/users/entry-password/verify" // <--- POST로 이동
                                 ).permitAll()
+                                // 3. PUBLIC PATCH 요청
+                                .requestMatchers(HttpMethod.PATCH, "/api/users/*/entry-password"
 
-                        // 2. PUBLIC POST 요청 (회원가입, 게스트 등록, 비밀번호 검증 등)
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/auth/login",
-                                "/api/auth/refresh",
-                                "/api/auth/logout",
-                                "/api/admin/auth/login",
-                                "/api/admin/auth/refresh",
-                                "/api/admin/auth/logout",
-                                "/api/users/signup",                  // <--- POST로 이동
-                                "/api/users/guest",                   // <--- POST로 이동
-                                "/api/users/entry-password/verify"    // <--- POST로 이동
-                        ).permitAll()
+                                ).authenticated()
 
-                        .requestMatchers(
-                                HttpMethod.PATCH,
-                                "/api/users/*/entry-password"
-                                
-                        ).authenticated()
+                                // 사용자 결제 관련 - 결제 요청 시 USER 또는 GUEST 권한 필요 (ADMIN 권한은 불필요)
+                                .requestMatchers(HttpMethod.POST, "/api/payments", "/api/payments/confirm",
+                                        "/api/payments/*/mock-confirm")
+                                .hasAnyRole("USER", "GUEST")
+                                // 관리자 결제 관련 - 결제 내역 조회 시 ADMIN 권한 필요(추후 AdminPrincipal 사용자 인증 구현 시 추가)
 
-                        .anyRequest().authenticated())
+                                // PUBLIC 요청 외 모든 요청은 인증 필요
+                                .anyRequest().authenticated())
 
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
-    }
+                return http.build();
+        }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
+        @Bean
+        public CorsConfigurationSource corsConfigurationSource() {
+                CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(frontendUrls);
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setExposedHeaders(List.of("Authorization"));
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
+                configuration.setAllowedOrigins(frontendUrls);
+                configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+                configuration.setAllowedHeaders(List.of("*"));
+                configuration.setExposedHeaders(List.of("Authorization"));
+                configuration.setAllowCredentials(true);
+                configuration.setMaxAge(3600L);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-        source.registerCorsConfiguration("/**", configuration);
+                source.registerCorsConfiguration("/**", configuration);
 
-        return source;
-    }
+                return source;
+        }
 }

@@ -19,13 +19,9 @@ public class PaymentRequestDTO {
   private Long ticketId;
 
   @NotNull
-  private Long userId;
-
-  @NotNull
   @Positive
   private Integer amount;
 
   @NotNull
   private PaymentMethod paymentMethod;
 }
-
