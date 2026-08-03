@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.scac.admin.dto.request.AdminUserSearchReq;
 import com.scac.admin.dto.request.UserPenaltyReq;
 import com.scac.admin.dto.response.AdminUserRes;
-import com.scac.admin.service.AdminUserService;
 import com.scac.global.response.ApiResponse;
+import com.scac.user.service.UserService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AdminUserController {
 
-    private final AdminUserService adminUserService;
+    // 💡 AdminUserService 대신 통합된 UserService를 주입받아 사용!
+    private final UserService userService;
 
     /**
      * 회원 목록 및 조건 검색
@@ -34,7 +35,7 @@ public class AdminUserController {
     public ResponseEntity<ApiResponse<List<AdminUserRes>>> getUsers(
             @ModelAttribute AdminUserSearchReq searchReq
     ) {
-        List<AdminUserRes> users = adminUserService.getUsers(searchReq);
+        List<AdminUserRes> users = userService.getUsersForAdmin(searchReq);
         return ResponseEntity.ok(
                 ApiResponse.success("회원 목록 조회를 완료했습니다.", users)
         );
@@ -47,7 +48,7 @@ public class AdminUserController {
     public ResponseEntity<ApiResponse<AdminUserRes>> getUserDetail(
             @PathVariable Long userId
     ) {
-        AdminUserRes userDetail = adminUserService.getUserDetail(userId);
+        AdminUserRes userDetail = userService.getUserDetailForAdmin(userId);
         return ResponseEntity.ok(
                 ApiResponse.success("회원 상세 조회를 완료했습니다.", userDetail)
         );
@@ -61,7 +62,7 @@ public class AdminUserController {
             @PathVariable Long userId,
             @Valid @RequestBody UserPenaltyReq req
     ) {
-        adminUserService.applyUserPenalty(userId, req);
+        userService.applyUserPenalty(userId, req);
         return ResponseEntity.ok(
                 ApiResponse.success("회원 상태 변경이 완료되었습니다.")
         );
