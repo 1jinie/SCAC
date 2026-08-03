@@ -4,32 +4,22 @@ import axiosInstance from "./axiosInstance";
 export const getAdminUsers = async () => {
   const response = await axiosInstance.get("/api/admin/users");
 
-  return response.data;
+  return response.data.data;
 };
 
 /* 특정 사용자 상세 조회 */
 export const getAdminUserById = async (userId) => {
   const response = await axiosInstance.get(`/api/admin/users/${userId}`);
 
-  return response.data;
+  return response.data.data;
 };
 
-/* 사용자 상태 변경 */
-export const updateAdminUserStatus = async (userId, statusData) => {
+/* 사용자 제재 및 상태 변경 (백엔드 AdminUserController PATCH /penalty와 통일) */
+export const updateAdminUserPenalty = async (userId, penaltyData) => {
+  // penaltyData 예시: { userStatus: "SUSPENDED", penaltyType: "ACCOUNT_SUSPEND", reason: "소음 유발", penaltyEndDate: "2026-08-10" }
   const response = await axiosInstance.patch(
-    `/api/admin/users/${userId}/status`,
-    statusData,
+    `/api/admin/users/${userId}/penalty`,
+    penaltyData,
   );
-
-  return response.data;
-};
-
-/* 사용자 권한 변경 */
-export const updateAdminUserRole = async (userId, roleData) => {
-  const response = await axiosInstance.patch(
-    `/api/admin/users/${userId}/role`,
-    roleData,
-  );
-
-  return response.data;
+  return response.data.data;
 };

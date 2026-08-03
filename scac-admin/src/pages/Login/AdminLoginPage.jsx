@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import HeaderTime from '../../components/HeaderTime';
-import './css/Admin_Login.css';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import HeaderTime from "../../components/HeaderTime";
+import "./css/Admin_Login.css";
 
 export default function AdminLoginPage() {
   const navigate = useNavigate();
 
-  const [adminId, setAdminId] = useState('');
-  const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [adminId, setAdminId] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleAdminIdChange = (e) => {
     setAdminId(e.target.value);
@@ -22,19 +22,19 @@ export default function AdminLoginPage() {
     e.preventDefault();
 
     if (!adminId.trim() || !password.trim()) {
-      setErrorMessage('관리자 번호와 비밀번호를 입력해 주세요.');
+      setErrorMessage("관리자 번호와 비밀번호를 입력해 주세요.");
       return;
     }
 
-    setErrorMessage('');
+    setErrorMessage("");
 
     // 추후 관리자 로그인 API 연결
     // 성공 시 관리자 메인으로 이동
-    navigate('/admin', { replace: true });
+    navigate("/admin", { replace: true });
   };
 
   const handleHome = () => {
-    navigate('/');
+    navigate("/");
   };
 
   return (
@@ -61,14 +61,14 @@ export default function AdminLoginPage() {
           </div>
 
           <form className="admin_login_form" onSubmit={handleLoginSubmit}>
-            <label htmlFor="admin_id">관리자 번호</label>
+            <label htmlFor="admin_id">관리자 ID</label>
             <input
               id="admin_id"
               name="adminId"
               type="text"
               value={adminId}
               onChange={handleAdminIdChange}
-              placeholder="관리자 번호를 입력해 주세요"
+              placeholder="관리자 ID를 입력해 주세요"
               autoComplete="username"
             />
 
