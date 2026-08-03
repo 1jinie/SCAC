@@ -4,16 +4,22 @@ import { useAuthStore } from '../../store/authStore';
 import { useUserStore } from '../../store/userStore';
 import { seatStore } from '../../store/seatStore';
 import { checkInStore } from '../../store/checkInStore';
+import { getCurrentUser } from '../../api/userApi';
 import InOutModal from '../../components/modal/InOutModal';
 import '../../styles/LoginHome.css';
+import { reservationStore } from '../../store/reservationStore';
 
 function LoginHomePage() {
   const navigate = useNavigate();
   const [showCheckOutModal, setShowCheckOutModal] = useState(false);
+  const prepareMemberCheckIn = checkInStore(
+    (state) => state.prepareMemberCheckIn,
+  );
   const checkOutSeat = seatStore((state) => state.checkOutSeat);
   const updateCheckOut = checkInStore((state) => state.updateCheckOut);
   const seats = seatStore((state) => state.seats);
   const fetchSeats = seatStore((state) => state.fetchSeats);
+  const setReservation = reservationStore((state) => state.setReservation);
   const logout = useAuthStore((state) => state.logout);
   const clearUserData = useUserStore((state) => state.clearUserData);
 
@@ -23,10 +29,40 @@ function LoginHomePage() {
 
   const totalSeats = seats.filter((seat) => seat.type === 'seat').length;
 
+  const handleMemberCheckIn = async () => {
+    const result = await prepareMemberCheckIn();
+
+    if (!result.success) {
+      alert(result.message);
+      return;
+    }
+
+    navigate('/seat');
+  };
+
   const handleCheckOut = (data) => {
     updateCheckOut(data.checkInId);
     checkOutSeat(data.seatId);
     setShowCheckOutModal(false);
+  };
+
+  const handleRoom = async () => {
+    try {
+      const result = await getCurrentUser();
+
+      if (!result.success) {
+        alert(result.message);
+        return;
+      }
+
+      setReservation({
+        userId: result.data,
+      });
+
+      navigate('/room');
+    } catch (error) {
+      alert('사용자 정보를 가져오는데 실패했습니다');
+    }
   };
 
   useEffect(() => {
@@ -75,7 +111,7 @@ function LoginHomePage() {
           <button
             type="button"
             className="menu_btn btn_orange"
-            onClick={() => navigate('/seat')} //임시 경로
+            onClick={handleMemberCheckIn}
           >
             <div className="btn_icon">
               <img
@@ -135,7 +171,7 @@ function LoginHomePage() {
           <button
             type="button"
             className="menu_btn btn_gray"
-            onClick={() => navigate('/room')}
+            onClick={handleRoom}
           >
             <div className="btn_icon">
               <img

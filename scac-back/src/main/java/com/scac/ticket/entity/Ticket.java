@@ -40,6 +40,9 @@ public class Ticket {
   @Column(name = "ticket_time")
   private Integer ticketTime;
 
+  @Column(name = "valid_days")
+  private Integer validDays;
+
   @Column(name = "ticket_price", nullable = false)
   private Integer ticketPrice;
 
@@ -56,37 +59,33 @@ public class Ticket {
   @Column(name = "updated_at", nullable = false)
   private LocalDateTime updatedAt;
 
-  private Ticket(String ticketName, TicketType ticketType, Integer ticketTime, Integer ticketPrice,
-
-    TargetType targetType, boolean active) {
-    validate(ticketName, ticketType, ticketTime, ticketPrice, targetType, active);
+  private Ticket(String ticketName, TicketType ticketType, Integer ticketTime, Integer validDays,
+    Integer ticketPrice, TargetType targetType, boolean active) {
+    validate(ticketName, ticketType, ticketTime, validDays, ticketPrice, targetType, active);
     this.ticketName = ticketName;
     this.ticketType = ticketType;
-    this.ticketTime = ticketTime;
+    this.ticketTime = ticketType == TicketType.TIME_PACK ? ticketTime : null;
+    this.validDays = ticketType == TicketType.PERIOD_PACK ? validDays : null;
     this.ticketPrice = ticketPrice;
-
     this.targetType = targetType;
     this.active = active;
   }
 
-  public static Ticket create(String ticketName, TicketType ticketType, Integer ticketTime,
-    Integer ticketPrice,
-
-    TargetType targetType
-
-  ) {
-    return new Ticket(ticketName, ticketType, ticketTime, ticketPrice,
-
-      targetType, true);
+  public static Ticket create(String ticketName, TicketType ticketType, Integer ticketTime, Integer validDays,
+    Integer ticketPrice, TargetType targetType) {
+    return new Ticket(ticketName, ticketType, ticketTime, validDays, ticketPrice, targetType, true);
   }
 
-  public void update(String ticketName, TicketType ticketType, Integer ticketTime, Integer ticketPrice,
+  public void update(String ticketName, TicketType ticketType, Integer ticketTime, Integer validDays,
+    Integer ticketPrice,
 
     TargetType targetType, boolean active) {
-    validate(ticketName, ticketType, ticketTime, ticketPrice, targetType, active);
+    validate(ticketName, ticketType, ticketTime, validDays, ticketPrice, targetType, active);
     this.ticketName = ticketName;
     this.ticketType = ticketType;
-    this.ticketTime = ticketTime;
+    this.ticketTime = ticketType == TicketType.TIME_PACK ? ticketTime : null;
+
+    this.validDays = ticketType == TicketType.PERIOD_PACK ? validDays : null;
     this.ticketPrice = ticketPrice;
     this.targetType = targetType;
     this.active = active;
@@ -117,7 +116,7 @@ public class Ticket {
   }
 
   private static void validate(String ticketName, TicketType ticketType, Integer ticketTime,
-    Integer ticketPrice, TargetType targetType, boolean active) {
+    Integer validDays, Integer ticketPrice, TargetType targetType, boolean active) {
     if (ticketName == null || ticketName.isBlank()) {
       throw new IllegalArgumentException("이용권 이름은 필수입니다.");
     }
@@ -131,7 +130,11 @@ public class Ticket {
       throw new IllegalArgumentException("이용권 대상 유형은 필수입니다.");
     }
     if (ticketType == TicketType.TIME_PACK && (ticketTime == null || ticketTime <= 0)) {
-      throw new IllegalArgumentException("시간권의 이용 시간은 필수입니다.");
+      throw new IllegalArgumentException("시간권의 이용 시간은 필수이며 0보다 커야 합니다.");
+    }
+
+    if (ticketType == TicketType.PERIOD_PACK && (validDays == null || validDays <= 0)) {
+      throw new IllegalArgumentException("기간권의 유효기간은 필수이며 0보다 커야 합니다.");
     }
 
   }

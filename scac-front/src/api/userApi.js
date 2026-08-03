@@ -71,3 +71,15 @@ export const getUserActiveTickets = async (userId) => {
     throw error;
   }
 };
+
+/* 7. jwt 로그인 회원 id 가져오기 위함 */
+export const getCurrentUser = async () => {
+  try {
+    const response = await axiosInstance.get('/api/users/me');
+
+    return response.data;
+  } catch (error) {
+    console.error('Get Current User Error: ', error);
+    throw error;
+  }
+};

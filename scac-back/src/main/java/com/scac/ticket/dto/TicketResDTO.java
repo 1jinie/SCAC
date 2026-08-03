@@ -1,7 +1,5 @@
 package com.scac.ticket.dto;
 
-
-
 import java.time.LocalDateTime;
 
 import com.scac.global.enums.TargetType;
@@ -20,7 +18,7 @@ public class TicketResDTO {
     private final TicketType ticketType;
     private final Integer ticketTime;
     private final Integer ticketPrice;
-    
+    private final Integer validDays;
     private final Boolean isActive;
     private final TargetType targetType;
     private final LocalDateTime createdAt;
@@ -28,9 +26,9 @@ public class TicketResDTO {
 
     // Ticket 엔티티를 TicketResDTO로 변환하는 메서드
     public static TicketResDTO from(Ticket ticket) {
-        return new TicketResDTO(ticket.getTicketId(), ticket.getTicketName(),
-         ticket.getTicketType(), ticket.getTicketTime(), ticket.getTicketPrice(), 
-         ticket.isActive(), ticket.getTargetType(), ticket.getCreatedAt(), ticket.getUpdatedAt());
-               
+        return new TicketResDTO(ticket.getTicketId(), ticket.getTicketName(), ticket.getTicketType(),
+            ticket.getTicketTime(), ticket.getTicketPrice(), ticket.getValidDays(), ticket.isActive(),
+            ticket.getTargetType(), ticket.getCreatedAt(), ticket.getUpdatedAt());
+
     }
 }
