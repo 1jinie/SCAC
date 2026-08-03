@@ -65,7 +65,6 @@ public class SecurityConfig {
                                         "/api/seats/**",
                                         "/api/rooms/**",
                                         "/api/meeting-rooms/**",
-                                        "/api/admin/**",
                                         "/api/checkin/**",
                                         "/api/users/*"
                                 ).permitAll()
@@ -76,18 +75,23 @@ public class SecurityConfig {
                                 "/api/auth/login",
                                 "/api/auth/refresh",
                                 "/api/auth/logout",
-                                "/api/admin/auth/login",
-                                "/api/admin/auth/refresh",
-                                "/api/admin/auth/logout",
                                 "/api/users/signup",                  // <--- POST로 이동
                                 "/api/users/guest",                   // <--- POST로 이동
                                 "/api/users/entry-password/verify"    // <--- POST로 이동
                         ).permitAll()
 
+                        // 3. PUBLIC 관리자 인증 API (로그인, 토큰 재발급, 로그아웃)
+                        .requestMatchers(
+                                "/api/admin/auth/**"
+                        ).permitAll()
+
+                        // . PROTECTED 모든 관리자 기능 API (/api/admin/**)
+                        //    (Dashboard, Accounts, Seats, Users, Logs, Memos 등)
+                        .requestMatchers("/api/admin/**").hasAnyAuthority("SUPER_ADMIN", "STAFF")
+
                         .requestMatchers(
                                 HttpMethod.PATCH,
                                 "/api/users/*/entry-password"
-                                
                         ).authenticated()
 
                         .anyRequest().authenticated())
