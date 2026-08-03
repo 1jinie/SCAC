@@ -1,4 +1,4 @@
-package com.scac.admin.entity;
+package com.scac.global.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

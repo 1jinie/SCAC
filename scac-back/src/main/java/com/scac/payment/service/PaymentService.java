@@ -218,4 +218,20 @@ public class PaymentService {
 
     return PaymentResDTO.from(payment);
   }
+
+  // ==========================================
+    // 💡 [관리자 대시보드 연동] 금일 누적 매출액 집계
+    // ==========================================
+    public long getTodayRevenue() {
+        LocalDateTime startOfToday = java.time.LocalDate.now().atStartOfDay();
+        LocalDateTime endOfToday = java.time.LocalDate.now().atTime(java.time.LocalTime.MAX);
+
+        return paymentRepository.findAll().stream()
+            .filter(payment -> payment.getStatus() == PaymentStatus.PAID)
+            .filter(payment -> payment.getPaidAt() != null && 
+                    !payment.getPaidAt().isBefore(startOfToday) && 
+                    !payment.getPaidAt().isAfter(endOfToday))
+            .mapToLong(Payment::getAmount)
+            .sum();
+    }
 }

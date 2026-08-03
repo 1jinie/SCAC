@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.scac.admin.entity.AdminAccount;
-import com.scac.admin.entity.AdminRole;
+import com.scac.global.enums.AdminRole;
 
 public interface AdminAccountRepository
         extends JpaRepository<AdminAccount, Long> {

@@ -1,4 +1,4 @@
-package com.scac.admin.dto;
+package com.scac.admin.dto.request;
 
 import com.scac.global.enums.SeatStatus;
 

@@ -12,7 +12,7 @@ import AdminTicketManagePage from "../pages/Ticket/AdminTicketManagePage";
 import AdminErrorPage from "../pages/Error/AdminErrorPage";
 import AdminUserPage from "../pages/User/AdminUserPage";
 import AdminMemoPage from "../pages/Memo/AdminMemoPage";
-// import AdminPrivateRoute from './AdminPrivateRoute';
+import AdminPrivateRoute from "./AdminPrivateRoute";
 
 const router = createBrowserRouter([
   // ============================
