@@ -3,6 +3,8 @@ package com.scac.checkin.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
+import com.scac.auth.jwt.UserPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,12 +56,30 @@ public class CheckinService {
         return user;
     }
 
-    // 입실 준비(사용자, 이용권 확인)
+    // 비로그인 User 찾기
     @Transactional(readOnly = true)
     public CheckinPrepareResponse prepare(CheckinPrepareRequest request) {
 
         User user = authenticateUser(request.getPhoneNumber(), request.getPassword());
 
+        return prepareByUser(user);
+    }
+
+    // 로그인(JWT) User 찾기
+    @Transactional(readOnly = true)
+    public CheckinPrepareResponse prepareMember(Authentication authentication) {
+        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+
+        User user = userRepository.findById(principal.id())
+            .orElseThrow(() -> 
+                new ResourceNotFoundException("없는 사용자입니다")
+        );
+        
+        return prepareByUser(user);
+    }
+
+    // 입실 준비
+    private CheckinPrepareResponse prepareByUser(User user){
         Checkin awayCheckin = checkinRepository.findByUserIdAndCheckinStatus(user.getId(), CheckinStatus.AWAY)
             .orElse(null);
 
@@ -125,6 +145,15 @@ public class CheckinService {
         return CheckinResponse.from(savedCheckin);
     }
 
+    // 사용시간 계산
+    private int calculateUsedMinutes(Checkin checkin){
+        LocalDateTime now = LocalDateTime.now();
+
+        return (int) java.time.Duration
+            .between(checkin.getCheckinAt(), now)
+            .toMinutes();
+    }
+
     // 외출
     @Transactional
     public CheckinResponse goAway(CheckinPrepareRequest request) {
@@ -171,17 +200,6 @@ public class CheckinService {
         // 좌석 조회
         Seat seat = seatRepository.findById(checkin.getSeatId())
             .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 좌석입니다"));
-
-        // 사용 시간 계산
-        LocalDateTime now = LocalDateTime.now();
-
-        if (ticketUsage.getTicketType() == TicketType.TIME_PACK) {
-            long usedMinutes = java.time.Duration.between(checkin.getCheckinAt(), now).toMinutes();
-
-            if (usedMinutes > 0) {
-                ticketUsage.deductTime((int) usedMinutes);
-            }
-        }
 
         // 퇴실 처리
         checkin.checkout();
