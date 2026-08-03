@@ -1,5 +1,6 @@
 package com.scac.user.controller;
 
+import com.scac.auth.jwt.UserPrincipal;
 import com.scac.global.response.ApiResponse;
 import com.scac.user.dto.*;
 import com.scac.user.entity.User;
@@ -7,7 +8,9 @@ import com.scac.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/api/users")
@@ -59,7 +62,21 @@ public class UserController {
     }
 
     /**
-     * 3. 회원 프로필 조회 (마이페이지)
+     * 3-1. 로그인 정보 전송 위함
+     */
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<Long>> getCurrentUser(Authentication authentication) {
+        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+
+        Long userId = principal.id();
+
+        return ResponseEntity.ok(
+                ApiResponse.<Long>success(userId)
+        );
+    }
+
+    /**
+     * 3-2. 회원 프로필 조회 (마이페이지)
      */
     @GetMapping("/{userId}")
     public ResponseEntity<ApiResponse<UserRes>> findUser(
@@ -101,5 +118,4 @@ public class UserController {
                 ApiResponse.success("입실 비밀번호 변경이 완료되었습니다.")
         );
     }
-
 }

@@ -14,7 +14,7 @@ import {
 import '../../styles/reservation.css';
 
 const Reservation = () => {
-  const memberId = useAuthStore((state) => state.memberId);
+  const userId = reservationStore((state) => state.reservation.userId);
   const roomId = reservationStore((state) => state.reservation.roomId);
   const setReservation = reservationStore((state) => state.setReservation);
   const rooms = roomStore((state) => state.rooms);
@@ -63,16 +63,10 @@ const Reservation = () => {
           selectedDate,
         );
 
-        console.log('전체 응답', response);
-        console.log('data', response.data);
-        console.log('data.data', response.data.data);
-
         const times = response.data.data.map((item) => ({
           time: `${String(item.startHour).padStart(2, '0')}:00`,
           available: item.available,
         }));
-
-        console.log('변환 시간', times);
 
         setSelectedTimes(times);
       } catch (error) {
@@ -141,12 +135,14 @@ const Reservation = () => {
     const finalEndTime = addOneHour(endTime ?? startTime);
 
     setReservation({
-      userId: memberId,
+      userId,
       roomId,
       date: selectedDate,
       startTime,
       endTime: finalEndTime,
     });
+
+    console.log(reservationStore.getState().reservation);
 
     setPurchaseType('MEETING_ROOM');
 

@@ -106,6 +106,10 @@ public class ApiResponse<T> {
     return new ApiResponse<>(true, message, null);
   }
 
+  public static <T> ApiResponse<T> success(T data) {
+    return new ApiResponse<>(true, null, data);
+  }
+
   public static <T> ApiResponse<T> error(String message, T data) {
     return new ApiResponse<>(false, message, data);
   }
