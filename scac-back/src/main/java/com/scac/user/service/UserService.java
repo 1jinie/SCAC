@@ -1,5 +1,8 @@
 package com.scac.user.service;
 
+import com.scac.admin.dto.request.AdminUserSearchReq;
+import com.scac.admin.dto.request.UserPenaltyReq;
+import com.scac.admin.dto.response.AdminUserRes;
 import com.scac.global.enums.UserStatus;
 import com.scac.user.dto.GuestRegisterReq;
 import com.scac.user.dto.PasswordUpdateReq;
@@ -10,6 +13,9 @@ import com.scac.user.entity.User;
 import com.scac.user.repository.UserRepository;
 // import com.scac.ticket.repository.UserTicketRepository; // 💡 이용권 리포지토리 예시
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -126,5 +132,62 @@ public class UserService {
         }
 
         user.changePassword(passwordEncoder.encode(req.newPassword()));
+    }
+
+    // ==========================================
+    // 💡 [관리자 기능] 회원 검색 / 상세조회 / 제재 이관
+    // ==========================================
+
+    /**
+     * [관리자] 전체 회원 목록 및 조건 조회
+     */
+    @Transactional(readOnly = true)
+    public List<AdminUserRes> getUsersForAdmin(AdminUserSearchReq searchReq) {
+        if (searchReq.getPhoneNumber() != null && !searchReq.getPhoneNumber().isBlank()) {
+            String cleanPhone = sanitizePhoneNumber(searchReq.getPhoneNumber());
+            return userRepository.findByPhoneNumber(cleanPhone)
+                    .stream()
+                    .map(AdminUserRes::from)
+                    .toList();
+        }
+
+        if (searchReq.getUserStatus() != null) {
+            return userRepository.findByUserStatus(searchReq.getUserStatus())
+                    .stream()
+                    .map(AdminUserRes::from)
+                    .toList();
+        }
+
+        return userRepository.findAll()
+                .stream()
+                .map(AdminUserRes::from)
+                .toList();
+    }
+
+    /**
+     * [관리자] 회원 상세 조회[cite: 44]
+     */
+    @Transactional(readOnly = true)
+    public AdminUserRes getUserDetailForAdmin(Long userId) {
+        User user = findUser(userId); // 기존 findUser 메서드 재사용[cite: 45]
+        return AdminUserRes.from(user);
+    }
+
+    /**
+     * [관리자] 회원 제재 / 정지 / 정지 해제 처리[cite: 44]
+     */
+    public void applyUserPenalty(Long userId, UserPenaltyReq req) {
+        User user = findUser(userId); // 기존 findUser 메서드 재사용[cite: 45]
+
+        if (req.getUserStatus() == UserStatus.BANNED) {
+            user.ban();
+        } else if (req.getUserStatus() == UserStatus.SUSPENDED) {
+            if (req.getPenaltyEndDate() == null) {
+                throw new IllegalArgumentException("정지 상태 설정 시 정지 종료일은 필수입니다.");
+            }
+            user.applyPenalty(req.getPenaltyEndDate());
+        } else if (req.getUserStatus() == UserStatus.ACTIVE) {
+            user.activate();
+        }
     }
 }
