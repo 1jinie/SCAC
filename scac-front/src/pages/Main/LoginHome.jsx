@@ -10,6 +10,9 @@ import '../../styles/LoginHome.css';
 function LoginHomePage() {
   const navigate = useNavigate();
   const [showCheckOutModal, setShowCheckOutModal] = useState(false);
+  const prepareMemberCheckIn = checkInStore(
+    (state) => state.prepareMemberCheckIn,
+  );
   const checkOutSeat = seatStore((state) => state.checkOutSeat);
   const updateCheckOut = checkInStore((state) => state.updateCheckOut);
   const seats = seatStore((state) => state.seats);
@@ -22,6 +25,17 @@ function LoginHomePage() {
   ).length;
 
   const totalSeats = seats.filter((seat) => seat.type === 'seat').length;
+
+  const handleMemberCheckIn = async () => {
+    const result = await prepareMemberCheckIn();
+
+    if (!result.success) {
+      alert(result.message);
+      return;
+    }
+
+    navigate('/seat');
+  };
 
   const handleCheckOut = (data) => {
     updateCheckOut(data.checkInId);
@@ -75,7 +89,7 @@ function LoginHomePage() {
           <button
             type="button"
             className="menu_btn btn_orange"
-            onClick={() => navigate('/seat')} //임시 경로
+            onClick={handleMemberCheckIn}
           >
             <div className="btn_icon">
               <img

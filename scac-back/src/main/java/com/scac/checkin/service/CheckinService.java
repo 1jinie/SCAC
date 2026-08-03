@@ -3,6 +3,8 @@ package com.scac.checkin.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
+import com.scac.auth.jwt.UserPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,12 +56,30 @@ public class CheckinService {
         return user;
     }
 
-    // 입실 준비(사용자, 이용권 확인)
+    // 비로그인 User 찾기
     @Transactional(readOnly = true)
     public CheckinPrepareResponse prepare(CheckinPrepareRequest request) {
 
         User user = authenticateUser(request.getPhoneNumber(), request.getPassword());
 
+        return prepareByUser(user);
+    }
+
+    // 로그인(JWT) User 찾기
+    @Transactional(readOnly = true)
+    public CheckinPrepareResponse prepareMember(Authentication authentication) {
+        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+
+        User user = userRepository.findById(principal.id())
+            .orElseThrow(() -> 
+                new ResourceNotFoundException("없는 사용자입니다")
+        );
+        
+        return prepareByUser(user);
+    }
+
+    // 입실 준비
+    private CheckinPrepareResponse prepareByUser(User user){
         Checkin awayCheckin = checkinRepository.findByUserIdAndCheckinStatus(user.getId(), CheckinStatus.AWAY)
             .orElse(null);
 
