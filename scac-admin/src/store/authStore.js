@@ -1,71 +1,154 @@
 import { create } from 'zustand';
-import { postLogin, postLogout, postSignUp } from '../api/authApi';
+import { postLogin, postAdminLogin, postLogout } from '../api/authApi';
+import { postSignUp, postGuestSignUp } from '../api/userApi';
 
 export const useAuthStore = create((set) => ({
-  // --- 상태 (State) ---
-  isLoggedIn: false, // 로그인 여부 (기본값: 로그아웃 상태)
-  userRole: 'GUEST', // 권한 (GUEST ➔ USER ➔ ADMIN)
-  memberId: null, // DB 연동을 위한 회원 고유 ID
+  accessToken: localStorage.getItem('accessToken') || null,
+  user: JSON.parse(localStorage.getItem('userInfo')) || null,
+  isAuthenticated: !!localStorage.getItem('accessToken'),
+  isLoading: false,
 
-  // --- 액션 (Actions) ---
-  /* 로그인 처리 액션 - authApi의 postLogin을 호출하고 성공 시 전역 상태를 업데이트 */
+  // 1. 일반 사용자 로그인
   login: async (phoneNumber, password) => {
+    set({ isLoading: true });
     try {
-      // authApi의 postLogin 호출
-      const data = await postLogin(phoneNumber, password);
+      const res = await postLogin(phoneNumber, password);
+      if (res.isSuccess && res.data) {
+        const { accessToken, refreshToken, userId, phoneNumber, role } =
+          res.data;
 
-      set({
-        isLoggedIn: true,
-        userRole: data.user_role, // 'USER' 또는 'ADMIN'
-        memberId: data.member_id,
-      });
+        const userObj = {
+          userId,
+          phoneNumber,
+          role,
+        };
 
-      return { success: true, role: data.user_role };
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('userInfo', JSON.stringify(userObj));
+
+        set({
+          accessToken,
+          user: userObj,
+          isAuthenticated: true,
+          isLoading: false,
+        });
+        return { success: true, role: userObj?.role }; // 👈 role 리턴 추가
+      }
+      set({ isLoading: false });
+      return {
+        success: false,
+        message: res.message || '로그인에 실패했습니다.',
+      };
     } catch (error) {
-      console.error('Store Login Error:', error);
-      return { success: false, error };
+      set({ isLoading: false });
+      const message =
+        error.response?.data?.message || '로그인 중 오류가 발생했습니다.';
+      return { success: false, message };
     }
   },
 
-  /* 로그아웃 처리 액션 - 상태를 초기화하여 출입 권한을 회수 */
-  logout: async () => {
+  // 2. 관리자 로그인
+  adminLogin: async (loginId, password) => {
+    set({ isLoading: true });
     try {
-      await postLogout();
+      const res = await postAdminLogin(loginId, password);
+      if (res.isSuccess && res.data) {
+        const { accessToken, refreshToken, adminId, loginId, role } = res.data;
+
+        const userObj = {
+          adminId,
+          loginId,
+          role: role || 'ROLE_ADMIN',
+        };
+
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('userInfo', JSON.stringify(userObj));
+
+        set({
+          accessToken,
+          user: userObj,
+          isAuthenticated: true,
+          isLoading: false,
+        });
+        return { success: true, role: userObj.role };
+      }
+      set({ isLoading: false });
+      return {
+        success: false,
+        message: res.message || '관리자 로그인에 실패했습니다.',
+      };
     } catch (error) {
-      console.error('Store Logout Error:', error);
-    } finally {
-      // 에러가 나더라도 클라이언트 상태는 안전하게 리셋
-      set({
-        isLoggedIn: false,
-        userRole: 'GUEST',
-        memberId: null,
-      });
+      set({ isLoading: false });
+      const message =
+        error.response?.data?.message ||
+        '관리자 로그인 중 오류가 발생했습니다.';
+      return { success: false, message };
     }
   },
 
-  /* 회원가입 처리 액션 */
+  // 3. 일반 회원가입 👈 [추가됨]
   signUp: async (userData) => {
+    set({ isLoading: true });
     try {
-      // authApi의 postSignUp 함수를 호출하여 서버에 전송
-      const data = await postSignUp(userData);
-
-      // 회원가입 성공 시 로그인 상태로 설정
-      set({
-        isLoggedIn: true,
-        userRole: data.user_role || 'USER', // 기본값은 'USER'
-        memberId: data.member_id,
-      });
-
-      // 회원가입 성공 신호를 리턴
-      return { success: true };
+      const res = await postSignUp(userData);
+      set({ isLoading: false });
+      if (res.isSuccess) {
+        return { success: true, userId: res.data?.userId };
+      }
+      return {
+        success: false,
+        errorMessage: res.message || '회원가입에 실패했습니다.',
+      };
     } catch (error) {
-      console.error('Store SignUp Error:', error);
-      // 서버에서 에러 메시지가 올 경우 화면에 뿌려줄 수 있도록 에러 객체 반환
+      set({ isLoading: false });
+      const errorMessage =
+        error.response?.data?.message ||
+        '회원가입 처리 중 오류가 발생했습니다.';
+      return { success: false, errorMessage };
+    }
+  },
+
+  // 4. 비회원/게스트 등록 👈 [추가됨]
+  guestSignUp: async (userData) => {
+    set({ isLoading: true });
+    try {
+      const res = await postGuestSignUp(userData);
+
+      set({ isLoading: false });
+
+      if (res.isSuccess) {
+        return {
+          success: true,
+          userId: res.data?.userId,
+        };
+      }
+      return {
+        success: false,
+        errorMessage: res.message || '비회원 등록에 실패했습니다.',
+      };
+    } catch (error) {
+      set({ isLoading: false });
+
       return {
         success: false,
         errorMessage:
-          error.response?.data?.message || error.message || '알 수 없는 에러',
+          error.response?.data?.message ??
+          '비회원 등록 처리 중 오류가 발생했습니다.',
       };
+    }
+  },
+
+  // 5. 로그아웃
+  logout: async () => {
+    try {
+      await postLogout();
+    } catch (e) {
+      console.warn('Logout API Failed:', e);
+    } finally {
+      localStorage.clear();
+      set({ accessToken: null, user: null, isAuthenticated: false });
     }
   },
 }));
