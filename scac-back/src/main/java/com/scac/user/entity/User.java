@@ -103,4 +103,12 @@ public class User {
     public void changePassword(String newEncodedPassword) {
         this.password = newEncodedPassword;
     }
+
+    /**
+     * 제재 기간 만료에 따른 정지 해제
+     */
+    public void releasePenalty() {
+        this.userStatus = UserStatus.ACTIVE;
+        this.penaltyEndDate = null;
+    }
 }
