@@ -1,22 +1,36 @@
-export default function AdminSeatStatusButtons({ selectedSeat, onSeatChange }) {
-  const handleStatusChange = (status) => {
-    // 추후 API 연결
-    // await seatApi.updateStatus(selectedSeat.seatId, status);
+import { adminSeatApi } from "../../../api/seatApi";
 
-    onSeatChange(status);
+export default function AdminSeatStatusButtons({ selectedSeat, onSeatChange }) {
+  const handleStatusChange = async (status) => {
+    try {
+      await adminSeatApi.updateSeatStatus(selectedSeat.seatId, status);
+
+      onSeatChange(status);
+
+      alert("좌석 상태가 변경되었습니다");
+    } catch (error) {
+      console.error("좌석 상태 변경 실패", error);
+      alert("좌석 상태 변경에 실패했습니다");
+    }
   };
 
-  const handleForceCheckout = () => {
+  const handleForceCheckout = async () => {
     const isConfirmed = window.confirm(
-      `${selectedSeat.seatNumber}번 좌석의 사용자를 강제 퇴실 처리하시겠습니까?`,
+      `${selectedSeat.seatNumber} 좌석의 사용자를 강제 퇴실 처리하시겠습니까?`,
     );
 
     if (!isConfirmed) return;
 
-    // 추후 API 연결
-    // await seatApi.forceCheckout(selectedSeat.seatId);
+    try {
+      await adminSeatApi.forceCheckout(selectedSeat.seatId);
 
-    onSeatChange('AVB', true);
+      alert("강제 퇴실 되었습니다");
+
+      onSeatChange("AVB", true);
+    } catch (error) {
+      console.error("강제 퇴실 실패", error);
+      alert("강제 퇴실 처리에 실패했습니다");
+    }
   };
 
   return (
@@ -27,9 +41,9 @@ export default function AdminSeatStatusButtons({ selectedSeat, onSeatChange }) {
         <button
           type="button"
           disabled={
-            selectedSeat.status === 'USR' || selectedSeat.status === 'AVB'
+            selectedSeat.status === "USR" || selectedSeat.status === "AVB"
           }
-          onClick={() => handleStatusChange('AVB')}
+          onClick={() => handleStatusChange("AVB")}
         >
           이용 가능
         </button>
@@ -37,15 +51,15 @@ export default function AdminSeatStatusButtons({ selectedSeat, onSeatChange }) {
         <button
           type="button"
           disabled={
-            selectedSeat.status === 'USR' || selectedSeat.status === 'BRK'
+            selectedSeat.status === "USR" || selectedSeat.status === "BRK"
           }
-          onClick={() => handleStatusChange('BRK')}
+          onClick={() => handleStatusChange("BRK")}
         >
           점검 중
         </button>
       </div>
 
-      {selectedSeat.status === 'USR' && (
+      {selectedSeat.status === "USR" && (
         <button
           type="button"
           className="admin_force_checkout_button"
