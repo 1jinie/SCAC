@@ -172,3 +172,45 @@ TicketList가 Fragment를 반환하고 있기 때문에
 
   transform: translateX(-50%);
 }
+
+/* ==========================
+   Kiosk Error State
+========================== */
+
+.ticket_page_state,
+.ticket_page_empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+}
+
+.ticket_page_state {
+  min-height: 1700px;
+}
+
+.ticket_page_state p {
+  margin: 0;
+
+  color: var(--color-text-light);
+  font-size: var(--font-size-subtitle);
+}
+
+.ticket_page_empty {
+  min-height: 1000px;
+}
+
+.ticket_page_empty p {
+  margin: 0 0 20px;
+
+  font-size: var(--font-size-heading);
+  font-weight: var(--font-bold);
+}
+
+.ticket_page_empty span {
+  color: var(--color-text-light);
+
+  font-size: var(--font-size-subtitle);
+}

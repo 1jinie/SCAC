@@ -22,8 +22,7 @@ export default function PaymentProcess() {
 
   const paymentMethod = usePaymentStore((state) => state.paymentMethod);
 
-  const memberId = useAuthStore((state) => state.memberId);
-
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [ticket, setTicket] = useState(null);
   const [isLoadingTicket, setIsLoadingTicket] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
@@ -71,7 +70,7 @@ export default function PaymentProcess() {
 
       const orderData = {
         ticketId: selectedTicketId,
-        userId: memberId,
+
         amount: ticket.ticketPrice,
         paymentMethod,
       };
@@ -141,7 +140,7 @@ export default function PaymentProcess() {
         variant="page"
         title="선택된 이용권이 없습니다."
         message="처음 화면으로 돌아가 이용권을 다시 선택해 주세요."
-        onHome={() => navi('/')}
+        onHome={() => navi('/', { replace: true })}
       />
     );
   }
@@ -152,18 +151,18 @@ export default function PaymentProcess() {
         variant="page"
         title="선택된 결제 수단이 없습니다."
         message="처음 화면으로 돌아가 결제 수단을 다시 선택해 주세요."
-        onHome={() => navi('/')}
+        onHome={() => navi('/', { replace: true })}
       />
     );
   }
 
-  if (memberId == null) {
+  if (!isAuthenticated) {
     return (
       <KioskErrorState
         variant="page"
-        title="사용자 정보를 확인할 수 없습니다."
-        message="로그인 정보가 만료되었을 수 있습니다. 처음 화면에서 다시 로그인해 주세요."
-        onHome={() => navi('/')}
+        title="사용자 정보가 필요합니다."
+        message="사용자 정보가 만료되었을 수 있습니다. 다시 시도해 주세요."
+        onHome={() => navi('/', { replace: true })}
       />
     );
   }
@@ -216,7 +215,7 @@ export default function PaymentProcess() {
           title="이용권 정보를 불러오지 못했습니다."
           message={ticketError}
           onRetry={fetchTicket}
-          onHome={() => navi('/')}
+          onHome={() => navi('/', { replace: true })}
         />
       )}
 

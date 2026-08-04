@@ -1,5 +1,6 @@
 package com.scac.checkin.scheduler;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.scheduling.annotation.Scheduled;
@@ -45,21 +46,34 @@ public class CheckinScheduler {
             // READY면 아직 시작 안한 이용권
             if(usage.getStatus() == TicketUsageStatus.READY) continue;
 
-            // 1분 차감
-            usage.deductTime(1);
+            // 1분씩 차감
+            if(usage.getRemainingTime() > 0) 
+                usage.deductTime(1);
 
             // 시간 다되면 자동 퇴실
-            if(usage.getRemainingTime() <= 0){
-                checkin.checkout();
-
-                Seat seat = seatRepository.findById(checkin.getSeatId()).orElse(null);
-
-                if(seat != null){
-                    seat.releaseUser();
+            if(usage.getTicketType() == TicketType.TIME_PACK){
+                if(usage.getRemainingTime() <= 0){
+                    autoCheckout(checkin, usage);
                 }
+            }
 
-                usage.expire();
+            // 기간권 자동 퇴실
+            else if(usage.getTicketType() == TicketType.PERIOD_PACK){
+                if(usage.getEndAt() != null && LocalDateTime.now().isAfter(usage.getEndAt())){
+                    autoCheckout(checkin, usage);
+                }
             }
         }
+    }
+
+    // 자동 퇴실 메서드
+    private void autoCheckout(Checkin checkin, TicketUsage usage){
+        checkin.checkout();
+
+        Seat seat = seatRepository.findById(checkin.getSeatId()).orElse(null);
+
+        if(seat != null) seat.releaseUser();
+
+        usage.expire();
     }
 }
