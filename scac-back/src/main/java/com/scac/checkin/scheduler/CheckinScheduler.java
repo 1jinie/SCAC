@@ -3,7 +3,6 @@ package com.scac.checkin.scheduler;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.hibernate.annotations.Check;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
