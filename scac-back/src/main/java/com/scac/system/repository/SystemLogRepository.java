@@ -30,9 +30,14 @@ public interface SystemLogRepository extends JpaRepository<SystemLog, Long> {
     List<SystemLog> findByAdminId(Long adminId);
 
     /**
-     * 대상별 로그 조회
+     * 대상 타입별 로그 조회
      */
-    List<SystemLog> findByTargetTypeAndTargetId(String targetType, Long targetId);
+    List<SystemLog> findByTargetTypeOrderByCreatedAtDesc(String targetType);
+
+    /**
+     * 대상타입 및 대상ID별 로그 조회
+     */
+    List<SystemLog> findByTargetTypeAndTargetIdOrderByCreatedAtDesc(String targetType, Long targetId);
 
     /**
      * 기간별 로그 조회

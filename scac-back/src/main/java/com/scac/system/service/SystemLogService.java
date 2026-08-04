@@ -1,5 +1,7 @@
 package com.scac.system.service;
 
+import com.scac.user.entity.User;
+import com.scac.user.repository.UserRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -8,6 +10,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.scac.system.dto.SeatLogRes;
 import com.scac.system.entity.SystemLog;
 import com.scac.system.repository.SystemLogRepository;
 
@@ -18,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class SystemLogService {
 
+    private final UserRepository userRepository;
     private final SystemLogRepository systemLogRepository;
 
     /**
@@ -32,6 +36,41 @@ public class SystemLogService {
      */
     public List<SystemLog> getLogsByLevel(String logLevel) {
         return systemLogRepository.findByLogLevel(logLevel);
+    }
+
+    /**
+     * 전체 좌석 로그 조회
+     */
+    public List<SeatLogRes> getLogsByTarget(String targetType){
+        List<SystemLog> logs = systemLogRepository.findByTargetTypeOrderByCreatedAtDesc(targetType);
+
+        return logs.stream().map(log -> {
+            String phoneNumber = "-";
+
+            if(log.getUserId() != null){
+                phoneNumber = userRepository.findById(log.getUserId())
+                    .map(User::getPhoneNumber).orElse("-");      
+            }
+            return SeatLogRes.from(log, phoneNumber);
+        }).toList();
+    }
+
+    /**
+     * 특정 좌석 로그 조회
+     */
+    public List<SeatLogRes> getLogsByTarget(String targetType, Long targetId){
+        List<SystemLog> logs =
+            systemLogRepository.findByTargetTypeAndTargetIdOrderByCreatedAtDesc(targetType, targetId);
+
+            return logs.stream().map(log -> {
+                String phoneNumber = "-";
+
+                if(log.getUserId() != null){
+                    phoneNumber = userRepository.findById(log.getUserId())
+                        .map(User::getPhoneNumber).orElse("-");      
+                }
+                return SeatLogRes.from(log, phoneNumber);
+            }).toList();
     }
 
     /**

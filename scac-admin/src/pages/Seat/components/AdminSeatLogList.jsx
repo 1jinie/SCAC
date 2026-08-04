@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Pagination from "../../../components/common/Pagination";
 
-export default function AdminSeatLogList({ logs, selectedSeat }) {
+export default function AdminSeatLogList({ logs = [], selectedSeat }) {
   const [currentPage, setCurrentPage] = useState(1);
   const PAGE_SIZE = 10;
   const totalPages = Math.ceil(logs.length / PAGE_SIZE);
@@ -30,7 +30,7 @@ export default function AdminSeatLogList({ logs, selectedSeat }) {
           <p>
             {selectedSeat
               ? `${selectedSeat}번 좌석 이용 내역`
-              : '전체 좌석 이용 내역'}
+              : "전체 좌석 이용 내역"}
           </p>
         </div>
       </div>
@@ -49,18 +49,18 @@ export default function AdminSeatLogList({ logs, selectedSeat }) {
 
             <tbody>
               {currentLogs.map((log) => (
-                <tr key={log.log_id}>
-                  <td>{log.created_at}</td>
+                <tr key={log.logId}>
+                  <td>{log.createdAt}</td>
 
                   <td>
                     <span className={`admin_log_type ${log.action}`}>
-                      {ACTION_LABEL[log.action]}
+                      {ACTION_LABEL[log.action] || log.action}
                     </span>
                   </td>
 
-                  <td>{log.description}</td>
+                  <td>{log.content}</td>
 
-                  <td>{log.phone_number || "-"}</td>
+                  <td>{log.phoneNumber}</td>
                 </tr>
               ))}
             </tbody>
