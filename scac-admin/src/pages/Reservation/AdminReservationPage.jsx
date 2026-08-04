@@ -1,130 +1,87 @@
-import { useMemo, useState } from 'react';
-import SeatList from '../../components/seat/SeatList';
-import { seatStore } from '../../store/seatStore';
-import { toDateString } from '../../utils/date';
-import AdminRoomDetail from './components/AdminRoomDetail';
-import RecentReservationList from './components/RecentReservationList';
-import ReservationDateSlider from './components/ReservationDateSlider';
-import RoomDailySchedule from './components/RoomDailySchedule';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import SeatList from "../../components/seat/SeatList";
+import { seatStore } from "../../store/seatStore";
+import { roomStore } from "../../store/roomStore";
+import { reservationApi } from "../../api/reservationApi"; // 💡 reservationApi 추가
+import { toDateString } from "../../utils/date";
+import AdminRoomDetail from "./components/AdminRoomDetail";
+import RecentReservationList from "./components/RecentReservationList";
+import ReservationDateSlider from "./components/ReservationDateSlider";
+import RoomDailySchedule from "./components/RoomDailySchedule";
 
-import './css/AdminReservationPage.css';
-
-const ROOM_DUMMY = [
-  {
-    roomId: 101,
-    roomNumber: 'R1',
-    roomName: '스터디룸 R1',
-    capacity: 4,
-  },
-  {
-    roomId: 102,
-    roomNumber: 'R2',
-    roomName: '스터디룸 R2',
-    capacity: 4,
-  },
-  {
-    roomId: 103,
-    roomNumber: 'R3',
-    roomName: '스터디룸 R3',
-    capacity: 6,
-  },
-  {
-    roomId: 3,
-    roomNumber: 'R3',
-    roomName: '스터디룸 C',
-    capacity: 6,
-    status: 'AVB',
-  },
-];
-
-const RESERVATION_DUMMY = [
-  {
-    reservationId: 1,
-    roomId: 101,
-    roomNumber: 'R1',
-    phoneNumber: '010-1111-2222',
-    reservationDate: '2026-07-20',
-    startTime: '09:00',
-    endTime: '11:00',
-    status: 'RESERVED',
-    createdAt: '2026-07-19 18:30:00',
-  },
-  {
-    reservationId: 2,
-    roomId: 101,
-    roomNumber: 'R1',
-    phoneNumber: '010-3333-4444',
-    reservationDate: '2026-07-20',
-    startTime: '13:00',
-    endTime: '15:00',
-    status: 'IN_USE',
-    createdAt: '2026-07-19 19:20:00',
-  },
-  {
-    reservationId: 3,
-    roomId: 102,
-    roomNumber: 'R2',
-    phoneNumber: '010-5555-6666',
-    reservationDate: '2026-07-21',
-    startTime: '16:00',
-    endTime: '18:00',
-    status: 'RESERVED',
-    createdAt: '2026-07-20 09:10:00',
-  },
-];
+import "./css/AdminReservationPage.css";
 
 const TO_ADMIN_STATUS = {
-  available: 'AVB',
-  using: 'USR',
-  repair: 'BRK',
+  available: "AVB",
+  using: "USR",
+  repair: "BRK",
 };
 
 export default function AdminReservationPage() {
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [selectedDate, setSelectedDate] = useState(toDateString(new Date()));
-  const [reservations, setReservations] = useState(RESERVATION_DUMMY);
+  const [reservations, setReservations] = useState([]); // 💡 더미 데이터 제거 및 빈 배열 초기화
+  const [isLoading, setIsLoading] = useState(false);
 
+  // 스토어 상태 추출
   const seats = seatStore((state) => state.seats);
   const selected = seatStore((state) => state.selectedSeat);
   const selectSeat = seatStore((state) => state.selectSeat);
   const resetSeat = seatStore((state) => state.clearSelected);
 
-  const mode = 'room';
+  const rooms = roomStore((state) => state.rooms);
+  const fetchRooms = roomStore((state) => state.fetchRooms);
+
+  const mode = "room";
+
+  // 1. 전체 스터디룸 정보 조회
+  useEffect(() => {
+    fetchRooms();
+  }, [fetchRooms]);
+
+  // 2. 백엔드 실시간 스터디룸 예약 목록 조회
+  const fetchReservations = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const response = await reservationApi.getReservationList();
+      setReservations(response.data?.data ?? []);
+    } catch (error) {
+      console.error("예약 목록 조회 실패:", error);
+      setReservations([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchReservations();
+  }, [fetchReservations]);
 
   // 스터디룸 배치도 클릭
   const handleClick = (seat) => {
-    // 일반 좌석은 선택 불가
-    if (seat.type !== 'room') {
+    if (seat.type !== "room") {
       return;
     }
 
     selectSeat(seat.id);
 
-    const roomInfo = ROOM_DUMMY.find((room) => room.roomId === seat.id);
+    // roomStore에서 방 정보 찾기
+    const roomInfo = rooms.find((room) => room.id === seat.id);
 
     if (!roomInfo) {
       return;
     }
 
     setSelectedRoom({
-      ...roomInfo,
-
-      // SeatList의 상태를 관리자 상태값으로 변환
-      status: TO_ADMIN_STATUS[seat.status] ?? 'AVB',
-
-      // 사용 중인 방의 임시 이용 정보
-      currentUsage:
-        seat.status === 'using'
-          ? {
-              phoneNumber: '010-1234-5678',
-              startAt: '2026-07-20 13:00',
-              endAt: '2026-07-20 15:00',
-            }
-          : null,
+      roomId: roomInfo.id,
+      roomNumber: roomInfo.name,
+      roomName: roomInfo.name,
+      capacity: roomInfo.capacity,
+      status: TO_ADMIN_STATUS[seat.status] ?? "AVB",
     });
   };
 
-  // 선택한 방 + 선택한 날짜의 예약만 조회
+  // 선택한 방 + 선택한 날짜의 예약만 필터링
   const selectedRoomReservations = useMemo(() => {
     if (!selectedRoom) {
       return [];
@@ -133,32 +90,33 @@ export default function AdminReservationPage() {
     return reservations
       .filter(
         (reservation) =>
-          reservation.roomId === selectedRoom.roomId &&
+          Number(reservation.roomId) === Number(selectedRoom.roomId) &&
           reservation.reservationDate === selectedDate,
       )
-      .sort((a, b) => a.startTime.localeCompare(b.startTime));
+      .sort((a, b) => (a.startTime ?? "").localeCompare(b.startTime ?? ""));
   }, [reservations, selectedRoom, selectedDate]);
 
-  // 관리자 예약 취소
-  const handleAdminCancel = (reservationId) => {
+  // 3. 백엔드 예약 취소 API 연동
+  const handleAdminCancel = async (reservationId) => {
     const confirmed = window.confirm(
-      '선택한 예약을 관리자 취소 처리하시겠습니까?',
+      "선택한 예약을 관리자 취소 처리하시겠습니까?",
     );
 
     if (!confirmed) {
       return;
     }
 
-    setReservations((previousReservations) =>
-      previousReservations.map((reservation) =>
-        reservation.reservationId === reservationId
-          ? {
-              ...reservation,
-              status: 'ADMIN_CANCELED',
-            }
-          : reservation,
-      ),
-    );
+    try {
+      // 백엔드 PATCH /api/meeting-rooms/reservations/{id}/cancel 호출
+      await reservationApi.cancelReservation(reservationId);
+      window.alert("예약 취소가 완료되었습니다.");
+
+      // 취소 후 최신 목록 재조회
+      await fetchReservations();
+    } catch (error) {
+      console.error("관리자 예약 취소 실패:", error);
+      window.alert("예약 취소 처리에 실패했습니다.");
+    }
   };
 
   // 전체 현황 보기
@@ -172,9 +130,7 @@ export default function AdminReservationPage() {
       <div className="admin_page_heading">
         <div>
           <p className="admin_page_eyebrow">STUDY ROOM MANAGEMENT</p>
-
           <h2>스터디룸 현황</h2>
-
           <p>스터디룸의 현재 상태와 날짜별 예약 내역을 확인합니다.</p>
         </div>
       </div>
@@ -221,7 +177,6 @@ export default function AdminReservationPage() {
                     <span className="legend_color unavailable">
                       <span className="legend_diagonal" />
                     </span>
-
                     <span className="legend_text">불가능</span>
                   </div>
 
