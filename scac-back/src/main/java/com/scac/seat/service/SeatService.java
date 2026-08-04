@@ -1,5 +1,6 @@
 package com.scac.seat.service;
 
+import com.scac.system.service.SystemLogService;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -14,12 +15,14 @@ import com.scac.seat.domain.Seat;
 import com.scac.seat.dto.SeatOccupiedResponse;
 import com.scac.seat.dto.SeatResponse;
 import com.scac.seat.repository.SeatRepository;
+import com.scac.system.entity.SystemLog;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class SeatService {
+    private final SystemLogService systemLogService;
     private final CheckinRepository checkinRepository;
     private final SeatRepository seatRepository;
     
@@ -74,5 +77,18 @@ public class SeatService {
         checkin.checkout();
 
         seat.releaseUser();
+
+        SystemLog log = SystemLog.builder()
+            .logType("SEAT")
+            .logLevel("WARNING")
+            .action("SEAT_FORCE_CHECK_OUT")
+            .userId(checkin.getUserId())
+            .targetType("SEAT")
+            .targetId(seat.getSeatId())
+            .content(seat.getSeatNumber() + " 좌석 강제 퇴실 처리")
+            .detail("{\"reason\":\"관리자 강제 퇴실\"}")
+            .build();
+
+        systemLogService.createLog(log);
     }
 }
