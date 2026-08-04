@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../store/authStore";
 import HeaderTime from "../../components/HeaderTime";
 import "./css/Admin_Login.css";
 
 export default function AdminLoginPage() {
   const navigate = useNavigate();
+
+  const adminLogin = useAuthStore((state) => state.adminLogin);
 
   const [adminId, setAdminId] = useState("");
   const [password, setPassword] = useState("");
@@ -18,19 +21,20 @@ export default function AdminLoginPage() {
     setPassword(e.target.value);
   };
 
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
-
     if (!adminId.trim() || !password.trim()) {
-      setErrorMessage("관리자 번호와 비밀번호를 입력해 주세요.");
+      setErrorMessage("관리자 아이디와 비밀번호를 입력해 주세요.");
       return;
     }
 
-    setErrorMessage("");
-
-    // 추후 관리자 로그인 API 연결
-    // 성공 시 관리자 메인으로 이동
-    navigate("/admin", { replace: true });
+    // 백엔드 POST /api/admin/auth/login 연동
+    const result = await adminLogin(adminId, password);
+    if (result.success) {
+      navigate("/admin", { replace: true });
+    } else {
+      setErrorMessage(result.message || "로그인에 실패했습니다.");
+    }
   };
 
   const handleHome = () => {
