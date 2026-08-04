@@ -1,14 +1,17 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import SeatList from "../../components/seat/SeatList";
 import { seatStore } from "../../store/seatStore";
 import { roomStore } from "../../store/roomStore";
+import { adminSeatApi } from "../../api/seatApi"; // 💡 adminSeatApi 추가
 import AdminSeatDetail from "./components/AdminSeatDetail";
 import AdminSeatLogList from "./components/AdminSeatLogList";
 import "./css/AdminSeatPage.css";
 
 export default function AdminSeatPage() {
   const [selectedSeat, setSelectedSeat] = useState(null);
-  const [data] = useState([]);
+  const [seatLogs, setSeatLogs] = useState([]); // 💡 백엔드 좌석 로그 저장
+  const [isLoadingLogs, setIsLoadingLogs] = useState(false);
+
   const seats = seatStore((state) => state.seats);
   const fetchSeats = seatStore((state) => state.fetchSeats);
   const rooms = roomStore((state) => state.rooms);
@@ -17,8 +20,6 @@ export default function AdminSeatPage() {
   const selectSeat = seatStore((state) => state.selectSeat);
   const resetSeat = seatStore((state) => state.clearSelected);
   const mode = "seat";
-
-  const updateSeatStatus = seatStore((state) => state.updateSeatStatus);
 
   const TO_ADMIN_STATUS = {
     available: "AVB",
@@ -32,7 +33,14 @@ export default function AdminSeatPage() {
     BRK: "repair",
   };
 
-  const handleClick = (seat) => {
+  // 1. 전체 좌석 및 룸 목록 조회
+  useEffect(() => {
+    fetchSeats();
+    fetchRooms();
+  }, [fetchSeats, fetchRooms]);
+
+  // 2. 좌석 클릭 및 해당 좌석 실시간 로그 조회
+  const handleClick = async (seat) => {
     if (seat.type !== "seat") return;
 
     selectSeat(seat.id);
@@ -41,45 +49,56 @@ export default function AdminSeatPage() {
       seatId: seat.id,
       seatNumber: seat.name,
       status: TO_ADMIN_STATUS[seat.status],
-
-      user:
-        seat.status === "using"
-          ? {
-              phoneNumber: "010-1234-5678",
-              ticketName: "4시간권",
-              ticketType: "TIME",
-              remainingTime: 95,
-            }
-          : null,
+      currentUserId: seat.currentUserId,
     });
-  };
 
-  useEffect(() => {
-    fetchSeats();
-    fetchRooms();
-  }, [fetchSeats, fetchRooms]);
-
-  const filteredLogs = useMemo(() => {
-    if (!selected) {
-      return data;
+    // 백엔드 좌석 로그 API 호출
+    try {
+      setIsLoadingLogs(true);
+      const response = await adminSeatApi.getSeatLogs(seat.id);
+      setSeatLogs(response.data?.data ?? []);
+    } catch (error) {
+      console.error("좌석 로그 조회 실패:", error);
+      setSeatLogs([]);
+    } finally {
+      setIsLoadingLogs(false);
     }
-
-    return data.filter((log) => Number(log.seat_id) === Number(selected));
-  }, [data, selected]);
+  };
 
   const handleReset = () => {
     resetSeat();
     setSelectedSeat(null);
+    setSeatLogs([]);
   };
 
-  const handleSeatStatusChange = (newStatus, isForceCheckout = false) => {
-    setSelectedSeat((prevSeat) => ({
-      ...prevSeat,
-      status: newStatus,
-      user: isForceCheckout ? null : prevSeat.user,
-    }));
+  // 3. 백엔드 DB 좌석 상태 변경 및 강제 퇴실 연동
+  const handleSeatStatusChange = async (newStatus, isForceCheckout = false) => {
+    if (!selectedSeat) return;
 
-    updateSeatStatus(Number(selectedSeat.seatId), TO_SEAT_STATUS[newStatus]);
+    try {
+      if (isForceCheckout) {
+        // 백엔드 강제 퇴실 API 호출 (POST /api/admin/seats/{seatId}/force-checkout)
+        await adminSeatApi.forceCheckout(selectedSeat.seatId);
+        window.alert("강제 퇴실 처리가 완료되었습니다.");
+      } else {
+        // 백엔드 상태 변경 API 호출 (PATCH /api/admin/seats/{seatId}/status)
+        await adminSeatApi.updateSeatStatus(selectedSeat.seatId, newStatus);
+        window.alert("좌석 상태 변경이 완료되었습니다.");
+      }
+
+      // 백엔드 변경 사항 적용 후 전체 좌석 재조회
+      await fetchSeats();
+
+      // 선택 상태 업데이트
+      setSelectedSeat((prev) => ({
+        ...prev,
+        status: newStatus,
+        user: isForceCheckout ? null : prev?.user,
+      }));
+    } catch (error) {
+      console.error("좌석 상태 변경 실패:", error);
+      window.alert("좌석 상태 변경 처리 중 오류가 발생했습니다.");
+    }
   };
 
   const items = [...seats, ...rooms];
@@ -89,9 +108,7 @@ export default function AdminSeatPage() {
       <div className="admin_page_heading">
         <div>
           <p className="admin_page_eyebrow">SEAT MANAGEMENT</p>
-
           <h2>좌석 현황</h2>
-
           <p>좌석의 현재 상태와 이용 내역을 확인합니다.</p>
         </div>
       </div>
@@ -102,10 +119,7 @@ export default function AdminSeatPage() {
               <h2>좌석 배치도</h2>
               <p>관리할 좌석을 선택해 주세요.</p>
             </div>
-            <button
-              className="admin_seat_map_all"
-              onClick={() => handleReset()}
-            >
+            <button className="admin_seat_map_all" onClick={handleReset}>
               좌석 전체 보기
             </button>
           </div>
@@ -147,13 +161,12 @@ export default function AdminSeatPage() {
         </div>
 
         <AdminSeatDetail
-          // 샘플 데이터로 14번 좌석을 잠시 사용할 예정
           selectedSeat={selectedSeat}
           onSeatChange={handleSeatStatusChange}
         />
       </section>
 
-      <AdminSeatLogList logs={filteredLogs} selectedSeat={selected} />
+      <AdminSeatLogList logs={seatLogs} selectedSeat={selected} />
     </div>
   );
 }
