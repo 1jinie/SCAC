@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { formatDate, addOneHour } from '../../utils/date';
 import { reservationApi } from '../../api/reservationApi';
 import { roomStore } from '../../store/roomStore';
-import { useAuthStore } from '../../store/authStore';
 import { reservationStore } from '../../store/reservationStore';
 import { useTicketStore } from '../../store/ticketStore';
 import {
