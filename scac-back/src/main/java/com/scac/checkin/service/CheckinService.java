@@ -145,15 +145,6 @@ public class CheckinService {
         return CheckinResponse.from(savedCheckin);
     }
 
-    // 사용시간 계산
-    private int calculateUsedMinutes(Checkin checkin){
-        LocalDateTime now = LocalDateTime.now();
-
-        return (int) java.time.Duration
-            .between(checkin.getCheckinAt(), now)
-            .toMinutes();
-    }
-
     // 외출
     @Transactional
     public CheckinResponse goAway(CheckinPrepareRequest request) {
@@ -192,10 +183,6 @@ public class CheckinService {
         Checkin checkin = checkinRepository
             .findByUserIdAndCheckinStatusIn(user.getId(), List.of(CheckinStatus.USING, CheckinStatus.AWAY))
             .orElseThrow(() -> new ResourceNotFoundException("입실 정보가 없습니다"));
-
-        // 이용권 조회
-        TicketUsage ticketUsage = ticketUsageRepository.findById(checkin.getUsageId())
-            .orElseThrow(() -> new ResourceNotFoundException("이용권 정보가 없습니다"));
 
         // 좌석 조회
         Seat seat = seatRepository.findById(checkin.getSeatId())

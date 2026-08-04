@@ -46,7 +46,8 @@ public class CheckinScheduler {
             if(usage.getStatus() == TicketUsageStatus.READY) continue;
 
             // 1분 차감
-            usage.deductTime(1);
+            if(usage.getRemainingTime() > 0) 
+                usage.deductTime(1);
 
             // 시간 다되면 자동 퇴실
             if(usage.getRemainingTime() <= 0){
