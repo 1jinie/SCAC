@@ -1,9 +1,18 @@
 package com.scac.user.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.scac.admin.dto.request.AdminUserSearchReq;
 import com.scac.admin.dto.request.UserPenaltyReq;
 import com.scac.admin.dto.response.AdminUserRes;
 import com.scac.global.enums.UserStatus;
+import com.scac.system.entity.SystemLog;
+import com.scac.system.service.SystemLogService; // 💡 SystemLogService 추가
 import com.scac.user.dto.GuestRegisterReq;
 import com.scac.user.dto.PasswordUpdateReq;
 import com.scac.user.dto.PasswordVerifyReq;
@@ -11,15 +20,11 @@ import com.scac.user.dto.UserRes;
 import com.scac.user.dto.UserSignUpReq;
 import com.scac.user.entity.User;
 import com.scac.user.repository.UserRepository;
-// import com.scac.ticket.repository.UserTicketRepository; // 💡 이용권 리포지토리 예시
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -27,6 +32,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SystemLogService systemLogService;
     //private final UserTicketRepository userTicketRepository; 이용권 조회를 위해 주입
 
     @Transactional(readOnly = true)
@@ -41,7 +47,6 @@ public class UserService {
         }
 
         String encodedPassword = passwordEncoder.encode(req.password());
-        // 전화번호가 정제된 DTO 기반으로 Entity 생성
         UserSignUpReq cleanReq = new UserSignUpReq(cleanPhone, req.password());
         User user = cleanReq.toEntity(encodedPassword);
 
@@ -80,20 +85,16 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserRes getUserProfile(Long userId) {
         User user = findUser(userId);
-
-        // 💡 실제 이용권 엔티티/리포지토리 연동 시 활성화된 이용권명 조회
-        // String activeTicketName = userTicketRepository.findActiveTicketNameByUserId(userId).orElse(null);
         String activeTicketName = null; // 이용권 엔티티 연동 후 적용 예정
 
         return UserRes.from(user, activeTicketName);
     }
 
-
     public User verifyPassword(PasswordVerifyReq req) {
         User user = userRepository.findByPhoneNumber(req.phoneNumber())
                 .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 전화번호입니다."));
 
-        // 정지 기간 자동 해제 검증
+        // 정지 기간 자동 해제 검증[cite: 28]
         user.checkAndReleaseSuspension();
 
         if (user.getUserStatus() == UserStatus.SUSPENDED) {
@@ -134,9 +135,42 @@ public class UserService {
         user.changePassword(passwordEncoder.encode(req.newPassword()));
     }
 
-    // ==========================================
-    // 💡 [관리자 기능] 회원 검색 / 상세조회 / 제재 이관
-    // ==========================================
+    /**
+     * [스케줄러] 정지 기간(penaltyEndDate)이 지난 회원을 자동으로 ACTIVE 상태로 전환
+     */
+    public int releaseExpiredPenalties() {
+        LocalDateTime now = LocalDateTime.now();
+        List<User> expiredUsers = userRepository.findExpiredSuspendedUsers(UserStatus.SUSPENDED, now);
+
+        if (expiredUsers.isEmpty()) {
+            return 0;
+        }
+
+        for (User user : expiredUsers) {
+
+            user.checkAndReleaseSuspension();
+
+            // 자동 해제 감사 로그(SystemLog) 생성
+            try {
+                SystemLog autoReleaseLog = SystemLog.builder()
+                        .logType("USER")
+                        .logLevel("INFO")
+                        .action("AUTO_RELEASE_PENALTY")
+                        .userId(user.getId())
+                        .targetType("USER")
+                        .targetId(user.getId())
+                        .content("스케줄러에 의한 회원 제재 자동 해제 처리")
+                        .detail("정지 만료 시각 경과로 ACTIVE 상태 자동 전환")
+                        .build();
+
+                systemLogService.createLog(autoReleaseLog);
+            } catch (Exception e) {
+                log.error("회원 ID: {} 제재 자동 해제 로그 기록 실패: {}", user.getId(), e.getMessage());
+            }
+        }
+
+        return expiredUsers.size();
+    }
 
     /**
      * [관리자] 전체 회원 목록 및 조건 조회
@@ -165,19 +199,19 @@ public class UserService {
     }
 
     /**
-     * [관리자] 회원 상세 조회[cite: 44]
+     * [관리자] 회원 상세 조회
      */
     @Transactional(readOnly = true)
     public AdminUserRes getUserDetailForAdmin(Long userId) {
-        User user = findUser(userId); // 기존 findUser 메서드 재사용[cite: 45]
+        User user = findUser(userId);
         return AdminUserRes.from(user);
     }
 
     /**
-     * [관리자] 회원 제재 / 정지 / 정지 해제 처리[cite: 44]
+     * [관리자] 회원 제재 / 정지 / 정지 해제 처리
      */
     public void applyUserPenalty(Long userId, UserPenaltyReq req) {
-        User user = findUser(userId); // 기존 findUser 메서드 재사용[cite: 45]
+        User user = findUser(userId);
 
         if (req.getUserStatus() == UserStatus.BANNED) {
             user.ban();
@@ -188,6 +222,6 @@ public class UserService {
             user.applyPenalty(req.getPenaltyEndDate());
         } else if (req.getUserStatus() == UserStatus.ACTIVE) {
             user.activate();
-        }
     }
+}
 }

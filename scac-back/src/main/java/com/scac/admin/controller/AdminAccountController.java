@@ -16,6 +16,7 @@ import com.scac.admin.dto.request.AdminAccountCreateReq;
 import com.scac.admin.dto.request.AdminAccountUpdateReq;
 import com.scac.admin.dto.response.AdminAccountRes;
 import com.scac.admin.service.AdminAccountService;
+import com.scac.global.log.annotation.AutoLog; // 💡 AutoLog 어노테이션 추가
 import com.scac.global.response.ApiResponse;
 
 import jakarta.validation.Valid;
@@ -32,6 +33,12 @@ public class AdminAccountController {
      * 1. 관리자 계정 생성
      */
     @PostMapping
+    @AutoLog(
+        logType = "ADMIN", 
+        action = "CREATE", 
+        targetType = "ADMIN_ACCOUNT", 
+        content = "신규 관리자 계정 생성"
+    )
     public ResponseEntity<ApiResponse<AdminAccountRes>> createAdminAccount(
             @Valid @RequestBody AdminAccountCreateReq req
     ) {
@@ -42,7 +49,7 @@ public class AdminAccountController {
     }
 
     /**
-     * 2. 전체 관리자 계정 목록 조회
+     * 2. 전체 관리자 계정 목록 조회 (READ - 제외)
      */
     @GetMapping
     public ResponseEntity<ApiResponse<List<AdminAccountRes>>> getAllAdminAccounts() {
@@ -53,7 +60,7 @@ public class AdminAccountController {
     }
 
     /**
-     * 3. 특정 관리자 계정 상세 조회
+     * 3. 특정 관리자 계정 상세 조회 (READ - 제외)
      */
     @GetMapping("/{adminId}")
     public ResponseEntity<ApiResponse<AdminAccountRes>> getAdminAccount(
@@ -69,6 +76,12 @@ public class AdminAccountController {
      * 4. 관리자 권한 / 비밀번호 수정
      */
     @PatchMapping("/{adminId}")
+    @AutoLog(
+        logType = "ADMIN", 
+        action = "UPDATE", 
+        targetType = "ADMIN_ACCOUNT", 
+        content = "관리자 계정 정보 및 권한 수정"
+    )
     public ResponseEntity<ApiResponse<Void>> updateAdminAccount(
             @PathVariable Long adminId,
             @RequestBody AdminAccountUpdateReq req
@@ -83,6 +96,12 @@ public class AdminAccountController {
      * 5. 관리자 계정 삭제
      */
     @DeleteMapping("/{adminId}")
+    @AutoLog(
+        logType = "ADMIN", 
+        action = "DELETE", 
+        targetType = "ADMIN_ACCOUNT", 
+        content = "관리자 계정 삭제"
+    )
     public ResponseEntity<ApiResponse<Void>> deleteAdminAccount(
             @PathVariable Long adminId
     ) {
