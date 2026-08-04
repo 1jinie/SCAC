@@ -1,12 +1,13 @@
-import { useEffect, useMemo, useState } from 'react';
-import AdminSummary from '../../components/common/Summary';
-import { useAdminUserStore } from '../../store/adminUserStore';
-import AdminUserDetail from './components/AdminUserDetail';
-import AdminUserList from './components/AdminUserList';
-import AdminUserSearch from './components/AdminUserSearch';
-import './css/AdminUserPage.css';
+import { useEffect, useMemo, useState } from "react";
+import AdminSummary from "../../components/common/Summary";
+import { useAdminUserStore } from "../../store/adminUserStore";
+import AdminUserDetail from "./components/AdminUserDetail";
+import AdminUserList from "./components/AdminUserList";
+import AdminUserSearch from "./components/AdminUserSearch";
+import "./css/AdminUserPage.css";
 
 export default function AdminUserPage() {
+  // 💡 adminUserStore 정의에 존재하는 메서드만 정확히 추출
   const {
     users,
     selectedUser,
@@ -16,13 +17,12 @@ export default function AdminUserPage() {
     fetchUsers,
     selectUser,
     changeUserStatus,
-    changeUserRole,
     clearSelectedUser,
   } = useAdminUserStore();
 
-  const [searchKeyword, setSearchKeyword] = useState('');
-  const [statusFilter, setStatusFilter] = useState('ALL');
-  const [roleFilter, setRoleFilter] = useState('ALL');
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [roleFilter, setRoleFilter] = useState("ALL");
 
   useEffect(() => {
     fetchUsers();
@@ -35,11 +35,11 @@ export default function AdminUserPage() {
           summary.memberCount += 1;
         }
 
-        if (user.userStatus === 'SUSPENDED') {
+        if (user.userStatus === "SUSPENDED") {
           summary.suspendedCount += 1;
         }
 
-        if (user.role === 'ADMIN') {
+        if (user.role === "ADMIN") {
           summary.adminCount += 1;
         }
 
@@ -55,24 +55,23 @@ export default function AdminUserPage() {
 
   const filteredUsers = useMemo(() => {
     const normalizedKeyword = searchKeyword
-      .replaceAll('-', '')
+      .replaceAll("-", "")
       .trim()
       .toLowerCase();
 
     return users.filter((user) => {
-      const phoneNumber = user.phoneNumber?.replaceAll('-', '').toLowerCase();
-
+      const phoneNumber = user.phoneNumber?.replaceAll("-", "").toLowerCase();
       const userId = String(user.userId);
 
       const matchesKeyword =
-        normalizedKeyword === '' ||
+        normalizedKeyword === "" ||
         phoneNumber?.includes(normalizedKeyword) ||
         userId.includes(normalizedKeyword);
 
       const matchesStatus =
-        statusFilter === 'ALL' || user.userStatus === statusFilter;
+        statusFilter === "ALL" || user.userStatus === statusFilter;
 
-      const matchesRole = roleFilter === 'ALL' || user.role === roleFilter;
+      const matchesRole = roleFilter === "ALL" || user.role === roleFilter;
 
       return matchesKeyword && matchesStatus && matchesRole;
     });
@@ -81,68 +80,62 @@ export default function AdminUserPage() {
   const summaryItems = useMemo(
     () => [
       {
-        key: 'total',
-        label: '전체 사용자',
+        key: "total",
+        label: "전체 사용자",
         value: users.length,
-        unit: '명',
-        description: '회원 및 비회원 포함',
-        color: 'blue',
+        unit: "명",
+        description: "회원 및 비회원 포함",
+        color: "blue",
       },
       {
-        key: 'member',
-        label: '가입 회원',
+        key: "member",
+        label: "가입 회원",
         value: userSummary.memberCount,
-        unit: '명',
-        description: '회원가입 완료 사용자',
-        color: 'mint',
+        unit: "명",
+        description: "회원가입 완료 사용자",
+        color: "mint",
       },
       {
-        key: 'suspended',
-        label: '이용 정지',
+        key: "suspended",
+        label: "이용 정지",
         value: userSummary.suspendedCount,
-        unit: '명',
-        description: '현재 이용 제한 사용자',
-        color: 'orange',
+        unit: "명",
+        description: "현재 이용 제한 사용자",
+        color: "orange",
       },
       {
-        key: 'admin',
-        label: '관리자',
+        key: "admin",
+        label: "관리자",
         value: userSummary.adminCount,
-        unit: '명',
-        description: '관리자 권한 보유자',
-        color: 'dark',
+        unit: "명",
+        description: "관리자 권한 보유자",
+        color: "dark",
       },
     ],
     [users.length, userSummary],
   );
 
   const handleResetSearch = () => {
-    setSearchKeyword('');
-    setStatusFilter('ALL');
-    setRoleFilter('ALL');
+    setSearchKeyword("");
+    setStatusFilter("ALL");
+    setRoleFilter("ALL");
     clearSelectedUser();
   };
 
+  // 💡 백엔드 PATCH /api/admin/users/{userId}/penalty 호출 연동
   const handleStatusChange = async (userId, userStatus, penaltyEndDate) => {
-    const result = await changeUserStatus(userId, userStatus, penaltyEndDate);
+    const result = await changeUserStatus(
+      userId,
+      userStatus,
+      penaltyEndDate,
+      "관리자 제재 처리",
+    );
 
-    if (!result.success) {
-      window.alert('회원 상태 변경에 실패했습니다.');
-      return;
+    if (result.success) {
+      window.alert("회원 상태가 변경되었습니다.");
+    } else {
+      window.alert("회원 상태 변경에 실패했습니다.");
     }
-
-    window.alert('회원 상태가 변경되었습니다.');
-  };
-
-  const handleRoleChange = async (userId, role) => {
-    const result = await changeUserRole(userId, role);
-
-    if (!result.success) {
-      window.alert('회원 권한 변경에 실패했습니다.');
-      return;
-    }
-
-    window.alert('회원 권한이 변경되었습니다.');
   };
 
   if (isLoading) {
@@ -158,9 +151,7 @@ export default function AdminUserPage() {
       <header className="admin_page_heading">
         <div>
           <p className="admin_page_eyebrow">USER MANAGEMENT</p>
-
           <h2>회원 관리</h2>
-
           <p>SCAC 회원을 조회하고 관리합니다.</p>
         </div>
       </header>
@@ -190,7 +181,6 @@ export default function AdminUserPage() {
           selectedUser={selectedUser}
           isUpdating={isUpdating}
           onStatusChange={handleStatusChange}
-          onRoleChange={handleRoleChange}
         />
       </section>
     </main>

@@ -1,6 +1,8 @@
 package com.scac.payment.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -239,5 +241,20 @@ public class PaymentService {
     Payment payment = getPayment(paymentId);
     paymentRepository.delete(payment);
   }
+
+  // 대시보드용 당일 매출액 집계 메서드
+  public long getTodayRevenue() {
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();              // 오늘 00:00:00
+        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);         // 오늘 23:59:59.999999999
+
+        Long revenue = paymentRepository.sumTodayRevenue(
+            PaymentStatus.PAID,
+            startOfDay,
+            endOfDay
+        );
+
+        return revenue != null ? revenue : 0L;
+    }
 
 }

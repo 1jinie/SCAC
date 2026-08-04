@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.scac.admin.dto.request.AdminUserSearchReq;
 import com.scac.admin.dto.request.UserPenaltyReq;
 import com.scac.admin.dto.response.AdminUserRes;
+import com.scac.global.log.annotation.AutoLog;
 import com.scac.global.response.ApiResponse;
 import com.scac.user.service.UserService;
 
@@ -54,17 +55,21 @@ public class AdminUserController {
         );
     }
 
-    /**
-     * 회원 제재 및 상태 변경 (정지/영구정지/정지해제)
-     */
-    @PatchMapping("/{userId}/penalty")
-    public ResponseEntity<ApiResponse<Void>> applyPenalty(
-            @PathVariable Long userId,
-            @Valid @RequestBody UserPenaltyReq req
-    ) {
+        /**
+         * 회원 제재 및 상태 변경 (정지/영구정지/정지해제)
+         */
+        @PatchMapping("/{userId}/penalty")
+        @AutoLog(
+        logType = "USER", 
+        action = "PENALTY", 
+        targetType = "USER", 
+        content = "관리자에 의한 회원 제재 처리"
+        )
+        public ResponseEntity<ApiResponse<Void>> applyPenalty(
+                @PathVariable Long userId,
+                @Valid @RequestBody UserPenaltyReq req
+        ) {
         userService.applyUserPenalty(userId, req);
-        return ResponseEntity.ok(
-                ApiResponse.success("회원 상태 변경이 완료되었습니다.")
-        );
-    }
+        return ResponseEntity.ok(ApiResponse.success("회원 제재 처리가 완료되었습니다."));
+        }
 }

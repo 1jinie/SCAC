@@ -1,29 +1,58 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   LOG_ACTION_LABELS,
   LOG_LEVEL_LABELS,
   LOG_REFERENCE_TYPE_LABELS,
   LOG_TARGET_TYPE_LABELS,
   LOG_TYPE_LABELS,
-} from '../../constants/log';
-import admin_log from '../../data/admin_log.json';
-import './css/AdminLogPage.css';
+} from "../../constants/log";
+import "./css/AdminLogPage.css";
 
 export default function AdminLogDetailPage() {
   const { logId } = useParams();
   const navigate = useNavigate();
 
-  const selectedLog = admin_log.find((log) => log.logId === Number(logId));
+  const [selectedLog, setSelectedLog] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 💡 단일 로그 조회 (전체 목록에서 해당 ID 검색)
+  useEffect(() => {
+    const fetchLogDetail = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axiosInstance.get("/api/admin/logs");
+        const logs = response.data?.data ?? [];
+        const foundLog = logs.find(
+          (log) => Number(log.id ?? log.logId) === Number(logId),
+        );
+        setSelectedLog(foundLog ?? null);
+      } catch (error) {
+        console.error("로그 상세 조회 실패:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchLogDetail();
+  }, [logId]);
+
+  if (isLoading) {
+    return (
+      <div className="admin_log_detail_empty">
+        <p>로그 상세 정보를 불러오는 중입니다...</p>
+      </div>
+    );
+  }
 
   if (!selectedLog) {
     return (
       <div className="admin_log_detail_empty">
         <p>로그 정보를 찾을 수 없습니다.</p>
-
         <button
           type="button"
           className="admin_log_back_button"
-          onClick={() => navigate('/log')}
+          onClick={() => navigate("/log")}
         >
           목록으로
         </button>
@@ -36,9 +65,7 @@ export default function AdminLogDetailPage() {
       <section className="admin_page_heading">
         <div>
           <p className="admin_page_eyebrow">LOG DETAIL</p>
-
           <h2>로그 상세</h2>
-
           <p>선택한 시스템 로그의 상세 내용을 확인합니다.</p>
         </div>
       </section>
@@ -50,12 +77,16 @@ export default function AdminLogDetailPage() {
           <div className="admin_log_detail_grid">
             <div>
               <span>로그 번호</span>
-              <strong>#{selectedLog.logId}</strong>
+              <strong>#{selectedLog.id ?? selectedLog.logId}</strong>
             </div>
 
             <div>
               <span>발생 시간</span>
-              <strong>{selectedLog.createdAt}</strong>
+              <strong>
+                {selectedLog.createdAt
+                  ? String(selectedLog.createdAt).replace("T", " ")
+                  : "-"}
+              </strong>
             </div>
 
             <div>
@@ -68,7 +99,7 @@ export default function AdminLogDetailPage() {
             <div>
               <span>상태</span>
               <strong
-                className={`admin_log_level is_${selectedLog.logLevel.toLowerCase()}`}
+                className={`admin_log_level is_${(selectedLog.logLevel ?? "INFO").toLowerCase()}`}
               >
                 {LOG_LEVEL_LABELS[selectedLog.logLevel] ?? selectedLog.logLevel}
               </strong>
@@ -77,7 +108,9 @@ export default function AdminLogDetailPage() {
             <div>
               <span>처리 유형</span>
               <strong>
-                {LOG_ACTION_LABELS[selectedLog.action] ?? selectedLog.action}
+                {LOG_ACTION_LABELS[selectedLog.action] ??
+                  selectedLog.action ??
+                  "-"}
               </strong>
             </div>
           </div>
@@ -90,25 +123,25 @@ export default function AdminLogDetailPage() {
             <div>
               <span>사용자 ID</span>
               <strong>
-                {selectedLog.userId ? `#${selectedLog.userId}` : '-'}
+                {selectedLog.userId ? `#${selectedLog.userId}` : "-"}
               </strong>
             </div>
 
             <div>
               <span>전화번호</span>
-              <strong>{selectedLog.phoneNumber ?? '-'}</strong>
+              <strong>{selectedLog.phoneNumber ?? "-"}</strong>
             </div>
 
             <div>
               <span>관리자 ID</span>
               <strong>
-                {selectedLog.adminId ? `#${selectedLog.adminId}` : '-'}
+                {selectedLog.adminId ? `#${selectedLog.adminId}` : "-"}
               </strong>
             </div>
 
             <div>
               <span>관리자 계정</span>
-              <strong>{selectedLog.adminLoginId ?? '-'}</strong>
+              <strong>{selectedLog.adminLoginId ?? "-"}</strong>
             </div>
           </div>
         </section>
@@ -123,14 +156,14 @@ export default function AdminLogDetailPage() {
                 {selectedLog.targetType
                   ? (LOG_TARGET_TYPE_LABELS[selectedLog.targetType] ??
                     selectedLog.targetType)
-                  : '-'}
+                  : "-"}
               </strong>
             </div>
 
             <div>
               <span>대상 ID</span>
               <strong>
-                {selectedLog.targetId ? `#${selectedLog.targetId}` : '-'}
+                {selectedLog.targetId ? `#${selectedLog.targetId}` : "-"}
               </strong>
             </div>
 
@@ -140,14 +173,14 @@ export default function AdminLogDetailPage() {
                 {selectedLog.referenceType
                   ? (LOG_REFERENCE_TYPE_LABELS[selectedLog.referenceType] ??
                     selectedLog.referenceType)
-                  : '-'}
+                  : "-"}
               </strong>
             </div>
 
             <div>
               <span>연관 ID</span>
               <strong>
-                {selectedLog.referenceId ? `#${selectedLog.referenceId}` : '-'}
+                {selectedLog.referenceId ? `#${selectedLog.referenceId}` : "-"}
               </strong>
             </div>
           </div>
@@ -163,7 +196,7 @@ export default function AdminLogDetailPage() {
 
           <div className="admin_log_detail_message">
             <span>상세 내용</span>
-            <p>{selectedLog.detail ?? '-'}</p>
+            <p>{selectedLog.detail ?? "-"}</p>
           </div>
         </section>
 
@@ -171,7 +204,7 @@ export default function AdminLogDetailPage() {
           <button
             type="button"
             className="admin_log_back_button"
-            onClick={() => navigate('/log')}
+            onClick={() => navigate("/log")}
           >
             목록으로
           </button>

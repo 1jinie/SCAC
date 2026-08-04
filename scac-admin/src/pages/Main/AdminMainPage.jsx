@@ -1,33 +1,100 @@
-import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import AdminSummary from '../../components/common/Summary';
-import dashboardData from '../../data/dashboard_data.json';
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { adminApi } from "../../api/adminApi";
+import { deviceApi } from "../../api/deviceApi";
+import axiosInstance from "../../api/axiosInstance";
+import AdminSummary from "../../components/common/Summary";
 
 export default function AdminMainPage() {
-  const { dashboard, logList, device } = dashboardData;
   const navigate = useNavigate();
 
-  const reservationAlertCount = 2;
+  // 1. 백엔드에서 불러올 상태 값들
+  const [dashboard, setDashboard] = useState(null);
+  const [devices, setDevices] = useState([]);
+  const [recentLogs, setRecentLogs] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const deviceAlertCount = useMemo(() => {
-    return device.filter(
-      (item) => item.status === 'WARNING' || item.status === 'ERROR',
-    ).length;
-  }, [device]);
+  // 2. 통합 데이터 조회 Effect
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setIsLoading(true);
 
-  const summaryItems = dashboard.map((summary) => ({
-    ...summary,
-    value:
-      summary.key === 'pending-reservation'
-        ? reservationAlertCount
-        : summary.key === 'device-error'
-          ? deviceAlertCount
-          : summary.value,
-  }));
+        // ① 대시보드 요약 통계 조회
+        const dashboardData = await adminApi.getDashboardSummary();
+        setDashboard(dashboardData);
+
+        // ② 장치 상태 목록 조회
+        const deviceList = await deviceApi.getDevices();
+        setDevices(deviceList ?? []);
+
+        // ③ 최근 시스템 로그 조회 (최신 5건만 표출)
+        const logResponse = await axiosInstance.get("/api/admin/logs");
+        const logs = logResponse.data?.data ?? [];
+        setRecentLogs(logs.slice(0, 5));
+      } catch (error) {
+        console.error("대시보드 데이터 조회 실패:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  // 3. 백엔드 DashboardRes 객체를 AdminSummary 카드 규격으로 매핑
+  const summaryItems = useMemo(() => {
+    if (!dashboard) return [];
+
+    return [
+      {
+        key: "occupiedSeats",
+        label: "이용 중 좌석",
+        value: dashboard.occupiedSeats,
+        unit: "석",
+        description: `전체 ${dashboard.totalSeats}석 중 이용 중`,
+        color: "blue",
+      },
+      {
+        key: "todayRevenue",
+        label: "당일 매출액",
+        value: (dashboard.todayRevenue ?? 0).toLocaleString(),
+        unit: "원",
+        description: "오늘 누적 결제금액",
+        color: "mint",
+      },
+      {
+        key: "errorDevices",
+        label: "장비 장애",
+        value: dashboard.errorDevices,
+        unit: "대",
+        description: `전체 ${dashboard.totalDevices}대 중 이상 발생`,
+        color: "orange",
+      },
+      {
+        key: "todayErrorLogs",
+        label: "오늘의 에러 로그",
+        value: dashboard.todayErrorLogs,
+        unit: "건",
+        description: "시스템 오류 발생 건수",
+        color: "red",
+      },
+    ];
+  }, [dashboard]);
 
   const handleMovePage = (path) => {
     navigate(path);
   };
+
+  if (isLoading) {
+    return (
+      <div className="admin_dashboard">
+        <p className="admin_loading_message">
+          대시보드 데이터를 불러오는 중입니다...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="admin_dashboard">
@@ -39,9 +106,11 @@ export default function AdminMainPage() {
         </div>
       </section>
 
+      {/* 실시간 요약 통계 카드 */}
       <AdminSummary items={summaryItems} />
 
       <section className="admin_dashboard_grid">
+        {/* ① 실시간 장치 상태 패널 */}
         <article className="admin_panel">
           <div className="admin_panel_header">
             <div>
@@ -52,34 +121,34 @@ export default function AdminMainPage() {
             <button
               type="button"
               className="admin_text_button"
-              onClick={() => handleMovePage('/device')}
+              onClick={() => handleMovePage("/device")}
             >
               전체 보기
             </button>
           </div>
 
           <div className="admin_device_list">
-            {device.map((item) => (
-              <div key={item.id} className="admin_device_item">
+            {devices.map((item) => (
+              <div key={item.deviceId} className="admin_device_item">
                 <div className="admin_device_name_wrap">
                   <span
-                    className={`admin_status_dot is_${item.status.toLowerCase()}`}
+                    className={`admin_status_dot is_${(item.status ?? "NORMAL").toLowerCase()}`}
                     aria-hidden="true"
                   />
-
-                  <span className="admin_device_name">{item.name}</span>
+                  <span className="admin_device_name">{item.deviceName}</span>
                 </div>
 
                 <span
-                  className={`admin_status_badge is_${item.status.toLowerCase()}`}
+                  className={`admin_status_badge is_${(item.status ?? "NORMAL").toLowerCase()}`}
                 >
-                  {item.statusLabel}
+                  {item.status}
                 </span>
               </div>
             ))}
           </div>
         </article>
 
+        {/* ② 빠른 관리 패널 */}
         <article className="admin_panel">
           <div className="admin_panel_header">
             <div>
@@ -92,7 +161,7 @@ export default function AdminMainPage() {
             <button
               type="button"
               className="admin_quick_menu"
-              onClick={() => handleMovePage('/reservation')}
+              onClick={() => handleMovePage("/reservation")}
             >
               <strong>스터디룸 현황</strong>
               <span>스터디룸의 현재 상태 및 예약 일정 관리</span>
@@ -101,7 +170,7 @@ export default function AdminMainPage() {
             <button
               type="button"
               className="admin_quick_menu"
-              onClick={() => handleMovePage('/ticket')}
+              onClick={() => handleMovePage("/ticket")}
             >
               <strong>이용권 관리</strong>
               <span>가격 및 판매 여부 설정</span>
@@ -110,7 +179,7 @@ export default function AdminMainPage() {
             <button
               type="button"
               className="admin_quick_menu"
-              onClick={() => handleMovePage('/payment')}
+              onClick={() => handleMovePage("/payment")}
             >
               <strong>결제 관리</strong>
               <span>결제 조회 및 취소</span>
@@ -119,7 +188,7 @@ export default function AdminMainPage() {
             <button
               type="button"
               className="admin_quick_menu"
-              onClick={() => handleMovePage('/log')}
+              onClick={() => handleMovePage("/log")}
             >
               <strong>로그 확인</strong>
               <span>오류 및 시스템 기록 조회</span>
@@ -127,6 +196,7 @@ export default function AdminMainPage() {
           </div>
         </article>
 
+        {/* ③ 최근 시스템 로그 패널 */}
         <article className="admin_panel admin_recent_log_panel">
           <div className="admin_panel_header">
             <div>
@@ -137,7 +207,7 @@ export default function AdminMainPage() {
             <button
               type="button"
               className="admin_text_button"
-              onClick={() => handleMovePage('/log')}
+              onClick={() => handleMovePage("/log")}
             >
               전체 보기
             </button>
@@ -155,11 +225,15 @@ export default function AdminMainPage() {
               </thead>
 
               <tbody>
-                {logList.map((log) => (
+                {recentLogs.map((log) => (
                   <tr key={log.id}>
-                    <td>{log.createdAt}</td>
                     <td>
-                      <span className="admin_log_type">{log.type}</span>
+                      {log.createdAt
+                        ? String(log.createdAt).replace("T", " ")
+                        : "-"}
+                    </td>
+                    <td>
+                      <span className="admin_log_type">{log.logType}</span>
                     </td>
                     <td>{log.content}</td>
                     <td>
