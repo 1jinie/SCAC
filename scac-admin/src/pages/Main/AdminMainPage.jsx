@@ -1,48 +1,100 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { adminApi } from "../../api/adminApi";
+import { deviceApi } from "../../api/deviceApi";
+import axiosInstance from "../../api/axiosInstance";
 import AdminSummary from "../../components/common/Summary";
 
 export default function AdminMainPage() {
-  const [dashboard, setDashboard] = useState(null);
   const navigate = useNavigate();
 
-  const reservationAlertCount = 2;
+  // 1. 백엔드에서 불러올 상태 값들
+  const [dashboard, setDashboard] = useState(null);
+  const [devices, setDevices] = useState([]);
+  const [recentLogs, setRecentLogs] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // 2. 통합 데이터 조회 Effect
   useEffect(() => {
-    const fetchDashboard = async () => {
+    const fetchDashboardData = async () => {
       try {
-        const data = await adminApi.getDashboardSummary(); // DashboardRes DTO
-        setDashboard(data);
+        setIsLoading(true);
+
+        // ① 대시보드 요약 통계 조회
+        const dashboardData = await adminApi.getDashboardSummary();
+        setDashboard(dashboardData);
+
+        // ② 장치 상태 목록 조회
+        const deviceList = await deviceApi.getDevices();
+        setDevices(deviceList ?? []);
+
+        // ③ 최근 시스템 로그 조회 (최신 5건만 표출)
+        const logResponse = await axiosInstance.get("/api/admin/logs");
+        const logs = logResponse.data?.data ?? [];
+        setRecentLogs(logs.slice(0, 5));
       } catch (error) {
-        console.error("대시보드 조회 실패:", error);
+        console.error("대시보드 데이터 조회 실패:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
-    fetchDashboard();
+
+    fetchDashboardData();
   }, []);
 
-  // 백엔드 반환 데이터(totalUsers, todayRevenue, errorDevices 등)를 Summary 카드에 바인딩
+  // 3. 백엔드 DashboardRes 객체를 AdminSummary 카드 규격으로 매핑
+  const summaryItems = useMemo(() => {
+    if (!dashboard) return [];
 
-  const deviceAlertCount = useMemo(() => {
-    return device.filter(
-      (item) => item.status === "WARNING" || item.status === "ERROR",
-    ).length;
-  }, [device]);
-
-  const summaryItems = dashboard.map((summary) => ({
-    ...summary,
-    value:
-      summary.key === "pending-reservation"
-        ? reservationAlertCount
-        : summary.key === "device-error"
-          ? deviceAlertCount
-          : summary.value,
-  }));
+    return [
+      {
+        key: "occupiedSeats",
+        label: "이용 중 좌석",
+        value: dashboard.occupiedSeats,
+        unit: "석",
+        description: `전체 ${dashboard.totalSeats}석 중 이용 중`,
+        color: "blue",
+      },
+      {
+        key: "todayRevenue",
+        label: "당일 매출액",
+        value: (dashboard.todayRevenue ?? 0).toLocaleString(),
+        unit: "원",
+        description: "오늘 누적 결제금액",
+        color: "mint",
+      },
+      {
+        key: "errorDevices",
+        label: "장비 장애",
+        value: dashboard.errorDevices,
+        unit: "대",
+        description: `전체 ${dashboard.totalDevices}대 중 이상 발생`,
+        color: "orange",
+      },
+      {
+        key: "todayErrorLogs",
+        label: "오늘의 에러 로그",
+        value: dashboard.todayErrorLogs,
+        unit: "건",
+        description: "시스템 오류 발생 건수",
+        color: "red",
+      },
+    ];
+  }, [dashboard]);
 
   const handleMovePage = (path) => {
     navigate(path);
   };
+
+  if (isLoading) {
+    return (
+      <div className="admin_dashboard">
+        <p className="admin_loading_message">
+          대시보드 데이터를 불러오는 중입니다...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="admin_dashboard">
@@ -54,9 +106,11 @@ export default function AdminMainPage() {
         </div>
       </section>
 
+      {/* 실시간 요약 통계 카드 */}
       <AdminSummary items={summaryItems} />
 
       <section className="admin_dashboard_grid">
+        {/* ① 실시간 장치 상태 패널 */}
         <article className="admin_panel">
           <div className="admin_panel_header">
             <div>
@@ -74,27 +128,27 @@ export default function AdminMainPage() {
           </div>
 
           <div className="admin_device_list">
-            {device.map((item) => (
-              <div key={item.id} className="admin_device_item">
+            {devices.map((item) => (
+              <div key={item.deviceId} className="admin_device_item">
                 <div className="admin_device_name_wrap">
                   <span
-                    className={`admin_status_dot is_${item.status.toLowerCase()}`}
+                    className={`admin_status_dot is_${(item.status ?? "NORMAL").toLowerCase()}`}
                     aria-hidden="true"
                   />
-
-                  <span className="admin_device_name">{item.name}</span>
+                  <span className="admin_device_name">{item.deviceName}</span>
                 </div>
 
                 <span
-                  className={`admin_status_badge is_${item.status.toLowerCase()}`}
+                  className={`admin_status_badge is_${(item.status ?? "NORMAL").toLowerCase()}`}
                 >
-                  {item.statusLabel}
+                  {item.status}
                 </span>
               </div>
             ))}
           </div>
         </article>
 
+        {/* ② 빠른 관리 패널 */}
         <article className="admin_panel">
           <div className="admin_panel_header">
             <div>
@@ -142,6 +196,7 @@ export default function AdminMainPage() {
           </div>
         </article>
 
+        {/* ③ 최근 시스템 로그 패널 */}
         <article className="admin_panel admin_recent_log_panel">
           <div className="admin_panel_header">
             <div>
@@ -170,11 +225,15 @@ export default function AdminMainPage() {
               </thead>
 
               <tbody>
-                {logList.map((log) => (
+                {recentLogs.map((log) => (
                   <tr key={log.id}>
-                    <td>{log.createdAt}</td>
                     <td>
-                      <span className="admin_log_type">{log.type}</span>
+                      {log.createdAt
+                        ? String(log.createdAt).replace("T", " ")
+                        : "-"}
+                    </td>
+                    <td>
+                      <span className="admin_log_type">{log.logType}</span>
                     </td>
                     <td>{log.content}</td>
                     <td>
