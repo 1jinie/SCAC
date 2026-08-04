@@ -53,6 +53,12 @@ public class AdminSeatController {
      * 3. 좌석 상태 수동 변경 (점검중/사용가능 등)
      */
     @PatchMapping("/{seatId}/status")
+    @AutoLog(
+        logType = "SEAT", 
+        action = "UPDATE_STATUS", 
+        targetType = "SEAT", 
+        content = "관리자에 의한 좌석 상태 수동 변경"
+    )
     public ResponseEntity<ApiResponse<Void>> updateSeatStatus(
             @PathVariable Long seatId,
             @Valid @RequestBody SeatStatusRequest request
