@@ -1,6 +1,15 @@
 package com.scac.seat.service;
 
 import com.scac.system.service.SystemLogService;
+import com.scac.ticket.entity.Ticket;
+import com.scac.ticket.repository.TicketRepository;
+import com.scac.ticketusage.entity.TicketUsage;
+import com.scac.ticketusage.repository.TicketUsageRepository;
+import com.scac.user.entity.User;
+import com.scac.user.repository.UserRepository;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -14,6 +23,7 @@ import com.scac.global.exception.ResourceNotFoundException;
 import com.scac.seat.domain.Seat;
 import com.scac.seat.dto.SeatOccupiedResponse;
 import com.scac.seat.dto.SeatResponse;
+import com.scac.seat.dto.SeatUserInfoRes;
 import com.scac.seat.repository.SeatRepository;
 import com.scac.system.entity.SystemLog;
 
@@ -25,6 +35,9 @@ public class SeatService {
     private final SystemLogService systemLogService;
     private final CheckinRepository checkinRepository;
     private final SeatRepository seatRepository;
+    private final TicketUsageRepository ticketUsageRepository;
+    private final UserRepository userRepository;
+    private final TicketRepository ticketRepository;
     
     // 전체 좌석 조회
     public List<SeatResponse> getAllSeats() {
@@ -92,5 +105,43 @@ public class SeatService {
             .build();
 
         systemLogService.createLog(log);
+    }
+
+    // 현재 좌석 사용자 조회(관리자)
+    public SeatUserInfoRes getCurrentUser(Long seatId){
+        Checkin checkin = checkinRepository.findBySeatIdAndCheckinStatusIn(seatId, List.of(CheckinStatus.USING, CheckinStatus.AWAY))
+            .orElseThrow(() -> 
+                new ResourceNotFoundException("현재 이용자가 없습니다")
+        );
+
+        TicketUsage usage = ticketUsageRepository.findById(checkin.getUsageId())
+            .orElseThrow(() ->
+                new ResourceNotFoundException("이용권 정보가 없습니다")
+        );
+
+        User user = userRepository.findById(usage.getUserId())
+            .orElseThrow(() ->
+                new ResourceNotFoundException("사용자가 없습니다")
+        );
+
+        Ticket ticket = ticketRepository.findById(usage.getTicketId())
+            .orElseThrow(() ->
+                new ResourceNotFoundException("이용권이 없습니다")
+        );
+
+        Long remainingDays = null;
+
+        // 기간권이면 남은 일수 계산
+        if(ticket.getTicketType().name().equals("PERIOD_PACK")){
+            remainingDays = ChronoUnit.DAYS.between(LocalDate.now(), usage.getEndAt().toLocalDate());
+        }
+
+        return new SeatUserInfoRes(
+            user.getPhoneNumber(),
+            ticket.getTicketName(),
+            ticket.getTicketType().name(),
+            usage.getRemainingTime(),
+            remainingDays
+        );
     }
 }

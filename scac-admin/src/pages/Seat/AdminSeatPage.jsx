@@ -38,20 +38,23 @@ export default function AdminSeatPage() {
 
     selectSeat(seat.id);
 
+    let user = null;
+
+    if (seat.status === "using") {
+      try {
+        const response = await adminSeatApi.getSeatUser(seat.id);
+
+        user = response.data.data;
+      } catch (error) {
+        console.error("현재 이용자 조회 실패", error);
+      }
+    }
+
     setSelectedSeat({
       seatId: seat.id,
       seatNumber: seat.name,
       status: TO_ADMIN_STATUS[seat.status],
-
-      user:
-        seat.status === "using"
-          ? {
-              phoneNumber: "010-1234-5678",
-              ticketName: "4시간권",
-              ticketType: "TIME",
-              remainingTime: 95,
-            }
-          : null,
+      user,
     });
 
     try {

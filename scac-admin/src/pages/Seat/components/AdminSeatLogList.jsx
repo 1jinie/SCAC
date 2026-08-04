@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Pagination from "../../../components/common/Pagination";
+import { formatPhoneNumber } from "../../../utils/formatter";
 
 export default function AdminSeatLogList({ logs = [], selectedSeat }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -60,7 +61,7 @@ export default function AdminSeatLogList({ logs = [], selectedSeat }) {
 
                   <td>{log.content}</td>
 
-                  <td>{log.phoneNumber}</td>
+                  <td>{formatPhoneNumber(log.phoneNumber)}</td>
                 </tr>
               ))}
             </tbody>

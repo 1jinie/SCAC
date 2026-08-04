@@ -15,10 +15,13 @@ import com.scac.admin.dto.request.SeatStatusRequest;
 import com.scac.global.response.ApiResponse;
 import com.scac.seat.dto.SeatOccupiedResponse;
 import com.scac.seat.dto.SeatResponse;
+import com.scac.seat.dto.SeatUserInfoRes;
 import com.scac.seat.service.SeatService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -76,4 +79,19 @@ public class AdminSeatController {
                 ApiResponse.success("강제 퇴실 처리가 완료되었습니다.")
         );
     }
+
+    /**
+     * 5. 좌석 사용자 조회
+     */
+    @GetMapping("/{seatId}/user")
+    public ResponseEntity<ApiResponse<SeatUserInfoRes>> getSeatUser(
+        @PathVariable Long seatId
+        ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        seatService.getCurrentUser(seatId)
+                )
+        );
+    }
+    
 }

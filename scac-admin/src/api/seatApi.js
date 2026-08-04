@@ -30,4 +30,7 @@ export const adminSeatApi = {
 
     return response.data;
   },
+
+  // 선택 좌석 현재 사용자
+  getSeatUser: (seatId) => axiosInstance.get(`/api/admin/seats/${seatId}/user`),
 };
