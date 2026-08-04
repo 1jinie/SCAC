@@ -32,7 +32,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final SystemLogService systemLogService; // 💡 감사 로그 생성을 위한 주입 추가
+    private final SystemLogService systemLogService;
     //private final UserTicketRepository userTicketRepository; 이용권 조회를 위해 주입
 
     @Transactional(readOnly = true)
@@ -135,10 +135,6 @@ public class UserService {
         user.changePassword(passwordEncoder.encode(req.newPassword()));
     }
 
-    // ==========================================
-    // 💡 [배치/스케줄러] 정지 회원 자동 해제
-    // ==========================================
-
     /**
      * [스케줄러] 정지 기간(penaltyEndDate)이 지난 회원을 자동으로 ACTIVE 상태로 전환
      */
@@ -151,7 +147,7 @@ public class UserService {
         }
 
         for (User user : expiredUsers) {
-            // User 엔티티의 기존 정지 해제 메서드 활용[cite: 28]
+
             user.checkAndReleaseSuspension();
 
             // 자동 해제 감사 로그(SystemLog) 생성
@@ -176,12 +172,8 @@ public class UserService {
         return expiredUsers.size();
     }
 
-    // ==========================================
-    // 💡 [관리자 기능] 회원 검색 / 상세조회 / 제재 이관
-    // ==========================================
-
     /**
-     * [관리자] 전체 회원 목록 및 조건 조회[cite: 28]
+     * [관리자] 전체 회원 목록 및 조건 조회
      */
     @Transactional(readOnly = true)
     public List<AdminUserRes> getUsersForAdmin(AdminUserSearchReq searchReq) {
@@ -207,7 +199,7 @@ public class UserService {
     }
 
     /**
-     * [관리자] 회원 상세 조회[cite: 28]
+     * [관리자] 회원 상세 조회
      */
     @Transactional(readOnly = true)
     public AdminUserRes getUserDetailForAdmin(Long userId) {
@@ -216,7 +208,7 @@ public class UserService {
     }
 
     /**
-     * [관리자] 회원 제재 / 정지 / 정지 해제 처리[cite: 28]
+     * [관리자] 회원 제재 / 정지 / 정지 해제 처리
      */
     public void applyUserPenalty(Long userId, UserPenaltyReq req) {
         User user = findUser(userId);
