@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.scac.admin.dto.request.SeatStatusRequest;
+import com.scac.global.log.annotation.AutoLog;
 import com.scac.global.response.ApiResponse;
 import com.scac.seat.dto.SeatOccupiedResponse;
 import com.scac.seat.dto.SeatResponse;
@@ -67,6 +68,12 @@ public class AdminSeatController {
      * 4. 강제 퇴실 조치 (시간 차감 및 퇴실 처리 포함)
      */
     @PostMapping("/{seatId}/force-checkout")
+    @AutoLog(
+    logType = "SEAT", 
+    action = "FORCE_CHECKOUT", 
+    targetType = "SEAT", 
+    content = "관리자에 의한 강제 퇴실 처리"
+)
     public ResponseEntity<ApiResponse<Void>> forceCheckout(
             @PathVariable Long seatId
     ) {
