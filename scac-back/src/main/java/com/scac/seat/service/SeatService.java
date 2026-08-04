@@ -76,23 +76,6 @@ public class SeatService {
                 new ResourceNotFoundException("입실 정보가 없습니다")
         );
 
-        // 이용권 조회
-        TicketUsage ticketUsage = ticketUsageRepository.findById(checkin.getUsageId())
-            .orElseThrow(() ->
-                new ResourceNotFoundException("이용권 정보가 없습니다")
-        );
-
-        // 시간권이면 사용시간 차감
-        if(ticketUsage.getTicketType() == TicketType.TIME_PACK){
-            LocalDateTime now = LocalDateTime.now();
-
-            long usedMinutes = java.time.Duration.between(checkin.getCheckinAt(), now).toMinutes();
-
-            if(usedMinutes > 0){
-                ticketUsage.deductTime((int) usedMinutes);
-            }
-        }
-
         checkin.checkout();
 
         seat.releaseUser();
