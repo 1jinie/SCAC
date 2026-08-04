@@ -169,7 +169,6 @@ export default function AdminSeatPage() {
         </div>
 
         <AdminSeatDetail
-          // 샘플 데이터로 14번 좌석을 잠시 사용할 예정
           selectedSeat={selectedSeat}
           onSeatChange={handleSeatStatusChange}
         />

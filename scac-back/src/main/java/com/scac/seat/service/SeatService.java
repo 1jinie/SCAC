@@ -85,6 +85,8 @@ public class SeatService {
             .userId(checkin.getUserId())
             .targetType("SEAT")
             .targetId(seat.getSeatId())
+            .referenceType("CHECK_INOUT")
+            .referenceId(checkin.getCheckinId())
             .content(seat.getSeatNumber() + " 좌석 강제 퇴실 처리")
             .detail("{\"reason\":\"관리자 강제 퇴실\"}")
             .build();

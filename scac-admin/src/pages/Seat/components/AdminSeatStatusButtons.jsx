@@ -1,11 +1,17 @@
 import { adminSeatApi } from "../../../api/seatApi";
 
 export default function AdminSeatStatusButtons({ selectedSeat, onSeatChange }) {
-  const handleStatusChange = (status) => {
-    // 추후 API 연결
-    // await seatApi.updateStatus(selectedSeat.seatId, status);
+  const handleStatusChange = async (status) => {
+    try {
+      await adminSeatApi.updateSeatStatus(selectedSeat.seatId, status);
 
-    onSeatChange(status);
+      onSeatChange(status);
+
+      alert("좌석 상태가 변경되었습니다");
+    } catch (error) {
+      console.error("좌석 상태 변경 실패", error);
+      alert("좌석 상태 변경에 실패했습니다");
+    }
   };
 
   const handleForceCheckout = async () => {
