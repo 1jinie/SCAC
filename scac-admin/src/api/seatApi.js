@@ -21,6 +21,16 @@ export const adminSeatApi = {
   forceCheckout: (seatId) =>
     axiosInstance.post(`/api/admin/seats/${seatId}/force-checkout`),
 
+  // 전체 좌석 이용 로그
+  getAllSeatLogs: (seatId) => axiosInstance.get("/api/admin/logs/seat"),
+
   // 선택 좌석 이용 로그
-  getSeatLogs: (seatId) => axiosInstance.get(`/api/admin/seats/${seatId}/logs`),
+  getSeatLogs: async (seatId) => {
+    const response = await axiosInstance.get(`/api/admin/logs/seat/${seatId}`);
+
+    return response.data;
+  },
+
+  // 선택 좌석 현재 사용자
+  getSeatUser: (seatId) => axiosInstance.get(`/api/admin/seats/${seatId}/user`),
 };

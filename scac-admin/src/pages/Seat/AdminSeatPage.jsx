@@ -1,14 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import SeatList from "../../components/seat/SeatList";
 import { seatStore } from "../../store/seatStore";
 import { roomStore } from "../../store/roomStore";
+import { adminSeatApi } from "../../api/seatApi";
 import AdminSeatDetail from "./components/AdminSeatDetail";
 import AdminSeatLogList from "./components/AdminSeatLogList";
 import "./css/AdminSeatPage.css";
 
 export default function AdminSeatPage() {
   const [selectedSeat, setSelectedSeat] = useState(null);
-  const [data] = useState([]);
+  const [logs, setLogs] = useState([]);
   const seats = seatStore((state) => state.seats);
   const fetchSeats = seatStore((state) => state.fetchSeats);
   const rooms = roomStore((state) => state.rooms);
@@ -32,44 +33,68 @@ export default function AdminSeatPage() {
     BRK: "repair",
   };
 
-  const handleClick = (seat) => {
+  const handleClick = async (seat) => {
     if (seat.type !== "seat") return;
 
     selectSeat(seat.id);
+
+    let user = null;
+
+    if (seat.status === "using") {
+      try {
+        const response = await adminSeatApi.getSeatUser(seat.id);
+
+        user = response.data.data;
+      } catch (error) {
+        console.error("현재 이용자 조회 실패", error);
+      }
+    }
 
     setSelectedSeat({
       seatId: seat.id,
       seatNumber: seat.name,
       status: TO_ADMIN_STATUS[seat.status],
-
-      user:
-        seat.status === "using"
-          ? {
-              phoneNumber: "010-1234-5678",
-              ticketName: "4시간권",
-              ticketType: "TIME",
-              remainingTime: 95,
-            }
-          : null,
+      user,
     });
+
+    try {
+      const response = await adminSeatApi.getSeatLogs(seat.id);
+
+      setLogs(response.data);
+    } catch (error) {
+      console.error("좌석 로그 조회 실패", error);
+      setLogs([]);
+    }
   };
 
   useEffect(() => {
     fetchSeats();
     fetchRooms();
+
+    const fetchLogs = async () => {
+      try {
+        const response = await adminSeatApi.getAllSeatLogs();
+        setLogs(response.data.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchLogs();
   }, [fetchSeats, fetchRooms]);
 
-  const filteredLogs = useMemo(() => {
-    if (!selected) {
-      return data;
-    }
-
-    return data.filter((log) => Number(log.seat_id) === Number(selected));
-  }, [data, selected]);
-
-  const handleReset = () => {
+  const handleReset = async () => {
     resetSeat();
     setSelectedSeat(null);
+
+    try {
+      const response = await adminSeatApi.getAllSeatLogs();
+
+      setLogs(response.data.data);
+    } catch (error) {
+      console.error("전체 좌석 로그 조회 실패", error);
+      setLogs([]);
+    }
   };
 
   const handleSeatStatusChange = (newStatus, isForceCheckout = false) => {
@@ -147,13 +172,12 @@ export default function AdminSeatPage() {
         </div>
 
         <AdminSeatDetail
-          // 샘플 데이터로 14번 좌석을 잠시 사용할 예정
           selectedSeat={selectedSeat}
           onSeatChange={handleSeatStatusChange}
         />
       </section>
 
-      <AdminSeatLogList logs={filteredLogs} selectedSeat={selected} />
+      <AdminSeatLogList logs={logs} selectedSeat={selected} />
     </div>
   );
 }
