@@ -9,9 +9,7 @@ import "./css/AdminSeatPage.css";
 
 export default function AdminSeatPage() {
   const [selectedSeat, setSelectedSeat] = useState(null);
-  const [seatLogs, setSeatLogs] = useState([]); // 💡 백엔드 좌석 로그 저장
-  const [isLoadingLogs, setIsLoadingLogs] = useState(false);
-
+  const [logs, setLogs] = useState([]);
   const seats = seatStore((state) => state.seats);
   const fetchSeats = seatStore((state) => state.fetchSeats);
   const rooms = roomStore((state) => state.rooms);
@@ -33,42 +31,68 @@ export default function AdminSeatPage() {
     BRK: "repair",
   };
 
-  // 1. 전체 좌석 및 룸 목록 조회
-  useEffect(() => {
-    fetchSeats();
-    fetchRooms();
-  }, [fetchSeats, fetchRooms]);
-
-  // 2. 좌석 클릭 및 해당 좌석 실시간 로그 조회
   const handleClick = async (seat) => {
     if (seat.type !== "seat") return;
 
     selectSeat(seat.id);
 
+    let user = null;
+
+    if (seat.status === "using") {
+      try {
+        const response = await adminSeatApi.getSeatUser(seat.id);
+
+        user = response.data.data;
+      } catch (error) {
+        console.error("현재 이용자 조회 실패", error);
+      }
+    }
+
     setSelectedSeat({
       seatId: seat.id,
       seatNumber: seat.name,
       status: TO_ADMIN_STATUS[seat.status],
-      currentUserId: seat.currentUserId,
+      user,
     });
 
-    // 백엔드 좌석 로그 API 호출
     try {
-      setIsLoadingLogs(true);
       const response = await adminSeatApi.getSeatLogs(seat.id);
-      setSeatLogs(response.data?.data ?? []);
+
+      setLogs(response.data);
     } catch (error) {
-      console.error("좌석 로그 조회 실패:", error);
-      setSeatLogs([]);
-    } finally {
-      setIsLoadingLogs(false);
+      console.error("좌석 로그 조회 실패", error);
+      setLogs([]);
     }
   };
 
-  const handleReset = () => {
+  useEffect(() => {
+    fetchSeats();
+    fetchRooms();
+
+    const fetchLogs = async () => {
+      try {
+        const response = await adminSeatApi.getAllSeatLogs();
+        setLogs(response.data.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchLogs();
+  }, [fetchSeats, fetchRooms]);
+
+  const handleReset = async () => {
     resetSeat();
     setSelectedSeat(null);
-    setSeatLogs([]);
+
+    try {
+      const response = await adminSeatApi.getAllSeatLogs();
+
+      setLogs(response.data.data);
+    } catch (error) {
+      console.error("전체 좌석 로그 조회 실패", error);
+      setLogs([]);
+    }
   };
 
   // 3. 백엔드 DB 좌석 상태 변경 및 강제 퇴실 연동
@@ -166,7 +190,7 @@ export default function AdminSeatPage() {
         />
       </section>
 
-      <AdminSeatLogList logs={seatLogs} selectedSeat={selected} />
+      <AdminSeatLogList logs={logs} selectedSeat={selected} />
     </div>
   );
 }

@@ -78,6 +78,7 @@ public class SecurityConfig {
                                 ).permitAll()
                                 // 3. PUBLIC PATCH 요청
                                 .requestMatchers(HttpMethod.PATCH, "/api/users/*/entry-password",
+                                        "/api/admin/seats/**",
                                         "/api/checkin/away",
                                         "/api/checkin/comeback",
                                         "/api/checkin/checkout"
