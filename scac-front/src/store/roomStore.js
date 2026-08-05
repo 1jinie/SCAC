@@ -10,7 +10,7 @@ export const roomStore = create((set) => ({
 
     const statusMap = {
       AVB: 'available',
-      USE: 'using',
+      USR: 'using',
       UNA: 'unavailable',
       BRK: 'repair',
     };
