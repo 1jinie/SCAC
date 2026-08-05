@@ -77,20 +77,17 @@ public class SystemLogService {
     }
 
     /**
-     * 당일 발생한 심각/에러 로그 수 집계 (대시보드용)
+     * 당일 발생한 심각/에러 로그 수 집계 (DB 카운트 쿼리 적용)
      */
     public long getTodayErrorCount() {
         LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
         LocalDateTime endOfToday = LocalDate.now().atTime(LocalTime.MAX);
 
-        List<SystemLog> todayLogs = systemLogRepository.findByCreatedAtBetween(startOfToday, endOfToday);
-        return todayLogs.stream()
-                .filter(log -> "ERROR".equalsIgnoreCase(log.getLogLevel()) || "CRITICAL".equalsIgnoreCase(log.getLogLevel()))
-                .count();
+        return systemLogRepository.countTodayErrors(startOfToday, endOfToday);
     }
 
     /**
-     * 로그 생성 (다른 도메인에서 시스템 이벤트 발생 시 호출)
+     * 로그 생성 (다른 도메인에서 시스템 이벤트 발생 시 독립 트랜잭션으로 저장)
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public SystemLog createLog(SystemLog log) {

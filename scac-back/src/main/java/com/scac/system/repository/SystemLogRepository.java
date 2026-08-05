@@ -4,53 +4,41 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.scac.system.entity.SystemLog;
 
 public interface SystemLogRepository extends JpaRepository<SystemLog, Long> {
 
-    /**
-     * 로그 타입별 조회
-     */
     List<SystemLog> findByLogType(String logType);
 
-    /**
-     * 로그 레벨별 조회
-     */
     List<SystemLog> findByLogLevel(String logLevel);
 
-    /**
-     * 사용자별 로그 조회
-     */
     List<SystemLog> findByUserId(Long userId);
 
-    /**
-     * 관리자별 로그 조회
-     */
     List<SystemLog> findByAdminId(Long adminId);
 
-    /**
-     * 대상 타입별 로그 조회
-     */
     List<SystemLog> findByTargetTypeOrderByCreatedAtDesc(String targetType);
 
-    /**
-     * 대상타입 및 대상ID별 로그 조회
-     */
     List<SystemLog> findByTargetTypeAndTargetIdOrderByCreatedAtDesc(String targetType, Long targetId);
 
-    /**
-     * 기간별 로그 조회
-     */
     List<SystemLog> findByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
 
-    /**
-     * 액션별 기간 조회
-     */
     List<SystemLog> findByActionAndCreatedAtBetween(
             String action,
             LocalDateTime startDate,
             LocalDateTime endDate
     );
 
+    /**
+     * [추가] 금일 에러/심각 로그 수 DB 레벨 집계 (대시보드 성능 최적화)
+     */
+    @Query("SELECT COUNT(l) FROM SystemLog l " +
+           "WHERE UPPER(l.logLevel) IN ('ERROR', 'CRITICAL') " +
+           "AND l.createdAt BETWEEN :startDate AND :endDate")
+    long countTodayErrors(
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
 }
