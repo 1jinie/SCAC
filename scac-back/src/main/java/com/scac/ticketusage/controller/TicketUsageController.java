@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/ticket-usages")
+@RequestMapping("/api/ticket-usages")
 public class TicketUsageController {
     private final TicketUsageService ticketUsageService;
 
