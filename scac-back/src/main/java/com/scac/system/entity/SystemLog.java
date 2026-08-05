@@ -2,7 +2,15 @@ package com.scac.system.entity;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,24 +36,13 @@ public class SystemLog {
     @Column(name = "log_id")
     private Long id;
 
-    @Column(
-            name = "log_type",
-            nullable = false,
-            length = 50
-    )
+    @Column(name = "log_type", nullable = false, length = 50)
     private String logType;
 
-    @Column(
-            name = "log_level",
-            nullable = false,
-            length = 20
-    )
+    @Column(name = "log_level", nullable = false, length = 20)
     private String logLevel;
 
-    @Column(
-            nullable = false,
-            length = 100
-    )
+    @Column(nullable = false, length = 100)
     private String action;
 
     @Column(name = "user_id")
@@ -54,45 +51,32 @@ public class SystemLog {
     @Column(name = "admin_id")
     private Long adminId;
 
-    @Column(
-            name = "ip_address",
-            length = 45
-    )
+    @Column(name = "ip_address", length = 45)
     private String ipAddress;
 
-    @Column(
-            name = "target_type",
-            length = 50
-    )
+    @Column(name = "target_type", length = 50)
     private String targetType;
 
     @Column(name = "target_id")
     private Long targetId;
 
-    @Column(
-            name = "reference_type",
-            length = 50
-    )
+    @Column(name = "reference_type", length = 50)
     private String referenceType;
 
     @Column(name = "reference_id")
     private Long referenceId;
 
-    @Column(
-            length = 255
-    )
+    @Column(length = 255)
     private String content;
 
-    @Column(
-            columnDefinition = "TEXT"
-    )
+    @Column(columnDefinition = "TEXT")
     private String detail;
 
+    @CreationTimestamp
     @Column(
             name = "created_at",
             nullable = false,
-            updatable = false,
-            insertable = false
+            updatable = false
     )
     private LocalDateTime createdAt;
 
@@ -124,5 +108,4 @@ public class SystemLog {
         this.content = content;
         this.detail = detail;
     }
-
 }
