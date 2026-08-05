@@ -1,12 +1,12 @@
 const STATUS_LABELS = {
-  RESERVED: '예약 완료',
-  IN_USE: '이용 중',
-  COMPLETED: '이용 완료',
-  USER_CANCELED: '사용자 취소',
-  ADMIN_CANCELED: '관리자 취소',
+  RESERVED: "예약 완료",
+  CONFIRMED: "예약 확정",
+  IN_USE: "이용 중",
+  COMPLETED: "이용 완료",
+  CANCELED: "예약 취소",
 };
 
-const canAdminCancel = (reservation) => reservation.status === 'RESERVED';
+const canAdminCancel = (reservation) => reservation.status === "RESERVED";
 
 export default function RoomDailySchedule({
   selectedRoom,

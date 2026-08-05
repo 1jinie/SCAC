@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.scac.admin.dto.request.SeatStatusRequest;
-import com.scac.global.log.annotation.AutoLog;
 import com.scac.global.response.ApiResponse;
 import com.scac.seat.dto.SeatOccupiedResponse;
 import com.scac.seat.dto.SeatResponse;

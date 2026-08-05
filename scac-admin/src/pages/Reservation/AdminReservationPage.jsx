@@ -25,9 +25,10 @@ export default function AdminReservationPage() {
 
   // 스토어 상태 추출
   const seats = seatStore((state) => state.seats);
+  const fetchSeats = seatStore((state) => state.fetchSeats);
   const selected = seatStore((state) => state.selectedSeat);
   const selectSeat = seatStore((state) => state.selectSeat);
-  const resetSeat = seatStore((state) => state.clearSelected);
+  const clearSelected = seatStore((state) => state.clearSelected);
 
   const rooms = roomStore((state) => state.rooms);
   const fetchRooms = roomStore((state) => state.fetchRooms);
@@ -36,14 +37,16 @@ export default function AdminReservationPage() {
 
   // 1. 전체 스터디룸 정보 조회
   useEffect(() => {
+    fetchSeats();
     fetchRooms();
-  }, [fetchRooms]);
+    clearSelected();
+  }, [fetchRooms, clearSelected]);
 
   // 2. 백엔드 실시간 스터디룸 예약 목록 조회
   const fetchReservations = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await reservationApi.getReservationList();
+      const response = await reservationApi.getAdminReservationList();
       setReservations(response.data?.data ?? []);
     } catch (error) {
       console.error("예약 목록 조회 실패:", error);
@@ -63,6 +66,7 @@ export default function AdminReservationPage() {
       return;
     }
 
+    console.log(seat);
     selectSeat(seat.id);
 
     // roomStore에서 방 정보 찾기
@@ -121,9 +125,11 @@ export default function AdminReservationPage() {
 
   // 전체 현황 보기
   const handleReset = () => {
-    resetSeat();
+    clearSelected();
     setSelectedRoom(null);
   };
+
+  const items = [...seats, ...rooms];
 
   return (
     <div className="admin_reservation_page">
@@ -156,7 +162,7 @@ export default function AdminReservationPage() {
             <div className="admin_map_viewport">
               <div className="admin_map_scale">
                 <SeatList
-                  seats={seats}
+                  seats={items}
                   selected={selected}
                   mode={mode}
                   onClick={handleClick}

@@ -4,9 +4,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.scac.global.enums.ReservationStatus;
 import com.scac.meetingroom.domain.MeetingRoomReservation;
+import com.scac.meetingroom.dto.AdminReservationResponse;
 
 public interface MeetingRoomReservationRepository extends JpaRepository<MeetingRoomReservation, Long>{
     boolean existsByRoomIdAndReservationDateAndStatusInAndStartHourLessThanAndEndHourGreaterThan(
@@ -23,4 +25,25 @@ public interface MeetingRoomReservationRepository extends JpaRepository<MeetingR
             LocalDate reservationDate,
             List<ReservationStatus> statuses
     );
+
+    // 관리자용 예약 조회
+    @Query("""
+        SELECT new com.scac.meetingroom.dto.AdminReservationResponse(
+                r.reservationId,
+                r.roomId,
+                mr.roomName,
+                r.userId,
+                u.phoneNumber,
+                r.reservationDate,
+                r.startHour,
+                r.endHour,
+                r.status,
+                r.createdAt
+        )
+        FROM MeetingRoomReservation r
+        JOIN MeetingRoom mr ON r.roomId = mr.roomId
+        JOIN User u ON r.userId = u.id
+        ORDER BY r.createdAt DESC
+    """)
+    List<AdminReservationResponse> findAdminReservationList();
 }

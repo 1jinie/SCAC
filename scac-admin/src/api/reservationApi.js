@@ -1,12 +1,12 @@
-import axiosInstance from './axiosInstance.js';
+import axiosInstance from "./axiosInstance.js";
 
 export const reservationApi = {
   // 전체 예약 조회
-  getReservationList: () => axiosInstance.get('/api/meeting-rooms'),
+  getReservationList: () => axiosInstance.get("/api/meeting-rooms"),
 
   // 예약 생성
   createReservation: (data) =>
-    axiosInstance.post('/api/meeting-rooms/reservations', data),
+    axiosInstance.post("/api/meeting-rooms/reservations", data),
 
   // 예약 취소
   cancelReservation: (reservationId) =>
@@ -21,4 +21,8 @@ export const reservationApi = {
         date,
       },
     }),
+
+  // 관리자용 예약 조회
+  getAdminReservationList: () =>
+    axiosInstance.get("/api/meeting-rooms/admin/reservations"),
 };
