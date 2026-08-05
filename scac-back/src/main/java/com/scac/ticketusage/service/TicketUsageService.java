@@ -1,8 +1,11 @@
 package com.scac.ticketusage.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.scac.global.enums.TicketUsageStatus;
 import com.scac.global.exception.ResourceNotFoundException;
 import com.scac.ticket.entity.Ticket;
 import com.scac.ticket.service.TicketService;
@@ -24,6 +27,19 @@ public class TicketUsageService {
   public TicketUsage findTicketUsage(Long ticketUsageId) {
     return ticketUsageRepository.findById(ticketUsageId)
       .orElseThrow(() -> new ResourceNotFoundException("사용자 이용권을 찾을 수 없습니다."));
+  }
+
+  /* [추가] 사용자의 활성(USING / READY) 이용권명 조회 */
+  public String getActiveTicketName(Long userId) {
+    List<TicketUsageStatus> activeStatuses = List.of(TicketUsageStatus.USING, TicketUsageStatus.READY);
+
+    return ticketUsageRepository
+      .findFirstByUserIdAndStatusInOrderByCreatedAtDesc(userId, activeStatuses)
+      .map(ticketUsage -> {
+          Ticket ticket = ticketService.findTicket(ticketUsage.getTicketId());
+          return ticket.getTicketName();
+      })
+      .orElse(null);
   }
 
   @Transactional
