@@ -1,16 +1,16 @@
-package com.scac.memo.service;
+package com.scac.admin.service;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.scac.admin.dto.request.AdminMemoCreateDTO;
+import com.scac.admin.dto.request.AdminMemoUpdateDTO;
+import com.scac.admin.dto.response.AdminMemoResDTO;
+import com.scac.admin.entity.AdminMemo;
+import com.scac.admin.repository.AdminMemoRepository;
 import com.scac.global.exception.ResourceNotFoundException;
-import com.scac.memo.dto.AdminMemoCreateDTO;
-import com.scac.memo.dto.AdminMemoResDTO;
-import com.scac.memo.dto.AdminMemoUpdateDTO;
-import com.scac.memo.entity.AdminMemo;
-import com.scac.memo.repository.AdminMemoRepository;
 
 import lombok.RequiredArgsConstructor;
 

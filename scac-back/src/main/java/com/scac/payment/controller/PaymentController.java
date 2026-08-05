@@ -63,39 +63,4 @@ public class PaymentController {
         return ResponseEntity.ok(ApiResponse.success("Mock 카드 결제가 승인되었습니다.", payment));
     }
 
-    // 관리자
-    // 특정 결제내역 조회
-    @GetMapping("/{paymentId}")
-    public ResponseEntity<ApiResponse<PaymentResDTO>> findById(@PathVariable("paymentId") Long paymentId) {
-        PaymentResDTO payment = paymentService.findById(paymentId);
-
-        return ResponseEntity.ok(ApiResponse.success("결제 내역 조회를 완료했습니다.", payment));
-    }
-
-    // 모든 결제내역 조회
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<PaymentHistoryDTO>>> findAll(
-        @RequestParam(name = "userId", required = false) Long userId) {
-        List<PaymentHistoryDTO> payments = paymentService.findAll(userId);
-
-        return ResponseEntity.ok(ApiResponse.success("결제 내역 목록 조회를 완료했습니다.", payments));
-    }
-
-    // 결제 취소
-    @PatchMapping("/{paymentId}/cancel")
-    public ResponseEntity<ApiResponse<PaymentResDTO>> cancel(@PathVariable("paymentId") Long paymentId,
-        @Valid @RequestBody PaymentCancelDTO form) {
-        PaymentResDTO payment = paymentService.cancel(paymentId, form);
-
-        return ResponseEntity.ok(ApiResponse.success("결제 취소를 완료했습니다.", payment));
-    }
-
-    // 결제내역 삭제
-    @DeleteMapping("/{paymentId}")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable("paymentId") Long paymentId) {
-        paymentService.delete(paymentId);
-
-        return ResponseEntity.ok(ApiResponse.success("결제 내역 삭제를 완료했습니다."));
-    }
-
 }

@@ -153,8 +153,7 @@ public class CheckinService {
             .referenceType("CHECK_INOUT")
             .referenceId(savedCheckin.getCheckinId())
             .content(seat.getSeatNumber() + " 좌석 입실 완료")
-            .detail(String.format("{\"seat_name\":\"%s\"}", seat.getSeatNumber()))
-            .build();
+            .detail(String.format("{\"seat_name\":\"%s\"}", seat.getSeatNumber())).build();
 
         systemLogService.createLog(log);
 

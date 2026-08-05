@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.scac.global.response.ApiResponse;
+import com.scac.meetingroom.dto.AdminReservationResponse;
 import com.scac.meetingroom.dto.MeetingRoomAvailabilityResponse;
 import com.scac.meetingroom.dto.MeetingRoomReservationRequest;
 import com.scac.meetingroom.dto.MeetingRoomReservationResponse;
@@ -73,5 +74,14 @@ public class MeetingRoomReservationController {
         );
     }
     
+    // 관리자 예약 조회
+    @GetMapping("/admin/reservations")
+    public ResponseEntity<ApiResponse<List<AdminReservationResponse>>> getAdminReservations() {
+        return ResponseEntity.ok(
+            ApiResponse.success(
+                reservationService.getAdminReservationList()
+            )
+        );
+    }
     
 }

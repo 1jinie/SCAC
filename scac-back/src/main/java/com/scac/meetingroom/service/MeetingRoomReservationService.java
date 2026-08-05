@@ -5,18 +5,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.scac.global.enums.ReservationStatus;
 import com.scac.global.exception.BusinessException;
 import com.scac.global.exception.ResourceNotFoundException;
 import com.scac.meetingroom.domain.MeetingRoomReservation;
+import com.scac.meetingroom.dto.AdminReservationResponse;
 import com.scac.meetingroom.dto.MeetingRoomAvailabilityResponse;
 import com.scac.meetingroom.dto.MeetingRoomReservationRequest;
 import com.scac.meetingroom.dto.MeetingRoomReservationResponse;
 import com.scac.meetingroom.repository.MeetingRoomRepository;
 import com.scac.meetingroom.repository.MeetingRoomReservationRepository;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -136,5 +137,11 @@ public class MeetingRoomReservationService {
         }
 
         return result;
+    }
+
+    // 관리자용 예약 조회
+    @Transactional(readOnly = true)
+    public List<AdminReservationResponse> getAdminReservationList(){
+        return reservationRepository.findAdminReservationList();
     }
 }

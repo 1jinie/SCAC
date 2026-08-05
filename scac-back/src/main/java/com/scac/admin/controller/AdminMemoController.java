@@ -1,4 +1,4 @@
-package com.scac.memo.controller;
+package com.scac.admin.controller;
 
 import java.util.List;
 
@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.scac.admin.dto.request.AdminMemoCreateDTO;
+import com.scac.admin.dto.request.AdminMemoUpdateDTO;
+import com.scac.admin.dto.response.AdminMemoResDTO;
+import com.scac.admin.service.AdminMemoService;
 import com.scac.auth.jwt.UserPrincipal;
 import com.scac.global.response.ApiResponse;
-import com.scac.memo.dto.AdminMemoCreateDTO;
-import com.scac.memo.dto.AdminMemoResDTO;
-import com.scac.memo.dto.AdminMemoUpdateDTO;
-import com.scac.memo.service.AdminMemoService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,13 +41,10 @@ public class AdminMemoController {
 
   // 관리자 메모 등록
   @PostMapping
-  public ResponseEntity<ApiResponse<AdminMemoResDTO>> create(
-      @Valid @RequestBody AdminMemoCreateDTO form,
-      @AuthenticationPrincipal UserPrincipal currentUser
-  ) {
-    Long adminId = (currentUser != null) ? currentUser.id() : null;
+  public ResponseEntity<ApiResponse<AdminMemoResDTO>> create(@Valid @RequestBody AdminMemoCreateDTO form,
+    @AuthenticationPrincipal UserPrincipal currentAdmin) {
 
-    AdminMemoResDTO memo = adminMemoService.create(adminId, form);
+    AdminMemoResDTO memo = adminMemoService.create(currentAdmin.id(), form);
 
     return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("관리자 메모 등록을 완료했습니다.", memo));
   }
@@ -55,7 +52,7 @@ public class AdminMemoController {
   // 관리자 메모 수정
   @PutMapping("/{memoId}")
   public ResponseEntity<ApiResponse<AdminMemoResDTO>> update(@PathVariable("memoId") Long memoId,
-    @Valid @RequestBody AdminMemoUpdateDTO form) {
+    @Valid @RequestBody AdminMemoUpdateDTO form, @AuthenticationPrincipal UserPrincipal currentAdmin) {
     AdminMemoResDTO memo = adminMemoService.update(memoId, form);
 
     return ResponseEntity.ok(ApiResponse.success("관리자 메모 수정을 완료했습니다.", memo));

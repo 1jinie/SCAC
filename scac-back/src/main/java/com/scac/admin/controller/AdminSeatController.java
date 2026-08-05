@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.scac.admin.dto.request.SeatStatusRequest;
-import com.scac.global.log.annotation.AutoLog;
 import com.scac.global.response.ApiResponse;
 import com.scac.seat.dto.SeatUserInfoRes;
 import com.scac.seat.service.SeatService;
@@ -41,12 +40,6 @@ public class AdminSeatController {
      * 2. 좌석 상태 수동 변경 (점검중/사용가능 등)
      */
     @PatchMapping("/{seatId}/status")
-    @AutoLog(
-        logType = "SEAT", 
-        action = "UPDATE_STATUS", 
-        targetType = "SEAT", 
-        content = "관리자에 의한 좌석 상태 수동 변경"
-    )
     public ResponseEntity<ApiResponse<Void>> updateSeatStatus(
             @PathVariable Long seatId,
             @Valid @RequestBody SeatStatusRequest request

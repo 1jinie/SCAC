@@ -8,6 +8,7 @@ import {
   LOG_TYPE_LABELS,
 } from "../../constants/log";
 import "./css/AdminLogPage.css";
+import axiosInstance from "../../api/axiosInstance";
 
 export default function AdminLogDetailPage() {
   const { logId } = useParams();
