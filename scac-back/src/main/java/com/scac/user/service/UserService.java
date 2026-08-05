@@ -140,6 +140,7 @@ public class UserService {
     /**
      * [스케줄러] 정지 기간(penaltyEndDate)이 지난 회원을 자동으로 ACTIVE 상태로 전환
      */
+    @Transactional
     public int releaseExpiredPenalties() {
         LocalDateTime now = LocalDateTime.now();
         List<User> expiredUsers = userRepository.findExpiredSuspendedUsers(UserStatus.SUSPENDED, now);
