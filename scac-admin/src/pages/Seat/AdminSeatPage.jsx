@@ -69,6 +69,7 @@ export default function AdminSeatPage() {
   useEffect(() => {
     fetchSeats();
     fetchRooms();
+    resetSeat();
 
     const fetchLogs = async () => {
       try {
@@ -80,7 +81,7 @@ export default function AdminSeatPage() {
     };
 
     fetchLogs();
-  }, [fetchSeats, fetchRooms]);
+  }, [fetchSeats, fetchRooms, resetSeat]);
 
   const handleReset = async () => {
     resetSeat();
