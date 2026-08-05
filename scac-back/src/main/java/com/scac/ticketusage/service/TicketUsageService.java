@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class TicketUsageService {
 
-  // private final TicketUsageMapper ticketUsageMapper;
   private final TicketService ticketService;
   private final TicketUsageRepository ticketUsageRepository;
 
@@ -29,7 +28,7 @@ public class TicketUsageService {
       .orElseThrow(() -> new ResourceNotFoundException("사용자 이용권을 찾을 수 없습니다."));
   }
 
-  /* [추가] 사용자의 활성(USING / READY) 이용권명 조회 */
+  /* 사용자의 활성(USING / READY) 이용권명 조회 */
   public String getActiveTicketName(Long userId) {
     List<TicketUsageStatus> activeStatuses = List.of(TicketUsageStatus.USING, TicketUsageStatus.READY);
 
@@ -45,8 +44,6 @@ public class TicketUsageService {
   @Transactional
   public TicketUsageResDTO issue(Long userId, Long ticketId) {
     Ticket ticket = ticketService.findTicket(ticketId);
-    System.out.println("issue userId = " + userId);
-    System.out.println("issue ticketId = " + ticketId);
 
     return TicketUsageResDTO.from(ticketUsageRepository.save(TicketUsage.create(userId, ticket)));
   }
