@@ -1,6 +1,5 @@
 package com.scac.payment.dto;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.scac.global.enums.PaymentMethod;
@@ -25,9 +24,8 @@ public class PaymentResDTO {
     private final String approvalNum;
     private final String paymentKey;
     private final String cancelReason;
-    private final LocalDate cancelledAt;
+    private final LocalDateTime cancelledAt; // LocalDateTime으로 수정
 
-  // Payment 엔티티를 PaymentDTO로 변환하는 메서드
   public static PaymentResDTO from(Payment payment) {
     return new PaymentResDTO(
         payment.getPaymentId(),
