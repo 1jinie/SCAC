@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.scac.auth.jwt.UserPrincipal;
 import com.scac.global.response.ApiResponse;
 import com.scac.memo.dto.AdminMemoCreateDTO;
 import com.scac.memo.dto.AdminMemoResDTO;
@@ -39,9 +41,11 @@ public class AdminMemoController {
 
   // 관리자 메모 등록
   @PostMapping
-  public ResponseEntity<ApiResponse<AdminMemoResDTO>> create(@Valid @RequestBody AdminMemoCreateDTO form) {
-    // 추후 관리자 인증 연동 후 JWT에서 adminId 가져오기
-    Long adminId = null;
+  public ResponseEntity<ApiResponse<AdminMemoResDTO>> create(
+      @Valid @RequestBody AdminMemoCreateDTO form,
+      @AuthenticationPrincipal UserPrincipal currentUser
+  ) {
+    Long adminId = (currentUser != null) ? currentUser.id() : null;
 
     AdminMemoResDTO memo = adminMemoService.create(adminId, form);
 
