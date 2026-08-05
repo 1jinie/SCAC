@@ -68,7 +68,6 @@ public class SeatService {
         Seat seat = seatRepository.findById(seatId)
                 .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 좌석입니다."));
 
-        // 이용 중인 좌석을 점검 중으로 바꿀 경우 할당 해제 처리 등의 안전장치 추가 가능
         if (status == SeatStatus.BRK && seat.getCurrentUserId() != null) {
             seat.releaseUser();
         }
@@ -82,15 +81,14 @@ public class SeatService {
         Seat seat = seatRepository.findById(seatId)
                 .orElseThrow(() -> new ResourceNotFoundException("없는 좌석입니다."));
 
-        // 단건 조회의 예외 방지를 위해 최신 1건 가져오기
-        Checkin checkin = checkinRepository.findBySeatIdAndCheckinStatusIn(
+        // 최신 입실/외출 기록 1건만 단건 조회하여 다중 예외 방지
+        Checkin checkin = checkinRepository.findFirstBySeatIdAndCheckinStatusInOrderByCheckinAtDesc(
                 seatId, List.of(CheckinStatus.USING, CheckinStatus.AWAY)
         ).orElseThrow(() -> new ResourceNotFoundException("입실 정보가 없습니다."));
 
         checkin.checkout();
         seat.releaseUser();
 
-        // 관리자 컨트롤러에서 @AutoLog를 사용하지 않는다면 이 수동 로그 생성을 유지합니다.
         SystemLog log = SystemLog.builder()
                 .logType("SEAT")
                 .logLevel("WARNING")
@@ -109,7 +107,7 @@ public class SeatService {
 
     // 현재 좌석 사용자 조회(관리자)
     public SeatUserInfoRes getCurrentUser(Long seatId){
-        Checkin checkin = checkinRepository.findBySeatIdAndCheckinStatusIn(
+        Checkin checkin = checkinRepository.findFirstBySeatIdAndCheckinStatusInOrderByCheckinAtDesc(
                 seatId, List.of(CheckinStatus.USING, CheckinStatus.AWAY)
         ).orElseThrow(() -> new ResourceNotFoundException("현재 이용자가 없습니다."));
 
@@ -124,7 +122,6 @@ public class SeatService {
 
         Long remainingDays = null;
 
-        // Enum 비교 및 Null Safety 처리
         if (ticket.getTicketType() == TicketType.PERIOD_PACK && Objects.nonNull(usage.getEndAt())) {
             remainingDays = ChronoUnit.DAYS.between(LocalDate.now(), usage.getEndAt().toLocalDate());
         }
