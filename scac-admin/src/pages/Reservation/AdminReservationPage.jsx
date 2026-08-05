@@ -46,7 +46,7 @@ export default function AdminReservationPage() {
   const fetchReservations = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await reservationApi.getReservationList();
+      const response = await reservationApi.getAdminReservationList();
       setReservations(response.data?.data ?? []);
     } catch (error) {
       console.error("예약 목록 조회 실패:", error);
