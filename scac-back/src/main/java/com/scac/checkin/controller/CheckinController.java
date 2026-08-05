@@ -1,5 +1,10 @@
 package com.scac.checkin.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,13 +18,6 @@ import com.scac.global.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/checkin")
@@ -28,36 +26,31 @@ public class CheckinController {
 
     // 비회원 입실 준비
     @PostMapping("/prepare")
-    public ResponseEntity<ApiResponse<CheckinPrepareResponse>> prepare(@RequestBody CheckinPrepareRequest request) {
+    public ResponseEntity<ApiResponse<CheckinPrepareResponse>> prepare(
+        @Valid @RequestBody CheckinPrepareRequest request
+    ) {
         return ResponseEntity.ok(
-            ApiResponse.success(
-                "입실 준비 완료",
-                checkinService.prepare(request)
-            )
+            ApiResponse.success("입실 준비 완료", checkinService.prepare(request))
         );
     }
 
     // 회원 입실 준비
     @PostMapping("/prepare/member")
-    public ResponseEntity<ApiResponse<CheckinPrepareResponse>> prepareMember(Authentication authentication) {
+    public ResponseEntity<ApiResponse<CheckinPrepareResponse>> prepareMember(
+        Authentication authentication
+    ) {
         return ResponseEntity.ok(
-            ApiResponse.success(
-                "입실 준비 완료",
-                checkinService.prepareMember(authentication)
-            )
+            ApiResponse.success("입실 준비 완료", checkinService.prepareMember(authentication))
         );
     }
-    
 
     // 입실
     @PostMapping
-    public ResponseEntity<ApiResponse<CheckinResponse>> checkin(@RequestBody CheckinRequest request) {
-        
+    public ResponseEntity<ApiResponse<CheckinResponse>> checkin(
+        @Valid @RequestBody CheckinRequest request
+    ) {
         return ResponseEntity.ok(
-            ApiResponse.success(
-                "입실이 완료되었습니다",
-                checkinService.checkin(request)
-            )
+            ApiResponse.success("입실이 완료되었습니다.", checkinService.checkin(request))
         );
     }
 
@@ -66,12 +59,8 @@ public class CheckinController {
     public ResponseEntity<ApiResponse<CheckinResponse>> goAway(
         @Valid @RequestBody CheckinPrepareRequest request
     ){
-        CheckinResponse response = checkinService.goAway(request);
         return ResponseEntity.ok(
-            ApiResponse.success(
-                "외출처리 완료", 
-                response
-            )
+            ApiResponse.success("외출처리 완료", checkinService.goAway(request))
         );
     }
 
@@ -80,11 +69,8 @@ public class CheckinController {
     public ResponseEntity<ApiResponse<CheckinResponse>> comeBack(
         @Valid @RequestBody CheckinPrepareRequest request
     ){
-        CheckinResponse response = checkinService.comeBack(request);
         return ResponseEntity.ok(
-            ApiResponse.success(
-                "외출 복귀 완료", response
-            )
+            ApiResponse.success("외출 복귀 완료", checkinService.comeBack(request))
         );
     }
 
@@ -93,11 +79,8 @@ public class CheckinController {
     public ResponseEntity<ApiResponse<CheckinResponse>> checkout(
         @Valid @RequestBody CheckinPrepareRequest request
     ){
-        CheckinResponse response = checkinService.checkout(request);
         return ResponseEntity.ok(
-            ApiResponse.success(
-                "퇴실 완료", response
-            )
+            ApiResponse.success("퇴실 완료", checkinService.checkout(request))
         );
     }
 }
