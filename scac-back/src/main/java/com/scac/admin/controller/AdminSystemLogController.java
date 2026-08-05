@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.scac.admin.dto.response.SystemLogRes;
 import com.scac.global.response.ApiResponse;
-import com.scac.system.dto.SeatLogRes; // 💡 SeatLogRes DTO 추가
-import com.scac.system.entity.SystemLog;
+import com.scac.system.dto.SeatLogRes;
 import com.scac.system.service.SystemLogService;
 
 import lombok.RequiredArgsConstructor;
@@ -24,16 +24,30 @@ public class AdminSystemLogController {
     private final SystemLogService systemLogService;
 
     /**
-     * 1. 시스템 로그 조회 (로그 레벨 필터링 가능)
-     * GET /api/admin/logs
+     * 1. 시스템 로그 조회 (엔티티 -> SystemLogRes DTO 변환 반환)
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<List<SystemLog>>> getSystemLogs(
+    public ResponseEntity<ApiResponse<List<SystemLogRes>>> getSystemLogs(
             @RequestParam(required = false) String logLevel
     ) {
-        List<SystemLog> logs = (logLevel != null && !logLevel.isBlank())
+        List<SystemLogRes> logs = ((logLevel != null && !logLevel.isBlank())
                 ? systemLogService.getLogsByLevel(logLevel)
-                : systemLogService.getAllLogs();
+                : systemLogService.getAllLogs())
+                .stream()
+                .map(log -> new SystemLogRes(
+                        log.getId(),
+                        log.getLogType(),
+                        log.getLogLevel(),
+                        log.getAction(),
+                        log.getUserId(),
+                        log.getAdminId(),
+                        log.getTargetType(),
+                        log.getTargetId(),
+                        log.getContent(),
+                        log.getDetail(),
+                        log.getCreatedAt()
+                ))
+                .toList();
 
         return ResponseEntity.ok(
                 ApiResponse.success("시스템 로그 조회를 완료했습니다.", logs)
@@ -42,7 +56,6 @@ public class AdminSystemLogController {
 
     /**
      * 2. 전체 좌석 로그 확인
-     * GET /api/admin/logs/seat
      */
     @GetMapping("/seat")
     public ResponseEntity<ApiResponse<List<SeatLogRes>>> getAllSeatLogs() {
@@ -53,7 +66,6 @@ public class AdminSystemLogController {
 
     /**
      * 3. 특정 선택 좌석 로그 확인
-     * GET /api/admin/logs/seat/{seatId}
      */
     @GetMapping("/seat/{seatId}")
     public ResponseEntity<ApiResponse<List<SeatLogRes>>> getSeatLogs(
