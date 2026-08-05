@@ -1,16 +1,13 @@
 package com.scac.ticket.repository;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.scac.global.enums.TargetType;
 import com.scac.ticket.entity.Ticket;
 
+public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
-
-public interface TicketRepository extends JpaRepository<Ticket,Long>{
-
-  Collection<Ticket> findByTargetTypeIs(TargetType type);
-
+    List<Ticket> findByTargetType(TargetType targetType);
 }

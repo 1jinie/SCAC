@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,12 +24,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByIsMember(Boolean isMember);
 
+    long countByUserStatus(UserStatus userStatus);
+
     @Query("SELECT u FROM User u WHERE u.userStatus = :status " +
            "AND u.penaltyEndDate IS NOT NULL " +
-           "AND u.penaltyEndDate <= :now")
+           "AND u.penaltyEndDate <= :today")
     List<User> findExpiredSuspendedUsers(
             @Param("status") UserStatus status,
-            @Param("now") LocalDateTime now
+            @Param("today") LocalDate today
     );
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)

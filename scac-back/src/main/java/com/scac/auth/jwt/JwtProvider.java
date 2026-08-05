@@ -34,9 +34,7 @@ public class JwtProvider {
     private long refreshExpiration;
 
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(
-                secret.getBytes(StandardCharsets.UTF_8)
-        );
+        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
 private Claims createClaims(User user) {
@@ -205,6 +203,23 @@ public String getRole(String token, String principalType) {
 
     return null;
 }
+
+ /**
+     * 토큰 서명 및 구조만 검증 (만료 여부는 무시)
+     */
+    public boolean validateStructureAndSignature(String token) {
+        try {
+            Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token);
+            return true;
+        } catch (ExpiredJwtException e) {
+            return true; // 만료된 토큰이라도 서명과 구조가 정상이면 true 반환
+        } catch (Exception e) {
+            return false; // 위변조되었거나 파싱 불가능한 토큰
+        }
+    }
 
 // JwtProvider.java 개선
 public Claims getClaimsIgnoreExpiration(String token) {

@@ -24,106 +24,116 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class AdminAuthService {
 
-	private final AdminAccountRepository adminAccountRepository;
-	private final AdminRefreshTokenRepository adminRefreshTokenRepository;
-	private final PasswordEncoder passwordEncoder;
-	private final JwtProvider jwtProvider;
+    private final AdminAccountRepository adminAccountRepository;
+    private final AdminRefreshTokenRepository adminRefreshTokenRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtProvider jwtProvider;
 
-	/**
-	 * 관리자 로그인
-	 */
-	public AdminLoginRes login(AdminLoginReq req) {
+    /**
+     * 관리자 로그인
+     */
+    public AdminLoginRes login(AdminLoginReq req) {
 
-		AdminAccount admin = adminAccountRepository.findByLoginId(req.loginId())
-				.orElseThrow(() ->
-						new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다."));
+        AdminAccount admin = adminAccountRepository.findByLoginId(req.loginId())
+                .orElseThrow(() ->
+                        new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다."));
 
-		if (!passwordEncoder.matches(req.password(), admin.getPassword())) {
-			throw new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다.");
-		}
+        if (!passwordEncoder.matches(req.password(), admin.getPassword())) {
+            throw new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다.");
+        }
 
-		String accessToken = jwtProvider.generateAccessToken(admin);
-		String refreshToken = jwtProvider.generateRefreshToken(admin);
+        String accessToken = jwtProvider.generateAccessToken(admin);
+        String refreshToken = jwtProvider.generateRefreshToken(admin);
 
-		saveRefreshToken(admin, refreshToken);
+        saveRefreshToken(admin, refreshToken);
 
-		// 마지막 로그인 시간 갱신
-		admin.updateLastLogin();
+        // 마지막 로그인 시간 갱신
+        admin.updateLastLogin();
 
-		JwtTokenRes token = new JwtTokenRes(accessToken, refreshToken);
+        JwtTokenRes token = new JwtTokenRes(accessToken, refreshToken);
 
-		return AdminLoginRes.from(token, admin);
-	}
+        return AdminLoginRes.from(token, admin);
+    }
 
-	/**
-	 * 관리자용 Access Token 재발급
-	 */
-	public AdminLoginRes refresh(RefreshTokenReq req) {
+    /**
+     * Access Token / Refresh Token 재발급 (관리자)
+     */
+    public AdminLoginRes refresh(RefreshTokenReq req) {
+        String refreshTokenStr = req.refreshToken();
 
-		if (!jwtProvider.validateToken(req.refreshToken())) {
-			throw new IllegalArgumentException("유효하지 않은 Refresh Token입니다.");
-		}
+        // 1. 토큰 서명 및 구조 검증
+        if (!jwtProvider.validateStructureAndSignature(refreshTokenStr)) {
+            throw new IllegalArgumentException("유효하지 않은 Refresh Token입니다.");
+        }
 
-		Long adminId = jwtProvider.getAdminId(req.refreshToken());
+        // 2. Admin ID 추출
+        Long adminId = jwtProvider.getAdminId(refreshTokenStr);
 
-		AdminRefreshToken savedToken = adminRefreshTokenRepository.findByAdminId(adminId)
-				.orElseThrow(() -> new ResourceNotFoundException("Refresh Token이 존재하지 않습니다."));
+        // 3. DB 관리자 토큰 조회
+        AdminRefreshToken savedToken = adminRefreshTokenRepository.findByAdminId(adminId)
+                .orElseThrow(() -> new ResourceNotFoundException("로그인 정보가 존재하지 않습니다."));
 
-		if (!savedToken.getRefreshToken().equals(req.refreshToken())) {
-			throw new IllegalArgumentException("Refresh Token이 일치하지 않습니다.");
-		}
+        // 4. 토큰 일치 여부 검증
+        if (!savedToken.getRefreshToken().equals(refreshTokenStr)) {
+            throw new IllegalArgumentException("올바르지 않은 Refresh Token입니다.");
+        }
 
-		AdminAccount admin = adminAccountRepository.findById(adminId)
-				.orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 관리자입니다."));
+        // 5. 토큰 만료 여부 검증
+        if (savedToken.getExpiredAt().isBefore(LocalDateTime.now())) {
+            adminRefreshTokenRepository.delete(savedToken); // 만료 시 잔여 DB 삭제
+            throw new IllegalArgumentException("Refresh Token이 만료되었습니다. 다시 로그인해주세요.");
+        }
 
-		if (savedToken.getExpiredAt().isBefore(LocalDateTime.now())) {
-			throw new IllegalArgumentException("Refresh Token이 만료되었습니다.");
-		}
+        // 6. 관리자 계정 존재 확인
+        AdminAccount admin = adminAccountRepository.findById(adminId)
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 관리자입니다."));
 
-		String accessToken = jwtProvider.generateAccessToken(admin);
-		String refreshToken = jwtProvider.generateRefreshToken(admin);
+        // 7. 신규 토큰 발급 및 DB 갱신
+        String newAccessToken = jwtProvider.generateAccessToken(admin);
+        String newRefreshToken = jwtProvider.generateRefreshToken(admin);
 
-		saveRefreshToken(admin, refreshToken);
+        saveRefreshToken(admin, newRefreshToken);
+        admin.updateLastLogin();
 
-		// 마지막 로그인 시간 갱신 (토큰 재발급시에도 갱신하지 않아도 되지만 정책상 갱신)
-		admin.updateLastLogin();
+        JwtTokenRes tokenRes = new JwtTokenRes(newAccessToken, newRefreshToken);
+        return AdminLoginRes.from(tokenRes, admin);
+    }
 
-		JwtTokenRes token = new JwtTokenRes(accessToken, refreshToken);
+    /**
+     * 관리자 로그아웃 (예외 발생 시에도 정상 처리되도록 방어적 구현)
+     */
+    public void logout(String authorization) {
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
+            return;
+        }
 
-		return AdminLoginRes.from(token, admin);
-	}
+        String accessToken = authorization.substring(7);
 
-	/**
-	 * 로그아웃
-	 */
-	public void logout(String authorization) {
-		if (authorization == null || !authorization.startsWith("Bearer ")) {
-			throw new IllegalArgumentException("Authorization 헤더가 올바르지 않습니다.");
-		}
+        try {
+            Long adminId = jwtProvider.getAdminId(accessToken);
+            if (adminId != null) {
+                adminRefreshTokenRepository.deleteByAdminId(adminId);
+            }
+        } catch (Exception e) {
+            // 만료되거나 손상된 토큰의 로그아웃 요청도 정상 응답 처리
+        }
+    }
 
-		String accessToken = authorization.substring(7);
+    private void saveRefreshToken(AdminAccount admin, String refreshToken) {
 
-		Long adminId = jwtProvider.getAdminId(accessToken);
+        LocalDateTime expiredAt =
+                LocalDateTime.now().plusSeconds(jwtProvider.getRefreshExpirationSeconds());
 
-		adminRefreshTokenRepository.deleteByAdminId(adminId);
-	}
-
-	private void saveRefreshToken(AdminAccount admin, String refreshToken) {
-
-		java.time.LocalDateTime expiredAt =
-				java.time.LocalDateTime.now().plusSeconds(jwtProvider.getRefreshExpirationSeconds());
-
-		adminRefreshTokenRepository.findByAdminId(admin.getId()).ifPresentOrElse(
-				token -> token.update(refreshToken, expiredAt),
-				() -> {
-					AdminRefreshToken token = AdminRefreshToken.builder()
-							.admin(admin)
-							.refreshToken(refreshToken)
-							.expiredAt(expiredAt)
-							.build();
-					adminRefreshTokenRepository.save(token);
-				}
-		);
-	}
-
+        adminRefreshTokenRepository.findByAdminId(admin.getId()).ifPresentOrElse(
+                token -> token.update(refreshToken, expiredAt),
+                () -> {
+                    AdminRefreshToken token = AdminRefreshToken.builder()
+                            .admin(admin)
+                            .refreshToken(refreshToken)
+                            .expiredAt(expiredAt)
+                            .build();
+                    adminRefreshTokenRepository.save(token);
+                }
+        );
+    }
 }

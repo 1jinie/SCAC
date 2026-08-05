@@ -36,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CheckinService {
     private final UserRepository userRepository;
     private final SeatRepository seatRepository;
@@ -47,83 +48,83 @@ public class CheckinService {
 
     // 사용자 검증 함수
     private User authenticateUser(String phoneNumber, String password) {
-        // 사용자 조회
         User user = userRepository.findByPhoneNumber(phoneNumber)
-            .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 사용자입니다"));
+            .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 사용자입니다."));
 
-        // 비밀번호 검증
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new BusinessException("비밀번호가 일치하지 않습니다");
+            throw new BusinessException("비밀번호가 일치하지 않습니다.");
         }
 
         return user;
     }
 
     // 비로그인 User 찾기
-    @Transactional(readOnly = true)
     public CheckinPrepareResponse prepare(CheckinPrepareRequest request) {
-
         User user = authenticateUser(request.getPhoneNumber(), request.getPassword());
-
         return prepareByUser(user);
     }
 
     // 로그인(JWT) User 찾기
-    @Transactional(readOnly = true)
     public CheckinPrepareResponse prepareMember(Authentication authentication) {
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
 
         User user = userRepository.findById(principal.id())
-            .orElseThrow(() -> new ResourceNotFoundException("없는 사용자입니다"));
-
+            .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 사용자입니다."));
+        
         return prepareByUser(user);
     }
 
     // 입실 준비
-    private CheckinPrepareResponse prepareByUser(User user) {
-        Checkin awayCheckin = checkinRepository.findByUserIdAndCheckinStatus(user.getId(), CheckinStatus.AWAY)
+    private CheckinPrepareResponse prepareByUser(User user){
+        Checkin awayCheckin = checkinRepository
+            .findFirstByUserIdAndCheckinStatusOrderByCheckinAtDesc(user.getId(), CheckinStatus.AWAY)
             .orElse(null);
 
-        // 기존 입실 상태 확인
         if (checkinRepository.existsByUserIdAndCheckinStatus(user.getId(), CheckinStatus.USING)) {
-            throw new BusinessException("이미 입실 중인 사용자입니다");
+            throw new BusinessException("이미 입실 중인 사용자입니다.");
         }
 
-        // 이용권 확인
         TicketUsage ticketUsage = ticketUsageRepository
             .findFirstByUserIdAndStatusInOrderByCreatedAtDesc(user.getId(),
                 List.of(TicketUsageStatus.READY, TicketUsageStatus.USING))
-            .orElseThrow(() -> new ResourceNotFoundException("사용 가능한 이용권이 없습니다"));
+            .orElseThrow(() -> new ResourceNotFoundException("사용 가능한 이용권이 없습니다."));
 
-        // 이용권 사용가능 여부 확인
         if (!ticketUsage.isAvailable()) {
-            throw new BusinessException("사용 가능한 이용권이 없습니다");
+            throw new BusinessException("사용 가능한 이용권이 없습니다.");
         }
 
-        // 남은 시간 확인
         if (ticketUsage.getTicketType() == TicketType.TIME_PACK && ticketUsage.getRemainingTime() <= 0) {
-            throw new BusinessException("남은 이용 시간이 없습니다");
+            throw new BusinessException("남은 이용 시간이 없습니다.");
         }
-        ;
 
-        return new CheckinPrepareResponse(ticketUsage.getUserId(), ticketUsage.getUsageId(),
-            ticketUsage.getTicketType().name(), ticketUsage.getRemainingTime(), awayCheckin != null);
+        return new CheckinPrepareResponse(
+            user.getId(), 
+            ticketUsage.getUsageId(),
+            ticketUsage.getTicketType().name(), 
+            ticketUsage.getRemainingTime(), 
+            awayCheckin != null
+        );
     }
 
     // 입실
     @Transactional
     public CheckinResponse checkin(CheckinRequest request) {
+        // 이미 입실 또는 외출 중인지 방어 검증
+        if (checkinRepository.existsByUserIdAndCheckinStatusIn(request.getUserId(), List.of(CheckinStatus.USING, CheckinStatus.AWAY))) {
+            throw new BusinessException("이미 이용 중이거나 외출 중인 사용자입니다.");
+        }
 
         // 좌석 확인
         Seat seat = seatRepository.findById(request.getSeatId())
-            .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 좌석입니다"));
+            .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 좌석입니다."));
+            
         if (seat.getStatus() != SeatStatus.AVB) {
-            throw new BusinessException("사용할 수 없는 좌석입니다");
+            throw new BusinessException("사용할 수 없는 좌석입니다.");
         }
 
         // 이용권 조회
         TicketUsage ticketUsage = ticketUsageRepository.findById(request.getUsageId())
-            .orElseThrow(() -> new ResourceNotFoundException("이용권 정보가 없습니다"));
+            .orElseThrow(() -> new ResourceNotFoundException("이용권 정보가 없습니다."));
 
         // READY일 경우 시작 처리
         if (ticketUsage.getStatus() == TicketUsageStatus.READY) {
@@ -132,7 +133,6 @@ public class CheckinService {
 
             ticketUsage.start(ticket);
         }
-        ;
 
         // 좌석 점유
         seat.assignUser(request.getUserId());
@@ -143,26 +143,31 @@ public class CheckinService {
 
         Checkin savedCheckin = checkinRepository.save(checkin);
 
-        SystemLog log = SystemLog.builder().logType("SEAT").logLevel("INFO").action("SEAT_CHECK_IN")
-            .userId(request.getUserId()).targetType("SEAT").targetId(seat.getSeatId())
-            .referenceType("CHECK_INOUT").referenceId(checkin.getCheckinId())
+        SystemLog log = SystemLog.builder()
+            .logType("SEAT")
+            .logLevel("INFO")
+            .action("SEAT_CHECK_IN")
+            .userId(request.getUserId())
+            .targetType("SEAT")
+            .targetId(seat.getSeatId())
+            .referenceType("CHECK_INOUT")
+            .referenceId(savedCheckin.getCheckinId())
             .content(seat.getSeatNumber() + " 좌석 입실 완료")
             .detail(String.format("{\"seat_name\":\"%s\"}", seat.getSeatNumber())).build();
 
         systemLogService.createLog(log);
 
         return CheckinResponse.from(savedCheckin);
-
     }
 
     // 외출
     @Transactional
     public CheckinResponse goAway(CheckinPrepareRequest request) {
-
         User user = authenticateUser(request.getPhoneNumber(), request.getPassword());
 
-        Checkin checkin = checkinRepository.findByUserIdAndCheckinStatus(user.getId(), CheckinStatus.USING)
-            .orElseThrow(() -> new ResourceNotFoundException("입실 정보가 없습니다"));
+        Checkin checkin = checkinRepository
+            .findFirstByUserIdAndCheckinStatusOrderByCheckinAtDesc(user.getId(), CheckinStatus.USING)
+            .orElseThrow(() -> new ResourceNotFoundException("입실 정보가 없습니다."));
 
         checkin.goAway();
 
@@ -172,11 +177,11 @@ public class CheckinService {
     // 외출 복귀
     @Transactional
     public CheckinResponse comeBack(CheckinPrepareRequest request) {
-
         User user = authenticateUser(request.getPhoneNumber(), request.getPassword());
 
-        Checkin checkin = checkinRepository.findByUserIdAndCheckinStatus(user.getId(), CheckinStatus.AWAY)
-            .orElseThrow(() -> new ResourceNotFoundException("외출 정보가 없습니다"));
+        Checkin checkin = checkinRepository
+            .findFirstByUserIdAndCheckinStatusOrderByCheckinAtDesc(user.getId(), CheckinStatus.AWAY)
+            .orElseThrow(() -> new ResourceNotFoundException("외출 정보가 없습니다."));
 
         checkin.comeBack();
 
@@ -186,32 +191,40 @@ public class CheckinService {
     // 퇴실
     @Transactional
     public CheckinResponse checkout(CheckinPrepareRequest request) {
-
         User user = authenticateUser(request.getPhoneNumber(), request.getPassword());
 
-        // 입실 정보 조회
+        // 입실/외출 정보 조회
         Checkin checkin = checkinRepository
-            .findByUserIdAndCheckinStatusIn(user.getId(), List.of(CheckinStatus.USING, CheckinStatus.AWAY))
-            .orElseThrow(() -> new ResourceNotFoundException("입실 정보가 없습니다"));
+            .findFirstByUserIdAndCheckinStatusInOrderByCheckinAtDesc(user.getId(), List.of(CheckinStatus.USING, CheckinStatus.AWAY))
+            .orElseThrow(() -> new ResourceNotFoundException("입실 정보가 없습니다."));
 
-        // 좌석 조회
-        Seat seat = seatRepository.findById(checkin.getSeatId())
-            .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 좌석입니다"));
+        Long currentSeatId = checkin.getSeatId();
+
+        // 좌석 조회 및 반환 (퇴실 시 checkin.getSeatId()가 null로 처리되므로 먼저 좌석 조회)
+        if (currentSeatId != null) {
+            Seat seat = seatRepository.findById(currentSeatId)
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 좌석입니다."));
+            seat.releaseUser();
+
+            SystemLog log = SystemLog.builder()
+                .logType("SEAT")
+                .logLevel("INFO")
+                .action("SEAT_CHECK_OUT")
+                .userId(user.getId())
+                .targetType("SEAT")
+                .targetId(seat.getSeatId())
+                .referenceType("CHECK_INOUT")
+                .referenceId(checkin.getCheckinId())
+                .content(seat.getSeatNumber() + " 좌석 퇴실 완료")
+                .detail(String.format("{\"seat_name\":\"%s\"}", seat.getSeatNumber()))
+                .build();
+            
+            systemLogService.createLog(log);
+        }
 
         // 퇴실 처리
         checkin.checkout();
 
-        // 좌석 반환
-        seat.releaseUser();
-
-        SystemLog log = SystemLog.builder().logType("SEAT").logLevel("INFO").action("SEAT_CHECK_OUT")
-            .userId(user.getId()).targetType("SEAT").targetId(seat.getSeatId()).referenceType("CHECK_INOUT")
-            .referenceId(checkin.getCheckinId()).content(seat.getSeatNumber() + " 좌석 퇴실 완료")
-            .detail(String.format("{\"seat_name\":\"%s\"}", seat.getSeatNumber())).build();
-
-        systemLogService.createLog(log);
-
         return CheckinResponse.from(checkin);
     }
-
 }

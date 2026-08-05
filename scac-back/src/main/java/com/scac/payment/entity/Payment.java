@@ -1,6 +1,5 @@
 package com.scac.payment.entity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -30,7 +29,6 @@ public class Payment {
   @Column(name = "payment_id")
   private Long paymentId;
 
-  // 토스 페이먼트 연동용 id
   @Column(name = "order_id", nullable = false, unique = true, length = 64)
   private String orderId = "SCAC-" + UUID.randomUUID();
 
@@ -66,8 +64,9 @@ public class Payment {
   @Column(name = "cancel_reason", length = 200)
   private String cancelReason;
 
+  // LocalDate -> LocalDateTime으로 수정
   @Column(name = "cancelled_at")
-  private LocalDate cancelledAt;
+  private LocalDateTime cancelledAt;
 
   private Payment(Long userId, Long ticketId, Integer amount, PaymentMethod paymentMethod) {
     this.usageId = null;
@@ -78,12 +77,10 @@ public class Payment {
     this.status = PaymentStatus.PENDING;
   }
 
-  // 결제데이터 생성
   public static Payment create(Long userId, Long ticketId, Integer amount, PaymentMethod paymentMethod) {
     return new Payment(userId, ticketId, amount, paymentMethod);
   }
 
-  // 결제 취소
   public void cancel(String cancelReason) {
     if (status == PaymentStatus.CANCELED) {
       throw new IllegalStateException("이미 취소된 결제입니다.");
@@ -103,10 +100,9 @@ public class Payment {
 
     this.status = PaymentStatus.CANCELED;
     this.cancelReason = cancelReason;
-    this.cancelledAt = LocalDate.now();
+    this.cancelledAt = LocalDateTime.now(); // LocalDateTime 적용
   }
 
-  // 결제 완료 후 usageId 할당
   public void assignUsage(Long usageId) {
     if (usageId == null) {
       throw new IllegalArgumentException("사용자 이용권 ID는 필수입니다.");
@@ -119,7 +115,6 @@ public class Payment {
     this.usageId = usageId;
   }
 
-  // 토스 페이먼트 승인 성공 시 결체 데이터에 추가 데이터 할당
   public void approve(String paymentKey, String approvalNum, LocalDateTime paidAt) {
     if (status != PaymentStatus.PENDING) {
       throw new IllegalStateException("결제 대기 상태에서만 승인할 수 있습니다.");
@@ -131,7 +126,6 @@ public class Payment {
     this.status = PaymentStatus.PAID;
   }
 
-  // 일반 카드 결제 Mock 승인
   public void approveMock(String approvalNum2, LocalDateTime paidAt) {
     if (status != PaymentStatus.PENDING) {
       throw new IllegalStateException("결제 대기 상태에서만 승인할 수 있습니다.");
