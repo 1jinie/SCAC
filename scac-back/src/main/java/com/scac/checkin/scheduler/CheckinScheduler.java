@@ -16,7 +16,7 @@ import com.scac.seat.repository.SeatRepository;
 import com.scac.ticketusage.entity.TicketUsage;
 import com.scac.ticketusage.repository.TicketUsageRepository;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -40,24 +40,20 @@ public class CheckinScheduler {
             
             if(usage == null) continue;
 
-            // 기간권은 차감x
-            if(usage.getTicketType() != TicketType.TIME_PACK) continue;
-
-            // READY면 아직 시작 안한 이용권
+            // READY 상태면 아직 사용 시작 안함
             if(usage.getStatus() == TicketUsageStatus.READY) continue;
 
-            // 1분씩 차감
-            if(usage.getRemainingTime() > 0) 
-                usage.deductTime(1);
-
-            // 시간 다되면 자동 퇴실
+            // 시간권 분기
             if(usage.getTicketType() == TicketType.TIME_PACK){
+                if(usage.getRemainingTime() > 0){
+                    usage.deductTime(1);
+                }
+                // 시간 다 되면 자동 퇴실
                 if(usage.getRemainingTime() <= 0){
                     autoCheckout(checkin, usage);
                 }
-            }
-
-            // 기간권 자동 퇴실
+            } 
+            // 기간권 분기
             else if(usage.getTicketType() == TicketType.PERIOD_PACK){
                 if(usage.getEndAt() != null && LocalDateTime.now().isAfter(usage.getEndAt())){
                     autoCheckout(checkin, usage);
@@ -68,12 +64,12 @@ public class CheckinScheduler {
 
     // 자동 퇴실 메서드
     private void autoCheckout(Checkin checkin, TicketUsage usage){
+        if (checkin.getSeatId() != null) {
+            Seat seat = seatRepository.findById(checkin.getSeatId()).orElse(null);
+            if(seat != null) seat.releaseUser();
+        }
+
         checkin.checkout();
-
-        Seat seat = seatRepository.findById(checkin.getSeatId()).orElse(null);
-
-        if(seat != null) seat.releaseUser();
-
         usage.expire();
     }
 }
