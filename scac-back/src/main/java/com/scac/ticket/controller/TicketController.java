@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.scac.global.enums.TargetType;
 import com.scac.global.response.ApiResponse;
 import com.scac.ticket.dto.TicketCreateDTO;
 import com.scac.ticket.dto.TicketResDTO;
@@ -31,12 +33,20 @@ public class TicketController {
 
     private final TicketService ticketService;
 
-    // SEAT 이용권 조회
+    // 이용권 목록 조회 (targetType 파라미터 미지정 시 SEAT 기본 조회)
     @GetMapping
-    public ResponseEntity<ApiResponse<List<TicketResDTO>>> findAll() {
-        List<TicketResDTO> tickets = ticketService.findSeatTicket();
-        System.out.println("sdf" + tickets);
+    public ResponseEntity<ApiResponse<List<TicketResDTO>>> findAll(
+            @RequestParam(name = "targetType", required = false, defaultValue = "SEAT") TargetType targetType
+    ) {
+        List<TicketResDTO> tickets = ticketService.findTicketsByTarget(targetType);
         return ResponseEntity.ok(ApiResponse.success("이용권 목록 조회를 완료했습니다.", tickets));
+    }
+
+    // 미팅룸 전용 이용권 목록 조회
+    @GetMapping("/room")
+    public ResponseEntity<ApiResponse<List<TicketResDTO>>> findRoomTickets() {
+        List<TicketResDTO> tickets = ticketService.findRoomTicket();
+        return ResponseEntity.ok(ApiResponse.success("미팅룸 이용권 목록 조회를 완료했습니다.", tickets));
     }
 
     @GetMapping("/{ticketId}")
@@ -64,7 +74,6 @@ public class TicketController {
         return ResponseEntity.ok(ApiResponse.success("이용권 수정을 완료했습니다.", ticket));
     }
 
-    // 이용권의 판매 여부를 변경합니다.
     @PatchMapping("/{ticketId}/status")
     public ResponseEntity<ApiResponse<TicketResDTO>> updateStatus(
             @PathVariable("ticketId") Long ticketId, @Valid @RequestBody TicketStatusDTO form) {
