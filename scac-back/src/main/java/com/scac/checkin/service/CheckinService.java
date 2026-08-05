@@ -24,7 +24,7 @@ import com.scac.global.exception.ResourceNotFoundException;
 import com.scac.seat.domain.Seat;
 import com.scac.seat.repository.SeatRepository;
 import com.scac.system.entity.SystemLog;
-// import com.scac.system.service.SystemLogService;
+import com.scac.system.service.SystemLogService;
 import com.scac.ticket.entity.Ticket;
 import com.scac.ticket.repository.TicketRepository;
 import com.scac.ticketusage.entity.TicketUsage;
@@ -43,7 +43,7 @@ public class CheckinService {
     private final CheckinRepository checkinRepository;
     private final PasswordEncoder passwordEncoder;
     private final TicketRepository ticketRepository;
-    // private final SystemLogService systemLogService;
+    private final SystemLogService systemLogService;
 
     // 사용자 검증 함수
     private User authenticateUser(String phoneNumber, String password) {
@@ -149,7 +149,7 @@ public class CheckinService {
             .content(seat.getSeatNumber() + " 좌석 입실 완료")
             .detail(String.format("{\"seat_name\":\"%s\"}", seat.getSeatNumber())).build();
 
-        // systemLogService.createLog(log);
+        systemLogService.createLog(log);
 
         return CheckinResponse.from(savedCheckin);
 
@@ -209,7 +209,7 @@ public class CheckinService {
             .referenceId(checkin.getCheckinId()).content(seat.getSeatNumber() + " 좌석 퇴실 완료")
             .detail(String.format("{\"seat_name\":\"%s\"}", seat.getSeatNumber())).build();
 
-        // systemLogService.createLog(log);
+        systemLogService.createLog(log);
 
         return CheckinResponse.from(checkin);
     }
