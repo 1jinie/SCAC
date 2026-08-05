@@ -41,15 +41,14 @@ public class SystemLogService {
     /**
      * 전체 좌석 로그 조회
      */
-    public List<SeatLogRes> getLogsByTarget(String targetType){
+    public List<SeatLogRes> getLogsByTarget(String targetType) {
         List<SystemLog> logs = systemLogRepository.findByTargetTypeOrderByCreatedAtDesc(targetType);
 
         return logs.stream().map(log -> {
             String phoneNumber = "-";
 
-            if(log.getUserId() != null){
-                phoneNumber = userRepository.findById(log.getUserId())
-                    .map(User::getPhoneNumber).orElse("-");      
+            if (log.getUserId() != null) {
+                phoneNumber = userRepository.findById(log.getUserId()).map(User::getPhoneNumber).orElse("-");
             }
             return SeatLogRes.from(log, phoneNumber);
         }).toList();
@@ -58,19 +57,18 @@ public class SystemLogService {
     /**
      * 특정 좌석 로그 조회
      */
-    public List<SeatLogRes> getLogsByTarget(String targetType, Long targetId){
-        List<SystemLog> logs =
-            systemLogRepository.findByTargetTypeAndTargetIdOrderByCreatedAtDesc(targetType, targetId);
+    public List<SeatLogRes> getLogsByTarget(String targetType, Long targetId) {
+        List<SystemLog> logs = systemLogRepository.findByTargetTypeAndTargetIdOrderByCreatedAtDesc(targetType,
+            targetId);
 
-            return logs.stream().map(log -> {
-                String phoneNumber = "-";
+        return logs.stream().map(log -> {
+            String phoneNumber = "-";
 
-                if(log.getUserId() != null){
-                    phoneNumber = userRepository.findById(log.getUserId())
-                        .map(User::getPhoneNumber).orElse("-");      
-                }
-                return SeatLogRes.from(log, phoneNumber);
-            }).toList();
+            if (log.getUserId() != null) {
+                phoneNumber = userRepository.findById(log.getUserId()).map(User::getPhoneNumber).orElse("-");
+            }
+            return SeatLogRes.from(log, phoneNumber);
+        }).toList();
     }
 
     /**
@@ -81,9 +79,8 @@ public class SystemLogService {
         LocalDateTime endOfToday = LocalDate.now().atTime(LocalTime.MAX);
 
         List<SystemLog> todayLogs = systemLogRepository.findByCreatedAtBetween(startOfToday, endOfToday);
-        return todayLogs.stream()
-                .filter(log -> "ERROR".equalsIgnoreCase(log.getLogLevel()) || "CRITICAL".equalsIgnoreCase(log.getLogLevel()))
-                .count();
+        return todayLogs.stream().filter(log -> "ERROR".equalsIgnoreCase(log.getLogLevel())
+            || "CRITICAL".equalsIgnoreCase(log.getLogLevel())).count();
     }
 
     /**
