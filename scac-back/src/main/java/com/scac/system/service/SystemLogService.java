@@ -1,18 +1,23 @@
 package com.scac.system.service;
 
-import com.scac.user.entity.User;
-import com.scac.user.repository.UserRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.scac.system.dto.SeatLogRes;
 import com.scac.system.entity.SystemLog;
 import com.scac.system.repository.SystemLogRepository;
+import com.scac.user.entity.User;
+import com.scac.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -39,36 +44,36 @@ public class SystemLogService {
     }
 
     /**
-     * 전체 좌석 로그 조회
+     * 전체 좌석 로그 조회 (N+1 최적화)
      */
     public List<SeatLogRes> getLogsByTarget(String targetType) {
         List<SystemLog> logs = systemLogRepository.findByTargetTypeOrderByCreatedAtDesc(targetType);
-
-        return logs.stream().map(log -> {
-            String phoneNumber = "-";
-
-            if (log.getUserId() != null) {
-                phoneNumber = userRepository.findById(log.getUserId()).map(User::getPhoneNumber).orElse("-");
-            }
-            return SeatLogRes.from(log, phoneNumber);
-        }).toList();
+        return mapToSeatLogResList(logs);
     }
 
     /**
-     * 특정 좌석 로그 조회
+     * 특정 좌석 로그 조회 (N+1 최적화)
      */
     public List<SeatLogRes> getLogsByTarget(String targetType, Long targetId) {
-        List<SystemLog> logs = systemLogRepository.findByTargetTypeAndTargetIdOrderByCreatedAtDesc(targetType,
-            targetId);
+        List<SystemLog> logs = systemLogRepository.findByTargetTypeAndTargetIdOrderByCreatedAtDesc(targetType, targetId);
+        return mapToSeatLogResList(logs);
+    }
 
-        return logs.stream().map(log -> {
-            String phoneNumber = "-";
+    /**
+     * N+1 조회를 방지하기 위한 공통 변환 메서드
+     */
+    private List<SeatLogRes> mapToSeatLogResList(List<SystemLog> logs) {
+        Set<Long> userIds = logs.stream()
+                .map(SystemLog::getUserId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
 
-            if (log.getUserId() != null) {
-                phoneNumber = userRepository.findById(log.getUserId()).map(User::getPhoneNumber).orElse("-");
-            }
-            return SeatLogRes.from(log, phoneNumber);
-        }).toList();
+        Map<Long, String> userPhoneMap = userRepository.findAllById(userIds).stream()
+                .collect(Collectors.toMap(User::getId, User::getPhoneNumber));
+
+        return logs.stream()
+                .map(log -> SeatLogRes.from(log, userPhoneMap.getOrDefault(log.getUserId(), "-")))
+                .toList();
     }
 
     /**
@@ -86,7 +91,7 @@ public class SystemLogService {
     /**
      * 로그 생성 (다른 도메인에서 시스템 이벤트 발생 시 호출)
      */
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public SystemLog createLog(SystemLog log) {
         return systemLogRepository.save(log);
     }

@@ -21,7 +21,6 @@ import com.scac.seat.service.SeatService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController

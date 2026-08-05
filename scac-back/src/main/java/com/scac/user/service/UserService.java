@@ -12,7 +12,8 @@ import com.scac.admin.dto.request.UserPenaltyReq;
 import com.scac.admin.dto.response.AdminUserRes;
 import com.scac.global.enums.UserStatus;
 import com.scac.system.entity.SystemLog;
-import com.scac.system.service.SystemLogService; // 💡 SystemLogService 추가
+import com.scac.system.service.SystemLogService;
+import com.scac.ticketusage.service.TicketUsageService;
 import com.scac.user.dto.GuestRegisterReq;
 import com.scac.user.dto.PasswordUpdateReq;
 import com.scac.user.dto.PasswordVerifyReq;
@@ -33,7 +34,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final SystemLogService systemLogService;
-    //private final UserTicketRepository userTicketRepository; 이용권 조회를 위해 주입
+    private final TicketUsageService ticketUsageService;
 
     @Transactional(readOnly = true)
     public boolean existsByPhoneNumber(String phoneNumber) {
@@ -85,7 +86,9 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserRes getUserProfile(Long userId) {
         User user = findUser(userId);
-        String activeTicketName = null; // 이용권 엔티티 연동 후 적용 예정
+
+        // TicketUsageService를 통한 활성 이용권명 조회 연동
+        String activeTicketName = ticketUsageService.getActiveTicketName(userId);
 
         return UserRes.from(user, activeTicketName);
     }
@@ -94,7 +97,6 @@ public class UserService {
         User user = userRepository.findByPhoneNumber(req.phoneNumber())
                 .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 전화번호입니다."));
 
-        // 정지 기간 자동 해제 검증[cite: 28]
         user.checkAndReleaseSuspension();
 
         if (user.getUserStatus() == UserStatus.SUSPENDED) {
@@ -138,6 +140,7 @@ public class UserService {
     /**
      * [스케줄러] 정지 기간(penaltyEndDate)이 지난 회원을 자동으로 ACTIVE 상태로 전환
      */
+    @Transactional
     public int releaseExpiredPenalties() {
         LocalDateTime now = LocalDateTime.now();
         List<User> expiredUsers = userRepository.findExpiredSuspendedUsers(UserStatus.SUSPENDED, now);
@@ -147,10 +150,8 @@ public class UserService {
         }
 
         for (User user : expiredUsers) {
-
             user.checkAndReleaseSuspension();
 
-            // 자동 해제 감사 로그(SystemLog) 생성
             try {
                 SystemLog autoReleaseLog = SystemLog.builder()
                         .logType("USER")
@@ -222,6 +223,6 @@ public class UserService {
             user.applyPenalty(req.getPenaltyEndDate());
         } else if (req.getUserStatus() == UserStatus.ACTIVE) {
             user.activate();
+        }
     }
-}
 }
