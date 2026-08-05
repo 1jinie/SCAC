@@ -6,10 +6,3 @@ PORT=포트번호
 REACT_APP_API_URL=http://localhost:api포트번호
 REACT_APP_TOSS_CLIENT_KEY=토스_테스트_클라이언트_키
 REACT_APP_PUBLIC_ORIGIN=qr인증용_자신의_컴퓨터_ip:프론트포트번호
-
-# scac-back
-DB_URL=jdbc:mysql://db주소
-DB_USERNAME=아이디
-DB_PASSWORD=비밀번호
-JWT_SECRET=여기에_충분히_긴_랜덤_문자열
-REACT_APP_TOSS_SECRET_KEY=토스_테스트_시크릿_키

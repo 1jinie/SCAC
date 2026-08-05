@@ -84,9 +84,8 @@ public class SystemLogService {
         LocalDateTime endOfToday = LocalDate.now().atTime(LocalTime.MAX);
 
         List<SystemLog> todayLogs = systemLogRepository.findByCreatedAtBetween(startOfToday, endOfToday);
-        return todayLogs.stream()
-                .filter(log -> "ERROR".equalsIgnoreCase(log.getLogLevel()) || "CRITICAL".equalsIgnoreCase(log.getLogLevel()))
-                .count();
+        return todayLogs.stream().filter(log -> "ERROR".equalsIgnoreCase(log.getLogLevel())
+            || "CRITICAL".equalsIgnoreCase(log.getLogLevel())).count();
     }
 
     /**

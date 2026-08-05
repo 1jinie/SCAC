@@ -24,7 +24,7 @@ import com.scac.global.exception.ResourceNotFoundException;
 import com.scac.seat.domain.Seat;
 import com.scac.seat.repository.SeatRepository;
 import com.scac.system.entity.SystemLog;
-import com.scac.system.service.SystemLogService;
+// import com.scac.system.service.SystemLogService;
 import com.scac.ticket.entity.Ticket;
 import com.scac.ticket.repository.TicketRepository;
 import com.scac.ticketusage.entity.TicketUsage;
@@ -43,7 +43,7 @@ public class CheckinService {
     private final CheckinRepository checkinRepository;
     private final PasswordEncoder passwordEncoder;
     private final TicketRepository ticketRepository;
-    private final SystemLogService systemLogService;
+    // private final SystemLogService systemLogService;
 
     // 사용자 검증 함수
     private User authenticateUser(String phoneNumber, String password) {
@@ -74,15 +74,13 @@ public class CheckinService {
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
 
         User user = userRepository.findById(principal.id())
-            .orElseThrow(() -> 
-                new ResourceNotFoundException("없는 사용자입니다")
-        );
-        
+            .orElseThrow(() -> new ResourceNotFoundException("없는 사용자입니다"));
+
         return prepareByUser(user);
     }
 
     // 입실 준비
-    private CheckinPrepareResponse prepareByUser(User user){
+    private CheckinPrepareResponse prepareByUser(User user) {
         Checkin awayCheckin = checkinRepository.findByUserIdAndCheckinStatus(user.getId(), CheckinStatus.AWAY)
             .orElse(null);
 
@@ -145,20 +143,13 @@ public class CheckinService {
 
         Checkin savedCheckin = checkinRepository.save(checkin);
 
-        SystemLog log = SystemLog.builder()
-            .logType("SEAT")
-            .logLevel("INFO")
-            .action("SEAT_CHECK_IN")
-            .userId(request.getUserId())
-            .targetType("SEAT")
-            .targetId(seat.getSeatId())
-            .referenceType("CHECK_INOUT")
-            .referenceId(checkin.getCheckinId())
+        SystemLog log = SystemLog.builder().logType("SEAT").logLevel("INFO").action("SEAT_CHECK_IN")
+            .userId(request.getUserId()).targetType("SEAT").targetId(seat.getSeatId())
+            .referenceType("CHECK_INOUT").referenceId(checkin.getCheckinId())
             .content(seat.getSeatNumber() + " 좌석 입실 완료")
-            .detail(String.format("{\"seat_name\":\"%s\"}", seat.getSeatNumber()))
-            .build();
+            .detail(String.format("{\"seat_name\":\"%s\"}", seat.getSeatNumber())).build();
 
-        systemLogService.createLog(log);
+        // systemLogService.createLog(log);
 
         return CheckinResponse.from(savedCheckin);
 
@@ -213,20 +204,12 @@ public class CheckinService {
         // 좌석 반환
         seat.releaseUser();
 
-        SystemLog log = SystemLog.builder()
-            .logType("SEAT")
-            .logLevel("INFO")
-            .action("SEAT_CHECK_OUT")
-            .userId(user.getId())
-            .targetType("SEAT")
-            .targetId(seat.getSeatId())
-            .referenceType("CHECK_INOUT")
-            .referenceId(checkin.getCheckinId())
-            .content(seat.getSeatNumber() + " 좌석 퇴실 완료")
-            .detail(String.format("{\"seat_name\":\"%s\"}", seat.getSeatNumber()))
-            .build();
-        
-        systemLogService.createLog(log);
+        SystemLog log = SystemLog.builder().logType("SEAT").logLevel("INFO").action("SEAT_CHECK_OUT")
+            .userId(user.getId()).targetType("SEAT").targetId(seat.getSeatId()).referenceType("CHECK_INOUT")
+            .referenceId(checkin.getCheckinId()).content(seat.getSeatNumber() + " 좌석 퇴실 완료")
+            .detail(String.format("{\"seat_name\":\"%s\"}", seat.getSeatNumber())).build();
+
+        // systemLogService.createLog(log);
 
         return CheckinResponse.from(checkin);
     }

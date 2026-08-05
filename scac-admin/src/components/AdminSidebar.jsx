@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+//사이드바 메뉴 데이터 여기있습니다
 import adminMenuData from '../data/admin_sidebar.json';
 
 export default function AdminSidebar() {
