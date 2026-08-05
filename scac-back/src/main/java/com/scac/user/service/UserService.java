@@ -1,5 +1,6 @@
 package com.scac.user.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -142,8 +143,8 @@ public class UserService {
      */
     @Transactional
     public int releaseExpiredPenalties() {
-        LocalDateTime now = LocalDateTime.now();
-        List<User> expiredUsers = userRepository.findExpiredSuspendedUsers(UserStatus.SUSPENDED, now);
+        LocalDate today = LocalDate.now();
+        List<User> expiredUsers = userRepository.findExpiredSuspendedUsers(UserStatus.SUSPENDED, today);
 
         if (expiredUsers.isEmpty()) {
             return 0;
