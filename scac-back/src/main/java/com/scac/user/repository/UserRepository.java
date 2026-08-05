@@ -25,6 +25,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByIsMember(Boolean isMember);
 
+    long countByUserStatus(UserStatus userStatus);
+
     @Query("SELECT u FROM User u WHERE u.userStatus = :status " +
            "AND u.penaltyEndDate IS NOT NULL " +
            "AND u.penaltyEndDate <= :now")
