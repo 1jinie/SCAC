@@ -1,4 +1,4 @@
-package com.scac.memo.entity;
+package com.scac.admin.entity;
 
 import java.time.LocalDateTime;
 

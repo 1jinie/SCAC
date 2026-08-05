@@ -1,8 +1,8 @@
-package com.scac.memo.dto;
+package com.scac.admin.dto.response;
 
 import java.time.LocalDateTime;
 
-import com.scac.memo.entity.AdminMemo;
+import com.scac.admin.entity.AdminMemo;
 
 import lombok.Builder;
 import lombok.Getter;
