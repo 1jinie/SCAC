@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.scac.system.dto.SeatLogRes;
@@ -89,7 +90,7 @@ public class SystemLogService {
     /**
      * 로그 생성 (다른 도메인에서 시스템 이벤트 발생 시 호출)
      */
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public SystemLog createLog(SystemLog log) {
         return systemLogRepository.save(log);
     }
