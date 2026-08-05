@@ -21,7 +21,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
   @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Payment p " +
            "WHERE p.status = :status " +
-           "AND p.approvedAt BETWEEN :startOfDay AND :endOfDay")
+           "AND p.createdAt BETWEEN :startOfDay AND :endOfDay")
     Long sumTodayRevenue(
         @Param("status") PaymentStatus status,
         @Param("startOfDay") LocalDateTime startOfDay,
