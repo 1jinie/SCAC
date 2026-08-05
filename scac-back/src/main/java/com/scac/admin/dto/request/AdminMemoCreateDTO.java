@@ -1,4 +1,4 @@
-package com.scac.memo.dto;
+package com.scac.admin.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
