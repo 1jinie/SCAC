@@ -29,10 +29,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.userStatus = :status " +
            "AND u.penaltyEndDate IS NOT NULL " +
-           "AND u.penaltyEndDate <= :now")
+           "AND u.penaltyEndDate <= :today")
     List<User> findExpiredSuspendedUsers(
             @Param("status") UserStatus status,
-            @Param("now") LocalDateTime now
+            @Param("today") LocalDate today
     );
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
