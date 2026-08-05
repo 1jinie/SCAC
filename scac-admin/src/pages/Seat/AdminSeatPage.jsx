@@ -17,6 +17,7 @@ export default function AdminSeatPage() {
   const selected = seatStore((state) => state.selectedSeat);
   const selectSeat = seatStore((state) => state.selectSeat);
   const resetSeat = seatStore((state) => state.clearSelected);
+  const updateSeatStatus = seatStore((state) => state.updateSeatStatus);
   const mode = "seat";
 
   const TO_ADMIN_STATUS = {
@@ -95,34 +96,14 @@ export default function AdminSeatPage() {
     }
   };
 
-  // 3. 백엔드 DB 좌석 상태 변경 및 강제 퇴실 연동
-  const handleSeatStatusChange = async (newStatus, isForceCheckout = false) => {
-    if (!selectedSeat) return;
+  const handleSeatStatusChange = (newStatus, isForceCheckout = false) => {
+    setSelectedSeat((prevSeat) => ({
+      ...prevSeat,
+      status: newStatus,
+      user: isForceCheckout ? null : prevSeat.user,
+    }));
 
-    try {
-      if (isForceCheckout) {
-        // 백엔드 강제 퇴실 API 호출 (POST /api/admin/seats/{seatId}/force-checkout)
-        await adminSeatApi.forceCheckout(selectedSeat.seatId);
-        window.alert("강제 퇴실 처리가 완료되었습니다.");
-      } else {
-        // 백엔드 상태 변경 API 호출 (PATCH /api/admin/seats/{seatId}/status)
-        await adminSeatApi.updateSeatStatus(selectedSeat.seatId, newStatus);
-        window.alert("좌석 상태 변경이 완료되었습니다.");
-      }
-
-      // 백엔드 변경 사항 적용 후 전체 좌석 재조회
-      await fetchSeats();
-
-      // 선택 상태 업데이트
-      setSelectedSeat((prev) => ({
-        ...prev,
-        status: newStatus,
-        user: isForceCheckout ? null : prev?.user,
-      }));
-    } catch (error) {
-      console.error("좌석 상태 변경 실패:", error);
-      window.alert("좌석 상태 변경 처리 중 오류가 발생했습니다.");
-    }
+    updateSeatStatus(Number(selectedSeat.seatId), TO_SEAT_STATUS[newStatus]);
   };
 
   const items = [...seats, ...rooms];
