@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
     name = "admin_refresh_token",
     uniqueConstraints = {
         @UniqueConstraint(
-            name = "uq_admin_refresh_user",
+            name = "uq_admin_refresh_admin",
             columnNames = "admin_id"
         ),
         @UniqueConstraint(
