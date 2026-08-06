@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
-import axiosInstance from "../api/axiosInstance"; // 경로 확인
+import { useEffect, useState } from 'react';
+import { Navigate } from 'react-router-dom';
+import axiosInstance from '../api/axiosInstance'; // 경로 확인
 
 /**
  * 순수 JS 기반 JWT 토큰 만료 여부 검사 함수
@@ -8,16 +8,16 @@ import axiosInstance from "../api/axiosInstance"; // 경로 확인
 const isTokenExpired = (token) => {
   if (!token) return true;
   try {
-    const payloadBase64 = token.split(".")[1];
+    const payloadBase64 = token.split('.')[1];
     if (!payloadBase64) return true;
 
     // Base64Url 디코딩
-    const base64 = payloadBase64.replace(/-/g, "+").replace(/_/g, "/");
+    const base64 = payloadBase64.replace(/-/g, '+').replace(/_/g, '/');
     const jsonPayload = decodeURIComponent(
       atob(base64)
-        .split("")
-        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-        .join(""),
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join(''),
     );
 
     const { exp } = JSON.parse(jsonPayload);
@@ -36,8 +36,8 @@ export default function AdminPrivateRoute({ children }) {
 
   useEffect(() => {
     const verifyAuth = async () => {
-      const accessToken = localStorage.getItem("adminAccessToken");
-      const refreshToken = localStorage.getItem("adminRefreshToken");
+      const accessToken = localStorage.getItem('adminAccessToken');
+      const refreshToken = localStorage.getItem('adminRefreshToken');
 
       // 1. Access Token이 아예 없는 경우
       if (!accessToken) {
@@ -55,7 +55,7 @@ export default function AdminPrivateRoute({ children }) {
       if (refreshToken && !isTokenExpired(refreshToken)) {
         try {
           // 백엔드 관리자 토큰 재발급 API 호출 (/api/admin/auth/refresh)
-          const response = await axiosInstance.post("/api/admin/auth/refresh", {
+          const response = await axiosInstance.post('/api/admin/auth/refresh', {
             refreshToken,
           });
 
@@ -67,22 +67,22 @@ export default function AdminPrivateRoute({ children }) {
             } = response.data.data;
 
             // 로컬 스토리지에 새 토큰 저장
-            localStorage.setItem("adminAccessToken", newAccessToken);
+            localStorage.setItem('adminAccessToken', newAccessToken);
             if (newRefreshToken) {
-              localStorage.setItem("adminRefreshToken", newRefreshToken);
+              localStorage.setItem('adminRefreshToken', newRefreshToken);
             }
 
             setIsAuthenticated(true);
             return;
           }
         } catch (error) {
-          console.error("관리자 토큰 재발급 실패:", error);
+          console.error('관리자 토큰 재발급 실패:', error);
         }
       }
 
       // 4. 토큰 재발급 실패 또는 Refresh Token도 만료된 경우 -> 토큰 삭제 후 로그인 이동
-      localStorage.removeItem("adminAccessToken");
-      localStorage.removeItem("adminRefreshToken");
+      localStorage.removeItem('adminAccessToken');
+      localStorage.removeItem('adminRefreshToken');
       setIsAuthenticated(false);
     };
 
