@@ -138,14 +138,19 @@ export default function TicketPage() {
   return (
     <>
       <div className="ticket_page_container">
-        <div className="back_btn" onClick={() => navi('/', { replace: true })}>
+        <button
+          type="button"
+          className="back_btn"
+          onClick={() => navi('/', { replace: true })}
+        >
           <img
             src="/icons/common/next_black.svg"
-            alt="뒤로가기"
+            alt=""
             className="back_icon"
+            aria-hidden="true"
           />
-          <span>뒤로가기</span>
-        </div>
+          <span>홈으로 돌아가기</span>
+        </button>
         <h2 className="ticket_page_title">이용권 구매</h2>
         {tickets.length === 0 ? (
           <div className="ticket_page_empty">
