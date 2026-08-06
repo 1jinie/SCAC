@@ -35,6 +35,11 @@ public class Checkin {
     @Enumerated(EnumType.STRING)
     private CheckinStatus checkinStatus;
 
+    // 이용권 전환
+    public void changeUsage(Long usageId){
+        this.usageId = usageId;
+    }
+
     // 입실
     public Checkin(
         Long userId, Long seatId, Long usageId, LocalDateTime checkinAt, CheckinStatus checkinStatus){

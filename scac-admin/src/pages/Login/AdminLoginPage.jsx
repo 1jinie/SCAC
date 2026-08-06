@@ -1,17 +1,17 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../store/authStore";
-import HeaderTime from "../../components/HeaderTime";
-import "./css/Admin_Login.css";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../store/authStore';
+import HeaderTime from '../../components/HeaderTime';
+import './css/Admin_Login.css';
 
 export default function AdminLoginPage() {
   const navigate = useNavigate();
 
   const adminLogin = useAuthStore((state) => state.adminLogin);
 
-  const [adminId, setAdminId] = useState("");
-  const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [adminId, setAdminId] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleAdminIdChange = (e) => {
     setAdminId(e.target.value);
@@ -24,22 +24,22 @@ export default function AdminLoginPage() {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     if (!adminId.trim() || !password.trim()) {
-      setErrorMessage("관리자 아이디와 비밀번호를 입력해 주세요.");
+      setErrorMessage('관리자 아이디와 비밀번호를 입력해 주세요.');
       return;
     }
 
     // 백엔드 POST /api/admin/auth/login 연동[cite: 92]
     const result = await adminLogin(adminId, password);
     if (result.success) {
-      // 💡 /admin 경로 대신 어드민 루트 경로인 "/"로 이동
-      navigate("/", { replace: true });
+      // 💡 /admin 경로 대신 어드민 루트 경로인 "/"로 이동    
+      navigate('/', { replace: true });
     } else {
-      setErrorMessage(result.message || "로그인에 실패했습니다.");
+      setErrorMessage(result.message || '로그인에 실패했습니다.');
     }
   };
 
   const handleHome = () => {
-    navigate("/");
+    navigate('/');
   };
 
   return (

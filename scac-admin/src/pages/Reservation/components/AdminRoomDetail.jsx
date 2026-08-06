@@ -1,10 +1,39 @@
+import { useEffect, useState } from "react";
+import { reservationApi } from "../../../api/reservationApi";
+import { formatPhoneNumber } from "../../../utils/formatter";
+
 const STATUS_LABELS = {
-  AVB: '이용 가능',
-  USR: '이용 중',
-  BRK: '점검 중',
+  AVB: "이용 가능",
+  USR: "이용 중",
+  BRK: "점검 중",
 };
 
 export default function AdminRoomDetail({ selectedRoom }) {
+  const [currentUsage, setCurrentUsage] = useState(null);
+
+  useEffect(() => {
+    if (!selectedRoom || selectedRoom.status !== "USR") {
+      setCurrentUsage(null);
+      return;
+    }
+
+    const fetchCurrentUsage = async () => {
+      try {
+        const response = await reservationApi.getAdminReservationList();
+        const reservation = response.data.data.find(
+          (item) =>
+            item.roomId === selectedRoom.roomId && item.status === "IN_USE",
+        );
+
+        setCurrentUsage(reservation ?? null);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchCurrentUsage();
+  }, [selectedRoom]);
+
   if (!selectedRoom) {
     return (
       <aside className="admin_room_detail is_empty">
@@ -49,24 +78,24 @@ export default function AdminRoomDetail({ selectedRoom }) {
         </div>
       </dl>
 
-      {selectedRoom.status === 'USR' && selectedRoom.currentUsage && (
+      {selectedRoom.status === "USR" && currentUsage && (
         <section className="admin_room_current_usage">
           <h3>현재 이용 정보</h3>
 
           <dl className="admin_room_info_list">
             <div>
               <dt>사용자</dt>
-              <dd>{selectedRoom.currentUsage.phoneNumber}</dd>
+              <dd>{formatPhoneNumber(currentUsage.phoneNumber)}</dd>
             </div>
 
             <div>
               <dt>이용 시작</dt>
-              <dd>{selectedRoom.currentUsage.startAt}</dd>
+              <dd>{currentUsage.getStartTime ?? currentUsage.startTime}</dd>
             </div>
 
             <div>
               <dt>이용 종료 예정</dt>
-              <dd>{selectedRoom.currentUsage.endAt}</dd>
+              <dd>{currentUsage.getEndTime ?? currentUsage.endTime}</dd>
             </div>
           </dl>
         </section>

@@ -216,8 +216,9 @@
 
 .kiosk_error_state_close {
   color: var(--color-white);
-  background: var(--color-point);
-  border: 2px solid var(--color-point);
+  background: var(--color-gray);
+  /* background-color: red; */
+  border: 2px solid var(--color-gray);
 }
 
 .kiosk_error_state_actions button:disabled {

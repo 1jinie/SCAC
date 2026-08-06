@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { adminApi } from "../../api/adminApi";
-import { deviceApi } from "../../api/deviceApi";
-import axiosInstance from "../../api/axiosInstance";
-import AdminSummary from "../../components/common/Summary";
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { adminApi } from '../../api/adminApi';
+import { deviceApi } from '../../api/deviceApi';
+import axiosInstance from '../../api/axiosInstance';
+import AdminSummary from '../../components/common/Summary';
 
 export default function AdminMainPage() {
   const navigate = useNavigate();
@@ -29,11 +29,11 @@ export default function AdminMainPage() {
         setDevices(deviceList ?? []);
 
         // ③ 최근 시스템 로그 조회 (최신 5건만 표출)
-        const logResponse = await axiosInstance.get("/api/admin/logs");
+        const logResponse = await axiosInstance.get('/api/admin/logs');
         const logs = logResponse.data?.data ?? [];
         setRecentLogs(logs.slice(0, 5));
       } catch (error) {
-        console.error("대시보드 데이터 조회 실패:", error);
+        console.error('대시보드 데이터 조회 실패:', error);
       } finally {
         setIsLoading(false);
       }
@@ -48,36 +48,38 @@ export default function AdminMainPage() {
 
     return [
       {
-        key: "occupiedSeats",
-        label: "이용 중 좌석",
+        key: 'occupiedSeats',
+        label: '이용 중 좌석',
         value: dashboard.occupiedSeats,
-        unit: "석",
+        unit: '석',
         description: `전체 ${dashboard.totalSeats}석 중 이용 중`,
-        color: "blue",
+        color: 'blue',
       },
       {
-        key: "todayRevenue",
-        label: "당일 매출액",
+        key: 'todayRevenue',
+        label: '당일 매출액',
         value: (dashboard.todayRevenue ?? 0).toLocaleString(),
-        unit: "원",
-        description: "오늘 누적 결제금액",
-        color: "mint",
+        unit: '원',
+        description: '오늘 누적 결제금액',
+        color: 'mint',
       },
       {
-        key: "errorDevices",
-        label: "장비 장애",
+        key: 'errorDevices',
+        label: '장비 장애',
         value: dashboard.errorDevices,
-        unit: "대",
+        unit: '대',
         description: `전체 ${dashboard.totalDevices}대 중 이상 발생`,
-        color: "orange",
+        color: 'orange',
+        alert: true,
       },
       {
-        key: "todayErrorLogs",
-        label: "오늘의 에러 로그",
+        key: 'todayErrorLogs',
+        label: '오늘의 에러 로그',
         value: dashboard.todayErrorLogs,
-        unit: "건",
-        description: "시스템 오류 발생 건수",
-        color: "red",
+        unit: '건',
+        description: '시스템 오류 발생 건수',
+        color: 'red',
+        alert: true,
       },
     ];
   }, [dashboard]);
@@ -121,7 +123,7 @@ export default function AdminMainPage() {
             <button
               type="button"
               className="admin_text_button"
-              onClick={() => handleMovePage("/device")}
+              onClick={() => handleMovePage('/device')}
             >
               전체 보기
             </button>
@@ -132,14 +134,14 @@ export default function AdminMainPage() {
               <div key={item.deviceId} className="admin_device_item">
                 <div className="admin_device_name_wrap">
                   <span
-                    className={`admin_status_dot is_${(item.status ?? "NORMAL").toLowerCase()}`}
+                    className={`admin_status_dot is_${(item.status ?? 'NORMAL').toLowerCase()}`}
                     aria-hidden="true"
                   />
                   <span className="admin_device_name">{item.deviceName}</span>
                 </div>
 
                 <span
-                  className={`admin_status_badge is_${(item.status ?? "NORMAL").toLowerCase()}`}
+                  className={`admin_status_badge is_${(item.status ?? 'NORMAL').toLowerCase()}`}
                 >
                   {item.status}
                 </span>
@@ -161,7 +163,7 @@ export default function AdminMainPage() {
             <button
               type="button"
               className="admin_quick_menu"
-              onClick={() => handleMovePage("/reservation")}
+              onClick={() => handleMovePage('/reservation')}
             >
               <strong>스터디룸 현황</strong>
               <span>스터디룸의 현재 상태 및 예약 일정 관리</span>
@@ -170,7 +172,7 @@ export default function AdminMainPage() {
             <button
               type="button"
               className="admin_quick_menu"
-              onClick={() => handleMovePage("/ticket")}
+              onClick={() => handleMovePage('/ticket')}
             >
               <strong>이용권 관리</strong>
               <span>가격 및 판매 여부 설정</span>
@@ -179,7 +181,7 @@ export default function AdminMainPage() {
             <button
               type="button"
               className="admin_quick_menu"
-              onClick={() => handleMovePage("/payment")}
+              onClick={() => handleMovePage('/payment')}
             >
               <strong>결제 관리</strong>
               <span>결제 조회 및 취소</span>
@@ -188,7 +190,7 @@ export default function AdminMainPage() {
             <button
               type="button"
               className="admin_quick_menu"
-              onClick={() => handleMovePage("/log")}
+              onClick={() => handleMovePage('/log')}
             >
               <strong>로그 확인</strong>
               <span>오류 및 시스템 기록 조회</span>
@@ -207,7 +209,7 @@ export default function AdminMainPage() {
             <button
               type="button"
               className="admin_text_button"
-              onClick={() => handleMovePage("/log")}
+              onClick={() => handleMovePage('/log')}
             >
               전체 보기
             </button>
@@ -229,8 +231,8 @@ export default function AdminMainPage() {
                   <tr key={log.id}>
                     <td>
                       {log.createdAt
-                        ? String(log.createdAt).replace("T", " ")
-                        : "-"}
+                        ? String(log.createdAt).replace('T', ' ')
+                        : '-'}
                     </td>
                     <td>
                       <span className="admin_log_type">{log.logType}</span>
