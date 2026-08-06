@@ -28,10 +28,11 @@ export default function AdminLoginPage() {
       return;
     }
 
-    // 백엔드 POST /api/admin/auth/login 연동
+    // 백엔드 POST /api/admin/auth/login 연동[cite: 92]
     const result = await adminLogin(adminId, password);
     if (result.success) {
-      navigate("/admin", { replace: true });
+      // 💡 /admin 경로 대신 어드민 루트 경로인 "/"로 이동
+      navigate("/", { replace: true });
     } else {
       setErrorMessage(result.message || "로그인에 실패했습니다.");
     }
