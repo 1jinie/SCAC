@@ -20,12 +20,12 @@ const router = createBrowserRouter([
   // ============================
   {
     path: '/',
-    element: <AdminLayout />,
-    // element: (
-    //   <AdminPrivateRoute>
-    //     <AdminLayout />
-    //   </AdminPrivateRoute>
-    // ),
+    // element: <AdminLayout />,
+    element: (
+      <AdminPrivateRoute>
+        <AdminLayout />
+      </AdminPrivateRoute>
+    ),
     errorElement: <AdminErrorPage />,
     children: [
       { index: true, element: <AdminMainPage /> },
