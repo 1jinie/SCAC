@@ -66,10 +66,6 @@ const router = createBrowserRouter([
         children: [{ index: true, element: <AdminMemoPage /> }],
       },
       {
-        path: 'user',
-        children: [{ index: true, element: <AdminUserPage /> }],
-      },
-      {
         path: 'seat',
         children: [
           {

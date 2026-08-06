@@ -20,4 +20,11 @@ export const paymentApi = {
     );
     return response.data.data;
   },
+
+  // 사용자 결제 내역 조회
+  getPayment: async (paymentId) => {
+    const response = await axiosInstance.get(`/api/payments/${paymentId}`);
+
+    return response.data.data;
+  },
 };
