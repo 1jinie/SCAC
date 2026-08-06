@@ -24,15 +24,6 @@ public class DeviceController {
 
   private final DeviceService deviceService;
 
-  // 특정 장치 현재 상태 조회
-  @GetMapping("/{deviceId}")
-  public ResponseEntity<ApiResponse<DeviceResDTO>> findByDeviceId(@PathVariable("deviceId") Long deviceId) {
-
-    DeviceResDTO device = deviceService.findCurrentStatus(deviceId);
-
-    return ResponseEntity.ok(ApiResponse.success("장치 상태 조회를 완료했습니다.", device));
-  }
-
   // RTOS 이벤트 수신
   @PostMapping("/events")
   public ResponseEntity<ApiResponse<DeviceLogResDTO>> handleDeviceEvent(
