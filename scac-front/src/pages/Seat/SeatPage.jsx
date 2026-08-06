@@ -120,9 +120,7 @@ function SeatPage({ mode }) {
         </div>
         <div className="legend_item">
           <span className="legend_color using"></span>
-          <span className="legend_text">
-            {mode === 'seat' ? '사용중' : '예약됨'}
-          </span>
+          <span className="legend_text">사용중</span>
         </div>
       </div>
 
