@@ -76,9 +76,8 @@ const router = createBrowserRouter([
     ],
   },
 
-  // 관리자 로그인 경로 (/admin/login으로 맞춤)
   {
-    path: "/admin/login",
+    path: "/login",
     element: <AdminLoginPage />,
     errorElement: <AdminErrorPage />,
   },

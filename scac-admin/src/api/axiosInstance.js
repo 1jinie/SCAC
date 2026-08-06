@@ -9,7 +9,6 @@ const axiosInstance = axios.create({
   },
 });
 
-/* 1. Request Interceptor: Access Token 자동 첨부 */
 axiosInstance.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem("accessToken");
@@ -21,7 +20,6 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-/* 2. Response Interceptor: 401 발생 시 관리자/사용자 구분하여 자동 재발급 */
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -33,7 +31,6 @@ axiosInstance.interceptors.response.use(
 
       if (refreshToken) {
         try {
-          // 관리자 API 요청인지 확인하여 재발급 엔드포인트 분기 처리
           const isAdminRequest = originalRequest.url?.includes("/api/admin");
           const refreshEndpoint = isAdminRequest
             ? "/api/admin/auth/refresh"
@@ -60,14 +57,12 @@ axiosInstance.interceptors.response.use(
         } catch (refreshError) {
           console.error("토큰 재발급 실패:", refreshError);
           localStorage.clear();
-          const isAdminRequest = originalRequest.url?.includes("/api/admin");
-          window.location.href = isAdminRequest ? "/admin/login" : "/login";
+          window.location.href = "/login";
           return Promise.reject(refreshError);
         }
       } else {
         localStorage.clear();
-        const isAdminRequest = originalRequest.url?.includes("/api/admin");
-        window.location.href = isAdminRequest ? "/admin/login" : "/login";
+        window.location.href = "/login";
       }
     }
 
