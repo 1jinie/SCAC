@@ -7,7 +7,7 @@ import {
 } from '../api/authApi';
 import { postSignUp, postGuestSignUp } from '../api/userApi';
 
-export const AuthStore = create((set, get) => ({
+export const useAuthStore = create((set, get) => ({
   accessToken: localStorage.getItem('accessToken') || null,
   user: JSON.parse(localStorage.getItem('userInfo')) || null,
   isAuthenticated: !!localStorage.getItem('accessToken'),
