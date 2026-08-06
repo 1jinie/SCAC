@@ -188,7 +188,7 @@ export default function AdminReservationPage() {
 
                   <div className="legend_item">
                     <span className="legend_color using" />
-                    <span className="legend_text">예약됨</span>
+                    <span className="legend_text">사용중</span>
                   </div>
                 </div>
               </div>
