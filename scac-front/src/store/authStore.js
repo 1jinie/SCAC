@@ -1,8 +1,13 @@
 import { create } from 'zustand';
-import { postLogin, postAdminLogin, postLogout } from '../api/authApi';
+import {
+  postLogin,
+  postAdminLogin,
+  postLogout,
+  postAdminLogout,
+} from '../api/authApi';
 import { postSignUp, postGuestSignUp } from '../api/userApi';
 
-export const useAuthStore = create((set) => ({
+export const AuthStore = create((set, get) => ({
   accessToken: localStorage.getItem('accessToken') || null,
   user: JSON.parse(localStorage.getItem('userInfo')) || null,
   isAuthenticated: !!localStorage.getItem('accessToken'),
@@ -21,6 +26,7 @@ export const useAuthStore = create((set) => ({
           userId,
           phoneNumber,
           role,
+          isAdmin: false,
         };
 
         localStorage.setItem('accessToken', accessToken);
@@ -33,7 +39,7 @@ export const useAuthStore = create((set) => ({
           isAuthenticated: true,
           isLoading: false,
         });
-        return { success: true, role: userObj?.role }; // 👈 role 리턴 추가
+        return { success: true, role: userObj?.role };
       }
       set({ isLoading: false });
       return {
@@ -48,7 +54,7 @@ export const useAuthStore = create((set) => ({
     }
   },
 
-  // 2. 관리자 로그인
+  // 2. 관리자 로그인 (SUPER_ADMIN, STAFF 등의 실제 역할 저장)
   adminLogin: async (loginId, password) => {
     set({ isLoading: true });
     try {
@@ -59,7 +65,8 @@ export const useAuthStore = create((set) => ({
         const userObj = {
           adminId,
           loginId,
-          role: role || 'ROLE_ADMIN',
+          role: role, // 'SUPER_ADMIN' 또는 'STAFF'
+          isAdmin: true,
         };
 
         localStorage.setItem('accessToken', accessToken);
@@ -88,7 +95,7 @@ export const useAuthStore = create((set) => ({
     }
   },
 
-  // 3. 일반 회원가입 👈 [추가됨]
+  // 3. 회원가입
   signUp: async (userData) => {
     set({ isLoading: true });
     try {
@@ -110,19 +117,14 @@ export const useAuthStore = create((set) => ({
     }
   },
 
-  // 4. 비회원/게스트 등록 👈 [추가됨]
+  // 4. 게스트 등록
   guestSignUp: async (userData) => {
     set({ isLoading: true });
     try {
       const res = await postGuestSignUp(userData);
-
       set({ isLoading: false });
-
       if (res.isSuccess) {
-        return {
-          success: true,
-          userId: res.data?.userId,
-        };
+        return { success: true, userId: res.data?.userId };
       }
       return {
         success: false,
@@ -130,7 +132,6 @@ export const useAuthStore = create((set) => ({
       };
     } catch (error) {
       set({ isLoading: false });
-
       return {
         success: false,
         errorMessage:
@@ -140,12 +141,17 @@ export const useAuthStore = create((set) => ({
     }
   },
 
-  // 5. 로그아웃
+  // 5. 로그아웃 (관리자/사용자 구분하여 백엔드 DB 토큰 정상 삭제)
   logout: async () => {
+    const currentUser = get().user;
     try {
-      await postLogout();
+      if (currentUser?.isAdmin || currentUser?.adminId) {
+        await postAdminLogout();
+      } else {
+        await postLogout();
+      }
     } catch (e) {
-      console.warn('Logout API Failed:', e);
+      console.warn('Logout API Call Error:', e);
     } finally {
       localStorage.clear();
       set({ accessToken: null, user: null, isAuthenticated: false });
