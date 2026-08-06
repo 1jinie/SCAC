@@ -32,4 +32,8 @@ public class MeetingRoom {
     private int hourlyRate;
     
     private String description;
+
+    public void updateStatus(SeatStatus status){
+        this.status = status;
+    }
 }

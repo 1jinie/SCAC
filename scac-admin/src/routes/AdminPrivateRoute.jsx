@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import axiosInstance from '../api/axiosInstance'; // 경로 확인
+import { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
+import { postAdminRefreshToken } from "../api/authApi";
 
 /**
- * 순수 JS 기반 JWT 토큰 만료 여부 검사 함수
+ * 순수 JS 기반 JWT 토큰 만료 여부 체킹
  */
 const isTokenExpired = (token) => {
   if (!token) return true;
@@ -23,7 +23,6 @@ const isTokenExpired = (token) => {
     const { exp } = JSON.parse(jsonPayload);
     if (!exp) return false;
 
-    // 현재 시간(ms)과 exp(s) 비교
     return Date.now() >= exp * 1000;
   } catch (error) {
     return true;
@@ -31,72 +30,63 @@ const isTokenExpired = (token) => {
 };
 
 export default function AdminPrivateRoute({ children }) {
-  // null: 인증 상태 검증 중, true: 인증 성공, false: 인증 실패
   const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   useEffect(() => {
     const verifyAuth = async () => {
-      const accessToken = localStorage.getItem('adminAccessToken');
-      const refreshToken = localStorage.getItem('adminRefreshToken');
+      const accessToken = localStorage.getItem("accessToken");
+      const refreshToken = localStorage.getItem("refreshToken");
+      const userInfo = JSON.parse(localStorage.getItem("userInfo") || "null");
 
-      // 1. Access Token이 아예 없는 경우
-      if (!accessToken) {
+      // 1. 토큰이 없거나 관리자 계정이 아닌 경우 접근 거부
+      if (!accessToken || !userInfo?.adminId) {
         setIsAuthenticated(false);
         return;
       }
 
-      // 2. Access Token이 유효한 경우 (만료 안 됨)
+      // 2. Access Token이 유효한 경우 통과
       if (!isTokenExpired(accessToken)) {
         setIsAuthenticated(true);
         return;
       }
 
-      // 3. Access Token이 만료되었으나 Refresh Token이 존재하는 경우 -> 재발급 시도
+      // 3. Access Token이 만료된 경우 관리자 전용 Refresh API 호출
       if (refreshToken && !isTokenExpired(refreshToken)) {
         try {
-          // 백엔드 관리자 토큰 재발급 API 호출 (/api/admin/auth/refresh)
-          const response = await axiosInstance.post('/api/admin/auth/refresh', {
-            refreshToken,
-          });
-
-          // ApiResponse 구조 확인 (isSuccess: true)
-          if (response.data?.isSuccess && response.data?.data) {
+          const res = await postAdminRefreshToken(refreshToken);
+          if (res.isSuccess && res.data) {
             const {
               accessToken: newAccessToken,
               refreshToken: newRefreshToken,
-            } = response.data.data;
+            } = res.data;
 
-            // 로컬 스토리지에 새 토큰 저장
-            localStorage.setItem('adminAccessToken', newAccessToken);
+            localStorage.setItem("accessToken", newAccessToken);
             if (newRefreshToken) {
-              localStorage.setItem('adminRefreshToken', newRefreshToken);
+              localStorage.setItem("refreshToken", newRefreshToken);
             }
 
             setIsAuthenticated(true);
             return;
           }
         } catch (error) {
-          console.error('관리자 토큰 재발급 실패:', error);
+          console.error("관리자 토큰 재발급 연동 실패:", error);
         }
       }
 
-      // 4. 토큰 재발급 실패 또는 Refresh Token도 만료된 경우 -> 토큰 삭제 후 로그인 이동
-      localStorage.removeItem('adminAccessToken');
-      localStorage.removeItem('adminRefreshToken');
+      // 4. 재발급 실패 시 스토리지 비우고 로그인 페이지로 이동
+      localStorage.clear();
       setIsAuthenticated(false);
     };
 
     verifyAuth();
   }, []);
 
-  // 인증 검증 진행 중일 때는 화면 튕김(Flickering) 방지
   if (isAuthenticated === null) {
-    return null;
+    return null; // 로딩 중 화면 튕김 방지
   }
 
-  // 인증 실패 시 관리자 로그인 페이지로 리다이렉트
   if (!isAuthenticated) {
-    return <Navigate to="/admin/login" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return children;
