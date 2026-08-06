@@ -91,7 +91,8 @@ public class PaymentService {
       currentUserId, ticket.getTicketId(), ticket.getTicketPrice(), dto.getPaymentMethod()
 
     );
-
+    // 아직 결제가 완료되지 않았으므로 결제 상태는 PENDING으로 설정됩니다.
+    // 또한 paid_at, usage_id는 결제 승인 후에 데이터가 입력되므로 요청단계에선 null로 초기화됩니다.
     paymentRepository.save(payment);
 
     return PaymentResDTO.from(payment);

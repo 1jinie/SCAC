@@ -4,6 +4,7 @@ export const paymentApi = {
   // 토스 결제 준비
   createPayment: async (data) => {
     const response = await axiosInstance.post(`/api/payments`, data);
+    console.log(response.data.data);
     return response.data.data;
   },
 

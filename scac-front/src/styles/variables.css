@@ -59,6 +59,8 @@
   --color-overlay: rgba(0, 0, 0, 0.7);
   --color-mint-soft: #eef7f5;
   --color-mint-card: #dcefeb;
+  --color-gray: #a0a0a0;
+  --color-darkgray: #656565;
 
   /* ========================================================
      Border / Stroke
