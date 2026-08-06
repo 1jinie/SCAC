@@ -21,7 +21,6 @@ export default function AdminReservationPage() {
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [selectedDate, setSelectedDate] = useState(toDateString(new Date()));
   const [reservations, setReservations] = useState([]); // 💡 더미 데이터 제거 및 빈 배열 초기화
-  const [isLoading, setIsLoading] = useState(false);
 
   // 스토어 상태 추출
   const seats = seatStore((state) => state.seats);
@@ -40,19 +39,16 @@ export default function AdminReservationPage() {
     fetchSeats();
     fetchRooms();
     clearSelected();
-  }, [fetchRooms, clearSelected]);
+  }, [fetchSeats, fetchRooms, clearSelected]);
 
   // 2. 백엔드 실시간 스터디룸 예약 목록 조회
   const fetchReservations = useCallback(async () => {
     try {
-      setIsLoading(true);
       const response = await reservationApi.getAdminReservationList();
       setReservations(response.data?.data ?? []);
     } catch (error) {
       console.error("예약 목록 조회 실패:", error);
       setReservations([]);
-    } finally {
-      setIsLoading(false);
     }
   }, []);
 
