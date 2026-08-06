@@ -4,6 +4,7 @@ export const paymentApi = {
   // 토스 결제 준비
   createPayment: async (data) => {
     const response = await axiosInstance.post(`/api/payments`, data);
+    console.log(response.data.data);
     return response.data.data;
   },
 
@@ -18,6 +19,13 @@ export const paymentApi = {
     const response = await axiosInstance.post(
       `/api/payments/${paymentId}/mock-confirm`,
     );
+    return response.data.data;
+  },
+
+  // 사용자 결제 내역 조회
+  getPayment: async (paymentId) => {
+    const response = await axiosInstance.get(`/api/payments/${paymentId}`);
+
     return response.data.data;
   },
 };

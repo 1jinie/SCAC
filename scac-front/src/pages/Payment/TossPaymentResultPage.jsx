@@ -1,20 +1,63 @@
-import { useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { paymentApi } from '../../api/paymentApi';
 
 export default function TossPaymentResultPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const hasRequestedRef = useRef(false);
 
   useEffect(() => {
-    const confirmPayment = async () => {
+    // 여러번 호출되는 걸 막는용도
+    if (hasRequestedRef.current) {
+      return;
+    }
+
+    hasRequestedRef.current = true;
+
+    const handlePaymentResult = async () => {
+      // Toss 결제 실패 또는 취소
+      if (location.pathname.endsWith('/fail')) {
+        const code = searchParams.get('code');
+        const message =
+          searchParams.get('message') ??
+          '결제가 취소되었거나 처리되지 않았습니다.';
+
+        console.error('토스 결제 실패:', {
+          code,
+          message,
+        });
+
+        navigate('/payment/result/fail', {
+          replace: true,
+          state: {
+            code,
+            message,
+          },
+        });
+
+        return;
+      }
+
+      // Toss 결제 성공
       try {
-        // 1. 토스가 successUrl로 전달한 값
         const paymentKey = searchParams.get('paymentKey');
         const orderId = searchParams.get('orderId');
-        const amount = Number(searchParams.get('amount'));
+        const amountParam = searchParams.get('amount');
+        const amount = Number(amountParam);
 
-        // 2. 백엔드 결제 승인
+        if (
+          !paymentKey ||
+          !orderId ||
+          !amountParam ||
+          !Number.isFinite(amount) ||
+          amount <= 0
+        ) {
+          throw new Error('결제 승인 정보가 올바르지 않습니다.');
+        }
+
         const result = await paymentApi.confirmPayment({
           paymentKey,
           orderId,
@@ -23,7 +66,6 @@ export default function TossPaymentResultPage() {
 
         console.log('결제 승인 완료:', result);
 
-        // 3. 성공 화면에는 paymentId만 전달
         navigate('/payment/result/success', {
           replace: true,
           state: {
@@ -37,14 +79,16 @@ export default function TossPaymentResultPage() {
           replace: true,
           state: {
             message:
-              error.response?.data?.message ?? '결제 승인에 실패했습니다.',
+              error.response?.data?.message ??
+              error.message ??
+              '결제 승인에 실패했습니다.',
           },
         });
       }
     };
 
-    confirmPayment();
-  }, [navigate, searchParams]);
+    handlePaymentResult();
+  }, [location.pathname, navigate, searchParams]);
 
   return (
     <div className="overlay">

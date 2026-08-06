@@ -32,13 +32,11 @@ public class TicketUsageService {
   public String getActiveTicketName(Long userId) {
     List<TicketUsageStatus> activeStatuses = List.of(TicketUsageStatus.USING, TicketUsageStatus.READY);
 
-    return ticketUsageRepository
-      .findFirstByUserIdAndStatusInOrderByCreatedAtDesc(userId, activeStatuses)
+    return ticketUsageRepository.findFirstByUserIdAndStatusInOrderByCreatedAtDesc(userId, activeStatuses)
       .map(ticketUsage -> {
-          Ticket ticket = ticketService.findTicket(ticketUsage.getTicketId());
-          return ticket.getTicketName();
-      })
-      .orElse(null);
+        Ticket ticket = ticketService.findTicket(ticketUsage.getTicketId());
+        return ticket.getTicketName();
+      }).orElse(null);
   }
 
   @Transactional
@@ -52,6 +50,11 @@ public class TicketUsageService {
   public void cancel(Long ticketUsageId) {
     TicketUsage ticketUsage = findTicketUsage(ticketUsageId);
     ticketUsage.cancel();
+  }
+
+  // UserId로 사용가능한 SEAT 이용권 보유 여부 조회
+  public boolean hasAvailableSeatTicketUsage(Long id) {
+    return ticketUsageRepository.findLatestSeatTicketUsage(id).isPresent();
   }
 
 }

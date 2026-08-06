@@ -2,25 +2,18 @@ package com.scac.payment.controller;
 
 import java.net.URI;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.scac.auth.jwt.UserPrincipal;
 import com.scac.global.response.ApiResponse;
-import com.scac.payment.dto.PaymentCancelDTO;
 import com.scac.payment.dto.PaymentConfirmDTO;
-import com.scac.payment.dto.PaymentHistoryDTO;
 import com.scac.payment.dto.PaymentRequestDTO;
 import com.scac.payment.dto.PaymentResDTO;
 import com.scac.payment.service.PaymentService;
@@ -61,6 +54,15 @@ public class PaymentController {
         @AuthenticationPrincipal UserPrincipal currentUser) {
         PaymentResDTO payment = paymentService.mockConfirm(paymentId, currentUser.id());
         return ResponseEntity.ok(ApiResponse.success("Mock 카드 결제가 승인되었습니다.", payment));
+    }
+
+    // 결제 내역 조회
+    @GetMapping("/{paymentId}")
+    public ResponseEntity<ApiResponse<PaymentResDTO>> findMyPayment(@PathVariable("paymentId") Long paymentId,
+        @AuthenticationPrincipal UserPrincipal currentUser) {
+        PaymentResDTO payment = paymentService.findMyPayment(paymentId, currentUser.id());
+
+        return ResponseEntity.ok(ApiResponse.success("결제 내역 조회를 완료했습니다.", payment));
     }
 
 }

@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { deviceApi } from "../../api/deviceApi";
-import AdminSummary from "../../components/common/Summary";
-import AdminDeviceDetail from "./components/AdminDeviceDetail";
-import AdminDeviceList from "./components/AdminDeviceList";
-import "./css/AdminDevicePage.css";
-import AdminDeviceLogList from "./components/AdminDeviceLogList";
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { deviceApi } from '../../api/deviceApi';
+import AdminSummary from '../../components/common/Summary';
+import AdminDeviceDetail from './components/AdminDeviceDetail';
+import AdminDeviceList from './components/AdminDeviceList';
+import './css/AdminDevicePage.css';
+import AdminDeviceLogList from './components/AdminDeviceLogList';
 
 export default function AdminDevicePage() {
   const [devices, setDevices] = useState([]);
@@ -12,19 +12,20 @@ export default function AdminDevicePage() {
   const [deviceLogs, setDeviceLogs] = useState([]);
   const [isDeviceLoading, setIsDeviceLoading] = useState(false);
   const [isLogLoading, setIsLogLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
   // 전체 장치 조회
   const fetchDevices = useCallback(async () => {
     try {
       setIsDeviceLoading(true);
-      setErrorMessage("");
+      setErrorMessage('');
       const data = await deviceApi.getDevices();
       setDevices(data);
+      console.log(data);
     } catch (error) {
       console.error(
-        "장치 목록 조회 실패:",
+        '장치 목록 조회 실패:',
         error.response?.data?.message ?? error,
       );
 
@@ -53,7 +54,7 @@ export default function AdminDevicePage() {
       setDeviceLogs(logs);
     } catch (error) {
       console.error(
-        "장치 로그 조회 실패:",
+        '장치 로그 조회 실패:',
         error.response?.data?.message ?? error,
       );
       setDeviceLogs([]);
@@ -70,9 +71,9 @@ export default function AdminDevicePage() {
 
     setIsUpdatingStatus(true);
     const message =
-      status === "NORMAL"
-        ? "관리자 확인 후 정상 처리되었습니다."
-        : "관리자에 의해 장치 상태가 변경되었습니다.";
+      status === 'NORMAL'
+        ? '관리자 확인 후 정상 처리되었습니다.'
+        : '관리자에 의해 장치 상태가 변경되었습니다.';
 
     try {
       const updatedDevice = await deviceApi.updateDeviceStatus(
@@ -92,7 +93,7 @@ export default function AdminDevicePage() {
       setDeviceLogs(logs);
     } catch (error) {
       console.error(
-        "장치 상태 업데이트 실패:",
+        '장치 상태 업데이트 실패:',
         error.response?.data?.message ?? error,
       );
     } finally {
@@ -106,15 +107,15 @@ export default function AdminDevicePage() {
         result.total += 1;
 
         switch (device.status) {
-          case "NORMAL":
+          case 'NORMAL':
             result.normal += 1;
             break;
 
-          case "OFFLINE":
+          case 'OFFLINE':
             result.offline += 1;
             break;
 
-          case "ERROR":
+          case 'ERROR':
             result.error += 1;
             break;
 
@@ -136,36 +137,36 @@ export default function AdminDevicePage() {
   const summaryItems = useMemo(
     () => [
       {
-        key: "total",
-        label: "전체 장치",
+        key: 'total',
+        label: '전체 장치',
         value: deviceSummary.total,
-        unit: "대",
-        description: "등록된 장치",
-        color: "blue",
+        unit: '대',
+        description: '등록된 장치',
+        color: 'blue',
       },
       {
-        key: "normal",
-        label: "정상 작동",
+        key: 'normal',
+        label: '정상 작동',
         value: deviceSummary.normal,
-        unit: "대",
-        description: "현재 정상 상태",
-        color: "mint",
+        unit: '대',
+        description: '현재 정상 상태',
+        color: 'mint',
       },
       {
-        key: "offline",
-        label: "오프라인",
+        key: 'offline',
+        label: '오프라인',
         value: deviceSummary.offline,
-        unit: "대",
-        description: "현재 연결되지 않은 장치",
-        color: "orange",
+        unit: '대',
+        description: '현재 연결되지 않은 장치',
+        color: 'orange',
       },
       {
-        key: "error",
-        label: "오류",
+        key: 'error',
+        label: '오류',
         value: deviceSummary.error,
-        unit: "대",
-        description: "즉시 확인 필요",
-        color: "red",
+        unit: '대',
+        description: '즉시 확인 필요',
+        color: 'red',
       },
     ],
     [deviceSummary],

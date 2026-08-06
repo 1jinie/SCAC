@@ -214,3 +214,17 @@ TicketList가 Fragment를 반환하고 있기 때문에
 
   font-size: var(--font-size-subtitle);
 }
+
+.back_btn {
+  display: flex;
+  align-items: center;
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--color-text);
+  cursor: pointer;
+  user-select: none;
+  position: absolute;
+  left: 0;
+  background-color: transparent;
+  border: none;
+}
