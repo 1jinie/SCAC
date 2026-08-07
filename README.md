@@ -72,6 +72,14 @@ SCAC Backend는 스터디카페 키오스크와 관리자 웹 애플리케이션
 - 관리자 결제 조회·취소 권한 보완 진행 중
 - 기간·상태·결제수단별 검색 및 매출 통계 예정
 
+### 결제 취소 정책
+
+- 결제가 완료된 거래는 관리자 페이지에서 취소할 수 있습니다.
+- 결제 취소 시 PG 결제 취소와 함께 `Payment` 상태를 `CANCELED`로 변경합니다.
+- 해당 결제로 발급된 `TicketUsage`도 함께 `CANCELED` 처리됩니다.
+- 이미 사용 중이거나 사용 완료된 이용권은 결제 취소 대상에서 제외합니다.
+- 부분 환불은 지원하지 않으며, 미사용 이용권에 대한 전체 취소만 지원합니다.
+
 ### 🪑 좌석 및 입·퇴실
 
 - 전체 좌석 현황 및 상세 조회
@@ -799,7 +807,7 @@ PATCH  /api/payments/{paymentId}/cancel
 
 ## 📝 Documentation Version
 
-- **README v2.0**
+- **README v2.1**
 - Last Updated: 2026.08.05
 
 ### History
@@ -807,6 +815,7 @@ PATCH  /api/payments/{paymentId}/cancel
 - README v1.0 (2026.07.22)
 - README v1.1 (2026.07.23)
 - README v2.0 (2026.08.05) — 8월 4일 프로젝트 구조 및 API 기준 현행화
+- README v2.1 (2026.08.05)
 
 ---
 
