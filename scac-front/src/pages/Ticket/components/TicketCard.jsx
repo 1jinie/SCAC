@@ -8,7 +8,6 @@ export default function TicketCard({ ticket }) {
   const setPurchaseType = useTicketStore((state) => state.setPurchaseType);
 
   const onSelect = () => {
-    console.log(ticketId);
     selectTicket(ticketId);
     setPurchaseType('SEAT');
   };

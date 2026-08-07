@@ -22,7 +22,6 @@ export default function AdminDevicePage() {
       setErrorMessage('');
       const data = await deviceApi.getDevices();
       setDevices(data);
-      console.log(data);
     } catch (error) {
       console.error(
         '장치 목록 조회 실패:',

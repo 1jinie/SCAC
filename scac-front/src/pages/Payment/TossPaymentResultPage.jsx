@@ -64,8 +64,6 @@ export default function TossPaymentResultPage() {
           amount,
         });
 
-        console.log('결제 승인 완료:', result);
-
         navigate('/payment/result/success', {
           replace: true,
           state: {

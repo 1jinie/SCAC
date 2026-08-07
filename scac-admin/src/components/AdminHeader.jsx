@@ -2,12 +2,15 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import HeaderTime from './HeaderTime';
 
 const ADMIN_PAGE_TITLES = {
-  '/admin': '관리자 메인',
-  '/admin/log': '로그 확인',
-  '/admin/reservation': '예약 승인',
-  '/admin/device': '장치 관리',
-  '/admin/ticket': '이용권 관리',
-  '/admin/payment': '결제 관리',
+  '/': '관리자 메인',
+  '/log': '로그 확인',
+  '/reservation': '예약 승인',
+  '/device': '장치 관리',
+  '/ticket': '이용권 관리',
+  '/payment': '결제 관리',
+  '/user': '회원 관리',
+  '/memo': '관리자 메모',
+  '/seat': '좌석 관리',
 };
 
 export default function AdminHeader() {
@@ -16,9 +19,7 @@ export default function AdminHeader() {
 
   const pageTitle =
     ADMIN_PAGE_TITLES[location.pathname] ||
-    (location.pathname.startsWith('/admin/log/')
-      ? '로그 상세'
-      : '관리자 페이지');
+    (location.pathname.startsWith('/log/') ? '로그 상세' : '관리자 페이지');
 
   const handleBack = () => {
     navigate(-1);
@@ -26,7 +27,7 @@ export default function AdminHeader() {
 
   const handleLogout = () => {
     // 추후 로그아웃 API 연결필요
-    navigate('/admin/login', { replace: true });
+    navigate('/login', { replace: true });
   };
 
   return (
