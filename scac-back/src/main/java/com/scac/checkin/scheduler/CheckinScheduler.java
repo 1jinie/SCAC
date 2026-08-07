@@ -11,6 +11,7 @@ import com.scac.checkin.repository.CheckinRepository;
 import com.scac.global.enums.CheckinStatus;
 import com.scac.global.enums.TicketType;
 import com.scac.global.enums.TicketUsageStatus;
+import com.scac.global.exception.BusinessException;
 import com.scac.seat.domain.Seat;
 import com.scac.seat.repository.SeatRepository;
 import com.scac.system.entity.SystemLog;
@@ -37,10 +38,14 @@ public class CheckinScheduler {
         TicketUsage next = ticketUsageRepository.findFirstByUserIdAndStatusOrderByCreatedAtAsc(userId, TicketUsageStatus.READY).orElse(null);
 
         if(next == null) return null;
+        
+        // 시간권
         if(next.getTicketType() == TicketType.TIME_PACK){
             next.start();
-        } else{
-            Ticket ticket = ticketRepository.findById(next.getTicketId()).orElseThrow();
+        }
+        // 기간권 
+        else if(next.getTicketType() == TicketType.PERIOD_PACK){
+            Ticket ticket = ticketRepository.findById(next.getTicketId()).orElseThrow(() -> new BusinessException("해당 상품이 없습니다"));
 
             next.startPeriod(ticket.getValidDays());
         }

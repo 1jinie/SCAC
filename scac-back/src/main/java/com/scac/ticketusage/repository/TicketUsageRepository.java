@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import com.scac.global.enums.TicketType;
 import com.scac.global.enums.TicketUsageStatus;
 import com.scac.ticketusage.entity.TicketUsage;
 
@@ -27,4 +28,7 @@ public interface TicketUsageRepository extends JpaRepository<TicketUsage,Long>{
         ORDER BY tu.created_at DESC LIMIT 1
         """, nativeQuery = true)
     Optional<TicketUsage> findLatestSeatTicketUsage(@Param("userId") Long userId);
+
+    // 구매일 기준 오래된 것부터 상태별 이용권 조회에다가 이용권 종류 추가
+    Optional<TicketUsage> findFirstByUserIdAndStatusAndTicketTypeOrderByCreatedAtAsc(Long userId, TicketUsageStatus status, TicketType ticketType);
 }
