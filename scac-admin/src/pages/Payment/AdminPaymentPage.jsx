@@ -56,14 +56,16 @@ export default function AdminPaymentPage() {
 
   // 검색 + 상태 필터
   const filteredPayments = useMemo(() => {
-    const refacKeyword = searchKeyword.trim().replace(/\D/g, '');
+    const keyword = searchKeyword.trim().replace(/\D/g, '');
 
     return payments.filter((payment) => {
       const phoneNumber = String(payment.phoneNumber ?? '').replace(/\D/g, '');
+      const paymentId = String(payment.paymentId ?? '');
+
       const matchesKeyword =
-        searchKeyword === '' ||
-        String(phoneNumber).includes(refacKeyword) ||
-        String(payment.paymentId).includes(refacKeyword);
+        keyword === '' ||
+        phoneNumber.includes(keyword) ||
+        paymentId.includes(keyword);
 
       const matchesStatus =
         statusFilter === 'ALL' || payment.status === statusFilter;
