@@ -9,7 +9,6 @@ export default function PaymentMethodPage() {
   const setPaymentMethod = usePaymentStore((state) => state.setPaymentMethod);
   const handleMethod = (method) => {
     setPaymentMethod(method);
-    console.log(method);
     navi(`process`);
     // navi(`toss`);
   };
