@@ -88,25 +88,8 @@ export default function PaymentProcess() {
         return;
       }
 
-      // 2. 네이버페이 → QR 결제 화면
-      if (paymentMethod === PAYMENT_METHOD.NAVERPAY) {
-        const order = await paymentApi.createPayment(orderData);
-
-        navi('/payment/kiosk/qr', {
-          state: {
-            paymentId: order.paymentId,
-            amount: order.amount,
-          },
-        });
-
-        return;
-      }
-
-      // 3. 토스페이 / 카카오페이
-      if (
-        paymentMethod === PAYMENT_METHOD.TOSSPAY ||
-        paymentMethod === PAYMENT_METHOD.KAKAOPAY
-      ) {
+      // 3. 토스페이 /
+      if (paymentMethod === PAYMENT_METHOD.TOSSPAY) {
         const order = await paymentApi.createPayment(orderData);
 
         await requestTossPayment({
