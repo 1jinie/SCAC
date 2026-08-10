@@ -35,8 +35,20 @@ public class CheckinScheduler {
 
     // 다음 이용권으로 전환
     private TicketUsage activateNextTicket(Long userId){
-        TicketUsage next = ticketUsageRepository.findFirstByUserIdAndStatusOrderByCreatedAtAsc(userId, TicketUsageStatus.READY).orElse(null);
+        // 1순위 : READY 기간권
+        TicketUsage next = ticketUsageRepository.findFirstByUserIdAndStatusAndTicketTypeOrderByCreatedAtAsc(
+            userId, 
+            TicketUsageStatus.READY, 
+            TicketType.PERIOD_PACK).orElse(null);
 
+        // 2순위 : READY 시간권
+        if(next == null){
+            next = ticketUsageRepository.findFirstByUserIdAndStatusAndTicketTypeOrderByCreatedAtAsc(
+                userId, 
+                TicketUsageStatus.READY, 
+                TicketType.TIME_PACK).orElse(null);
+        }
+        
         if(next == null) return null;
         
         // 시간권
