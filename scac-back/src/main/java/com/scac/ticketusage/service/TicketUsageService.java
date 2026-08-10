@@ -61,7 +61,15 @@ public class TicketUsageService {
       // 바로 사용 시작
       usage.startPeriod(ticket.getValidDays());
 
-      return TicketUsageResDTO.from(ticketUsageRepository.save(usage));
+      // 기간권 사용시 check_inout 테이블의 usage_id 전환
+      TicketUsage savedUsage = ticketUsageRepository.save(usage);
+      checkinRepository.findFirstByUserIdAndCheckinStatusInOrderByCheckinAtDesc(
+        userId,
+        List.of(CheckinStatus.USING, CheckinStatus.AWAY)).ifPresent(checkin ->
+          checkin.changeUsage(savedUsage.getUsageId())
+        );
+
+      return TicketUsageResDTO.from(savedUsage);
     }
 
     // 시간권 구매
