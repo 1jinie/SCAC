@@ -26,6 +26,7 @@ public class NotificationService {
   private final UserRepository userRepository;
   private final SolapiMessageClient solapiMessageClient;
 
+  // 사용자에게 알림 발송
   @Transactional
   public NotificationLog sendToUser(Long userId, NotificationType type, String title, String content) {
     User user = userRepository.findById(userId)
@@ -54,6 +55,7 @@ public class NotificationService {
     return log;
   }
 
+  // 최근 알림 발송 여부 확인
   @Transactional(readOnly = true)
   public boolean wasSentRecently(Long userId, NotificationType type, Collection<NotificationStatus> statuses,
       LocalDateTime since) {
@@ -61,6 +63,7 @@ public class NotificationService {
         .existsByUserIdAndNotificationTypeAndStatusAndCreatedAtAfter(userId, type, statuses, since);
   }
 
+  // SOLAPI 발송 상태 동기화
   @Transactional
   public void syncPendingStatuses() {
     LocalDateTime cutoff = LocalDateTime.now().minusDays(1);
@@ -71,6 +74,7 @@ public class NotificationService {
         .forEach(this::syncStatus);
   }
 
+  // SOLAPI 발송 상태 동기화
   private void syncStatus(NotificationLog log) {
     SolapiMessageClient.SolapiMessageStatus remote = solapiMessageClient.findMessageStatus(log.getExternalMsgId());
 
