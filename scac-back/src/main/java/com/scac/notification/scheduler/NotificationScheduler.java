@@ -16,9 +16,7 @@ import com.scac.ticketusage.entity.TicketUsage;
 import com.scac.ticketusage.repository.TicketUsageRepository;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class NotificationScheduler {
@@ -40,12 +38,9 @@ public class NotificationScheduler {
   // 1분마다 이용권 만료 예정 알림 대상 확인
   @Scheduled(cron = "15 * * * * *")
   public void sendExpirationPreview() {
-    log.info(
-        "[알림] 스케줄러 실행 enabled={}, 기준={}분",
-        notificationEnabled,
-        timePackPreviewMinutes);
+
     if (!notificationEnabled) {
-      log.warn("[알림] NOTIFICATION_ENABLED=false → 발송 중단");
+
       return;
     }
 
@@ -63,6 +58,7 @@ public class NotificationScheduler {
     notificationService.syncPendingStatuses();
   }
 
+  // 시간권 만료 예정 알림 대상자에게 문자 발송
   private void sendTimePackExpirationPreview() {
     List<TicketUsage> targets = ticketUsageRepository
         .findByStatusAndTicketTypeAndRemainingTimeBetween(
@@ -71,19 +67,12 @@ public class NotificationScheduler {
             1,
             timePackPreviewMinutes);
 
-    log.info("[알림] 시간권 대상자 {}명", targets.size());
-
     for (TicketUsage usage : targets) {
-      log.info(
-          "[알림] 대상 usageId={}, userId={}, remainingTime={}, status={}",
-          usage.getUsageId(),
-          usage.getUserId(),
-          usage.getRemainingTime(),
-          usage.getStatus());
+
       if (alreadyNotified(usage)) {
         continue;
       }
-      log.info("[알림] 문자 발송 시작 usageId={}", usage.getUsageId());
+
       String content = String.format(
           "[SCAC] 현재 이용권 사용 시간이 %d분 이하로 남았습니다.",
           timePackPreviewMinutes);
@@ -96,6 +85,7 @@ public class NotificationScheduler {
     }
   }
 
+  // 기간권 만료 예정 알림 대상자에게 문자 발송
   private void sendPeriodPackExpirationPreview() {
     LocalDateTime now = LocalDateTime.now();
     LocalDateTime previewLimit = now.plusHours(periodPackPreviewHours);
@@ -124,6 +114,7 @@ public class NotificationScheduler {
     }
   }
 
+  // 이미 알림을 보낸 이용권인지 확인
   private boolean alreadyNotified(TicketUsage usage) {
     LocalDateTime since = usage.getStartAt() != null
         ? usage.getStartAt()
