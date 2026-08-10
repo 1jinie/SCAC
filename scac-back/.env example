@@ -7,6 +7,8 @@ DB_USERNAME=아이디
 DB_PASSWORD=비밀번호
 JWT_SECRET=여기에_충분히_긴_랜덤_문자열
 REACT_APP_TOSS_SECRET_KEY=토스_테스트_시크릿_키
+
+# SOLAPI
 SOLAPI_API_KEY=발급받은_API_KEY
 SOLAPI_API_SECRET=발급받은_API_SECRET
 # 해당 번호로 문자를 발송합니다
