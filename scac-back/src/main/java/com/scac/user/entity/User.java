@@ -85,7 +85,7 @@ public class User {
 
     public boolean checkAndReleaseSuspension() {
         if (this.userStatus == UserStatus.SUSPENDED) {
-            if (this.penaltyEndDate != null && LocalDate.now().isAfter(this.penaltyEndDate)) {
+            if (this.penaltyEndDate != null && !LocalDate.now().isBefore(this.penaltyEndDate)) {
                 this.userStatus = UserStatus.ACTIVE;
                 this.penaltyEndDate = null;
                 return false;
