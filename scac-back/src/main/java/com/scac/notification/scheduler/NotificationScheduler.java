@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.scac.global.enums.NotificationStatus;
 import com.scac.global.enums.NotificationType;
 import com.scac.global.enums.TicketType;
 import com.scac.global.enums.TicketUsageStatus;
@@ -129,6 +130,11 @@ public class NotificationScheduler {
         : usage.getCreatedAt();
 
     return notificationService.wasSentRecently(
-        usage.getUserId(), NotificationType.EXPIRATION_PREVIEW, since);
+        usage.getUserId(),
+        NotificationType.EXPIRATION_PREVIEW,
+        List.of(
+            NotificationStatus.PENDING,
+            NotificationStatus.SUCCESS),
+        since);
   }
 }

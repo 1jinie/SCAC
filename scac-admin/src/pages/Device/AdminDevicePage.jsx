@@ -158,6 +158,7 @@ export default function AdminDevicePage() {
         unit: '대',
         description: '현재 연결되지 않은 장치',
         color: 'orange',
+        alert: true,
       },
       {
         key: 'error',
@@ -166,6 +167,7 @@ export default function AdminDevicePage() {
         unit: '대',
         description: '즉시 확인 필요',
         color: 'red',
+        alert: true,
       },
     ],
     [deviceSummary],

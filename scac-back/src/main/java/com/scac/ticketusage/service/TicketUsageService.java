@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.scac.checkin.repository.CheckinRepository;
-import com.scac.global.enums.CheckinStatus;
 import com.scac.global.enums.TicketType;
 import com.scac.global.enums.TicketUsageStatus;
 import com.scac.global.exception.ResourceNotFoundException;
@@ -29,7 +28,7 @@ public class TicketUsageService {
 
   public TicketUsage findTicketUsage(Long ticketUsageId) {
     return ticketUsageRepository.findById(ticketUsageId)
-      .orElseThrow(() -> new ResourceNotFoundException("사용자 이용권을 찾을 수 없습니다."));
+        .orElseThrow(() -> new ResourceNotFoundException("사용자 이용권을 찾을 수 없습니다."));
   }
 
   /* 사용자의 활성(USING / READY) 이용권명 조회 */
@@ -37,10 +36,10 @@ public class TicketUsageService {
     List<TicketUsageStatus> activeStatuses = List.of(TicketUsageStatus.USING, TicketUsageStatus.READY);
 
     return ticketUsageRepository.findFirstByUserIdAndStatusInOrderByCreatedAtDesc(userId, activeStatuses)
-      .map(ticketUsage -> {
-        Ticket ticket = ticketService.findTicket(ticketUsage.getTicketId());
-        return ticket.getTicketName();
-      }).orElse(null);
+        .map(ticketUsage -> {
+          Ticket ticket = ticketService.findTicket(ticketUsage.getTicketId());
+          return ticket.getTicketName();
+        }).orElse(null);
   }
 
   @Transactional
@@ -48,16 +47,18 @@ public class TicketUsageService {
     Ticket ticket = ticketService.findTicket(ticketId);
 
     // 기간권 구매
-    if(ticket.getTicketType() == TicketType.PERIOD_PACK){
+    if (ticket.getTicketType() == TicketType.PERIOD_PACK) {
       // 현재 사용중 이용권 찾기
-      TicketUsage current = ticketUsageRepository.findFirstByUserIdAndStatusOrderByCreatedAtAsc(userId, TicketUsageStatus.USING).orElse(null);
+      TicketUsage current = ticketUsageRepository
+          .findFirstByUserIdAndStatusOrderByCreatedAtAsc(userId, TicketUsageStatus.USING).orElse(null);
 
       // 시간권 사용중이면 READY 변경
-      if(current.getTicketType() == TicketType.TIME_PACK) current.ready();
-      
+      if (current != null && current.getTicketType() == TicketType.TIME_PACK)
+        current.ready();
+
       // 새 기간권 생성
       TicketUsage usage = TicketUsage.create(userId, ticket);
-  
+
       // 바로 사용 시작
       usage.startPeriod(ticket.getValidDays());
 
