@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import './css/KioskCardPayment.css';
 import { paymentApi } from '../../api/paymentApi';
+import './css/KioskCardPayment.css';
 
 export default function KioskCardPayment() {
   const navi = useNavigate();
@@ -11,29 +11,42 @@ export default function KioskCardPayment() {
 
   const [status, setStatus] = useState('WAITING');
 
-  const handleMockCardInsert = async () => {
-    if (status !== 'WAITING') {
-      return;
-    }
-
-    try {
-      setStatus('PROCESSING');
-      const result = await paymentApi.mockConfirmPayment(paymentId);
-      navi('/payment/result/success', {
-        replace: true,
-        state: {
-          paymentId: result.paymentId,
-        },
-      });
-    } catch (error) {
+  useEffect(() => {
+    if (!paymentId) {
       navi('/payment/result/fail', {
         replace: true,
         state: {
-          message: error.response?.data?.message ?? '카드 결제에 실패했습니다.',
+          message: '결제 정보를 확인할 수 없습니다.',
         },
       });
+      return;
     }
-  };
+
+    const timer = window.setTimeout(async () => {
+      try {
+        setStatus('PROCESSING');
+
+        const result = await paymentApi.mockConfirmPayment(paymentId);
+
+        navi('/payment/result/success', {
+          replace: true,
+          state: {
+            paymentId: result.paymentId,
+          },
+        });
+      } catch (error) {
+        navi('/payment/result/fail', {
+          replace: true,
+          state: {
+            message:
+              error.response?.data?.message ?? '카드 결제에 실패했습니다.',
+          },
+        });
+      }
+    }, 5000);
+
+    return () => window.clearTimeout(timer);
+  }, [paymentId, navi]);
 
   return (
     <div className="overlay">
@@ -77,20 +90,10 @@ export default function KioskCardPayment() {
         </div>
 
         {status === 'WAITING' ? (
-          <>
-            <p className="kiosk_payment_wait">
-              카드 인식을 기다리고 있습니다
-              <span className="waiting_dot">...</span>
-            </p>
-
-            <button
-              type="button"
-              onClick={handleMockCardInsert}
-              className="mock_card_button"
-            >
-              Mock 카드 삽입
-            </button>
-          </>
+          <p className="kiosk_payment_wait">
+            카드 인식을 기다리고 있습니다
+            <span className="waiting_dot">...</span>
+          </p>
         ) : (
           <div className="kiosk_payment_processing">
             <div className="payment_spinner" />
