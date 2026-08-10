@@ -52,16 +52,47 @@ public class TicketUsageService {
       // 현재 사용중 이용권 찾기
       TicketUsage current = ticketUsageRepository.findFirstByUserIdAndStatusOrderByCreatedAtAsc(userId, TicketUsageStatus.USING).orElse(null);
 
-      // 시간권 사용중이면 READY 변경
-      if(current.getTicketType() == TicketType.TIME_PACK) current.ready();
-      
-      // 새 기간권 생성
+      // 새 이용권 생성
       TicketUsage usage = TicketUsage.create(userId, ticket);
-  
-      // 바로 사용 시작
-      usage.startPeriod(ticket.getValidDays());
 
-      return TicketUsageResDTO.from(ticketUsageRepository.save(usage));
+      if(current != null){
+        // 기존 이용권이 기간권인 경우
+        if(current.getTicketType() == TicketType.PERIOD_PACK){
+          // 새 기간권 READY
+          usage.ready();
+
+          // 기존 기간권 만료 시점부터 시작
+          usage.setStartAt(current.getEndAt());
+          usage.setEndAt(usage.getStartAt().plusDays(ticket.getValidDays()));
+        } else{
+          // 기존 이용권이 시간권이면 시간권 READY, 기간권 바로 사용
+          current.ready();
+
+          usage.startPeriod(ticket.getValidDays());
+
+          // 현재 입실 중이면 check_inout의 usage_id 변경
+          checkinRepository.findFirstByUserIdAndCheckinStatusInOrderByCheckinAtDesc(
+            userId, 
+            List.of(CheckinStatus.USING, CheckinStatus.AWAY)).ifPresent(checkin -> 
+              checkin.changeUsage(usage.getUsageId()));
+        }
+      } else{
+        // 현재 USING 이용권 없으면 새 기간권 바로 사용
+        usage.startPeriod(ticket.getValidDays());
+      }
+      
+      // 기간권 사용시 check_inout 테이블의 usage_id 전환
+      TicketUsage savedUsage = ticketUsageRepository.save(usage);
+
+      if(savedUsage.getStatus() == TicketUsageStatus.USING){
+        checkinRepository.findFirstByUserIdAndCheckinStatusInOrderByCheckinAtDesc(
+          userId,
+          List.of(CheckinStatus.USING, CheckinStatus.AWAY)).ifPresent(checkin ->
+            checkin.changeUsage(savedUsage.getUsageId())
+          );
+      }
+
+      return TicketUsageResDTO.from(savedUsage);
     }
 
     // 시간권 구매

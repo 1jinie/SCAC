@@ -108,7 +108,7 @@ public class TicketUsage {
     start();
 
     if(endAt == null)
-      endAt = LocalDateTime.now().plusDays(validDays);
+      endAt = startAt.plusDays(validDays);
   }
 
   // 시간권 다시 준비상태로
@@ -176,5 +176,13 @@ public class TicketUsage {
   @PreUpdate
   void setUpdatedAt() {
     this.updatedAt = LocalDateTime.now();
+  }
+
+  public void setStartAt(LocalDateTime startAt){
+    this.startAt = startAt;
+  }
+
+  public void setEndAt(LocalDateTime endAt){
+    this.endAt = endAt;
   }
 }
