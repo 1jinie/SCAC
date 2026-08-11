@@ -11,7 +11,6 @@ import com.scac.global.enums.TicketType;
 import com.scac.global.enums.TicketUsageStatus;
 import com.scac.global.exception.ResourceNotFoundException;
 import com.scac.meetingroom.domain.MeetingRoomReservation;
-import com.scac.meetingroom.dto.MeetingRoomReservationResponse;
 import com.scac.meetingroom.service.MeetingRoomReservationService;
 import com.scac.ticket.entity.Ticket;
 import com.scac.ticket.service.TicketService;
@@ -33,7 +32,7 @@ public class TicketUsageService {
 
   public TicketUsage findTicketUsage(Long ticketUsageId) {
     return ticketUsageRepository.findById(ticketUsageId)
-      .orElseThrow(() -> new ResourceNotFoundException("사용자 이용권을 찾을 수 없습니다."));
+        .orElseThrow(() -> new ResourceNotFoundException("사용자 이용권을 찾을 수 없습니다."));
   }
 
   /* 사용자의 활성(USING / READY) 이용권명 조회 */
@@ -41,11 +40,11 @@ public class TicketUsageService {
     List<TicketUsageStatus> activeStatuses = List.of(TicketUsageStatus.USING, TicketUsageStatus.READY);
 
     return ticketUsageRepository
-      .findFirstByUserIdAndStatusInAndTicketIdIsNotNullOrderByCreatedAtDesc(userId, activeStatuses)
-      .map(ticketUsage -> {
-        Ticket ticket = ticketService.findTicket(ticketUsage.getTicketId());
-        return ticket.getTicketName();
-      }).orElse(null);
+        .findFirstByUserIdAndStatusInAndTicketIdIsNotNullOrderByCreatedAtDesc(userId, activeStatuses)
+        .map(ticketUsage -> {
+          Ticket ticket = ticketService.findTicket(ticketUsage.getTicketId());
+          return ticket.getTicketName();
+        }).orElse(null);
   }
 
   // 좌석 이용권 발급
@@ -57,11 +56,18 @@ public class TicketUsageService {
     if (ticket.getTicketType() == TicketType.PERIOD_PACK) {
       // 현재 사용중 이용권 찾기
       TicketUsage current = ticketUsageRepository
-        .findFirstByUserIdAndStatusAndTicketIdIsNotNullOrderByCreatedAtDesc(userId, TicketUsageStatus.USING)
-        .orElse(null);
+          .findFirstByUserIdAndStatusAndTicketIdIsNotNullOrderByCreatedAtDesc(userId, TicketUsageStatus.USING)
+          .orElse(null);
 
-      // 새 이용권 생성
+      // 시간권 사용중이면 READY 변경
+      if (current != null && current.getTicketType() == TicketType.TIME_PACK)
+        current.ready();
+
+      // 새 기간권 생성
       TicketUsage usage = TicketUsage.createTicketUsage(userId, ticket);
+
+      // 바로 사용 시작
+      usage.startPeriod(ticket.getValidDays());
 
       if (current != null) {
         // 기존 이용권이 기간권인 경우
@@ -80,9 +86,9 @@ public class TicketUsageService {
 
           // 현재 입실 중이면 check_inout의 usage_id 변경
           checkinRepository
-            .findFirstByUserIdAndCheckinStatusInOrderByCheckinAtDesc(userId,
-              List.of(CheckinStatus.USING, CheckinStatus.AWAY))
-            .ifPresent(checkin -> checkin.changeUsage(usage.getUsageId()));
+              .findFirstByUserIdAndCheckinStatusInOrderByCheckinAtDesc(userId,
+                  List.of(CheckinStatus.USING, CheckinStatus.AWAY))
+              .ifPresent(checkin -> checkin.changeUsage(usage.getUsageId()));
         }
       } else {
         // 현재 USING 이용권 없으면 새 기간권 바로 사용
@@ -94,9 +100,9 @@ public class TicketUsageService {
 
       if (savedUsage.getStatus() == TicketUsageStatus.USING) {
         checkinRepository
-          .findFirstByUserIdAndCheckinStatusInOrderByCheckinAtDesc(userId,
-            List.of(CheckinStatus.USING, CheckinStatus.AWAY))
-          .ifPresent(checkin -> checkin.changeUsage(savedUsage.getUsageId()));
+            .findFirstByUserIdAndCheckinStatusInOrderByCheckinAtDesc(userId,
+                List.of(CheckinStatus.USING, CheckinStatus.AWAY))
+            .ifPresent(checkin -> checkin.changeUsage(savedUsage.getUsageId()));
       }
 
       return TicketUsageResDTO.from(savedUsage);

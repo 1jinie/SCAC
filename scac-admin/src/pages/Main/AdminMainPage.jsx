@@ -228,7 +228,7 @@ export default function AdminMainPage() {
 
               <tbody>
                 {recentLogs.map((log) => (
-                  <tr key={log.id}>
+                  <tr key={log.logId}>
                     <td>
                       {log.createdAt
                         ? String(log.createdAt).replace('T', ' ')
@@ -242,7 +242,7 @@ export default function AdminMainPage() {
                       <button
                         type="button"
                         className="admin_table_detail_button"
-                        onClick={() => handleMovePage(`/log/${log.id}`)}
+                        onClick={() => handleMovePage(`/log/${log.logId}`)}
                       >
                         상세
                       </button>

@@ -1,6 +1,7 @@
 package com.scac.notification.service;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,17 +26,18 @@ public class NotificationService {
   private final UserRepository userRepository;
   private final SolapiMessageClient solapiMessageClient;
 
+  // 사용자에게 알림 발송
   @Transactional
   public NotificationLog sendToUser(Long userId, NotificationType type, String title, String content) {
     User user = userRepository.findById(userId)
-      .orElseThrow(() -> new ResourceNotFoundException("알림 수신 사용자를 찾을 수 없습니다."));
+        .orElseThrow(() -> new ResourceNotFoundException("알림 수신 사용자를 찾을 수 없습니다."));
 
     NotificationLog log = NotificationLog.pending(
-      user.getId(),
-      user.getPhoneNumber(),
-      type,
-      title,
-      content);
+        user.getId(),
+        user.getPhoneNumber(),
+        type,
+        title,
+        content);
 
     notificationLogRepository.save(log);
 
@@ -53,25 +55,28 @@ public class NotificationService {
     return log;
   }
 
+  // 최근 알림 발송 여부 확인
   @Transactional(readOnly = true)
-  public boolean wasSentRecently(Long userId, NotificationType type, LocalDateTime since) {
+  public boolean wasSentRecently(Long userId, NotificationType type, Collection<NotificationStatus> statuses,
+      LocalDateTime since) {
     return notificationLogRepository
-      .existsByUserIdAndNotificationTypeAndCreatedAtAfter(userId, type, since);
+        .existsByUserIdAndNotificationTypeAndStatusAndCreatedAtAfter(userId, type, statuses, since);
   }
 
+  // SOLAPI 발송 상태 동기화
   @Transactional
   public void syncPendingStatuses() {
     LocalDateTime cutoff = LocalDateTime.now().minusDays(1);
 
     notificationLogRepository
-      .findByStatusAndExternalMsgIdIsNotNullAndCreatedAtAfterOrderByCreatedAtAsc(
-        NotificationStatus.PENDING, cutoff)
-      .forEach(this::syncStatus);
+        .findByStatusAndExternalMsgIdIsNotNullAndCreatedAtAfterOrderByCreatedAtAsc(
+            NotificationStatus.PENDING, cutoff)
+        .forEach(this::syncStatus);
   }
 
+  // SOLAPI 발송 상태 동기화
   private void syncStatus(NotificationLog log) {
-    SolapiMessageClient.SolapiMessageStatus remote =
-      solapiMessageClient.findMessageStatus(log.getExternalMsgId());
+    SolapiMessageClient.SolapiMessageStatus remote = solapiMessageClient.findMessageStatus(log.getExternalMsgId());
 
     if (remote == null || remote.resultCode() == null) {
       return;
