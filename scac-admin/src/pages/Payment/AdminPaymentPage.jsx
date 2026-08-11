@@ -18,6 +18,9 @@ export default function AdminPaymentPage() {
 
   const [searchKeyword, setSearchKeyword] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const [paymentMethodFilter, setPaymentMethodFilter] = useState('ALL');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -56,21 +59,61 @@ export default function AdminPaymentPage() {
 
   // 검색 + 상태 필터
   const filteredPayments = useMemo(() => {
-    const refacKeyword = searchKeyword.trim().replace(/\D/g, '');
+    const keyword = searchKeyword.trim().replace(/\D/g, '');
 
     return payments.filter((payment) => {
       const phoneNumber = String(payment.phoneNumber ?? '').replace(/\D/g, '');
+      const paymentId = String(payment.paymentId ?? '');
+
       const matchesKeyword =
-        searchKeyword === '' ||
-        String(phoneNumber).includes(refacKeyword) ||
-        String(payment.paymentId).includes(refacKeyword);
+        keyword === '' ||
+        phoneNumber.includes(keyword) ||
+        paymentId.includes(keyword);
 
       const matchesStatus =
         statusFilter === 'ALL' || payment.status === statusFilter;
 
-      return matchesKeyword && matchesStatus;
+      const matchesPaymentMethod =
+        paymentMethodFilter === 'ALL' ||
+        payment.paymentMethod === paymentMethodFilter;
+
+      const paidDate = payment.paidAt
+        ? String(payment.paidAt).slice(0, 10)
+        : '';
+
+      const matchesStartDate =
+        startDate === '' || (paidDate !== '' && paidDate >= startDate);
+
+      const matchesEndDate =
+        endDate === '' || (paidDate !== '' && paidDate <= endDate);
+
+      return (
+        matchesKeyword &&
+        matchesStatus &&
+        matchesPaymentMethod &&
+        matchesStartDate &&
+        matchesEndDate
+      );
     });
-  }, [payments, searchKeyword, statusFilter]);
+  }, [
+    payments,
+    searchKeyword,
+    statusFilter,
+    paymentMethodFilter,
+    startDate,
+    endDate,
+  ]);
+
+  //초기화 버튼
+  const handleResetSearch = () => {
+    setSearchKeyword('');
+    setStatusFilter('ALL');
+    setPaymentMethodFilter('ALL');
+    setStartDate('');
+    setEndDate('');
+    setCurrentPage(1);
+    setSelectedPayment(null);
+  };
 
   // 전체 페이지 수
   const totalPages = useMemo(() => {
@@ -81,7 +124,7 @@ export default function AdminPaymentPage() {
   useEffect(() => {
     setCurrentPage(1);
     setSelectedPayment(null);
-  }, [searchKeyword, statusFilter]);
+  }, [searchKeyword, statusFilter, paymentMethodFilter, startDate, endDate]);
 
   // 데이터 변경으로 현재 페이지가 사라진 경우 보정
   useEffect(() => {
@@ -105,7 +148,7 @@ export default function AdminPaymentPage() {
 
   // 요약
   const summary = useMemo(() => {
-    return payments.reduce(
+    return filteredPayments.reduce(
       (result, payment) => {
         result.total += 1;
 
@@ -127,16 +170,16 @@ export default function AdminPaymentPage() {
         totalAmount: 0,
       },
     );
-  }, [payments]);
+  }, [filteredPayments]);
 
   const summaryItems = useMemo(
     () => [
       {
         key: 'total',
-        label: '전체 결제',
+        label: '조회 결제',
         value: summary.total,
         unit: '건',
-        description: '전체 결제 내역',
+        description: '현재 조회된 결제 내역',
         color: 'blue',
       },
       {
@@ -144,7 +187,7 @@ export default function AdminPaymentPage() {
         label: '결제 완료',
         value: summary.completed,
         unit: '건',
-        description: '정상 승인된 결제',
+        description: '조회 결과 중 정상 승인',
         color: 'mint',
       },
       {
@@ -152,15 +195,15 @@ export default function AdminPaymentPage() {
         label: '결제 취소',
         value: summary.canceled,
         unit: '건',
-        description: '취소 처리된 결제',
+        description: '조회 결과 중 취소 처리',
         color: 'orange',
       },
       {
         key: 'sales',
-        label: '총 결제 금액',
+        label: '조회 결제 금액',
         value: formatPrice(summary.totalAmount),
         unit: '원',
-        description: '완료 결제 기준',
+        description: '조회 결과의 완료 결제 기준',
         color: 'dark',
       },
     ],
@@ -232,8 +275,15 @@ export default function AdminPaymentPage() {
       <AdminPaymentSearch
         searchKeyword={searchKeyword}
         statusFilter={statusFilter}
+        paymentMethodFilter={paymentMethodFilter}
+        startDate={startDate}
+        endDate={endDate}
         onSearchChange={setSearchKeyword}
         onStatusChange={setStatusFilter}
+        onPaymentMethodChange={setPaymentMethodFilter}
+        onStartDateChange={setStartDate}
+        onEndDateChange={setEndDate}
+        onReset={handleResetSearch}
       />
 
       {errorMessage && (

@@ -1,6 +1,4 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
-// import axios from 'axios';
 
 export default function SelectButton({ nextPage, text, onClickAction }) {
   // 사용할 페이지에선
@@ -25,7 +23,7 @@ export default function SelectButton({ nextPage, text, onClickAction }) {
         // API 함수 성공시 nextPage로 이동
         navigate(nextPage);
       } catch (err) {
-        console.error('요청 실패:', err); //임시
+        console.error('요청 실패:', err);
       }
     } else {
       // 보낼 API가 없는 단순 이동 버튼일 경우 바로 nextPage로 이동

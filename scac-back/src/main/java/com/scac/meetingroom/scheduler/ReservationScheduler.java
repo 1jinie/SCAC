@@ -29,28 +29,31 @@ public class ReservationScheduler {
         LocalDate today = LocalDate.now();
         int currentHour = LocalTime.now().getHour();
 
-        // CONFIRMED -> IN_USE
-        List<MeetingRoomReservation> startReservations = reservationRepository.findByReservationDateAndStartHourAndStatus(
-            today, currentHour, ReservationStatus.CONFIRMED
+        // CONFIRMED -> IN_USE : 현재 시간이 startHour ~ endHour 사이면 사용중 변경
+        List<MeetingRoomReservation> confirmedReservations = reservationRepository.findByReservationDateAndStatus(
+            today, ReservationStatus.CONFIRMED
         );
 
-        startReservations.forEach(r -> {
-            r.updateReservationStatus(ReservationStatus.IN_USE);
-            roomRepository.findById(r.getRoomId()).ifPresent(room -> room.updateStatus(SeatStatus.USR));
+        confirmedReservations.forEach(r -> {
+            if(currentHour >= r.getStartHour() && currentHour < r.getEndHour()){
+                r.updateReservationStatus(ReservationStatus.IN_USE);
+                roomRepository.findById(r.getRoomId()).ifPresent(room -> {
+                    room.updateStatus(SeatStatus.USR);
+                });
+            }
         });
 
-        // IN_USE -> COMPLETED
-        List<MeetingRoomReservation> endReservations = reservationRepository.findByReservationDateAndEndHourAndStatus(
-            today, currentHour, ReservationStatus.IN_USE
+        // IN_USE -> COMPLETED : 현재 시간이 endHour 이상이면 예약 종료
+        List<MeetingRoomReservation> usingReservations = reservationRepository.findByReservationDateAndStatus(
+            today, ReservationStatus.IN_USE
         );
 
-        endReservations.forEach(r -> {
-            r.updateReservationStatus(ReservationStatus.COMPLETED);
+        usingReservations.forEach(r -> {
+            if(currentHour >= r.getEndHour()){
+                r.updateReservationStatus(ReservationStatus.COMPLETED);
 
-            boolean inUse = reservationRepository.existsByRoomIdAndStatus(r.getRoomId(), ReservationStatus.IN_USE);
-
-            if(!inUse)
-                roomRepository.findById(r.getRoomId()).ifPresent(room -> room.updateStatus(SeatStatus.AVB));
+                    roomRepository.findById(r.getRoomId()).ifPresent(room -> room.updateStatus(SeatStatus.AVB));
+            }
         });
     }
 }

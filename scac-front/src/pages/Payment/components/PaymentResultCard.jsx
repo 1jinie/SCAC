@@ -22,9 +22,7 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
       try {
         const payment = await paymentApi.getPayment(paymentId);
         const ticket = await ticketApi.getById(payment.ticketId);
-        // setPayment(payment);
         setTicket(ticket);
-        // console.log(payment);
       } catch (error) {
         console.error('결제 조회 실패:', error.response?.data ?? error.message);
       }
@@ -35,7 +33,6 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      console.log('resetAll');
       resetAll();
       navi('/');
     }, 10000);

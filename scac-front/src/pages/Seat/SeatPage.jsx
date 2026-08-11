@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { seatStore } from '../../store/seatStore';
 import { roomStore } from '../../store/roomStore';
@@ -17,12 +17,17 @@ function SeatPage({ mode }) {
   const fetchRooms = roomStore((state) => state.fetchRooms);
   const checkIn = checkInStore((state) => state.checkIn);
   const setReservation = reservationStore((state) => state.setReservation);
+  const reservations = reservationStore((state) => state.reservations);
+  const fetchReservations = reservationStore(
+    (state) => state.fetchReservations,
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchSeats();
     fetchRooms();
-  }, [fetchSeats, fetchRooms]);
+    fetchReservations();
+  }, [fetchSeats, fetchRooms, fetchReservations]);
 
   // 좌석 / 룸 선택 이벤트 정의
   const handleClick = (seat) => {
@@ -77,7 +82,35 @@ function SeatPage({ mode }) {
     clearSelected();
   }, [mode, clearSelected]);
 
-  const items = [...seats, ...rooms];
+  const items = useMemo(() => {
+    const now = new Date();
+    const today = now.toISOString().slice(0, 10);
+    const currentHour = now.getHours();
+    const updatedRooms = rooms.map((room) => {
+      const isUsing = reservations.some((reservation) => {
+        // 해당 방이 아니면 제외
+        if (Number(reservation.roomId) !== Number(room.id)) return false;
+        // 취소 예약 제외
+        if (reservation.status === 'CANCELED') return false;
+        // 오늘 예약 아니면 제외
+        if (reservation.reservationDate !== today) return false;
+        // 예약시간 없으면 제외
+        if (!reservation.startHour || !reservation.endHour) return false;
+
+        return (
+          currentHour >= reservation.startHour &&
+          currentHour < reservation.endHour
+        );
+      });
+
+      return {
+        ...room,
+        status: isUsing ? 'using' : 'available',
+      };
+    });
+
+    return [...seats, ...updatedRooms];
+  }, [seats, rooms, reservations]);
 
   return (
     <div className="seat_page">

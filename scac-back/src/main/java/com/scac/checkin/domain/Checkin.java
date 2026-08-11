@@ -78,6 +78,5 @@ public class Checkin {
 
         this.checkinStatus = CheckinStatus.CHECKOUT;
         this.checkoutAt = LocalDateTime.now();
-        this.seatId = null;
     }
 }

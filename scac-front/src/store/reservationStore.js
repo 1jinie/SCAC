@@ -1,6 +1,8 @@
 import { create } from 'zustand';
+import { reservationApi } from '../api/reservationApi';
 
 export const reservationStore = create((set) => ({
+  // 예약 페이지에서 사용할 선택 예약 정보
   reservation: {
     userId: null,
     roomId: null,
@@ -9,6 +11,10 @@ export const reservationStore = create((set) => ({
     endTime: null,
   },
 
+  // 전체 예약 목록
+  reservations: [],
+
+  // 예약 선택 정보 저장
   setReservation: (data) =>
     set((state) => ({
       reservation: {
@@ -17,6 +23,7 @@ export const reservationStore = create((set) => ({
       },
     })),
 
+  // 예약 선택 정보 초기화
   clearReservation: () =>
     set({
       reservation: {
@@ -27,4 +34,21 @@ export const reservationStore = create((set) => ({
         endTime: null,
       },
     }),
+
+  // 전체 예약 목록 조회
+  fetchReservations: async () => {
+    try {
+      const response = await reservationApi.getReservationList();
+
+      set({
+        reservations: response.data?.data ?? [],
+      });
+    } catch (error) {
+      console.error('예약 목록 조회 실패: ', error);
+
+      set({
+        reservations: [],
+      });
+    }
+  },
 }));
