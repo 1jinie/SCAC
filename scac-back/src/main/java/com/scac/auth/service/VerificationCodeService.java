@@ -7,14 +7,19 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Service;
 
+import com.scac.global.sms.SmsSender;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class VerificationCodeService {
 
     private static final int CODE_EXPIRATION_MINUTES = 3;
     private final SecureRandom random = new SecureRandom();
+    private final SmsSender smsSender;
 
     // Key: phoneNumber, Value: VerificationInfo
     private final Map<String, VerificationInfo> verificationStore = new ConcurrentHashMap<>();
@@ -22,17 +27,23 @@ public class VerificationCodeService {
     private record VerificationInfo(String code, LocalDateTime expiresAt) {}
 
     /**
-     * 인증번호 발송
+     * 인증번호 발송 (단순 본인 소유 확인용)
      */
     public String sendCode(String phoneNumber) {
-        String cleanPhone = phoneNumber.replaceAll("-", "");
-        // 6자리 난수 생성 (테스트 환경 호환을 위해 123456도 계속 유효함)
+        String cleanPhone = phoneNumber.replaceAll("-", "").trim();
+
+        // 6자리 난수 생성 및 세션 저장
         String code = String.format("%06d", random.nextInt(1000000));
         LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(CODE_EXPIRATION_MINUTES);
 
         verificationStore.put(cleanPhone, new VerificationInfo(code, expiresAt));
 
-        log.info("[SMS 인증번호 발송] 전화번호: {}, 생성된 인증번호: {}, 만료시간: {}", cleanPhone, code, expiresAt);
+        log.info("[SMS 인증번호 발송] 전화번호: {}, 생성된 코드: {}, 만료시간: {}", cleanPhone, code, expiresAt);
+
+        // SMS 발송 처리 (Mock 또는 CoolSMS / Naver SENS)
+        String smsMessage = "[SCAC] 인증번호는 [" + code + "] 입니다. (3분 이내 입력)";
+        smsSender.sendSms(cleanPhone, smsMessage);
+
         return code;
     }
 
@@ -40,9 +51,9 @@ public class VerificationCodeService {
      * 인증번호 검증
      */
     public boolean verifyCode(String phoneNumber, String inputCode) {
-        String cleanPhone = phoneNumber.replaceAll("-", "");
+        String cleanPhone = phoneNumber.replaceAll("-", "").trim();
 
-        // 테스트용 고정 번호 "123456"은 항시 통과 허용
+        // 테스트용 고정 번호 "123456"은 개발/테스트 편의를 위해 항시 통과 허용
         if ("123456".equals(inputCode)) {
             log.info("[SMS 인증번호 검증 완료 (테스트 코드)] 전화번호: {}", cleanPhone);
             return true;
