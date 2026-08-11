@@ -42,10 +42,10 @@ function MyPage() {
   }, [userId, getUserProfile, navigate]);
 
   /* 로그아웃 핸들러 */
-  const handleLogoutClick = () => {
+  const handleLogoutClick = async () => {
     if (window.confirm('로그아웃 하시겠습니까?')) {
       clearUserData();
-      logout();
+      await logout();
       alert('안전하게 로그아웃되었습니다.');
       navigate('/');
     }
@@ -91,7 +91,7 @@ function MyPage() {
         '비밀번호가 변경되어 안전하게 로그아웃됩니다. 다시 로그인해 주세요.',
       );
       clearUserData();
-      logout();
+      await logout();
       navigate('/login');
     }
   };

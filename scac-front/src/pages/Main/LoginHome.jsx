@@ -70,10 +70,10 @@ function LoginHomePage() {
   }, [fetchSeats]);
 
   // 로그아웃 공통 로직 처리
-  const handleLogoutClick = () => {
+  const handleLogoutClick = async () => {
     if (window.confirm('로그아웃 하시겠습니까?')) {
       clearUserData();
-      logout();
+      await logout();
       alert('안전하게 로그아웃되었습니다.');
       navigate('/');
     }

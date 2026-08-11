@@ -55,36 +55,56 @@ public class SecurityConfig {
 
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                                // 1. PUBLIC GET 요청 (전화번호 중복 확인 포함)
-                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/users/check-phone", // <--- 추가: 전화번호
-                                                                                           // 중복/존재 확인 API
-                                        "/api/tickets/**", "/api/seats/**", "/api/rooms/**",
-                                        "/api/meeting-rooms/**", "/api/admin/**", "/api/checkin/**",
-                                        "/api/users/*")
-                                .permitAll()
+                                // 1. PUBLIC GET 요청 (키오스크 및 일반 사용자 노출용)
+                                .requestMatchers(HttpMethod.GET, 
+                                "/api/users/check-phone",
+                                "/api/tickets/**", 
+                                "/api/seats/**", 
+                                "/api/rooms/**",
+                                "/api/meeting-rooms/**", 
+                                "/api/checkin/**"
+                                ).permitAll()
 
                                 // 2. PUBLIC POST 요청 (회원가입, 게스트 등록, 비밀번호 검증 등)
-                                .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/refresh",
-                                        "/api/auth/logout", "/api/admin/auth/login",
-                                        "/api/admin/auth/refresh", "/api/admin/auth/logout",
-                                        "/api/users/signup", // <--- POST로 이동
-                                        "/api/users/guest", // <--- POST로 이동
-                                        "/api/users/entry-password/verify", // <--- POST로 이동
-                                        "/api/admin/seats/**", "/api/checkin", "/api/checkin/prepare",
-                                        "/api/checkin/prepare/member")
-                                .permitAll()
-                                // 3. PUBLIC PATCH 요청
-                                .requestMatchers(HttpMethod.PATCH, "/api/users/*/entry-password",
-                                        "/api/admin/seats/**", "/api/checkin/away", "/api/checkin/comeback",
-                                        "/api/checkin/checkout")
+                                .requestMatchers(HttpMethod.POST, 
+                                "/api/auth/login", 
+                                "/api/auth/refresh",
+                                "/api/auth/logout", 
+                                "/api/auth/send-code",
+                                "/api/auth/verify-code",
+                                "/api/admin/auth/login",
+                                "/api/admin/auth/refresh", 
+                                "/api/admin/auth/logout",
+                                "/api/users/signup", 
+                                "/api/users/guest", 
+                                "/api/users/entry-password/verify",
+                                "/api/checkin", 
+                                "/api/checkin/prepare",
+                                "/api/checkin/prepare/member")
                                 .permitAll()
 
+                                // 3. PUBLIC PATCH 요청
+                                .requestMatchers(HttpMethod.PATCH, 
+                                "/api/users/*/entry-password",
+                                "/api/checkin/away",
+                                "/api/checkin/comeback",
+                                "/api/checkin/checkout"
+                                ).permitAll()
+
+                                // 회원 전용 API (JWT 필수)
+                                .requestMatchers("/api/checkin/prepare/member", "/api/users/me")
+                                .hasAnyRole("USER", "GUEST")
+
                                 // 사용자 결제 관련 - 결제 요청 시 USER 또는 GUEST 권한 필요 (ADMIN 권한은 불필요)
-                                .requestMatchers(HttpMethod.POST, "/api/payments", "/api/payments/confirm",
-                                        "/api/payments/*/mock-confirm")
+                                .requestMatchers(HttpMethod.POST, 
+                                "/api/payments", 
+                                "/api/payments/confirm",
+                                "/api/payments/*/mock-confirm")
                                 .hasAnyRole("USER", "GUEST")
                                 // 관리자 결제 관련 - 결제 내역 조회 시 ADMIN 권한 필요(추후 AdminPrincipal 사용자 인증 구현 시 추가)
+
+                                // 관리자 전용 경로 통제
+                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                                 // PUBLIC 요청 외 모든 요청은 인증 필요
                                 .anyRequest().authenticated())

@@ -46,3 +46,22 @@ export const postAdminLogout = async () => {
   const response = await axiosInstance.post('/api/admin/auth/logout');
   return response.data;
 };
+
+// 7. 인증번호 발송
+export const postSendCode = async (phoneNumber) => {
+  const cleanPhone = phoneNumber.replace(/-/g, '');
+  const response = await axiosInstance.post('/api/auth/send-code', {
+    phoneNumber: cleanPhone,
+  });
+  return response.data;
+};
+
+// 8. 인증번호 검증
+export const postVerifyCode = async (phoneNumber, code) => {
+  const cleanPhone = phoneNumber.replace(/-/g, '');
+  const response = await axiosInstance.post('/api/auth/verify-code', {
+    phoneNumber: cleanPhone,
+    code,
+  });
+  return response.data;
+};

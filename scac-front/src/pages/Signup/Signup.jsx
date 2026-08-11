@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
+import { postSendCode, postVerifyCode } from '../../api/authApi';
 import '../../styles/Auth.css';
 
 function SignUpPage() {
@@ -42,7 +43,7 @@ function SignUpPage() {
   };
 
   // 🎯 [기능] 인증번호 발송 클릭 핸들러
-  const handleSendVerification = () => {
+  const handleSendVerification = async () => {
     setErrorMessage('');
 
     if (!phoneNumber.trim()) {
@@ -50,28 +51,52 @@ function SignUpPage() {
       return;
     }
     // 휴대폰 번호 정규식 체크 (숫자만 10~11자리)
-    if (!/^01\d{8,9}$/.test(phoneNumber.replace(/-/g, ''))) {
+    const cleanPhone = phoneNumber.replace(/-/g, '');
+    if (!/^01\d{8,9}$/.test(cleanPhone)) {
       setErrorMessage('전화번호 형식이 올바르지 않습니다.');
       return;
     }
 
-    setIsVerificationSent(true);
-    setTimer(180); // 타이머 초기화
-    alert('인증번호 6자리가 발송되었습니다. (테스트용: 123456)');
+    try {
+      const res = await postSendCode(cleanPhone);
+      if (res.isSuccess) {
+        setIsVerificationSent(true);
+        setTimer(180); // 타이머 초기화
+        alert(res.message || '인증번호가 발송되었습니다.');
+      } else {
+        setErrorMessage(res.message || '인증번호 발송에 실패했습니다.');
+      }
+    } catch (error) {
+      setErrorMessage(
+        error.response?.data?.message || '인증번호 발송 처리 중 오류가 발생했습니다.',
+      );
+    }
   };
 
   // 🎯 [기능] 인증번호 확인 클릭 핸들러
-  const handleVerifyCode = () => {
+  const handleVerifyCode = async () => {
     setErrorMessage('');
     if (timer === 0) {
       setErrorMessage('인증 시간이 만료되었습니다. 다시 시도해 주세요.');
       return;
     }
-    if (verificationCode === '123456') {
-      setIsVerified(true);
-      alert('전화번호 인증이 완료되었습니다.');
-    } else {
-      setErrorMessage('인증번호가 일치하지 않습니다.');
+    if (!verificationCode.trim()) {
+      setErrorMessage('인증번호를 입력해주세요.');
+      return;
+    }
+
+    try {
+      const res = await postVerifyCode(phoneNumber, verificationCode);
+      if (res.isSuccess) {
+        setIsVerified(true);
+        alert('전화번호 인증이 완료되었습니다.');
+      } else {
+        setErrorMessage(res.message || '인증번호가 일치하지 않습니다.');
+      }
+    } catch (error) {
+      setErrorMessage(
+        error.response?.data?.message || '인증번호가 일치하지 않습니다.',
+      );
     }
   };
 

@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import HeaderTime from './HeaderTime';
+import { useAuthStore } from '../store/authStore';
 
 const ADMIN_PAGE_TITLES = {
   '/': '관리자 메인',
@@ -16,6 +17,7 @@ const ADMIN_PAGE_TITLES = {
 export default function AdminHeader() {
   const navigate = useNavigate();
   const location = useLocation();
+  const logout = useAuthStore((state) => state.logout);
 
   const pageTitle =
     ADMIN_PAGE_TITLES[location.pathname] ||
@@ -25,9 +27,9 @@ export default function AdminHeader() {
     navigate(-1);
   };
 
-  const handleLogout = () => {
-    // 추후 로그아웃 API 연결필요
-    navigate('/login', { replace: true });
+  const handleLogout = async () => {
+    await logout();
+    navigate('/admin/login', { replace: true });
   };
 
   return (

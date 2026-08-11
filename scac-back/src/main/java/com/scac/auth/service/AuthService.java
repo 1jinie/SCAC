@@ -39,6 +39,8 @@ public class AuthService {
                 .orElseThrow(() ->
                         new IllegalArgumentException("전화번호 또는 비밀번호가 일치하지 않습니다."));
 
+        user.checkAndReleaseSuspension();
+
         if (user.getUserStatus() == UserStatus.BANNED) {
             throw new IllegalArgumentException("영구 이용정지 회원입니다.");
         }
@@ -103,6 +105,8 @@ public class AuthService {
         // 6. 회원 존재 및 상태 검증
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 회원입니다."));
+
+        user.checkAndReleaseSuspension();
 
         if (user.getUserStatus() == UserStatus.BANNED) {
             throw new IllegalArgumentException("영구 이용정지 회원입니다.");
