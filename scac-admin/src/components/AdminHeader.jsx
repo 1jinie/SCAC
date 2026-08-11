@@ -35,7 +35,7 @@ export default function AdminHeader() {
   return (
     <header className="admin_header">
       <div className="admin_header_left">
-        {location.pathname !== '/admin' && (
+        {location.pathname !== '/' && (
           <button
             type="button"
             className="admin_back_button"

@@ -15,6 +15,11 @@ import com.scac.global.enums.PaymentMethod;
 import com.scac.global.enums.PaymentStatus;
 import com.scac.global.enums.TicketUsageStatus;
 import com.scac.global.exception.ResourceNotFoundException;
+import com.scac.meetingroom.domain.MeetingRoomReservation;
+import com.scac.meetingroom.dto.MeetingRoomReservationResponse;
+import com.scac.meetingroom.dto.MeetingRoomResponse;
+import com.scac.meetingroom.dto.ReservationPaymentInfoDTO;
+import com.scac.meetingroom.service.MeetingRoomReservationService;
 import com.scac.payment.client.TossPaymentClient;
 import com.scac.payment.dto.PaymentCancelDTO;
 import com.scac.payment.dto.PaymentConfirmDTO;
@@ -43,6 +48,7 @@ public class PaymentService {
   private final TicketService ticketService;
   private final TicketUsageService ticketUsageService;
   private final TossPaymentClient tossPaymentClient;
+  private final MeetingRoomReservationService meetingRoomReservationService;
 
   // 공통 메서드 -----------------------------------------------
   // id로 paymentDTO 가져오기
@@ -54,6 +60,18 @@ public class PaymentService {
   private Payment getPayment(Long paymentId) {
     return paymentRepository.findById(paymentId)
         .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 결제 내역입니다."));
+  }
+
+  // TicketId나 ReservationId 둘 중 하나는 반드시 존재하는지 확인
+  private void validationTicketIdOrReservationId(PaymentRequestDTO dto) {
+
+    if (dto.getTicketId() == null && dto.getReservationId() == null) {
+      throw new IllegalArgumentException("결제 대상 정보가 없습니다.");
+    }
+    if (dto.getTicketId() != null && dto.getReservationId() != null) {
+      throw new IllegalArgumentException(
+          "이용권과 예약을 동시에 결제할 수 없습니다.");
+    }
   }
 
   // 키오스크 사용자관련 메서드 -----------------------------------------------
@@ -71,24 +89,69 @@ public class PaymentService {
     }
   }
 
+  // 결제 성공 후 Usage 발급 및 예약확인처리
+  private void handlePaymentSuccess(Payment payment) {
+    TicketUsageResDTO usage;
+    if (payment.getTicketId() != null) {
+      usage = ticketUsageService.issueTicket(
+          payment.getUserId(),
+          payment.getTicketId());
+    } else if (payment.getReservationId() != null) {
+      usage = ticketUsageService.issueReservation(
+          payment.getUserId(),
+          payment.getReservationId());
+      meetingRoomReservationService.confirmReservation(payment.getReservationId());
+    } else {
+      throw new IllegalStateException(
+          "결제 대상 정보가 존재하지 않습니다.");
+    }
+    payment.assignUsage(usage.getUsageId());
+  }
+
   // 결제 요청
   @Transactional
   public PaymentResDTO create(PaymentRequestDTO dto, Long currentUserId) {
-    Ticket ticket = ticketService.findTicket(dto.getTicketId());
 
-    if (!ticket.isActive()) {
-      throw new IllegalArgumentException("판매 중인 이용권이 아닙니다.");
+    // TicketId와 ReservationId 둘 중 하나는 반드시 있는지 검증
+    validationTicketIdOrReservationId(dto);
+
+    Payment payment;
+
+    // TicketId 결제 (좌석 이용권)
+    if (dto.getTicketId() != null) {
+      Ticket ticket = ticketService.findTicket(dto.getTicketId());
+      if (!ticket.isActive()) {
+        throw new IllegalArgumentException("판매 중인 이용권이 아닙니다.");
+      }
+
+      if (!ticket.getTicketPrice().equals(dto.getAmount())) {
+        throw new IllegalArgumentException("결제 금액이 이용권 가격과 일치하지 않습니다.");
+      }
+      payment = Payment.createTicketPayment(
+          currentUserId, ticket.getTicketId(), ticket.getTicketPrice(), dto.getPaymentMethod());
+    } else {
+
+      // ReservationId 결제 (스터디룸 예약)
+      ReservationPaymentInfoDTO reservation = meetingRoomReservationService.getPaymentInfo(dto.getReservationId());
+
+      // 본인의 예약인지 검증
+      if (!Objects.equals(reservation.getUserId(), currentUserId)) {
+        throw new AccessDeniedException(
+            "본인의 예약만 결제할 수 있습니다.");
+      }
+
+      // 프론트에서 전달한 금액과 실제 예약 금액 비교
+      if (!reservation.getAmount().equals(dto.getAmount())) {
+        throw new IllegalArgumentException(
+            "결제 금액이 예약 금액과 일치하지 않습니다.");
+      }
+      payment = Payment.createReservationPayment(
+          currentUserId,
+          reservation.getReservationId(),
+          reservation.getAmount(),
+          dto.getPaymentMethod());
     }
 
-    if (!ticket.getTicketPrice().equals(dto.getAmount())) {
-      throw new IllegalArgumentException("결제 금액이 이용권 가격과 일치하지 않습니다.");
-    }
-
-    Payment payment = Payment.create(
-
-        currentUserId, ticket.getTicketId(), ticket.getTicketPrice(), dto.getPaymentMethod()
-
-    );
     // 아직 결제가 완료되지 않았으므로 결제 상태는 PENDING으로 설정됩니다.
     // 또한 paid_at, usage_id는 결제 승인 후에 데이터가 입력되므로 요청단계에선 null로 초기화됩니다.
     paymentRepository.save(payment);
@@ -128,10 +191,7 @@ public class PaymentService {
     payment.approve(tossResponse.getPaymentKey(), tossResponse.getApproveNo(),
         tossResponse.getApprovedAt() != null ? tossResponse.getApprovedAt().toLocalDateTime() : null);
 
-    TicketUsageResDTO ticketUsage = ticketUsageService.issue(payment.getUserId(), payment.getTicketId());
-
-    payment.assignUsage(ticketUsage.getUsageId());
-
+    handlePaymentSuccess(payment);
     return PaymentResDTO.from(payment);
   }
 
@@ -152,8 +212,7 @@ public class PaymentService {
 
     payment.approveMock(approvalNum, LocalDateTime.now());
 
-    TicketUsageResDTO ticketUsage = ticketUsageService.issue(payment.getUserId(), payment.getTicketId());
-    payment.assignUsage(ticketUsage.getUsageId());
+    handlePaymentSuccess(payment);
 
     return PaymentResDTO.from(payment);
   }

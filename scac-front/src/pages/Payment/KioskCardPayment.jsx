@@ -10,7 +10,7 @@ export default function KioskCardPayment() {
   const paymentId = state?.paymentId;
 
   const [status, setStatus] = useState('WAITING');
-
+  // 모크결제는 5초 후 자동으로 카드 삽입된 것으로 처리합니다.
   useEffect(() => {
     if (!paymentId) {
       navi('/payment/result/fail', {

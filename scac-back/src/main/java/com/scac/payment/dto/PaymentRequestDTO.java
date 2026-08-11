@@ -15,8 +15,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PaymentRequestDTO {
 
-  @NotNull
   private Long ticketId;
+
+  private Long reservationId;
 
   @NotNull
   @Positive

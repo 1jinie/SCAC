@@ -14,6 +14,7 @@ public class PaymentHistoryDTO {
   private String phoneNumber;
   private Long usageId;
   private Long ticketId;
+  private Long reservationId;
   private String ticketName;
   private String targetType;
   private String ticketType;
