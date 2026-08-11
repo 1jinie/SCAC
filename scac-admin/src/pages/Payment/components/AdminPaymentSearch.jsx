@@ -1,17 +1,16 @@
 export default function AdminPaymentSearch({
   searchKeyword,
   statusFilter,
+  paymentMethodFilter,
+  startDate,
+  endDate,
   onSearchChange,
   onStatusChange,
+  onPaymentMethodChange,
+  onStartDateChange,
+  onEndDateChange,
+  onReset,
 }) {
-  const handleSearchChange = (e) => {
-    onSearchChange(e.target.value);
-  };
-
-  const handleStatusChange = (e) => {
-    onStatusChange(e.target.value);
-  };
-
   return (
     <section className="admin_panel admin_payment_search">
       <div className="admin_payment_search_input_wrap">
@@ -21,7 +20,7 @@ export default function AdminPaymentSearch({
           id="payment_search"
           type="text"
           value={searchKeyword}
-          onChange={handleSearchChange}
+          onChange={(e) => onSearchChange(e.target.value)}
           placeholder="전화번호 또는 결제번호를 입력해 주세요."
         />
       </div>
@@ -32,7 +31,7 @@ export default function AdminPaymentSearch({
         <select
           id="payment_status_filter"
           value={statusFilter}
-          onChange={handleStatusChange}
+          onChange={(e) => onStatusChange(e.target.value)}
         >
           <option value="ALL">전체</option>
           <option value="PAID">결제 완료</option>
@@ -41,6 +40,50 @@ export default function AdminPaymentSearch({
           <option value="FAILED">결제 실패</option>
         </select>
       </div>
+
+      <div className="admin_payment_filter_wrap">
+        <label htmlFor="payment_method_filter">결제 수단</label>
+
+        <select
+          id="payment_method_filter"
+          value={paymentMethodFilter}
+          onChange={(e) => onPaymentMethodChange(e.target.value)}
+        >
+          <option value="ALL">전체</option>
+          <option value="CARD">카드</option>
+          <option value="TOSSPAY">토스페이</option>
+        </select>
+      </div>
+
+      <div className="admin_payment_date_filter_wrap">
+        <label>결제 기간</label>
+
+        <div className="admin_payment_date_inputs">
+          <input
+            type="date"
+            value={startDate}
+            max={endDate || undefined}
+            onChange={(e) => onStartDateChange(e.target.value)}
+          />
+
+          <span>~</span>
+
+          <input
+            type="date"
+            value={endDate}
+            min={startDate || undefined}
+            onChange={(e) => onEndDateChange(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <button
+        type="button"
+        className="admin_payment_reset_button"
+        onClick={onReset}
+      >
+        초기화
+      </button>
     </section>
   );
 }

@@ -5,6 +5,7 @@ import LoginPage from '../pages/Login/Login';
 import HomePage from '../pages/Main/Home';
 import LoginHomePage from '../pages/Main/LoginHome';
 import MyPage from '../pages/MyPage/MyPage';
+import KioskCardPayment from '../pages/Payment/KioskCardPayment';
 import PaymentMethodPage from '../pages/Payment/PaymentMethodPage';
 import PaymentProcess from '../pages/Payment/PaymentProcess';
 import PaymentResult from '../pages/Payment/PaymentResult';
@@ -15,9 +16,6 @@ import Seat from '../pages/Seat/Seat';
 import NonmemberSignup from '../pages/Signup/NonmemberSignup';
 import SignUpPage from '../pages/Signup/Signup';
 import TicketPage from '../pages/Ticket/TicketPage';
-import KioskCardPayment from '../pages/Payment/KioskCardPayment';
-import KioskQrPayment from '../pages/Payment/KioskQrPayment';
-import MobileMockPayment from '../pages/Payment/MobileMockPayment';
 // import DevErrorPage from '../pages/Error/DevErrorPage';
 
 const router = createBrowserRouter([
@@ -65,14 +63,7 @@ const router = createBrowserRouter([
             path: 'kiosk/card',
             element: <KioskCardPayment />,
           },
-          {
-            path: 'kiosk/qr',
-            element: <KioskQrPayment />,
-          },
-          {
-            path: 'mobile/mock',
-            element: <MobileMockPayment />,
-          },
+
           {
             path: 'toss/success',
             element: <TossPaymentResultPage />,
@@ -89,6 +80,7 @@ const router = createBrowserRouter([
       },
     ],
   },
+  //라우터 에러페이지
   {
     path: '*',
     element: <KioskErrorPage status={404} />,

@@ -1,15 +1,9 @@
 export const PAYMENT_METHOD = {
   CARD: 'CARD',
-
   TOSSPAY: 'TOSSPAY',
-  NAVERPAY: 'NAVERPAY',
-  KAKAOPAY: 'KAKAOPAY',
 };
 
 export const PAYMENT_METHOD_LABEL = {
   [PAYMENT_METHOD.CARD]: '카드결제',
-
   [PAYMENT_METHOD.TOSSPAY]: '토스페이',
-  [PAYMENT_METHOD.NAVERPAY]: '네이버페이',
-  [PAYMENT_METHOD.KAKAOPAY]: '카카오페이',
 };

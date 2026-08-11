@@ -25,6 +25,8 @@ import com.scac.seat.domain.Seat;
 import com.scac.seat.repository.SeatRepository;
 import com.scac.system.entity.SystemLog;
 import com.scac.system.service.SystemLogService;
+import com.scac.ticket.entity.Ticket;
+import com.scac.ticket.service.TicketService;
 import com.scac.ticketusage.entity.TicketUsage;
 import com.scac.ticketusage.repository.TicketUsageRepository;
 import com.scac.user.entity.User;
@@ -36,6 +38,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CheckinService {
+    private final TicketService ticketService;
     private final UserRepository userRepository;
     private final SeatRepository seatRepository;
     private final TicketUsageRepository ticketUsageRepository;
@@ -81,10 +84,34 @@ public class CheckinService {
             throw new BusinessException("이미 입실 중인 사용자입니다.");
         }
 
+        // 이용권 확인(1순위 : USING 기간권)
         TicketUsage ticketUsage = ticketUsageRepository
-            .findFirstByUserIdAndStatusInOrderByCreatedAtAsc(user.getId(),
-                List.of(TicketUsageStatus.READY, TicketUsageStatus.USING))
-            .orElseThrow(() -> new ResourceNotFoundException("사용 가능한 이용권이 없습니다."));
+            .findFirstByUserIdAndStatusAndTicketTypeOrderByCreatedAtAsc(
+                user.getId(), 
+                TicketUsageStatus.USING, 
+                TicketType.PERIOD_PACK).orElse(null);
+        
+        // 이용권 확인(2순위 : READY 기간권)
+        if(ticketUsage == null){
+            ticketUsage = ticketUsageRepository
+            .findFirstByUserIdAndStatusAndTicketTypeOrderByCreatedAtAsc(
+                user.getId(), 
+                TicketUsageStatus.READY, 
+                TicketType.PERIOD_PACK).orElse(null);
+        }
+
+        // 이용권 확인(3순위 : 시간권)
+        if(ticketUsage == null){
+            ticketUsage = ticketUsageRepository
+                .findFirstByUserIdAndStatusAndTicketTypeOrderByCreatedAtAsc(
+                    user.getId(), 
+                    TicketUsageStatus.READY, 
+                    TicketType.TIME_PACK).orElse(null);   
+        }
+
+        if(ticketUsage == null){
+            throw new ResourceNotFoundException("사용 가능한 이용권이 없습니다.");
+        }
 
         if (!ticketUsage.isAvailable()) {
             throw new BusinessException("사용 가능한 이용권이 없습니다.");
@@ -123,9 +150,25 @@ public class CheckinService {
         TicketUsage ticketUsage = ticketUsageRepository.findById(request.getUsageId())
             .orElseThrow(() -> new ResourceNotFoundException("이용권 정보가 없습니다."));
 
+        // 기간권 우선 재검증
+        TicketUsage periodTicket = ticketUsageRepository
+            .findFirstByUserIdAndStatusAndTicketTypeOrderByCreatedAtAsc(
+                request.getUserId(), 
+                TicketUsageStatus.USING, 
+                TicketType.PERIOD_PACK).orElse(null);
+        if(periodTicket != null){
+            ticketUsage = periodTicket;
+        }
+
         // READY일 경우 시작 처리
-        if (ticketUsage.getStatus() == TicketUsageStatus.READY && ticketUsage.getTicketType() == TicketType.TIME_PACK) {
-            ticketUsage.start();
+        if (ticketUsage.getStatus() == TicketUsageStatus.READY) {
+            if(ticketUsage.getTicketType() == TicketType.TIME_PACK){
+                ticketUsage.start();
+            } else if(ticketUsage.getTicketType() == TicketType.PERIOD_PACK){
+                Ticket ticket = ticketService.findTicket(ticketUsage.getTicketId());
+
+                ticketUsage.startPeriod(ticket.getValidDays());
+            }
         }
 
         // 좌석 점유
@@ -215,10 +258,17 @@ public class CheckinService {
             
             systemLogService.createLog(log);
         }
-
+        
+        // 사용중이던 이용권 READY 변경
+        TicketUsage ticketUsage = ticketUsageRepository.findById(checkin.getUsageId())
+        .orElseThrow(() -> new ResourceNotFoundException("이용권 정보가 없습니다"));
+        
+        if(ticketUsage.getTicketType() == TicketType.TIME_PACK)
+            ticketUsage.ready();
+        
         // 퇴실 처리
         checkin.checkout();
-
+        
         return CheckinResponse.from(checkin);
     }
 }

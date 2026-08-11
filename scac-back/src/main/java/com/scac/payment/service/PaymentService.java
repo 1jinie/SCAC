@@ -53,7 +53,7 @@ public class PaymentService {
   // id로 Payment 찾기
   private Payment getPayment(Long paymentId) {
     return paymentRepository.findById(paymentId)
-      .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 결제 내역입니다."));
+        .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 결제 내역입니다."));
   }
 
   // 키오스크 사용자관련 메서드 -----------------------------------------------
@@ -66,9 +66,7 @@ public class PaymentService {
 
   // 결제 수단 검증
   private void validateTossPaymentMethod(Payment payment) {
-    if (payment.getPaymentMethod() != PaymentMethod.TOSSPAY
-      && payment.getPaymentMethod() != PaymentMethod.KAKAOPAY
-      && payment.getPaymentMethod() != PaymentMethod.NAVERPAY) {
+    if (payment.getPaymentMethod() != PaymentMethod.TOSSPAY) {
       throw new IllegalStateException("토스 결제 승인 대상이 아닌 결제수단입니다.");
     }
   }
@@ -88,7 +86,7 @@ public class PaymentService {
 
     Payment payment = Payment.create(
 
-      currentUserId, ticket.getTicketId(), ticket.getTicketPrice(), dto.getPaymentMethod()
+        currentUserId, ticket.getTicketId(), ticket.getTicketPrice(), dto.getPaymentMethod()
 
     );
     // 아직 결제가 완료되지 않았으므로 결제 상태는 PENDING으로 설정됩니다.
@@ -102,7 +100,7 @@ public class PaymentService {
   @Transactional
   public PaymentResDTO confirm(PaymentConfirmDTO request, Long currentUserId) {
     Payment payment = paymentRepository.findByOrderId(request.getOrderId())
-      .orElseThrow(() -> new ResourceNotFoundException("주문 정보를 찾을 수 없습니다."));
+        .orElseThrow(() -> new ResourceNotFoundException("주문 정보를 찾을 수 없습니다."));
 
     validatePaymentOwner(payment, currentUserId);
     validateTossPaymentMethod(payment);
@@ -116,19 +114,19 @@ public class PaymentService {
     }
 
     TossPaymentResponse tossResponse = tossPaymentClient.confirm(request.getPaymentKey(),
-      request.getOrderId(), request.getAmount());
+        request.getOrderId(), request.getAmount());
 
     if (!"DONE".equals(tossResponse.getStatus())) {
       throw new IllegalStateException("결제가 정상적으로 승인되지 않았습니다.");
     }
 
     if (!payment.getOrderId().equals(tossResponse.getOrderId())
-      || !payment.getAmount().equals(tossResponse.getTotalAmount())) {
+        || !payment.getAmount().equals(tossResponse.getTotalAmount())) {
       throw new IllegalStateException("토스 승인 결과가 주문 정보와 일치하지 않습니다.");
     }
 
     payment.approve(tossResponse.getPaymentKey(), tossResponse.getApproveNo(),
-      tossResponse.getApprovedAt() != null ? tossResponse.getApprovedAt().toLocalDateTime() : null);
+        tossResponse.getApprovedAt() != null ? tossResponse.getApprovedAt().toLocalDateTime() : null);
 
     TicketUsageResDTO ticketUsage = ticketUsageService.issue(payment.getUserId(), payment.getTicketId());
 
@@ -172,7 +170,7 @@ public class PaymentService {
   // 모든 결제내역 가져오기
   public List<PaymentHistoryDTO> findAll(Long userId) {
     List<PaymentHistoryDTO> payments = userId == null ? paymentMapper.findAllPaymentHistory()
-      : paymentMapper.findByUserId(userId);
+        : paymentMapper.findByUserId(userId);
 
     return payments;
   }
@@ -235,9 +233,8 @@ public class PaymentService {
 
     switch (payment.getPaymentMethod()) {
       case CARD -> cancelMockCard(payment, cancelReason);
-      case TOSSPAY, KAKAOPAY -> cancelTossPayment(payment, cancelReason);
-      case NAVERPAY -> throw new IllegalStateException("현재 네이버페이 결제 취소는 지원하지 않습니다");
-
+      case TOSSPAY -> cancelTossPayment(payment, cancelReason);
+      default -> throw new IllegalStateException("지원하지 않는 결제 수단입니다.");
     }
     ticketUsageService.cancel(payment.getUsageId());
     return PaymentResDTO.from(payment);

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.scac.global.enums.TicketType;
 import com.scac.global.enums.TicketUsageStatus;
+import com.scac.global.exception.BusinessException;
 import com.scac.ticket.entity.Ticket;
 
 import jakarta.persistence.Column;
@@ -107,7 +108,16 @@ public class TicketUsage {
     start();
 
     if(endAt == null)
-      endAt = LocalDateTime.now().plusDays(validDays);
+      endAt = startAt.plusDays(validDays);
+  }
+
+  // 시간권 다시 준비상태로
+  public void ready(){
+    if(status == TicketUsageStatus.EXPIRED || status == TicketUsageStatus.CANCELED){
+      throw new BusinessException("변경할 수 없는 이용권");
+    }
+
+    this.status = TicketUsageStatus.READY;
   }
 
   public void deductTime(int usedMinutes) {
@@ -166,5 +176,13 @@ public class TicketUsage {
   @PreUpdate
   void setUpdatedAt() {
     this.updatedAt = LocalDateTime.now();
+  }
+
+  public void setStartAt(LocalDateTime startAt){
+    this.startAt = startAt;
+  }
+
+  public void setEndAt(LocalDateTime endAt){
+    this.endAt = endAt;
   }
 }

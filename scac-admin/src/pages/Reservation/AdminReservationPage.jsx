@@ -125,7 +125,40 @@ export default function AdminReservationPage() {
     setSelectedRoom(null);
   };
 
-  const items = [...seats, ...rooms];
+  const items = useMemo(() => {
+    const now = new Date();
+    const updatedRooms = rooms.map((room) => {
+      const roomRervations = reservations.filter(
+        (reservation) =>
+          Number(reservation.roomId) === Number(room.id) &&
+          reservation.reservationDate === selectedDate,
+      );
+      const isUsing = roomRervations.some((reservation) => {
+        if (reservation.status === "CANCELED") {
+          return false;
+        }
+        if (!reservation.startTime || !reservation.endTime) {
+          return false;
+        }
+
+        const start = new Date(
+          `${reservation.reservationDate}T${reservation.startTime}`,
+        );
+        const end = new Date(
+          `${reservation.reservationDate}T${reservation.endTime}`,
+        );
+
+        return now >= start && now < end;
+      });
+
+      return {
+        ...room,
+        status: isUsing ? "using" : "available",
+      };
+    });
+
+    return [...seats, ...updatedRooms];
+  }, [seats, rooms, reservations, selectedDate]);
 
   return (
     <div className="admin_reservation_page">
