@@ -47,20 +47,12 @@ public interface MeetingRoomReservationRepository extends JpaRepository<MeetingR
     """)
     List<AdminReservationResponse> findAdminReservationList();
 
-    // 시작시간과 상태로 조회
-    List<MeetingRoomReservation> findByReservationDateAndStartHourAndStatus(
+    // 오늘 날짜 + 상태로 예약 조회
+    List<MeetingRoomReservation> findByReservationDateAndStatus(
         LocalDate reservationDate,
-        Integer startHour,
         ReservationStatus status
     );
 
-    // 끝시간과 상태로 조회
-    List<MeetingRoomReservation> findByReservationDateAndEndHourAndStatus(
-        LocalDate reservationDate,
-        Integer endHour,
-        ReservationStatus status
-    );
-
-    // roomId와 상태로 조회
+    // 해당 방에 특정 상태 예약 존재확인
     boolean existsByRoomIdAndStatus(Long roomId, ReservationStatus status);
 }
