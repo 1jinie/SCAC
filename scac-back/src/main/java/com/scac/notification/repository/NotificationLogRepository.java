@@ -12,12 +12,12 @@ import com.scac.notification.entity.NotificationLog;
 
 public interface NotificationLogRepository extends JpaRepository<NotificationLog, Long> {
 
-  boolean existsByUserIdAndNotificationTypeAndCreatedAtAfter(
-      Long userId, NotificationType notificationType, LocalDateTime createdAt);
+    boolean existsByUserIdAndNotificationTypeAndCreatedAtAfter(
+            Long userId, NotificationType notificationType, LocalDateTime createdAt);
 
-  List<NotificationLog> findByStatusAndExternalMsgIdIsNotNullAndCreatedAtAfterOrderByCreatedAtAsc(
-      NotificationStatus status, LocalDateTime createdAt);
+    List<NotificationLog> findByStatusAndExternalMsgIdIsNotNullAndCreatedAtAfterOrderByCreatedAtAsc(
+            NotificationStatus status, LocalDateTime createdAt);
 
-  boolean existsByUserIdAndNotificationTypeAndStatusAndCreatedAtAfter(Long userId, NotificationType type,
-      Collection<NotificationStatus> statuses, LocalDateTime since);
+    boolean existsByUserIdAndNotificationTypeAndStatusInAndCreatedAtAfter(Long userId, NotificationType type,
+            Collection<NotificationStatus> statuses, LocalDateTime since);
 }

@@ -60,7 +60,7 @@ public class NotificationService {
   public boolean wasSentRecently(Long userId, NotificationType type, Collection<NotificationStatus> statuses,
       LocalDateTime since) {
     return notificationLogRepository
-        .existsByUserIdAndNotificationTypeAndStatusAndCreatedAtAfter(userId, type, statuses, since);
+        .existsByUserIdAndNotificationTypeAndStatusInAndCreatedAtAfter(userId, type, statuses, since);
   }
 
   // SOLAPI 발송 상태 동기화
