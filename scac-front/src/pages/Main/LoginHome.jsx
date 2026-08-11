@@ -6,11 +6,13 @@ import { seatStore } from '../../store/seatStore';
 import { checkInStore } from '../../store/checkInStore';
 import { getCurrentUser } from '../../api/userApi';
 import InOutModal from '../../components/modal/InOutModal';
+import ChooseInModal from '../../components/modal/ChooseInModal';
 import '../../styles/LoginHome.css';
 import { reservationStore } from '../../store/reservationStore';
 
 function LoginHomePage() {
   const navigate = useNavigate();
+  const [showChooseInModal, setShowChooseInModal] = useState(false);
   const [showCheckOutModal, setShowCheckOutModal] = useState(false);
   const prepareMemberCheckIn = checkInStore(
     (state) => state.prepareMemberCheckIn,
@@ -19,6 +21,10 @@ function LoginHomePage() {
   const updateCheckOut = checkInStore((state) => state.updateCheckOut);
   const seats = seatStore((state) => state.seats);
   const fetchSeats = seatStore((state) => state.fetchSeats);
+  const reservations = reservationStore((state) => state.reservations);
+  const fetchReservations = reservationStore(
+    (state) => state.fetchReservations,
+  );
   const setReservation = reservationStore((state) => state.setReservation);
   const logout = useAuthStore((state) => state.logout);
   const clearUserData = useUserStore((state) => state.clearUserData);
@@ -62,6 +68,47 @@ function LoginHomePage() {
       navigate('/room');
     } catch (error) {
       alert('사용자 정보를 가져오는데 실패했습니다');
+    }
+  };
+
+  const handleRoomCheckIn = async () => {
+    try {
+      const result = await getCurrentUser();
+
+      if (!result.success) {
+        alert(result.message);
+        return;
+      }
+
+      const userId = result.data;
+      await fetchReservations();
+      const currentReservations = reservationStore.getState().reservations;
+      const now = new Date();
+      const today = now.toISOString().slice(0, 10);
+      const currentHour = now.getHours();
+      const reservation = currentReservations.find(
+        (r) =>
+          Number(r.userId) === Number(userId) &&
+          r.reservationDate === today &&
+          r.status === 'CONFIRMED' &&
+          currentHour >= r.startHour &&
+          currentHour < r.endHour,
+      );
+
+      if (!reservation) {
+        alert('예약이 없습니다');
+        return;
+      }
+
+      setReservation({
+        userId,
+        roomId: reservation.roomId,
+      });
+
+      navigate('/loginhome');
+    } catch (error) {
+      console.error(error);
+      alert('예약 정보 확인 중 오류가 발생했습니다');
     }
   };
 
@@ -111,7 +158,7 @@ function LoginHomePage() {
           <button
             type="button"
             className="menu_btn btn_orange"
-            onClick={handleMemberCheckIn}
+            onClick={() => setShowChooseInModal(true)}
           >
             <div className="btn_icon">
               <img
@@ -231,6 +278,19 @@ function LoginHomePage() {
           title="퇴실"
           onClose={() => setShowCheckOutModal(false)}
           onConfirm={handleCheckOut}
+        />
+      )}
+      {showChooseInModal && (
+        <ChooseInModal
+          onClose={() => setShowChooseInModal(false)}
+          onSeatCheckIn={() => {
+            setShowChooseInModal(false);
+            handleMemberCheckIn();
+          }}
+          onRoomCheckIn={() => {
+            setShowChooseInModal(false);
+            handleRoomCheckIn();
+          }}
         />
       )}
     </div>
