@@ -38,8 +38,11 @@ public class Payment {
   @Column(name = "user_id", nullable = false)
   private Long userId;
 
-  @Column(name = "ticket_id", nullable = false)
+  @Column(name = "ticket_id")
   private Long ticketId;
+
+  @Column(name = "reservation_id")
+  private Long reservationId;
 
   @Column(nullable = false)
   private Integer amount;
@@ -68,17 +71,22 @@ public class Payment {
   @Column(name = "cancelled_at")
   private LocalDateTime cancelledAt;
 
-  private Payment(Long userId, Long ticketId, Integer amount, PaymentMethod paymentMethod) {
+  private Payment(Long userId, Long ticketId,Long reservationId, Integer amount, PaymentMethod paymentMethod) {
     this.usageId = null;
     this.userId = userId;
     this.ticketId = ticketId;
+    this.reservationId = reservationId;
     this.amount = amount;
     this.paymentMethod = paymentMethod;
     this.status = PaymentStatus.PENDING;
   }
 
-  public static Payment create(Long userId, Long ticketId, Integer amount, PaymentMethod paymentMethod) {
-    return new Payment(userId, ticketId, amount, paymentMethod);
+  public static Payment createTicketPayment(Long userId, Long ticketId, Integer amount, PaymentMethod paymentMethod) {
+    return new Payment(userId, ticketId,null, amount, paymentMethod);
+  }
+
+  public static Payment createReservationPayment(Long userId, Long reservationId, Integer amount, PaymentMethod paymentMethod) {
+    return new Payment(userId, null, reservationId, amount, paymentMethod);
   }
 
   public void cancel(String cancelReason) {

@@ -14,19 +14,21 @@ export const ticketApi = {
 
   updateTicket: async (ticketId, ticket) => {
     const response = await axiosInstance.put(
-      `/api/tickets/${ticketId}`,
+      `/api/admin/tickets/${ticketId}`,
       ticket,
     );
     return response.data.data;
   },
   createTicket: async (ticket) => {
-    const response = await axiosInstance.post(`/api/tickets`, ticket);
+    const response = await axiosInstance.post(`/api/admin/tickets`, ticket);
     return response.data.data;
   },
 
   deleteTicket: async (ticketId) => {
-    const response = await axiosInstance.delete(`/api/tickets/${ticketId}`);
+    const response = await axiosInstance.delete(
+      `/api/admin/tickets/${ticketId}`,
+    );
 
-    return response.data;
+    return response.data.data;
   },
 };

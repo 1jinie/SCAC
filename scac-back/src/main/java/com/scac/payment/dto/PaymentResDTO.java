@@ -12,19 +12,20 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class PaymentResDTO {
-    private final Long paymentId;
-    private String orderId;
-    private final Long usageId;
-    private final Long userId;
-    private final Long ticketId;
-    private final Integer amount;
-    private final PaymentMethod paymentMethod;
-    private final PaymentStatus status;
-    private final LocalDateTime paidAt;
-    private final String approvalNum;
-    private final String paymentKey;
-    private final String cancelReason;
-    private final LocalDateTime cancelledAt; // LocalDateTime으로 수정
+  private final Long paymentId;
+  private String orderId;
+  private final Long usageId;
+  private final Long userId;
+  private final Long ticketId;
+  private final Long reservationId;
+  private final Integer amount;
+  private final PaymentMethod paymentMethod;
+  private final PaymentStatus status;
+  private final LocalDateTime paidAt;
+  private final String approvalNum;
+  private final String paymentKey;
+  private final String cancelReason;
+  private final LocalDateTime cancelledAt; // LocalDateTime으로 수정
 
   public static PaymentResDTO from(Payment payment) {
     return new PaymentResDTO(
@@ -33,6 +34,7 @@ public class PaymentResDTO {
         payment.getUsageId(),
         payment.getUserId(),
         payment.getTicketId(),
+        payment.getReservationId(),
         payment.getAmount(),
         payment.getPaymentMethod(),
         payment.getStatus(),
@@ -40,7 +42,6 @@ public class PaymentResDTO {
         payment.getApprovalNum(),
         payment.getPaymentKey(),
         payment.getCancelReason(),
-        payment.getCancelledAt()
-    );
+        payment.getCancelledAt());
   }
 }

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import com.scac.global.enums.TicketType;
 import com.scac.global.enums.TicketUsageStatus;
 import com.scac.global.exception.BusinessException;
+import com.scac.meetingroom.domain.MeetingRoomReservation;
 import com.scac.ticket.entity.Ticket;
 
 import jakarta.persistence.Column;
@@ -35,8 +36,11 @@ public class TicketUsage {
   @Column(name = "user_id", nullable = false)
   private Long userId;
 
-  @Column(name = "ticket_id", nullable = false)
+  @Column(name = "ticket_id")
   private Long ticketId;
+
+  @Column(name = "reservation_id")
+  private Long reservationId;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "ticket_type", nullable = false, length = 50)
@@ -61,18 +65,19 @@ public class TicketUsage {
   @Column(name = "updated_at", nullable = false)
   private LocalDateTime updatedAt;
 
-  private TicketUsage(Long userId, Long ticketId, TicketType ticketType, Integer remainingTime
+  private TicketUsage(Long userId, Long ticketId, Long reservationId, TicketType ticketType, Integer remainingTime
 
   ) {
     this.userId = userId;
     this.ticketId = ticketId;
+    this.reservationId = reservationId;
     this.ticketType = ticketType;
     this.remainingTime = remainingTime;
 
     this.status = TicketUsageStatus.READY;
   }
 
-  public static TicketUsage create(Long userId, Ticket ticket) {
+  public static TicketUsage createTicketUsage(Long userId, Ticket ticket) {
     if (userId == null) {
       throw new IllegalArgumentException("사용자 ID는 필수입니다.");
     }
@@ -83,9 +88,24 @@ public class TicketUsage {
       throw new IllegalArgumentException("판매 중인 이용권이 아닙니다.");
     }
 
-    return new TicketUsage(userId, ticket.getTicketId(), ticket.getTicketType(), ticket.getTicketTime()
+    return new TicketUsage(userId, ticket.getTicketId(), null, ticket.getTicketType(), ticket.getTicketTime()
 
     );
+  }
+
+  public static TicketUsage createReservationUsage(Long userId, MeetingRoomReservation reservation) {
+    if (userId == null) {
+      throw new IllegalArgumentException("사용자 ID는 필수입니다.");
+    }
+    if (reservation == null) {
+      throw new IllegalArgumentException("예약 정보는 필수입니다.");
+    }
+
+    TicketUsage usage = new TicketUsage(userId, null, reservation.getReservationId(), TicketType.MEETING_ROOM,
+        null);
+    usage.setStartAt(reservation.getReservationDate().atStartOfDay().plusHours(reservation.getStartHour()));
+    usage.setEndAt(reservation.getReservationDate().atStartOfDay().plusHours(reservation.getEndHour()));
+    return usage;
   }
 
   // 시간권 시작
@@ -99,22 +119,22 @@ public class TicketUsage {
     }
 
     this.status = TicketUsageStatus.USING;
-    if(startAt == null)
+    if (startAt == null)
       this.startAt = LocalDateTime.now();
   }
 
   // 기간권 시작
-  public void startPeriod(int validDays){
+  public void startPeriod(int validDays) {
     start();
 
-    if(endAt == null)
+    if (endAt == null)
       endAt = startAt.plusDays(validDays);
   }
 
   // 시간권 다시 준비상태로
-  public void ready(){
-    if(status == TicketUsageStatus.EXPIRED || status == TicketUsageStatus.CANCELED){
-      throw new BusinessException("변경할 수 없는 이용권");
+  public void ready() {
+    if (status == TicketUsageStatus.EXPIRED || status == TicketUsageStatus.CANCELED) {
+      throw new BusinessException("변경할 수 없는 상태입니다");
     }
 
     this.status = TicketUsageStatus.READY;
@@ -146,14 +166,16 @@ public class TicketUsage {
     }
   }
 
+  // 이용권 취소
   public void cancel() {
     if (status != TicketUsageStatus.READY) {
-      throw new IllegalStateException("사용하지 않은 이용권만 취소할 수 있습니다.");
+      throw new IllegalStateException("사용하지 않은 상태에서만 취소할 수 있습니다.");
     }
 
     this.status = TicketUsageStatus.CANCELED;
   }
 
+  // 사용가능한 이용권인지 체크
   public boolean isAvailable() {
     if (status == TicketUsageStatus.CANCELED || status == TicketUsageStatus.EXPIRED) {
       return false;
@@ -163,7 +185,15 @@ public class TicketUsage {
       return remainingTime != null && remainingTime > 0;
     }
 
-    return endAt == null || endAt.isAfter(LocalDateTime.now());
+    if (ticketType == TicketType.PERIOD_PACK) {
+      return endAt == null || endAt.isAfter(LocalDateTime.now());
+    }
+
+    if (ticketType == TicketType.MEETING_ROOM) {
+      return endAt != null && endAt.isAfter(LocalDateTime.now());
+    }
+
+    return false;
   }
 
   @PrePersist
@@ -178,11 +208,11 @@ public class TicketUsage {
     this.updatedAt = LocalDateTime.now();
   }
 
-  public void setStartAt(LocalDateTime startAt){
+  public void setStartAt(LocalDateTime startAt) {
     this.startAt = startAt;
   }
 
-  public void setEndAt(LocalDateTime endAt){
+  public void setEndAt(LocalDateTime endAt) {
     this.endAt = endAt;
   }
 }
