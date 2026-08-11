@@ -69,12 +69,12 @@ public class AuthController {
 
     /* 인증번호 발송 */
     @PostMapping("/send-code")
-    public ResponseEntity<ApiResponse<String>> sendCode(
+    public ResponseEntity<ApiResponse<Void>> sendCode(
             @Valid @RequestBody SendCodeReq req
     ) {
-        String code = verificationCodeService.sendCode(req.phoneNumber());
+        verificationCodeService.sendCode(req.phoneNumber());
         return ResponseEntity.ok(
-                ApiResponse.success("인증번호가 발송되었습니다.", code)
+                ApiResponse.success("인증번호가 발송되었습니다.")
         );
     }
 

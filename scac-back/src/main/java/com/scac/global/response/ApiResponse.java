@@ -114,6 +114,10 @@ public class ApiResponse<T> {
     return new ApiResponse<>(false, message, data);
   }
 
+  public static ApiResponse<Void> error(String message) {
+    return new ApiResponse<>(false, message, null);
+  }
+
   public static ApiResponse<Void> fail(String message) {
     return new ApiResponse<>(false, message, null);
   }
