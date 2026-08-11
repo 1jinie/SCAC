@@ -10,11 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.scac.global.enums.ReservationStatus;
 import com.scac.global.exception.BusinessException;
 import com.scac.global.exception.ResourceNotFoundException;
+import com.scac.meetingroom.domain.MeetingRoom;
 import com.scac.meetingroom.domain.MeetingRoomReservation;
 import com.scac.meetingroom.dto.AdminReservationResponse;
 import com.scac.meetingroom.dto.MeetingRoomAvailabilityResponse;
 import com.scac.meetingroom.dto.MeetingRoomReservationRequest;
 import com.scac.meetingroom.dto.MeetingRoomReservationResponse;
+import com.scac.meetingroom.dto.ReservationPaymentInfoDTO;
 import com.scac.meetingroom.repository.MeetingRoomRepository;
 import com.scac.meetingroom.repository.MeetingRoomReservationRepository;
 
@@ -28,112 +30,106 @@ public class MeetingRoomReservationService {
     private final MeetingRoomReservationRepository reservationRepository;
 
     // 예약 전체 조회
-    public List<MeetingRoomReservationResponse> getAllReservations(){
+    public List<MeetingRoomReservationResponse> getAllReservations() {
         return reservationRepository.findAll()
-            .stream().map(MeetingRoomReservationResponse::from).toList();
+                .stream().map(MeetingRoomReservationResponse::from).toList();
     }
 
     // 예약 단건 조회
-    public MeetingRoomReservationResponse getReservation(Long reservationId){
+    public MeetingRoomReservationResponse getReservation(Long reservationId) {
         MeetingRoomReservation reservation = reservationRepository.findById(reservationId)
-            .orElseThrow(() -> 
-                new ResourceNotFoundException("존재하지 않는 예약입니다")
-        );
-        
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 예약입니다"));
+
         return MeetingRoomReservationResponse.from(reservation);
+    }
+
+    // 예약 단건 엔터티 조회(이용권 생성용)
+    public MeetingRoomReservation getReservationEntity(Long reservationId) {
+        MeetingRoomReservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 예약입니다"));
+
+        return reservation;
     }
 
     // 예약 생성
     public MeetingRoomReservationResponse reserve(
-        MeetingRoomReservationRequest request
-    ){
+            MeetingRoomReservationRequest request) {
         // 스터디룸 존재 확인
         meetingRoomRepository.findById(request.getRoomId())
-            .orElseThrow(() -> 
-                new ResourceNotFoundException("없는 스터디룸입니다")    
-        );
+                .orElseThrow(() -> new ResourceNotFoundException("없는 스터디룸입니다"));
 
         // 이전 날짜 예약 불가
-        if(request.getReservationDate().isBefore(LocalDate.now())){
+        if (request.getReservationDate().isBefore(LocalDate.now())) {
             throw new BusinessException("이전 날짜는 예약할 수 없습니다");
         }
 
         // 예약시간 검증
-        if(request.getStartHour() >= request.getEndHour()){
+        if (request.getStartHour() >= request.getEndHour()) {
             throw new BusinessException("시작시간이 더 빨라야합니다");
         }
 
         // 중복 예약 확인
-        if(reservationRepository.existsByRoomIdAndReservationDateAndStatusInAndStartHourLessThanAndEndHourGreaterThan(
-            request.getRoomId(), 
-            request.getReservationDate(),
-            List.of(ReservationStatus.CONFIRMED, ReservationStatus.IN_USE),
-            request.getEndHour(),
-            request.getStartHour()
-        )){
-                throw new BusinessException("이미 예약된 시간입니다");
+        if (reservationRepository.existsByRoomIdAndReservationDateAndStatusInAndStartHourLessThanAndEndHourGreaterThan(
+                request.getRoomId(),
+                request.getReservationDate(),
+                List.of(ReservationStatus.CONFIRMED, ReservationStatus.IN_USE),
+                request.getEndHour(),
+                request.getStartHour())) {
+            throw new BusinessException("이미 예약된 시간입니다");
         }
 
-        MeetingRoomReservation reservation = 
-            new MeetingRoomReservation(
+        MeetingRoomReservation reservation = new MeetingRoomReservation(
                 request.getRoomId(),
                 request.getUserId(),
                 request.getPaymentId(),
                 request.getReservationDate(),
                 request.getStartHour(),
-                request.getEndHour()
-            );
-        
+                request.getEndHour());
+
         reservationRepository.save(reservation);
 
         return MeetingRoomReservationResponse.from(reservation);
     }
 
     // 예약 취소
-    public MeetingRoomReservationResponse cancel(Long reservationId){
-        MeetingRoomReservation reservation =
-            reservationRepository.findById(reservationId)
-                .orElseThrow(() ->
-                    new ResourceNotFoundException("예약 정보가 없습니다")
-                );
-        
+    public MeetingRoomReservationResponse cancel(Long reservationId) {
+        MeetingRoomReservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ResourceNotFoundException("예약 정보가 없습니다"));
+
         reservation.cancel();
 
         return MeetingRoomReservationResponse.from(reservation);
     }
 
     // 예약 가능 시간 조회
-    public List<MeetingRoomAvailabilityResponse> getAvailability(Long roomId, LocalDate date){
+    public List<MeetingRoomAvailabilityResponse> getAvailability(Long roomId, LocalDate date) {
         // 스터디룸 존재 확인
         meetingRoomRepository.findById(roomId)
-            .orElseThrow(() ->
-                new ResourceNotFoundException("없는 스터디룸입니다")
-        );
+                .orElseThrow(() -> new ResourceNotFoundException("없는 스터디룸입니다"));
 
         // 해당 날짜 예약 조회
-        List<MeetingRoomReservation> reservations =
-            reservationRepository.findByRoomIdAndReservationDateAndStatusIn(roomId, date, List.of(ReservationStatus.CONFIRMED, ReservationStatus.IN_USE));
-        
+        List<MeetingRoomReservation> reservations = reservationRepository.findByRoomIdAndReservationDateAndStatusIn(
+                roomId, date, List.of(ReservationStatus.CONFIRMED, ReservationStatus.IN_USE));
+
         List<MeetingRoomAvailabilityResponse> result = new ArrayList<>();
 
         // 운영시간 08 ~ 24
-        for(int hour = 8; hour < 24; hour++){
+        for (int hour = 8; hour < 24; hour++) {
             boolean available = true;
 
-            for(MeetingRoomReservation reservation : reservations){
+            for (MeetingRoomReservation reservation : reservations) {
                 // 예약시간이 겹치는 경우
-                if(hour >= reservation.getStartHour() && hour < reservation.getEndHour()){
+                if (hour >= reservation.getStartHour() && hour < reservation.getEndHour()) {
                     available = false;
                     break;
                 }
             }
 
             result.add(
-                new MeetingRoomAvailabilityResponse(
-                    hour,
-                    hour + 1,
-                    available)
-            );
+                    new MeetingRoomAvailabilityResponse(
+                            hour,
+                            hour + 1,
+                            available));
         }
 
         return result;
@@ -141,7 +137,34 @@ public class MeetingRoomReservationService {
 
     // 관리자용 예약 조회
     @Transactional(readOnly = true)
-    public List<AdminReservationResponse> getAdminReservationList(){
+    public List<AdminReservationResponse> getAdminReservationList() {
         return reservationRepository.findAdminReservationList();
+    }
+
+    // 스터디룸 결제관련 정보 조회
+    @Transactional(readOnly = true)
+    public ReservationPaymentInfoDTO getPaymentInfo(Long reservationId) {
+
+        MeetingRoomReservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 예약입니다."));
+
+        MeetingRoom room = meetingRoomRepository.findById(reservation.getRoomId())
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 스터디룸입니다."));
+
+        int amount = (reservation.getEndHour() - reservation.getStartHour())
+                * room.getHourlyRate();
+
+        return new ReservationPaymentInfoDTO(
+                reservation.getReservationId(),
+                reservation.getRoomId(),
+                reservation.getUserId(),
+                amount);
+    }
+
+    // 스터디룸 결제 완료 시 예약 상태를 CONFIRMED로 변경
+    @Transactional
+    public void confirmReservation(Long reservationId) {
+        MeetingRoomReservation reservation = getReservationEntity(reservationId);
+        reservation.confirmPayment();
     }
 }

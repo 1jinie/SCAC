@@ -4,7 +4,8 @@ import Pagination from '../../../components/common/Pagination';
 const PAGE_SIZE = 10;
 
 const STATUS_LABELS = {
-  RESERVED: '예약 완료',
+  PENDING_PAYMENT: '결제 진행중',
+  CONFIRMED: '예약 완료',
   IN_USE: '이용 중',
   COMPLETED: '이용 완료',
   USER_CANCELED: '사용자 취소',

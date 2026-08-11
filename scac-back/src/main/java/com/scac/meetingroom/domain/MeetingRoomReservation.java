@@ -31,7 +31,7 @@ public class MeetingRoomReservation {
     private LocalDate reservationDate;
     private Integer startHour;
     private Integer endHour;
-    
+
     @Enumerated(EnumType.STRING)
     private ReservationStatus status;
 
@@ -39,33 +39,41 @@ public class MeetingRoomReservation {
     private LocalDateTime updatedAt;
 
     public MeetingRoomReservation(
-        Long roomId,
-        Long userId,
-        Long paymentId,
-        LocalDate reservationDate,
-        Integer startHour,
-        Integer endHour
-    ){
+            Long roomId,
+            Long userId,
+            Long paymentId,
+            LocalDate reservationDate,
+            Integer startHour,
+            Integer endHour) {
         this.roomId = roomId;
         this.userId = userId;
         this.paymentId = paymentId;
         this.reservationDate = reservationDate;
         this.startHour = startHour;
         this.endHour = endHour;
-        this.status = ReservationStatus.CONFIRMED;
+        this.status = ReservationStatus.PENDING_PAYMENT;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void cancel(){
-        if(this.status != ReservationStatus.CONFIRMED){
+    public void cancel() {
+        if (this.status != ReservationStatus.CONFIRMED) {
             throw new BusinessException("취소할 수 없는 예약입니다");
         }
         this.status = ReservationStatus.CANCELED;
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void updateReservationStatus(ReservationStatus status){
+    public void updateReservationStatus(ReservationStatus status) {
         this.status = status;
+    }
+
+    // 결제 완료 시 예약 상태를 CONFIRMED로 변경
+    public void confirmPayment() {
+        if (status != ReservationStatus.PENDING_PAYMENT) {
+            throw new IllegalStateException("결제 대기 중인 예약만 확정할 수 있습니다.");
+        }
+
+        this.status = ReservationStatus.CONFIRMED;
     }
 }
