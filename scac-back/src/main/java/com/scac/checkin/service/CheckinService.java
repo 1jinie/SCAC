@@ -25,8 +25,6 @@ import com.scac.seat.domain.Seat;
 import com.scac.seat.repository.SeatRepository;
 import com.scac.system.entity.SystemLog;
 import com.scac.system.service.SystemLogService;
-import com.scac.ticket.entity.Ticket;
-import com.scac.ticket.repository.TicketRepository;
 import com.scac.ticketusage.entity.TicketUsage;
 import com.scac.ticketusage.repository.TicketUsageRepository;
 import com.scac.user.entity.User;
@@ -43,7 +41,6 @@ public class CheckinService {
     private final TicketUsageRepository ticketUsageRepository;
     private final CheckinRepository checkinRepository;
     private final PasswordEncoder passwordEncoder;
-    private final TicketRepository ticketRepository;
     private final SystemLogService systemLogService;
 
     // 사용자 검증 함수
@@ -85,7 +82,7 @@ public class CheckinService {
         }
 
         TicketUsage ticketUsage = ticketUsageRepository
-            .findFirstByUserIdAndStatusInOrderByCreatedAtDesc(user.getId(),
+            .findFirstByUserIdAndStatusInOrderByCreatedAtAsc(user.getId(),
                 List.of(TicketUsageStatus.READY, TicketUsageStatus.USING))
             .orElseThrow(() -> new ResourceNotFoundException("사용 가능한 이용권이 없습니다."));
 
@@ -127,11 +124,8 @@ public class CheckinService {
             .orElseThrow(() -> new ResourceNotFoundException("이용권 정보가 없습니다."));
 
         // READY일 경우 시작 처리
-        if (ticketUsage.getStatus() == TicketUsageStatus.READY) {
-            Ticket ticket = ticketRepository.findById(ticketUsage.getTicketId())
-                .orElseThrow(() -> new ResourceNotFoundException("이용권 상품 정보가 없습니다."));
-
-            ticketUsage.start(ticket);
+        if (ticketUsage.getStatus() == TicketUsageStatus.READY && ticketUsage.getTicketType() == TicketType.TIME_PACK) {
+            ticketUsage.start();
         }
 
         // 좌석 점유

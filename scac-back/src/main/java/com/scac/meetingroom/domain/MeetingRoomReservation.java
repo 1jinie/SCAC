@@ -34,6 +34,7 @@ public class MeetingRoomReservation {
     
     @Enumerated(EnumType.STRING)
     private ReservationStatus status;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -62,5 +63,9 @@ public class MeetingRoomReservation {
         }
         this.status = ReservationStatus.CANCELED;
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateReservationStatus(ReservationStatus status){
+        this.status = status;
     }
 }

@@ -91,7 +91,8 @@ public class PaymentService {
       currentUserId, ticket.getTicketId(), ticket.getTicketPrice(), dto.getPaymentMethod()
 
     );
-
+    // 아직 결제가 완료되지 않았으므로 결제 상태는 PENDING으로 설정됩니다.
+    // 또한 paid_at, usage_id는 결제 승인 후에 데이터가 입력되므로 요청단계에선 null로 초기화됩니다.
     paymentRepository.save(payment);
 
     return PaymentResDTO.from(payment);
@@ -159,8 +160,15 @@ public class PaymentService {
     return PaymentResDTO.from(payment);
   }
 
+  // 사용자 결제내역 조회
+  public PaymentResDTO findMyPayment(Long paymentId, Long id) {
+    Payment payment = getPayment(paymentId);
+    validatePaymentOwner(payment, id);
+    return PaymentResDTO.from(payment);
+  }
+
   // 관리자 결제내역 관리 관련 메서드 -----------------------------------------------
-  // (추후 AdminPrincipal 사용자 인증 구현 시 추가)
+  // 추후 Admin 연결시 관리자 권한 검증 추가
   // 모든 결제내역 가져오기
   public List<PaymentHistoryDTO> findAll(Long userId) {
     List<PaymentHistoryDTO> payments = userId == null ? paymentMapper.findAllPaymentHistory()
@@ -244,17 +252,13 @@ public class PaymentService {
 
   // 대시보드용 당일 매출액 집계 메서드
   public long getTodayRevenue() {
-        LocalDate today = LocalDate.now();
-        LocalDateTime startOfDay = today.atStartOfDay();              // 오늘 00:00:00
-        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);         // 오늘 23:59:59.999999999
+    LocalDate today = LocalDate.now();
+    LocalDateTime startOfDay = today.atStartOfDay(); // 오늘 00:00:00
+    LocalDateTime endOfDay = today.atTime(LocalTime.MAX); // 오늘 23:59:59.999999999
 
-        Long revenue = paymentRepository.sumTodayRevenue(
-            PaymentStatus.PAID,
-            startOfDay,
-            endOfDay
-        );
+    Long revenue = paymentRepository.sumTodayRevenue(PaymentStatus.PAID, startOfDay, endOfDay);
 
-        return revenue != null ? revenue : 0L;
-    }
+    return revenue != null ? revenue : 0L;
+  }
 
 }

@@ -38,7 +38,7 @@ export default function KioskErrorState({
   onClose,
   retryLabel = '다시 시도',
   homeLabel = '홈으로 돌아가기',
-  closeLabel = '확인',
+  closeLabel = '닫기',
   variant = 'page',
 }) {
   const titleId = useId();
