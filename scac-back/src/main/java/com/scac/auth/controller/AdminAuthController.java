@@ -60,7 +60,7 @@ public class AdminAuthController {
      */
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logout(
-            @RequestHeader("Authorization") String authorization
+            @RequestHeader(value = "Authorization", required = false) String authorization
     ) {
         adminAuthService.logout(authorization);
 

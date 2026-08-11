@@ -52,7 +52,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logout(
-            @RequestHeader("Authorization") String authorization
+            @RequestHeader(value = "Authorization", required = false) String authorization
     ) {
 
         authService.logout(authorization);
