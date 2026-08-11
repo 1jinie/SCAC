@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { checkInStore } from '../../store/checkInStore';
+import { postSendCode, postVerifyCode } from '../../api/authApi';
 import './css/NonSignup.css';
 
 function NonmemberSignup() {
@@ -37,9 +38,8 @@ function NonmemberSignup() {
       interval = setInterval(() => {
         setTimer((prev) => prev - 1);
       }, 1000);
-    }
-
-    if (timer === 0) {
+    } else if (timer === 0) {
+      clearInterval(interval);
       setErrors((prev) => ({
         ...prev,
         verification: '인증 시간이 만료되었습니다. 다시 발송해주세요.',
@@ -61,9 +61,9 @@ function NonmemberSignup() {
 
   // 인증번호 발송
   const handleSendVerification = async () => {
-    const phone = formData.phone.replace(/-/g, '');
+    const phone = formData.phone.trim().replace(/-/g, '');
 
-    if (!phone.trim()) {
+    if (!phone) {
       setErrors((prev) => ({
         ...prev,
         phone: '전화번호를 입력해주세요.',
@@ -80,31 +80,29 @@ function NonmemberSignup() {
     }
 
     try {
-      /*
-      추후 백엔드 연결
+      const res = await postSendCode(phone);
+      if (res.isSuccess) {
+        setErrors((prev) => ({
+          ...prev,
+          phone: '',
+          verification: '',
+        }));
 
-      await axios.post(
-        '/api/auth/send-code',
-        {
-          phoneNumber: phone
-        }
-      );
-    */
+        setIsVerificationSent(true);
+        setTimer(180);
 
-      setErrors((prev) => ({
-        ...prev,
-        phone: '',
-        verification: '',
-      }));
-
-      setIsVerificationSent(true);
-      setTimer(180);
-
-      alert('인증번호가 발송되었습니다. (테스트번호: 123456)');
+        alert(res.message || '인증번호가 발송되었습니다.');
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          phone: res.message || '인증번호 발송에 실패했습니다.',
+        }));
+      }
     } catch (error) {
       setErrors((prev) => ({
         ...prev,
-        phone: '인증번호 발송에 실패했습니다.',
+        phone:
+          error.response?.data?.message || '인증번호 발송에 실패했습니다.',
       }));
     }
   };
@@ -120,39 +118,37 @@ function NonmemberSignup() {
       return;
     }
 
-    try {
-      /*
-      추후 백엔드 연결
-
-      await axios.post(
-        '/api/auth/verify-code',
-        {
-          phoneNumber: formData.phone,
-          code: verificationCode
-        }
-      );
-
-    */
-
-      if (verificationCode !== '123456') {
-        setErrors((prev) => ({
-          ...prev,
-          verification: '인증번호가 일치하지 않습니다.',
-        }));
-
-        return;
-      }
-
-      setIsVerified(true);
-
+    if (!verificationCode.trim()) {
       setErrors((prev) => ({
         ...prev,
-        verification: '',
+        verification: '인증번호를 입력해주세요.',
       }));
+      return;
+    }
+
+    try {
+      const phone = formData.phone.trim().replace(/-/g, '');
+      const res = await postVerifyCode(phone, verificationCode);
+
+      if (res.isSuccess) {
+        setIsVerified(true);
+
+        setErrors((prev) => ({
+          ...prev,
+          verification: '',
+        }));
+        alert('전화번호 인증이 완료되었습니다.');
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          verification: res.message || '인증번호가 일치하지 않습니다.',
+        }));
+      }
     } catch (error) {
       setErrors((prev) => ({
         ...prev,
-        verification: '인증 확인 중 오류가 발생했습니다.',
+        verification:
+          error.response?.data?.message || '인증번호가 일치하지 않습니다.',
       }));
     }
   };
