@@ -104,7 +104,7 @@ public class SecurityConfig {
                                 // 관리자 결제 관련 - 결제 내역 조회 시 ADMIN 권한 필요(추후 AdminPrincipal 사용자 인증 구현 시 추가)
 
                                 // 관리자 전용 경로 통제
-                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/api/admin/**").hasAnyRole("SUPER_ADMIN", "STAFF")
 
                                 // PUBLIC 요청 외 모든 요청은 인증 필요
                                 .anyRequest().authenticated())
