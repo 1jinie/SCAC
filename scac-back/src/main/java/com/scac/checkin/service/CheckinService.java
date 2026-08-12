@@ -84,12 +84,20 @@ public class CheckinService {
             throw new BusinessException("이미 입실 중인 사용자입니다.");
         }
 
+        TicketUsage ticketUsage = null;
+        // 외출 복귀면 기존 이용권 사용
+        if(awayCheckin != null){
+            ticketUsage = ticketUsageRepository.findById(awayCheckin.getUsageId())
+                .orElse(null);
+        }
+
         // 이용권 확인(1순위 : USING 기간권)
-        TicketUsage ticketUsage = ticketUsageRepository
-            .findFirstByUserIdAndStatusAndTicketTypeOrderByCreatedAtAsc(
+        if(ticketUsage == null) {
+            ticketUsageRepository.findFirstByUserIdAndStatusAndTicketTypeOrderByCreatedAtAsc(
                 user.getId(), 
                 TicketUsageStatus.USING, 
                 TicketType.PERIOD_PACK).orElse(null);
+            }        
         
         // 이용권 확인(2순위 : READY 기간권)
         if(ticketUsage == null){
