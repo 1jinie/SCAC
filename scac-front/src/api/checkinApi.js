@@ -9,7 +9,13 @@ export const checkinApi = {
 
   goOut: (data) => axiosInstance.patch('/api/checkin/away', data),
 
+  memberGoOut: () => axiosInstance.patch('/api/checkin/away/member'),
+
   comeBack: (data) => axiosInstance.patch('/api/checkin/comeback', data),
 
+  memberComeBack: () => axiosInstance.patch('/api/checkin/comeback/member'),
+
   checkout: (data) => axiosInstance.patch('/api/checkin/checkout', data),
+
+  memberCheckOut: () => axiosInstance.patch('/api/checkin/checkout/member'),
 };

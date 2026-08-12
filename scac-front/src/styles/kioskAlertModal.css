@@ -1,0 +1,47 @@
+.overlay.kioskAlert {
+  align-items: center;
+}
+
+.modal.kioskAlert {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  width: 1000px;
+
+  padding: 50px;
+  box-sizing: border-box;
+}
+
+.modal.kioskAlert h2 {
+  font-size: 72px;
+  font-weight: 700;
+  color: var(--color-text);
+
+  margin: 50px 0 0;
+}
+
+.kiosk_alert_message {
+  font-size: 50px;
+  font-weight: 400;
+  color: var(--color-text);
+
+  margin: 400px 0 0;
+
+  text-align: center;
+  word-break: keep-all;
+  white-space: pre-line;
+}
+
+.kiosk_alert_confirm {
+  width: 100%;
+  height: 150px;
+
+  margin-top: auto;
+  margin-bottom: 0;
+
+  font-size: 50px;
+  border-radius: 32px;
+}

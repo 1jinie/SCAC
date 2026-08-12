@@ -1,13 +1,15 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { seatStore } from '../../store/seatStore';
 import { roomStore } from '../../store/roomStore';
 import { reservationStore } from '../../store/reservationStore';
+import KioskAlertModal from '../../components/modal/KioskAlertModal';
 import SeatList from './components/SeatList';
 import '../../styles/seat.css';
 import { checkInStore } from '../../store/checkInStore';
 
 function SeatPage({ mode }) {
+  const [alertModal, setAlertModal] = useState(null);
   const seats = seatStore((state) => state.seats);
   const fetchSeats = seatStore((state) => state.fetchSeats);
   const selected = seatStore((state) => state.selectedSeat);
@@ -46,9 +48,12 @@ function SeatPage({ mode }) {
 
   const handleConfirm = async () => {
     if (!selected) {
-      alert(
-        mode === 'seat' ? '좌석을 선택해주세요' : '스터디룸을 선택해주세요',
-      );
+      setAlertModal({
+        title: '알림',
+        message:
+          mode === 'seat' ? '좌석을 선택해주세요' : '스터디룸을 선택해주세요',
+        onClose: () => setAlertModal(null),
+      });
       return;
     }
 
@@ -65,15 +70,24 @@ function SeatPage({ mode }) {
     const result = await checkIn(selected);
 
     if (!result.success) {
-      alert(result.message);
+      setAlertModal({
+        title: '입실 실패',
+        message: result.message,
+        onClose: () => setAlertModal(null),
+      });
       return;
     }
 
-    // 좌석 상태 변경
+    // 입실 성공
     checkInSeat(selected);
-
-    navigate('/');
-    alert('입실되었습니다');
+    setAlertModal({
+      title: '입실 완료',
+      message: '입실되었습니다',
+      onClose: () => {
+        setAlertModal(null);
+        navigate('/');
+      },
+    });
   };
 
   // mode 변경시 선택 초기화
@@ -160,6 +174,14 @@ function SeatPage({ mode }) {
       <button className="confirm_button" onClick={handleConfirm}>
         선택완료
       </button>
+
+      {alertModal && (
+        <KioskAlertModal
+          title={alertModal.title}
+          message={alertModal.message}
+          onClose={alertModal.onClose}
+        />
+      )}
     </div>
   );
 }

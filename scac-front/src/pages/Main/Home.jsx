@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { seatStore } from '../../store/seatStore';
 import { checkInStore } from '../../store/checkInStore';
 import InOutModal from '../../components/modal/InOutModal';
+import KioskAlertModal from '../../components/modal/KioskAlertModal';
 import '../../styles/Home.css';
 import { useResetStore } from '../../hooks/useResetStore';
 
 function HomePage() {
+  const [alertModal, setAlertModal] = useState(null);
   const [modalType, setModalType] = useState(null);
   const prepareCheckIn = checkInStore((state) => state.prepareCheckIn);
   const setPreparedInfo = checkInStore((state) => state.setPreparedInfo);
@@ -29,7 +31,11 @@ function HomePage() {
     const result = await prepareCheckIn(phoneNumber, password);
 
     if (!result.success) {
-      alert(result.message);
+      setAlertModal({
+        title: '입실 실패',
+        message: result.message,
+        onClose: () => setAlertModal(null),
+      });
       return;
     }
 
@@ -42,11 +48,19 @@ function HomePage() {
       const comebackResult = await comeBack(phoneNumber, password);
 
       if (!comebackResult.success) {
-        alert(comebackResult.message);
+        setAlertModal({
+          title: '복귀 실패',
+          message: result.message,
+          onClose: () => setAlertModal(null),
+        });
         return;
       }
 
-      alert('재입실되었습니다');
+      setAlertModal({
+        title: '입실',
+        message: '재입실되었습니다',
+        onClose: () => setAlertModal(null),
+      });
       return;
     }
 
@@ -57,7 +71,11 @@ function HomePage() {
   const handleGoOut = async (phoneNumber, password) => {
     const result = await goOut(phoneNumber, password);
 
-    alert(result.message);
+    setAlertModal({
+      title: '외출',
+      message: result.message,
+      onClose: () => setAlertModal(null),
+    });
 
     if (!result.success) return;
 
@@ -68,7 +86,11 @@ function HomePage() {
   const handleCheckOut = async (phoneNumber, password) => {
     const result = await checkOut(phoneNumber, password);
 
-    alert(result.message);
+    setAlertModal({
+      title: '퇴실',
+      message: result.message,
+      onClose: () => setAlertModal(null),
+    });
 
     if (!result.success) return;
 
@@ -252,6 +274,13 @@ function HomePage() {
           title={modalType}
           onClose={() => setModalType(null)}
           onConfirm={handleSubmit}
+        />
+      )}
+      {alertModal && (
+        <KioskAlertModal
+          title={alertModal.title}
+          message={alertModal.message}
+          onClose={alertModal.onClose}
         />
       )}
     </div>
