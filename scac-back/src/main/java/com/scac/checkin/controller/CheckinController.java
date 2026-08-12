@@ -64,6 +64,19 @@ public class CheckinController {
         );
     }
 
+    // 회원 외출
+    @PatchMapping("/away/member")
+    public ResponseEntity<ApiResponse<CheckinResponse>> memberGoAway(
+        Authentication authentication
+    ){
+        return ResponseEntity.ok(
+            ApiResponse.success(
+                "외출 처리 완료",
+                checkinService.memberGoAway(authentication)
+            )
+        );
+    }
+
     // 외출 복귀
     @PatchMapping("/comeback")
     public ResponseEntity<ApiResponse<CheckinResponse>> comeBack(
@@ -74,6 +87,18 @@ public class CheckinController {
         );
     }
 
+    // 회원 외출 복귀
+    @PatchMapping("/comeback/member")
+    public ResponseEntity<ApiResponse<CheckinResponse>> memberComeBack(
+        Authentication authentication
+    ){
+        return ResponseEntity.ok(
+            ApiResponse.success(
+                "외출 복귀 완료", 
+                checkinService.memberComeBack(authentication))
+        );
+    }
+
     // 퇴실
     @PatchMapping("/checkout")
     public ResponseEntity<ApiResponse<CheckinResponse>> checkout(
@@ -81,6 +106,19 @@ public class CheckinController {
     ){
         return ResponseEntity.ok(
             ApiResponse.success("퇴실 완료", checkinService.checkout(request))
+        );
+    }
+    
+    // 회원 퇴실
+    @PatchMapping("/checkout/member")
+    public ResponseEntity<ApiResponse<CheckinResponse>> memberCheckout(
+        Authentication authentication
+    ){
+        return ResponseEntity.ok(
+            ApiResponse.success(
+                "퇴실 완료", 
+                checkinService.memberCheckout(authentication)
+            )
         );
     }
 }

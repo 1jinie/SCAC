@@ -6,17 +6,22 @@ import { seatStore } from '../../store/seatStore';
 import { checkInStore } from '../../store/checkInStore';
 import { getCurrentUser } from '../../api/userApi';
 import InOutModal from '../../components/modal/InOutModal';
+import KioskAlertModal from '../../components/modal/KioskAlertModal';
 import ChooseInModal from '../../components/modal/ChooseInModal';
 import '../../styles/LoginHome.css';
 import { reservationStore } from '../../store/reservationStore';
 
 function LoginHomePage() {
   const navigate = useNavigate();
+  const [alertModal, setAlertModal] = useState(null);
   const [showChooseInModal, setShowChooseInModal] = useState(false);
   const [showCheckOutModal, setShowCheckOutModal] = useState(false);
   const prepareMemberCheckIn = checkInStore(
     (state) => state.prepareMemberCheckIn,
   );
+  const memberGoOut = checkInStore((state) => state.memberGoOut);
+  const memberComeBack = checkInStore((state) => state.memberComeBack);
+  const memberCheckOut = checkInStore((state) => state.memberCheckOut);
   const checkOutSeat = seatStore((state) => state.checkOutSeat);
   const updateCheckOut = checkInStore((state) => state.updateCheckOut);
   const seats = seatStore((state) => state.seats);
@@ -28,22 +33,49 @@ function LoginHomePage() {
   const setReservation = reservationStore((state) => state.setReservation);
   const logout = useAuthStore((state) => state.logout);
   const clearUserData = useUserStore((state) => state.clearUserData);
-
   const availableSeats = seats.filter(
     (seat) => seat.type === 'seat' && seat.status === 'available',
   ).length;
-
   const totalSeats = seats.filter((seat) => seat.type === 'seat').length;
-
   const handleMemberCheckIn = async () => {
+    // 현재 사용자 입실 상태 확인
     const result = await prepareMemberCheckIn();
 
     if (!result.success) {
-      alert(result.message);
+      setAlertModal({
+        title: '입실 실패',
+        message: result.message,
+        onClose: () => setAlertModal(null),
+      });
       return;
     }
 
-    navigate('/seat');
+    // 외출 복귀는 선택 없이 바로 복귀
+    if (result.data.away) {
+      const comebackResult = await memberComeBack();
+
+      if (!comebackResult.success) {
+        setAlertModal({
+          title: '복귀 실패',
+          message: comebackResult.message,
+          onClose: () => setAlertModal(null),
+        });
+        return;
+      }
+
+      setAlertModal({
+        title: '입실',
+        message: '재입실되었습니다',
+        onClose: () => {
+          setAlertModal(null);
+          navigate('/');
+        },
+      });
+
+      return;
+    }
+
+    setShowChooseInModal(true);
   };
 
   const handleCheckOut = (data) => {
@@ -57,7 +89,11 @@ function LoginHomePage() {
       const result = await getCurrentUser();
 
       if (!result.success) {
-        alert(result.message);
+        setAlertModal({
+          title: '스터디룸',
+          message: result.message,
+          onClose: () => setAlertModal(null),
+        });
         return;
       }
 
@@ -67,7 +103,11 @@ function LoginHomePage() {
 
       navigate('/room');
     } catch (error) {
-      alert('사용자 정보를 가져오는데 실패했습니다');
+      setAlertModal({
+        title: '스터디룸',
+        message: '사용자 정보를 가져오는데 실패했습니다',
+        onClose: () => setAlertModal(null),
+      });
     }
   };
 
@@ -76,7 +116,11 @@ function LoginHomePage() {
       const result = await getCurrentUser();
 
       if (!result.success) {
-        alert(result.message);
+        setAlertModal({
+          title: '스터디룸 입실 실패',
+          message: result.message,
+          onClose: () => setAlertModal(null),
+        });
         return;
       }
 
@@ -96,7 +140,11 @@ function LoginHomePage() {
       );
 
       if (!reservation) {
-        alert('예약이 없습니다');
+        setAlertModal({
+          title: '스터디룸 입실 실패',
+          message: '등록된 예약이 없습니다',
+          onClose: () => setAlertModal(null),
+        });
         return;
       }
 
@@ -108,8 +156,57 @@ function LoginHomePage() {
       navigate('/loginhome');
     } catch (error) {
       console.error(error);
-      alert('예약 정보 확인 중 오류가 발생했습니다');
+      setAlertModal({
+        title: '스터디룸 입실 실패',
+        message: '예약 정보 확인 중 오류가 발생했습니다',
+        onClose: () => setAlertModal(null),
+      });
     }
+  };
+
+  const handleMemberGoOut = async () => {
+    const result = await memberGoOut();
+
+    setAlertModal({
+      title: result.success ? '외출' : '외출 실패',
+      message: result.message,
+      onClose: () => {
+        setAlertModal(null);
+        if (result.success) {
+          navigate('/');
+        }
+      },
+    });
+  };
+
+  const handleMemberComeBack = async () => {
+    const result = await memberComeBack();
+
+    setAlertModal({
+      title: result.success ? '복귀' : '복귀 실패',
+      message: result.message,
+      onClose: () => {
+        setAlertModal(null);
+        if (result.success) {
+          navigate('/');
+        }
+      },
+    });
+  };
+
+  const handleMemberCheckOut = async () => {
+    const result = await memberCheckOut();
+
+    setAlertModal({
+      title: result.success ? '퇴실' : '퇴실 실패',
+      message: result.message,
+      onClose: () => {
+        setAlertModal(null);
+        if (result.success) {
+          navigate('/');
+        }
+      },
+    });
   };
 
   useEffect(() => {
@@ -121,7 +218,11 @@ function LoginHomePage() {
     if (window.confirm('로그아웃 하시겠습니까?')) {
       clearUserData();
       await logout();
-      alert('안전하게 로그아웃되었습니다.');
+      setAlertModal({
+        title: '로그아웃',
+        message: '안전하게 로그아웃되었습니다.',
+        onClose: () => setAlertModal(null),
+      });
       navigate('/');
     }
   };
@@ -158,7 +259,7 @@ function LoginHomePage() {
           <button
             type="button"
             className="menu_btn btn_orange"
-            onClick={() => setShowChooseInModal(true)}
+            onClick={handleMemberCheckIn}
           >
             <div className="btn_icon">
               <img
@@ -172,7 +273,7 @@ function LoginHomePage() {
           <button
             type="button"
             className="menu_btn btn_orange"
-            onClick={() => navigate('/')}
+            onClick={handleMemberGoOut}
           >
             <div className="btn_icon">
               <img
@@ -186,7 +287,7 @@ function LoginHomePage() {
           <button
             type="button"
             className="menu_btn btn_orange"
-            onClick={() => setShowCheckOutModal(true)}
+            onClick={handleMemberCheckOut}
           >
             <div className="btn_icon">
               <img
@@ -285,12 +386,19 @@ function LoginHomePage() {
           onClose={() => setShowChooseInModal(false)}
           onSeatCheckIn={() => {
             setShowChooseInModal(false);
-            handleMemberCheckIn();
+            navigate('/seat');
           }}
           onRoomCheckIn={() => {
             setShowChooseInModal(false);
             handleRoomCheckIn();
           }}
+        />
+      )}
+      {alertModal && (
+        <KioskAlertModal
+          title={alertModal.title}
+          message={alertModal.message}
+          onClose={alertModal.onClose}
         />
       )}
     </div>

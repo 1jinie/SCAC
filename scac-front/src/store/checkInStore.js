@@ -117,6 +117,27 @@ export const checkInStore = create((set, get) => ({
     }
   },
 
+  // 회원 외출
+  memberGoOut: async () => {
+    try {
+      const response = await checkinApi.memberGoOut();
+
+      set({
+        currentCheckIn: response.data.data,
+      });
+
+      return {
+        success: true,
+        message: '외출 처리되었습니다',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message ?? '외출 실패',
+      };
+    }
+  },
+
   // 복귀
   comeBack: async (phoneNumber, password) => {
     try {
@@ -124,6 +145,27 @@ export const checkInStore = create((set, get) => ({
         phoneNumber,
         password,
       });
+
+      set({
+        currentCheckIn: response.data.data,
+      });
+
+      return {
+        success: true,
+        message: '재입실되었습니다',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message ?? '재입실 실패',
+      };
+    }
+  },
+
+  // 회원 복귀
+  memberComeBack: async () => {
+    try {
+      const response = await checkinApi.memberComeBack();
 
       set({
         currentCheckIn: response.data.data,
@@ -155,7 +197,28 @@ export const checkInStore = create((set, get) => ({
 
       return {
         success: true,
-        message: '퇴실되었습니다',
+        message: '퇴실되었습니다\n오늘도 수고하셨습니다',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message ?? '퇴실 실패',
+      };
+    }
+  },
+
+  // 회원 퇴실
+  memberCheckOut: async () => {
+    try {
+      await checkinApi.memberCheckOut();
+
+      set({
+        currentUser: null,
+      });
+
+      return {
+        success: true,
+        message: '퇴실되었습니다\n\n\n오늘도 수고하셨습니다',
       };
     } catch (error) {
       return {

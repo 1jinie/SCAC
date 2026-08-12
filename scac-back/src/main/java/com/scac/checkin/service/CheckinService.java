@@ -84,12 +84,20 @@ public class CheckinService {
             throw new BusinessException("이미 입실 중인 사용자입니다.");
         }
 
+        TicketUsage ticketUsage = null;
+        // 외출 복귀면 기존 이용권 사용
+        if(awayCheckin != null){
+            ticketUsage = ticketUsageRepository.findById(awayCheckin.getUsageId())
+                .orElse(null);
+        }
+
         // 이용권 확인(1순위 : USING 기간권)
-        TicketUsage ticketUsage = ticketUsageRepository
-            .findFirstByUserIdAndStatusAndTicketTypeOrderByCreatedAtAsc(
+        if(ticketUsage == null) {
+            ticketUsageRepository.findFirstByUserIdAndStatusAndTicketTypeOrderByCreatedAtAsc(
                 user.getId(), 
                 TicketUsageStatus.USING, 
                 TicketType.PERIOD_PACK).orElse(null);
+            }        
         
         // 이용권 확인(2순위 : READY 기간권)
         if(ticketUsage == null){
@@ -211,6 +219,24 @@ public class CheckinService {
         return CheckinResponse.from(checkin);
     }
 
+    // 회원 외출
+    @Transactional
+    public CheckinResponse memberGoAway(Authentication authentication){
+        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+
+        User user = userRepository.findById(principal.id())
+            .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 사용자"));
+        
+        Checkin checkin = checkinRepository.findFirstByUserIdAndCheckinStatusOrderByCheckinAtDesc(
+            user.getId(), 
+            CheckinStatus.USING    
+        ).orElseThrow(() -> new ResourceNotFoundException("입실 정보가 없습니다"));
+
+        checkin.goAway();
+
+        return CheckinResponse.from(checkin);
+    }
+
     // 외출 복귀
     @Transactional
     public CheckinResponse comeBack(CheckinPrepareRequest request) {
@@ -225,10 +251,78 @@ public class CheckinService {
         return CheckinResponse.from(checkin);
     }
 
+    // 회원 복귀
+    @Transactional
+    public CheckinResponse memberComeBack(Authentication authentication){
+        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+
+        User user = userRepository.findById(principal.id())
+            .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 사용자"));
+        
+        Checkin checkin = checkinRepository.findFirstByUserIdAndCheckinStatusOrderByCheckinAtDesc(
+            user.getId(), 
+            CheckinStatus.AWAY   
+        ).orElseThrow(() -> new ResourceNotFoundException("외출 정보가 없습니다"));
+
+        checkin.comeBack();
+
+        return CheckinResponse.from(checkin);
+    }
+
     // 퇴실
     @Transactional
     public CheckinResponse checkout(CheckinPrepareRequest request) {
         User user = authenticateUser(request.getPhoneNumber(), request.getPassword());
+
+        // 입실/외출 정보 조회
+        Checkin checkin = checkinRepository
+            .findFirstByUserIdAndCheckinStatusInOrderByCheckinAtDesc(user.getId(), List.of(CheckinStatus.USING, CheckinStatus.AWAY))
+            .orElseThrow(() -> new ResourceNotFoundException("입실 정보가 없습니다."));
+
+        Long currentSeatId = checkin.getSeatId();
+
+        // 좌석 조회 및 반환 (퇴실 시 checkin.getSeatId()가 null로 처리되므로 먼저 좌석 조회)
+        if (currentSeatId != null) {
+            Seat seat = seatRepository.findById(currentSeatId)
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 좌석입니다."));
+            seat.releaseUser();
+
+            SystemLog log = SystemLog.builder()
+                .logType("SEAT")
+                .logLevel("INFO")
+                .action("SEAT_CHECK_OUT")
+                .userId(user.getId())
+                .targetType("SEAT")
+                .targetId(seat.getSeatId())
+                .referenceType("CHECK_INOUT")
+                .referenceId(checkin.getCheckinId())
+                .content(seat.getSeatNumber() + " 좌석 퇴실 완료")
+                .detail(String.format("{\"seat_name\":\"%s\"}", seat.getSeatNumber()))
+                .build();
+            
+            systemLogService.createLog(log);
+        }
+        
+        // 사용중이던 이용권 READY 변경
+        TicketUsage ticketUsage = ticketUsageRepository.findById(checkin.getUsageId())
+        .orElseThrow(() -> new ResourceNotFoundException("이용권 정보가 없습니다"));
+        
+        if(ticketUsage.getTicketType() == TicketType.TIME_PACK)
+            ticketUsage.ready();
+        
+        // 퇴실 처리
+        checkin.checkout();
+        
+        return CheckinResponse.from(checkin);
+    }
+    
+    // 회원 퇴실
+    @Transactional
+    public CheckinResponse memberCheckout(Authentication authentication) {
+        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+
+        User user = userRepository.findById(principal.id())
+            .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 사용자"));
 
         // 입실/외출 정보 조회
         Checkin checkin = checkinRepository
