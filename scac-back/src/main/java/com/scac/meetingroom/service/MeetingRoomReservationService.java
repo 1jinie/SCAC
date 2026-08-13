@@ -1,8 +1,10 @@
 package com.scac.meetingroom.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -166,5 +168,32 @@ public class MeetingRoomReservationService {
     public void confirmReservation(Long reservationId) {
         MeetingRoomReservation reservation = getReservationEntity(reservationId);
         reservation.confirmPayment();
+    }
+
+    // 현재 사용자 예약 조회
+    @Transactional(readOnly = true)
+    public MeetingRoomReservationResponse findCurrentReservation(Long userId){
+        LocalDate today = LocalDate.now();
+        int currentHour = LocalDateTime.now().getHour();
+
+        System.out.println("===== 현재 예약 조회 =====");
+        System.out.println("userId = " + userId);
+        System.out.println("today = " + today);
+        System.out.println("currentHour = " + currentHour);
+
+        Optional<MeetingRoomReservation> result =
+        reservationRepository.findCurrentReservation(
+            userId,
+            today,
+            ReservationStatus.IN_USE,
+            currentHour
+        );
+
+        System.out.println("reservation = " + result);
+
+        MeetingRoomReservation reservation = reservationRepository.findCurrentReservation(userId, today, ReservationStatus.IN_USE, currentHour)
+            .orElseThrow(() -> new ResourceNotFoundException("현재 입실 가능한 스터디룸 예약이 없습니다"));
+        
+        return MeetingRoomReservationResponse.from(reservation);
     }
 }

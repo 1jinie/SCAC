@@ -21,4 +21,7 @@ export const reservationApi = {
         date,
       },
     }),
+
+  // 현재 사용자의 예약 조회
+  getCurrentReservation: () => axiosInstance.get('/api/meeting-rooms/current'),
 };

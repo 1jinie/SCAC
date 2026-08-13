@@ -51,4 +51,27 @@ export const reservationStore = create((set) => ({
       });
     }
   },
+
+  // 현재 사용자 예약 조회
+  fetchCurrentReservation: async () => {
+    try {
+      const response = await reservationApi.getCurrentReservation();
+      const data = response.data.data;
+
+      set({ currentReservation: data });
+
+      return {
+        success: true,
+        data,
+      };
+    } catch (error) {
+      set({ currentReservation: null });
+
+      return {
+        success: false,
+        message:
+          error.response?.data?.message ?? '현재 예약 조회에 실패했습니다',
+      };
+    }
+  },
 }));
