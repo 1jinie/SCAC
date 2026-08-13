@@ -293,6 +293,12 @@ public class PaymentService {
       default -> throw new IllegalStateException("지원하지 않는 결제 수단입니다.");
     }
     ticketUsageService.cancel(payment.getUsageId());
+
+    // 예약 결제 취소 시 예약 상태를 CANCELED로 변경
+    if (payment.getReservationId() != null) {
+      meetingRoomReservationService.cancel(
+          payment.getReservationId());
+    }
     return PaymentResDTO.from(payment);
   }
 

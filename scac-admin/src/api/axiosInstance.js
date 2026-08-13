@@ -1,6 +1,10 @@
 import axios from "axios";
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8888";
+// const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8888";
+// PC의 IP 주소로 API_URL 설정
+const API_URL =
+  process.env.REACT_APP_API_URL ||
+  `${window.location.protocol}//${window.location.hostname}:8888`;
 
 const axiosInstance = axios.create({
   baseURL: API_URL,
