@@ -76,4 +76,14 @@ public class MeetingRoomReservation {
 
         this.status = ReservationStatus.CONFIRMED;
     }
+
+    // 결제 만료 시 예약 상태를 CANCELED로 변경
+    public void expirePayment() {
+        if (this.status != ReservationStatus.PENDING_PAYMENT) {
+            return;
+        }
+
+        this.status = ReservationStatus.CANCELED;
+        this.updatedAt = LocalDateTime.now();
+    }
 }

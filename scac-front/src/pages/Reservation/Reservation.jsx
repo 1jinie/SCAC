@@ -11,6 +11,7 @@ import {
   isTimeSelected,
 } from '../../utils/reservationUtils';
 import '../../styles/reservation.css';
+import { formatHour } from '../../utils/formatter';
 
 const Reservation = () => {
   const userId = reservationStore((state) => state.reservation.userId);
@@ -25,6 +26,8 @@ const Reservation = () => {
   const [selectedTimes, setSelectedTimes] = useState([]);
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
+  const [isCreatingReservation, setIsCreatingReservation] = useState(false);
+  const [reservationError, setReservationError] = useState('');
 
   const navigate = useNavigate();
 
@@ -125,27 +128,50 @@ const Reservation = () => {
     isTimeSelected(selectedTimes, startTime, endTime, time);
 
   // 선택완료 버튼 이벤트
-  const handleConfirm = () => {
-    if (!startTime) {
-      alert('시간을 선택해주세요');
+  const handleConfirm = async () => {
+    if (!startTime || isCreatingReservation) {
+      if (!startTime) {
+        alert('시간을 선택해주세요.');
+      }
       return;
     }
 
     const finalEndTime = addOneHour(endTime ?? startTime);
 
-    setReservation({
-      userId,
+    const requestData = {
       roomId,
-      date: selectedDate,
-      startTime,
-      endTime: finalEndTime,
-    });
+      reservationDate: selectedDate,
+      startHour: formatHour(startTime),
+      endHour: formatHour(finalEndTime),
+    };
 
-    console.log(reservationStore.getState().reservation);
+    try {
+      setIsCreatingReservation(true);
+      setReservationError('');
 
-    setPurchaseType('MEETING_ROOM');
+      const response = await reservationApi.createReservation(requestData);
 
-    navigate('/payment');
+      const createdReservation = response.data.data;
+
+      setReservation({
+        reservationId: createdReservation.reservationId,
+        roomId: createdReservation.roomId,
+        reservationDate: createdReservation.reservationDate,
+        startHour: createdReservation.startHour,
+        endHour: createdReservation.endHour,
+      });
+
+      setPurchaseType('MEETING_ROOM');
+
+      navigate('/payment');
+    } catch (error) {
+      setReservationError(
+        error.response?.data?.message ??
+          '예약을 생성하지 못했습니다. 다시 시도해주세요.',
+      );
+    } finally {
+      setIsCreatingReservation(false);
+    }
   };
 
   return (
@@ -201,8 +227,12 @@ const Reservation = () => {
           ROOM {room?.name} 👥 {room?.capacity}인실
         </div>
       </div>
-      <button className="confirm_button" onClick={handleConfirm}>
-        선택완료
+      <button
+        className="confirm_button"
+        onClick={handleConfirm}
+        disabled={isCreatingReservation}
+      >
+        {isCreatingReservation ? '예약 확인 중...' : '선택완료'}
       </button>
     </div>
   );

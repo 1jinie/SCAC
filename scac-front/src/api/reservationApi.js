@@ -24,4 +24,13 @@ export const reservationApi = {
 
   // 현재 사용자의 예약 조회
   getCurrentReservation: () => axiosInstance.get('/api/meeting-rooms/current'),
+
+  // 특정 예약 조회
+  getReservation: async (reservationId) => {
+    const response = await axiosInstance.get(
+      `/api/meeting-rooms/reservations/${reservationId}`,
+    );
+
+    return response.data.data;
+  },
 };

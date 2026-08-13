@@ -4,11 +4,11 @@ import { reservationApi } from '../api/reservationApi';
 export const reservationStore = create((set) => ({
   // 예약 페이지에서 사용할 선택 예약 정보
   reservation: {
-    userId: null,
+    reservationId: null,
     roomId: null,
-    date: null,
-    startTime: null,
-    endTime: null,
+    reservationDate: null,
+    startHour: null,
+    endHour: null,
   },
 
   // 전체 예약 목록
@@ -27,11 +27,11 @@ export const reservationStore = create((set) => ({
   clearReservation: () =>
     set({
       reservation: {
-        userId: null,
+        reservationId: null,
         roomId: null,
-        date: null,
-        startTime: null,
-        endTime: null,
+        reservationDate: null,
+        startHour: null,
+        endHour: null,
       },
     }),
 

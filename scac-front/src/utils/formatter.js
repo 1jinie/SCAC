@@ -7,3 +7,6 @@ export const formatPrice = (value) => {
 
   return Number(value).toLocaleString('ko-KR');
 };
+
+// 시간 문자열에서 시(hour)만 추출
+export const formatHour = (time) => Number(time.split(':')[0]);

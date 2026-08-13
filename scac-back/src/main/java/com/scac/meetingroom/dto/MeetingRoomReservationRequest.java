@@ -8,11 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MeetingRoomReservationRequest {
     private Long roomId;
-    private Long userId;
-    private Long paymentId;
-
     private LocalDate reservationDate;
-
     private Integer startHour;
-    private Integer endHour;    
+    private Integer endHour;
 }

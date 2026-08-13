@@ -40,6 +40,7 @@ export const roomStore = create((set) => ({
         type: 'room',
         name: room.roomName,
         capacity: room.capacity,
+        hourlyRate: room.hourlyRate,
         image: roomImages[room.roomId],
         status: statusMap[room.status] ?? 'available',
       };
