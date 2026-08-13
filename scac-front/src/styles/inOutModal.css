@@ -52,3 +52,12 @@
   justify-content: center;
   align-items: center;
 }
+
+.choose_in_content {
+  gap: 80px;
+  margin: 40px 0;
+}
+
+.choose_in_content .modal_confirm {
+  margin-top: 0;
+}

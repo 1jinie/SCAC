@@ -17,26 +17,16 @@ function ChooseInModal({
           />
         </button>
         <h2>{title}</h2>
-        <div className="content" style={{ gap: '30px', margin: '40px 0' }}>
-          <button
-            className="modal_confirm"
-            onClick={onSeatCheckIn}
-            style={{ marginBottom: 0 }}
-          >
+        <div className="content choose_in_content">
+          <button className="modal_confirm" onClick={onSeatCheckIn}>
             좌석 입실
           </button>
-          <button
-            className="modal_confirm"
-            onClick={onRoomCheckIn}
-            style={{ marginBottom: 0 }}
-          >
+
+          <button className="modal_confirm" onClick={onRoomCheckIn}>
             스터디룸 입실
           </button>
-          <button
-            className="modal_confirm"
-            onClick={onClose}
-            style={{ marginBottom: 0 }}
-          >
+
+          <button className="modal_confirm" onClick={onClose}>
             취소
           </button>
         </div>
