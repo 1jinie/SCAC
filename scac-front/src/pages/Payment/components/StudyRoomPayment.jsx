@@ -4,24 +4,29 @@ import { formatPrice } from '../../../utils/formatter';
 
 export default function StudyRoomPayment({ room, reservation }) {
   const paymentMethod = usePaymentStore((state) => state.paymentMethod);
+
+  if (!room || !reservation) {
+    return <p>스터디룸 예약 정보를 확인할 수 없습니다.</p>;
+  }
+
   const amount =
-    (reservation.endTime - reservation.startTime) * room.hourlyRate;
+    (reservation.endHour - reservation.startHour) * room.hourlyRate;
 
   return (
     <>
       <ul>
         <li>
           <span className="payment_name">선택한 ROOM</span>
-          <span className="payment_item">{room.roomName}</span>
+          <span className="payment_item">{room.name}</span>
         </li>
         <li>
           <span className="payment_name">날짜</span>
-          <span className="payment_item">{room.date}</span>
+          <span className="payment_item">{reservation.reservationDate}</span>
         </li>
         <li>
           <span className="payment_name">시간</span>
           <span className="payment_item">
-            {reservation.startTime} ~ {reservation.endTime}
+            {reservation.startHour}:00 ~ {reservation.endHour}:00
           </span>
         </li>
         <li>

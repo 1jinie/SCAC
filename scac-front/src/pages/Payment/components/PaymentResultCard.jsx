@@ -4,42 +4,76 @@ import { paymentApi } from '../../../api/paymentApi';
 import { ticketApi } from '../../../api/ticketApi';
 import SelectButton from '../../../components/button/SelectButton';
 import { useResetStore } from '../../../hooks/useResetStore';
-import { roomApi } from '../../../api/roomApi';
-import { reservationStore } from '../../../store/reservationStore';
+import { reservationApi } from '../../../api/reservationApi';
+import TicketPaymentResult from './TicketPaymentResult';
+import ReservationPaymentResult from './ReservationPaymentResult';
 
-export default function PaymentResultCard({ isSuccess, errorMessage, type }) {
+export default function PaymentResultCard({ isSuccess, errorMessage }) {
+  const [payment, setPayment] = useState(null);
   const [ticket, setTicket] = useState(null);
-  // const [payment, setPayment] = useState(null);
+  const [reservation, setReservation] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [resultError, setResultError] = useState('');
   const navi = useNavigate();
   const resetAll = useResetStore();
   const { state } = useLocation();
   const paymentId = state?.paymentId;
-  const [room, setRoom] = useState(null);
-  const reservation = reservationStore((state) => state.reservation);
 
   useEffect(() => {
-    if (!isSuccess || paymentId == null || type == null) {
+    if (!isSuccess || paymentId == null) {
       return;
     }
 
-    const fetchPayment = async () => {
+    // 결제 결과 가져오기
+    const fetchPaymentResult = async () => {
       try {
-        const payment = await paymentApi.getPayment(paymentId);
-        if (type === 'SEAT') {
-          const ticket = await ticketApi.getById(payment.ticketId);
-          setTicket(ticket);
-        } else if (type === 'MEETING_ROOM') {
-          const room = await roomApi.getRoomById(reservation.roomId);
-          setRoom(room);
-        } else {
-          throw new Error('이용권이나 스터디룸을 조회할 수 없습니다.');
+        setIsLoading(true);
+        setResultError('');
+
+        const paymentData = await paymentApi.getPayment(paymentId);
+
+        setPayment(paymentData);
+
+        // 좌석 이용권
+        if (paymentData.ticketId != null) {
+          const ticketData = await ticketApi.getById(paymentData.ticketId);
+
+          setTicket(ticketData);
+          setReservation(null);
+
+          return;
         }
+
+        // 스터디룸 예약
+        if (paymentData.reservationId != null) {
+          const reservationData = await reservationApi.getReservation(
+            paymentData.reservationId,
+          );
+
+          setReservation(reservationData);
+          setTicket(null);
+
+          return;
+        }
+
+        throw new Error('결제 대상 정보가 없습니다.');
       } catch (error) {
-        console.error('결제 조회 실패:', error.response?.data ?? error.message);
+        console.error(
+          '결제 결과 조회 실패:',
+          error.response?.data ?? error.message,
+        );
+
+        setResultError(
+          error.response?.data?.message ??
+            error.message ??
+            '결제 결과를 불러오지 못했습니다.',
+        );
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchPayment();
+    fetchPaymentResult();
   }, [isSuccess, paymentId]);
 
   useEffect(() => {
@@ -70,16 +104,30 @@ export default function PaymentResultCard({ isSuccess, errorMessage, type }) {
           <span>{isSuccess ? '[결제 성공]' : '[Error!]'}</span>
         </div>
         {isSuccess ? (
-          <div className="payment_status_row">
-            <span>선택한 이용권</span>
-            <span>
-              {type === 'SEAT'
-                ? ticket?.ticketName
-                : type === 'MEETING_ROOM'
-                  ? room?.roomName
-                  : '-'}
-            </span>
-          </div>
+          <>
+            {isLoading && (
+              <div className="payment_status_row">
+                <span>결제 결과를 불러오는 중입니다.</span>
+              </div>
+            )}
+
+            {!isLoading && resultError && (
+              <div className="payment_status_row">
+                <span>{resultError}</span>
+              </div>
+            )}
+
+            {!isLoading && !resultError && ticket && (
+              <TicketPaymentResult ticket={ticket} payment={payment} />
+            )}
+
+            {!isLoading && !resultError && reservation && (
+              <ReservationPaymentResult
+                reservation={reservation}
+                payment={payment}
+              />
+            )}
+          </>
         ) : (
           <div className="payment_status_row">
             <span>{errorMessage}</span>

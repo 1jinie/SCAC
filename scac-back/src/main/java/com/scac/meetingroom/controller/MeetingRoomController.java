@@ -22,23 +22,19 @@ public class MeetingRoomController {
     private final MeetingRoomService roomService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<MeetingRoomResponse>>> getAllRooms(){
+    public ResponseEntity<ApiResponse<List<MeetingRoomResponse>>> getAllRooms() {
         return ResponseEntity.ok(
-            ApiResponse.success(
-                "전체 스터디룸 조회를 완료했습니다.",
-                roomService.getAllRooms()
-            )
-        );
+                ApiResponse.success(
+                        "전체 스터디룸 조회를 완료했습니다.",
+                        roomService.getAllRooms()));
     }
 
     @GetMapping("/{roomId}")
     public ResponseEntity<ApiResponse<MeetingRoomResponse>> getRoomById(@PathVariable("roomId") Long roomId) {
         return ResponseEntity.ok(
-            ApiResponse.success(
-                "스터디룸 조회를 완료했습니다.",
-                roomService.getRoomById(roomId)
-            )
-        );
+                ApiResponse.success(
+                        "스터디룸 조회를 완료했습니다.",
+                        roomService.getRoomById(roomId)));
     }
 
 }

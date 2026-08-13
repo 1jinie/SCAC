@@ -10,96 +10,127 @@ import { usePaymentStore } from '../../store/paymentStore';
 import { useTicketStore } from '../../store/ticketStore';
 import SeatPayment from './components/SeatPayment';
 import StudyRoomPayment from './components/StudyRoomPayment';
-import './css/PaymentProcess.css';
-import './css/TossPayment.css';
 import { requestTossPayment } from './utils/requestTossPayment';
 import { reservationStore } from '../../store/reservationStore';
-import { roomApi } from '../../api/roomApi';
+import { roomStore } from '../../store/roomStore';
+import './css/PaymentProcess.css';
+import './css/TossPayment.css';
+import { formatPrice } from '../../utils/formatter';
 
 export default function PaymentProcess() {
   const navi = useNavigate();
 
-  // const targetType = useTicketStore((state) => state.targetType);
+  const targetType = useTicketStore((state) => state.targetType);
   const selectedTicketId = useTicketStore((state) => state.selectedTicketId);
-  const reservation = reservationStore((state) => state.reservation);
+
   const paymentMethod = usePaymentStore((state) => state.paymentMethod);
-  const setTypeStore = usePaymentStore((state) => state.setType);
 
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [ticket, setTicket] = useState(null);
-  const [isLoadingProduct, setIsLoadingProduct] = useState(false);
+  const [isLoadingTicket, setIsLoadingTicket] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
-  const [productError, setProductError] = useState('');
+  const [ticketError, setTicketError] = useState('');
   const [paymentError, setPaymentError] = useState('');
-  const [orderData, setOrderData] = useState([]);
-  const [type, setType] = useState(null);
-  const [room, setRoom] = useState(null);
 
-  // 결제정보 확인을 위해 이용권 조회
-  const fetchProduct = useCallback(async () => {
-    if (!selectedTicketId && !reservation) {
+  const reservation = reservationStore((state) => state.reservation);
+
+  const rooms = roomStore((state) => state.rooms);
+
+  const selectedRoom = rooms.find((room) => room.id === reservation.roomId);
+
+  const isTicketPayment = targetType === 'SEAT';
+  const isReservationPayment = targetType === 'MEETING_ROOM';
+
+  const reservationAmount =
+    selectedRoom && reservation.startHour != null
+      ? (reservation.endHour - reservation.startHour) * selectedRoom.hourlyRate
+      : 0;
+
+  const displayAmount = isTicketPayment
+    ? ticket?.ticketPrice
+    : reservationAmount;
+
+  // 좌석이용권 결제정보 확인을 위해 좌석이용권 조회
+  const fetchTicket = useCallback(async () => {
+    if (!isTicketPayment || !selectedTicketId) {
       return;
     }
 
     try {
-      setIsLoadingProduct(true);
-      setProductError('');
-      if (selectedTicketId != null) {
-        setType('SEAT');
-        setTypeStore('SEAT');
-        const result = await ticketApi.getById(selectedTicketId);
-        setTicket(result);
-      } else {
-        setType('MEETING_ROOM');
-        setTypeStore('MEETING_ROOM');
-        const result = await roomApi.getRoomById(reservation.roomId);
-        setRoom(result);
-      }
-    } catch (error) {
-      console.error('이용권 또는 스터디룸 조회 실패:', error);
+      setIsLoadingTicket(true);
+      setTicketError('');
 
+      const result = await ticketApi.getById(selectedTicketId);
+
+      setTicket(result);
+    } catch (error) {
       setTicket(null);
-      setRoom(null);
-      setType(null);
-      setTypeStore(null);
-      setProductError(
-        error.response?.data?.message ??
-          '이용권 또는 스터디룸 정보를 불러오지 못했습니다.',
+      setTicketError(
+        error.response?.data?.message ?? '이용권 정보를 불러오지 못했습니다.',
       );
     } finally {
-      setIsLoadingProduct(false);
+      setIsLoadingTicket(false);
     }
-  }, [selectedTicketId, reservation, type]);
+  }, [isTicketPayment, selectedTicketId]);
 
   useEffect(() => {
-    fetchProduct();
-  }, [fetchProduct]);
+    fetchTicket();
+  }, [fetchTicket]);
 
   // 결제 시작
   const handlePayment = async () => {
-    if ((!ticket && !reservation) || isPaying) {
+    if (isPaying) {
       return;
     }
 
     try {
       setIsPaying(true);
       setPaymentError('');
-      if (ticket != null) {
-        setOrderData({
-          ticketId: selectedTicketId,
 
+      let orderData;
+      let orderName;
+
+      // 좌석 이용권
+      if (isTicketPayment) {
+        if (!ticket) {
+          throw new Error('이용권 정보가 없습니다.');
+        }
+
+        orderData = {
+          ticketId: selectedTicketId,
           amount: ticket.ticketPrice,
           paymentMethod,
-        });
-      } else if (reservation != null) {
-        setOrderData(reservation, paymentMethod);
-      } else {
-        setPaymentError('Error');
-      }
-      // 1. 카드 결제 → 키오스크 Mock 단말기
-      if (paymentMethod === PAYMENT_METHOD.CARD) {
-        const order = await paymentApi.createPayment2(orderData, type);
+        };
 
+        orderName = ticket.ticketName;
+
+        //스터디룸 예약
+      } else if (isReservationPayment) {
+        if (!reservation.reservationId || !selectedRoom) {
+          throw new Error('스터디룸 예약 정보가 없습니다.');
+        }
+
+        const amount =
+          (reservation.endHour - reservation.startHour) *
+          selectedRoom.hourlyRate;
+
+        orderData = {
+          reservationId: reservation.reservationId,
+          amount,
+          paymentMethod,
+        };
+
+        orderName =
+          `${selectedRoom.name} 스터디룸 ` +
+          `${reservation.startHour}:00~${reservation.endHour}:00`;
+      } else {
+        throw new Error('결제 정보를 확인할 수 없습니다.');
+      }
+
+      const order = await paymentApi.createPayment(orderData);
+
+      // 1. Mock 카드결제
+      if (paymentMethod === PAYMENT_METHOD.CARD) {
         navi('/payment/kiosk/card', {
           state: {
             paymentId: order.paymentId,
@@ -109,13 +140,11 @@ export default function PaymentProcess() {
         return;
       }
 
-      // 2. 토스페이 /
+      // 2. TossPay 결제
       if (paymentMethod === PAYMENT_METHOD.TOSSPAY) {
-        const order = await paymentApi.createPayment2(orderData, type);
-
         await requestTossPayment({
           orderId: order.orderId,
-          orderName: `${type === 'SEAT' ? ticket.ticketName : room.roomName}`,
+          orderName,
           amount: order.amount,
           paymentMethod,
         });
@@ -125,12 +154,10 @@ export default function PaymentProcess() {
 
       throw new Error('지원하지 않는 결제 수단입니다.');
     } catch (error) {
-      console.error('결제 요청 오류:', error);
-
       setPaymentError(
         error.response?.data?.message ??
           error.message ??
-          '결제를 요청하지 못했습니다.',
+          '결제 요청을 실패했습니다.',
       );
     } finally {
       setIsPaying(false);
@@ -138,12 +165,23 @@ export default function PaymentProcess() {
   };
 
   // 화면 자체를 구성할 수 없는 오류
-  if (!selectedTicketId && !reservation) {
+  if (isTicketPayment && !selectedTicketId) {
     return (
       <KioskErrorState
         variant="page"
-        title="선택된 이용권이이나 예약정보가 없습니다."
-        message="처음 화면으로 돌아가 다시 선택해 주세요."
+        title="선택된 이용권이 없습니다."
+        message="처음 화면으로 돌아가 이용권을 다시 선택해 주세요."
+        onHome={() => navi('/', { replace: true })}
+      />
+    );
+  }
+
+  if (isReservationPayment && !reservation.reservationId) {
+    return (
+      <KioskErrorState
+        variant="page"
+        title="스터디룸 예약 정보가 없습니다."
+        message="스터디룸과 시간을 다시 선택해주세요."
         onHome={() => navi('/', { replace: true })}
       />
     );
@@ -180,19 +218,17 @@ export default function PaymentProcess() {
           <h2>결제정보 확인</h2>
 
           <div className="payment_process_box">
-            {isLoadingProduct && (
+            {isLoadingTicket && (
               <p className="payment_loading">결제 정보를 불러오고 있습니다.</p>
             )}
 
-            {!isLoadingProduct &&
-              (ticket || room) &&
-              (type === 'SEAT' ? (
-                <SeatPayment />
-              ) : type === 'MEETING_ROOM' ? (
-                <StudyRoomPayment room={room} reservation={reservation} />
-              ) : (
-                <p>결제 정보를 확인할 수 없습니다.</p>
-              ))}
+            {isTicketPayment ? (
+              <SeatPayment />
+            ) : isReservationPayment ? (
+              <StudyRoomPayment room={selectedRoom} reservation={reservation} />
+            ) : (
+              <p>결제 정보를 확인할 수 없습니다.</p>
+            )}
           </div>
 
           <div className="payment_action_area">
@@ -200,27 +236,23 @@ export default function PaymentProcess() {
               type="button"
               className="toss_payment_button"
               onClick={handlePayment}
-              disabled={isPaying || isLoadingProduct || (!ticket && !room)}
+              disabled={isPaying || isLoadingTicket}
             >
               {isPaying
                 ? '결제를 준비하고 있습니다'
-                : ticket
-                  ? `${ticket.ticketPrice.toLocaleString()}원 결제하기`
-                  : room
-                    ? `테스트`
-                    : '결제 정보 확인 중'}
+                : `${formatPrice(displayAmount)}원 결제하기`}
             </button>
           </div>
         </div>
       </div>
 
       {/* 이용권 조회 실패 팝업 */}
-      {productError && (
+      {ticketError && (
         <KioskErrorState
           variant="modal"
-          title="이용권 또는 예약 정보를 불러오지 못했습니다."
-          message={productError}
-          onRetry={fetchProduct}
+          title="이용권 정보를 불러오지 못했습니다."
+          message={ticketError}
+          onRetry={fetchTicket}
           onHome={() => navi('/', { replace: true })}
         />
       )}

@@ -28,13 +28,4 @@ export const paymentApi = {
 
     return response.data.data;
   },
-
-  // 다시만드는 결제시스템 스터디룸 예약 결제 생성 포함
-  createPayment2: async (data, type) => {
-    const response = await axiosInstance.post(
-      `/api/payments${type === 'SEAT' ? '' : `/reservation`}`,
-      data,
-    );
-    return response.data.data;
-  },
 };
