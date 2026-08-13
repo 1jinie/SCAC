@@ -2,7 +2,9 @@ package com.scac.meetingroom.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -55,4 +57,21 @@ public interface MeetingRoomReservationRepository extends JpaRepository<MeetingR
 
     // 해당 방에 특정 상태 예약 존재확인
     boolean existsByRoomIdAndStatus(Long roomId, ReservationStatus status);
+
+    // 현재 사용자 예약 조회
+    @Query("""
+            SELECT r
+            FROM MeetingRoomReservation r
+            WHERE r.userId = :userId
+            AND r.reservationDate = :reservationDate
+            AND r.status = :status
+            AND r.startHour <= :currentHour
+            AND r.endHour > :currentHour
+            ORDER BY r.startHour ASC
+            """)
+    Optional<MeetingRoomReservation> findCurrentReservation(
+        @Param("userId") Long userId, 
+        @Param("reservationDate") LocalDate reservationDate, 
+        @Param("status") ReservationStatus status, 
+        @Param("currentHour") Integer currentHour);
 }

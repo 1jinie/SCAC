@@ -3,6 +3,7 @@ package com.scac.meetingroom.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.scac.auth.jwt.UserPrincipal;
 import com.scac.global.response.ApiResponse;
 import com.scac.meetingroom.dto.AdminReservationResponse;
 import com.scac.meetingroom.dto.MeetingRoomAvailabilityResponse;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/meeting-rooms")
+@RequestMapping("/api/meeting-rooms")
 public class MeetingRoomReservationController {
     private final MeetingRoomReservationService reservationService;
 
@@ -73,6 +75,20 @@ public class MeetingRoomReservationController {
             )
         );
     }
+
+    // 현재 사용자 예약 조회
+    @GetMapping("/current")
+    public ResponseEntity<ApiResponse<MeetingRoomReservationResponse>> getCurrentReservation(Authentication authentication) {
+        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+
+        return ResponseEntity.ok(
+            ApiResponse.success(
+                "현재 예약 조회 성공",
+                reservationService.findCurrentReservation(principal.id())
+            )
+        );
+    }
+    
     
     // 관리자 예약 조회
     @GetMapping("/admin/reservations")
@@ -83,5 +99,4 @@ public class MeetingRoomReservationController {
             )
         );
     }
-    
 }

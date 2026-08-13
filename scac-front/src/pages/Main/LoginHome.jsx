@@ -26,9 +26,8 @@ function LoginHomePage() {
   const updateCheckOut = checkInStore((state) => state.updateCheckOut);
   const seats = seatStore((state) => state.seats);
   const fetchSeats = seatStore((state) => state.fetchSeats);
-  const reservations = reservationStore((state) => state.reservations);
-  const fetchReservations = reservationStore(
-    (state) => state.fetchReservations,
+  const fetchCurrentReservation = reservationStore(
+    (state) => state.fetchCurrentReservation,
   );
   const setReservation = reservationStore((state) => state.setReservation);
   const logout = useAuthStore((state) => state.logout);
@@ -113,31 +112,19 @@ function LoginHomePage() {
 
   const handleRoomCheckIn = async () => {
     try {
-      const result = await getCurrentUser();
+      // 현재 이용 가능한 예약 조회
+      const reservationResult = await fetchCurrentReservation();
 
-      if (!result.success) {
+      if (!reservationResult.success) {
         setAlertModal({
           title: '스터디룸 입실 실패',
-          message: result.message,
+          message: reservationResult.message,
           onClose: () => setAlertModal(null),
         });
         return;
       }
 
-      const userId = result.data;
-      await fetchReservations();
-      const currentReservations = reservationStore.getState().reservations;
-      const now = new Date();
-      const today = now.toISOString().slice(0, 10);
-      const currentHour = now.getHours();
-      const reservation = currentReservations.find(
-        (r) =>
-          Number(r.userId) === Number(userId) &&
-          r.reservationDate === today &&
-          r.status === 'CONFIRMED' &&
-          currentHour >= r.startHour &&
-          currentHour < r.endHour,
-      );
+      const reservation = reservationResult.data;
 
       if (!reservation) {
         setAlertModal({
@@ -149,11 +136,19 @@ function LoginHomePage() {
       }
 
       setReservation({
-        userId,
         roomId: reservation.roomId,
       });
 
-      navigate('/loginhome');
+      setAlertModal({
+        title: '스터디룸 입실',
+        message: '스터디룸 예약이 확인되었습니다',
+        onClose: () => {
+          setAlertModal(null);
+          navigate('/');
+        },
+      });
+
+      setShowChooseInModal(false);
     } catch (error) {
       console.error(error);
       setAlertModal({
