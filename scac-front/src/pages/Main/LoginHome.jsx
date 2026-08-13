@@ -174,21 +174,6 @@ function LoginHomePage() {
     });
   };
 
-  const handleMemberComeBack = async () => {
-    const result = await memberComeBack();
-
-    setAlertModal({
-      title: result.success ? '복귀' : '복귀 실패',
-      message: result.message,
-      onClose: () => {
-        setAlertModal(null);
-        if (result.success) {
-          navigate('/');
-        }
-      },
-    });
-  };
-
   const handleMemberCheckOut = async () => {
     const result = await memberCheckOut();
 
