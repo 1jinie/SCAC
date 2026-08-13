@@ -1,10 +1,11 @@
 import { create } from 'zustand';
 
 export const usePaymentStore = create((set) => ({
-  // 결제 수단 'CARD', 'EASY_PAY'
+  // 결제 수단 'CARD', 'TOSSPAY'
   paymentMethod: null,
+  type: null,
 
   setPaymentMethod: (paymentMethod) => set({ paymentMethod: paymentMethod }),
-
-  resetStore: () => set({ paymentMethod: null }),
+  setType: (type) => set({ type: type }),
+  resetStore: () => set({ paymentMethod: null, type: null }),
 }));

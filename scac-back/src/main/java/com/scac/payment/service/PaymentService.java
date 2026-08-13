@@ -18,7 +18,6 @@ import com.scac.global.enums.TicketUsageStatus;
 import com.scac.global.exception.ResourceNotFoundException;
 import com.scac.meetingroom.domain.MeetingRoomReservation;
 import com.scac.meetingroom.dto.MeetingRoomReservationRequest;
-import com.scac.meetingroom.dto.MeetingRoomReservationResponse;
 import com.scac.meetingroom.dto.ReservationPaymentInfoDTO;
 import com.scac.meetingroom.service.MeetingRoomReservationService;
 import com.scac.meetingroom.service.MeetingRoomService;
@@ -38,7 +37,6 @@ import com.scac.ticketusage.dto.TicketUsageResDTO;
 import com.scac.ticketusage.entity.TicketUsage;
 import com.scac.ticketusage.service.TicketUsageService;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service

@@ -23,6 +23,7 @@ export default function PaymentProcess() {
   const selectedTicketId = useTicketStore((state) => state.selectedTicketId);
   const reservation = reservationStore((state) => state.reservation);
   const paymentMethod = usePaymentStore((state) => state.paymentMethod);
+  const setTypeStore = usePaymentStore((state) => state.setType);
 
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [ticket, setTicket] = useState(null);
@@ -45,10 +46,12 @@ export default function PaymentProcess() {
       setProductError('');
       if (selectedTicketId != null) {
         setType('SEAT');
+        setTypeStore('SEAT');
         const result = await ticketApi.getById(selectedTicketId);
         setTicket(result);
       } else {
         setType('MEETING_ROOM');
+        setTypeStore('MEETING_ROOM');
         const result = await roomApi.getRoomById(reservation.roomId);
         setRoom(result);
       }
@@ -58,6 +61,7 @@ export default function PaymentProcess() {
       setTicket(null);
       setRoom(null);
       setType(null);
+      setTypeStore(null);
       setProductError(
         error.response?.data?.message ??
           '이용권 또는 스터디룸 정보를 불러오지 못했습니다.',
@@ -65,7 +69,7 @@ export default function PaymentProcess() {
     } finally {
       setIsLoadingProduct(false);
     }
-  }, [selectedTicketId, reservation]);
+  }, [selectedTicketId, reservation, type]);
 
   useEffect(() => {
     fetchProduct();
@@ -185,7 +189,7 @@ export default function PaymentProcess() {
               (type === 'SEAT' ? (
                 <SeatPayment />
               ) : type === 'MEETING_ROOM' ? (
-                <StudyRoomPayment />
+                <StudyRoomPayment room={room} reservation={reservation} />
               ) : (
                 <p>결제 정보를 확인할 수 없습니다.</p>
               ))}

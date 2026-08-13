@@ -4,25 +4,36 @@ import { paymentApi } from '../../../api/paymentApi';
 import { ticketApi } from '../../../api/ticketApi';
 import SelectButton from '../../../components/button/SelectButton';
 import { useResetStore } from '../../../hooks/useResetStore';
+import { roomApi } from '../../../api/roomApi';
+import { reservationStore } from '../../../store/reservationStore';
 
-export default function PaymentResultCard({ isSuccess, errorMessage }) {
+export default function PaymentResultCard({ isSuccess, errorMessage, type }) {
   const [ticket, setTicket] = useState(null);
   // const [payment, setPayment] = useState(null);
   const navi = useNavigate();
   const resetAll = useResetStore();
   const { state } = useLocation();
   const paymentId = state?.paymentId;
+  const [room, setRoom] = useState(null);
+  const reservation = reservationStore((state) => state.reservation);
 
   useEffect(() => {
-    if (!isSuccess || paymentId == null) {
+    if (!isSuccess || paymentId == null || type == null) {
       return;
     }
 
     const fetchPayment = async () => {
       try {
         const payment = await paymentApi.getPayment(paymentId);
-        const ticket = await ticketApi.getById(payment.ticketId);
-        setTicket(ticket);
+        if (type === 'SEAT') {
+          const ticket = await ticketApi.getById(payment.ticketId);
+          setTicket(ticket);
+        } else if (type === 'MEETING_ROOM') {
+          const room = await roomApi.getRoomById(reservation.roomId);
+          setRoom(room);
+        } else {
+          throw new Error('이용권이나 스터디룸을 조회할 수 없습니다.');
+        }
       } catch (error) {
         console.error('결제 조회 실패:', error.response?.data ?? error.message);
       }
@@ -61,7 +72,13 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
         {isSuccess ? (
           <div className="payment_status_row">
             <span>선택한 이용권</span>
-            <span>{ticket?.ticketName}</span>
+            <span>
+              {type === 'SEAT'
+                ? ticket?.ticketName
+                : type === 'MEETING_ROOM'
+                  ? room?.roomName
+                  : '-'}
+            </span>
           </div>
         ) : (
           <div className="payment_status_row">
