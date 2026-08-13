@@ -1,26 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper
-  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.scac.payment.mapper.PaymentMapper">
   <!-- 공통 컬럼 목록 -->
-  <sql id="columns">
-    
-  </sql>
+  <sql id="columns"> </sql>
 
   <select id="findAllPaymentHistory"
-        resultType="com.scac.payment.dto.PaymentHistoryDTO">
-  SELECT *
-  FROM vw_payment_history
-  ORDER BY paid_at DESC, payment_id DESC
-</select>
-<select id="findByUserId"
-        parameterType="long"
-        resultType="com.scac.payment.dto.PaymentHistoryDTO">
-  SELECT *
-  FROM vw_payment_history
-  WHERE user_id = #{userId}
-  ORDER BY paid_at DESC, payment_id DESC
-</select>
+    resultType="com.scac.payment.dto.PaymentHistoryDTO"> SELECT * FROM vw_payment_history ORDER BY
+    payment_id DESC </select>
+  <select id="findByUserId"
+    parameterType="long"
+    resultType="com.scac.payment.dto.PaymentHistoryDTO"> SELECT * FROM vw_payment_history WHERE
+    user_id = #{userId} ORDER BY payment_id DESC </select>
 
 </mapper>

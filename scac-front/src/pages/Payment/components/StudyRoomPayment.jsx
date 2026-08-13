@@ -1,33 +1,27 @@
-import React from 'react';
+import { PAYMENT_METHOD_LABEL } from '../../../constants/payment';
 import { usePaymentStore } from '../../../store/paymentStore';
 import { formatPrice } from '../../../utils/formatter';
-import { PAYMENT_METHOD_LABEL } from '../../../constants/payment';
 
-export default function StudyRoomPayment() {
-  const reserv = {
-    roomname: 'R1',
-    date: '2026-07-28',
-    startTime: '11:00',
-    endTime: '13:00',
-    price: 15000,
-  };
+export default function StudyRoomPayment({ room, reservation }) {
   const paymentMethod = usePaymentStore((state) => state.paymentMethod);
+  const amount =
+    (reservation.endTime - reservation.startTime) * room.hourlyRate;
 
   return (
     <>
       <ul>
         <li>
           <span className="payment_name">선택한 ROOM</span>
-          <span className="payment_item">{reserv.roomname}</span>
+          <span className="payment_item">{room.roomName}</span>
         </li>
         <li>
           <span className="payment_name">날짜</span>
-          <span className="payment_item">{reserv.date}</span>
+          <span className="payment_item">{room.date}</span>
         </li>
         <li>
           <span className="payment_name">시간</span>
           <span className="payment_item">
-            {reserv.startTime} ~ {reserv.endTime}
+            {reservation.startTime} ~ {reservation.endTime}
           </span>
         </li>
         <li>
@@ -38,7 +32,7 @@ export default function StudyRoomPayment() {
         </li>
         <li>
           <span className="payment_name">최종 가격</span>
-          <span className="payment_item">{formatPrice(reserv.price)} 원</span>
+          <span className="payment_item">{formatPrice(amount)} 원</span>
         </li>
       </ul>
     </>

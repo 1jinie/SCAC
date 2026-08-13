@@ -20,6 +20,7 @@ export const PAYMENT_METHOD_LABELS = {
 
 // 결제 상품 유형
 export const PAYMENT_PRODUCT_TYPE_LABELS = {
-  SEAT: '좌석',
-  MEETING_ROOM: '스터디룸',
+  TIME_PACK: '좌석 시간권',
+  PERIOD_PACK: '좌석 기간권',
+  MEETING_ROOM: '스터디룸 예약',
 };

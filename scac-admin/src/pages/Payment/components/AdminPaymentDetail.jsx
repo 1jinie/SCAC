@@ -33,7 +33,7 @@ export default function AdminPaymentDetail({
         </div>
 
         <span
-          className={`admin_payment_status status_${selectedPayment.status.toLowerCase()}`}
+          className={`admin_payment_status status_${selectedPayment.status.toLowerCase() ?? '-'}`}
         >
           {PAYMENT_STATUS_LABELS[selectedPayment.status]}
         </span>
@@ -51,17 +51,23 @@ export default function AdminPaymentDetail({
         </div>
 
         <div>
-          <dt>결제 상품</dt>
-          <dd>{selectedPayment.ticketName}</dd>
-        </div>
-
-        <div>
           <dt>상품 유형</dt>
           <dd>
-            {PAYMENT_PRODUCT_TYPE_LABELS[selectedPayment.targetType] ??
-              selectedPayment.targetType ??
+            {PAYMENT_PRODUCT_TYPE_LABELS[selectedPayment.ticketType] ??
+              selectedPayment.ticketType ??
               '-'}
           </dd>
+        </div>
+
+        {selectedPayment.reservationId != null && (
+          <div>
+            <dt>스터디룸 예약 번호</dt>
+            <dd>{selectedPayment.reservationId}</dd>
+          </div>
+        )}
+        <div>
+          <dt>결제 상품</dt>
+          <dd>{selectedPayment.ticketName}</dd>
         </div>
 
         <div>

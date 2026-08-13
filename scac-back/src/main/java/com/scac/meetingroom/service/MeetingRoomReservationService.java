@@ -160,6 +160,7 @@ public class MeetingRoomReservationService {
                 reservation.getReservationId(),
                 reservation.getRoomId(),
                 reservation.getUserId(),
+                reservation.getStatus(),
                 amount);
     }
 

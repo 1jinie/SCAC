@@ -37,10 +37,10 @@ public class AdminPaymentController {
     return ResponseEntity.ok(ApiResponse.success("결제 내역 조회를 완료했습니다.", payment));
   }
 
-  // 모든 결제내역 조회
+  // 전체 결제내역 조회
   @GetMapping
   public ResponseEntity<ApiResponse<List<PaymentHistoryDTO>>> findAll(
-    @RequestParam(name = "userId", required = false) Long userId) {
+      @RequestParam(name = "userId", required = false) Long userId) {
     List<PaymentHistoryDTO> payments = paymentService.findAll(userId);
 
     return ResponseEntity.ok(ApiResponse.success("결제 내역 목록 조회를 완료했습니다.", payments));
@@ -49,7 +49,7 @@ public class AdminPaymentController {
   // 결제 취소
   @PatchMapping("/{paymentId}/cancel")
   public ResponseEntity<ApiResponse<PaymentResDTO>> cancel(@PathVariable("paymentId") Long paymentId,
-    @Valid @RequestBody PaymentCancelDTO form) {
+      @Valid @RequestBody PaymentCancelDTO form) {
     PaymentResDTO payment = paymentService.cancel(paymentId, form);
 
     return ResponseEntity.ok(ApiResponse.success("결제 취소를 완료했습니다.", payment));

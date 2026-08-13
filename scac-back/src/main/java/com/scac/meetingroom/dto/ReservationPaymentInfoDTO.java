@@ -1,5 +1,7 @@
 package com.scac.meetingroom.dto;
 
+import com.scac.global.enums.ReservationStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -11,6 +13,6 @@ public class ReservationPaymentInfoDTO {
   private Long reservationId;
   private Long roomId;
   private Long userId;
-
+  private ReservationStatus status;
   private Integer amount;
 }

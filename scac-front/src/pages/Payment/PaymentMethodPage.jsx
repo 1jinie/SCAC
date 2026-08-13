@@ -10,7 +10,6 @@ export default function PaymentMethodPage() {
   const handleMethod = (method) => {
     setPaymentMethod(method);
     navi(`process`);
-    // navi(`toss`);
   };
   return (
     <div className="payment_method_box">

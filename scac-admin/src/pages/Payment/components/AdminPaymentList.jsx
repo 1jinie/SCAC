@@ -41,7 +41,7 @@ export default function AdminPaymentList({
           <tbody>
             {isLoading ? (
               <tr>
-                <td className="admin_payment_message">
+                <td colSpan="7" className="admin_payment_message">
                   결제 내역을 불러오고 있습니다.
                 </td>
               </tr>
@@ -65,8 +65,13 @@ export default function AdminPaymentList({
                     <td>{payment.paymentId}</td>
 
                     <td>{formatPhoneNumber(payment.phoneNumber)}</td>
-
-                    <td>{payment.ticketName}</td>
+                    {payment.ticketId ? (
+                      <td> 좌석 이용권 : {payment.ticketName}</td>
+                    ) : payment.reservationId ? (
+                      <td> 스터디룸 예약 : {payment.ticketName}</td>
+                    ) : (
+                      <td>올바르지 않은 정보입니다</td>
+                    )}
 
                     <td>{formatPrice(payment.paymentAmount)}</td>
 
@@ -80,7 +85,7 @@ export default function AdminPaymentList({
 
                     <td>
                       <span
-                        className={`admin_payment_status status_${payment.status.toLowerCase()}`}
+                        className={`admin_payment_status status_${payment.status.toLowerCase() ?? '-'}`}
                       >
                         {PAYMENT_STATUS_LABELS[payment.status] ??
                           payment.status ??
