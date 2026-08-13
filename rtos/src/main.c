@@ -67,6 +67,40 @@ static int parse_work(const char *json, work_t *work) {
            json_string(json, "payload", work->payload, sizeof(work->payload)) == 0 ? 1 : -1;
 }
 
+// 도어 열림
+static int handle_door_open(
+        const work_t *work,
+        char *result,
+        size_t result_size){
+    (void) work;
+
+    printf("[DOOR] OPEN\n");
+    fflush(stdout);
+
+    vTaskDelay(pdMS_TO_TICKS(500));
+
+    snprintf(result, result_size, "door opened");
+
+    return 0;
+}
+
+// 도어 닫힘
+static int handle_door_close(
+        const work_t *work,
+        char *result,
+        size_t result_size){
+    (void) work;
+
+    printf("[DOOR] CLOSE\n");
+    fflush(stdout);
+
+    vTaskDelay(pdMS_TO_TICKS(500));
+
+    snprintf(result, result_size, "door closed");
+
+    return 0;
+}
+
 
 static int handle_print_receipt(const work_t *work, char *result, size_t result_size) {
     char payload[sizeof(work->payload)];
@@ -92,39 +126,6 @@ static int handle_print_receipt(const work_t *work, char *result, size_t result_
     snprintf(result, result_size, "receipt printed: %s", order_id);
     return 0;
 }
-
-
-static int handle_led_blink(const work_t *work, char *result, size_t result_size) {
-    int count = atoi(work->payload);
-    if (count < 1 || count > 10) {
-        snprintf(result, result_size, "LED count must be 1..10");
-        return -1;
-    }
-    for (int index = 1; index <= count; index++) {
-        printf("[LED Handler] ON  (%d/%d)\n", index, count);
-        vTaskDelay(pdMS_TO_TICKS(250));
-        printf("[LED Handler] OFF (%d/%d)\n", index, count);
-        vTaskDelay(pdMS_TO_TICKS(250));
-    }
-    snprintf(result, result_size, "LED blink completed: %d times", count);
-    return 0;
-}
-
-
-static int handle_buzzer_on(const work_t *work, char *result, size_t result_size) {
-    int duration_ms = atoi(work->payload);
-    if (duration_ms < 100 || duration_ms > 5000) {
-        snprintf(result, result_size, "buzzer duration must be 100..5000 ms");
-        return -1;
-    }
-    printf("[Buzzer Handler] ON (%d ms)\n", duration_ms);
-    vTaskDelay(pdMS_TO_TICKS(duration_ms));
-    printf("[Buzzer Handler] OFF\n");
-    snprintf(result, result_size, "buzzer completed: %d ms", duration_ms);
-    return 0;
-}
-
-
 
 
 static int handle_recover_fault(const work_t *work, char *result, size_t result_size) {
@@ -163,9 +164,9 @@ static int handle_recover_fault(const work_t *work, char *result, size_t result_
 
 /* 새 작업을 추가할 때 Handler를 구현하고 이 테이블에 한 줄 등록합니다. */
 static const task_handler_mapping_t task_handlers[] = {
+    {"DOOR_OPEN", handle_door_open},
+    {"DOOR_CLOSE", handle_door_close},
     {"PRINT_RECEIPT", handle_print_receipt},
-    {"LED_BLINK", handle_led_blink},
-    {"BUZZER_ON", handle_buzzer_on},
     {"RECOVER_FAULT", handle_recover_fault},
 };
 
@@ -177,6 +178,45 @@ static task_handler_t find_task_handler(const char *task_type) {
             return task_handlers[index].handler;
     }
     return NULL;
+}
+
+static void health_check_task(void *parameter){
+    (void) parameter;
+
+    for(;;){
+        const char *json =
+            "{"
+            "\"deviceId\":\"KIOSK-01\","
+            "\"status\":\"ONLINE\","
+            "\"door\":\"CLOSE\","
+            "\"printer\":\"READY\","
+            "}"
+        char body[RESPONSE_CAPACITY];
+
+        http_response_t response = {0};
+
+        int result = http_request(
+            &spring_server,
+            "POST",
+            "/api/devices/health",
+            json,
+            body,
+            sizeof(body),
+            &response
+        );
+
+        if(result == 0 && response.status_code == 200){
+            printf("[HealthCheckTask -> Spring] 상태 전송 성공\n");
+        }else{
+            fprintf(
+                stderr,
+                "[HealthCheckTask] 상태 전송 실패: HTTP %d\n",
+                response.status_code
+            );
+        }
+
+        vTaskDelay(pdMS_TO_TICKS(5000));
+    }
 }
 
 
@@ -290,6 +330,8 @@ int main(int argc, char **argv) {
     configASSERT(xTaskCreate(command_poll_task, "CommandPollTask",
             2048, NULL, 2, NULL) == pdPASS);
     configASSERT(xTaskCreate(fault_monitor_task, "FaultMonitorTask",
+            2048, NULL, 2, NULL) == pdPASS);
+    configASSERT(xTaskCreate(health_check_task, "HealthCheckTask",
             2048, NULL, 2, NULL) == pdPASS);
     printf("[FreeRTOS] 양방향 명령/장애 예제 시작: %s\n", url);
     vTaskStartScheduler();
