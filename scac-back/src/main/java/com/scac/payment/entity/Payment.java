@@ -71,7 +71,8 @@ public class Payment {
   @Column(name = "cancelled_at")
   private LocalDateTime cancelledAt;
 
-  private Payment(Long userId, Long ticketId,Long reservationId, Integer amount, PaymentMethod paymentMethod) {
+  private Payment(Long userId, Long ticketId, Long reservationId, Integer amount,
+    PaymentMethod paymentMethod) {
     this.usageId = null;
     this.userId = userId;
     this.ticketId = ticketId;
@@ -81,12 +82,18 @@ public class Payment {
     this.status = PaymentStatus.PENDING;
   }
 
-  public static Payment createTicketPayment(Long userId, Long ticketId, Integer amount, PaymentMethod paymentMethod) {
-    return new Payment(userId, ticketId,null, amount, paymentMethod);
+  public static Payment createTicketPayment(Long userId, Long ticketId, Integer amount,
+    PaymentMethod paymentMethod) {
+    return new Payment(userId, ticketId, null, amount, paymentMethod);
   }
 
-  public static Payment createReservationPayment(Long userId, Long reservationId, Integer amount, PaymentMethod paymentMethod) {
+  public static Payment createReservationPayment(Long userId, Long reservationId, Integer amount,
+    PaymentMethod paymentMethod) {
     return new Payment(userId, null, reservationId, amount, paymentMethod);
+  }
+
+  public static Payment createReservationPayment2(Long userId, Integer amount, PaymentMethod paymentMethod) {
+    return new Payment(userId, null, null, amount, paymentMethod);
   }
 
   public void cancel(String cancelReason) {
