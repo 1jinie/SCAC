@@ -22,44 +22,34 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/admin/seats")
 public class AdminSeatController {
 
-    private final SeatService seatService;
+        private final SeatService seatService;
 
-    /**
-     * 1. 좌석 사용자 조회 (전화번호 등 개인정보 포함)
-     */
-    @GetMapping("/{seatId}/user")
-    public ResponseEntity<ApiResponse<SeatUserInfoRes>> getSeatUser(
-            @PathVariable Long seatId
-    ) {
-        return ResponseEntity.ok(
-                ApiResponse.success("현재 좌석 이용자 조회를 완료했습니다.", seatService.getCurrentUser(seatId))
-        );
-    }
+        /**
+         * 1. 좌석 사용자 조회 (전화번호 등 개인정보 포함)
+         */
+        @GetMapping("/{seatId}/user")
+        public ResponseEntity<ApiResponse<SeatUserInfoRes>> getSeatUser(
+                @PathVariable(name = "seatId") Long seatId) {
+                return ResponseEntity
+                        .ok(ApiResponse.success("현재 좌석 이용자 조회를 완료했습니다.", seatService.getCurrentUser(seatId)));
+        }
 
-    /**
-     * 2. 좌석 상태 수동 변경 (점검중/사용가능 등)
-     */
-    @PatchMapping("/{seatId}/status")
-    public ResponseEntity<ApiResponse<Void>> updateSeatStatus(
-            @PathVariable Long seatId,
-            @Valid @RequestBody SeatStatusRequest request
-    ) {
-        seatService.updateStatus(seatId, request.getStatus());
-        return ResponseEntity.ok(
-                ApiResponse.success("좌석 상태 변경이 완료되었습니다.")
-        );
-    }
+        /**
+         * 2. 좌석 상태 수동 변경 (점검중/사용가능 등)
+         */
+        @PatchMapping("/{seatId}/status")
+        public ResponseEntity<ApiResponse<Void>> updateSeatStatus(@PathVariable(name = "seatId") Long seatId,
+                @Valid @RequestBody SeatStatusRequest request) {
+                seatService.updateStatus(seatId, request.getStatus());
+                return ResponseEntity.ok(ApiResponse.success("좌석 상태 변경이 완료되었습니다."));
+        }
 
-    /**
-     * 3. 강제 퇴실 조치
-     */
-    @PostMapping("/{seatId}/force-checkout")
-    public ResponseEntity<ApiResponse<Void>> forceCheckout(
-            @PathVariable Long seatId
-    ) {
-        seatService.forceCheckout(seatId);
-        return ResponseEntity.ok(
-                ApiResponse.success("강제 퇴실 처리가 완료되었습니다.")
-        );
-    }
+        /**
+         * 3. 강제 퇴실 조치
+         */
+        @PostMapping("/{seatId}/force-checkout")
+        public ResponseEntity<ApiResponse<Void>> forceCheckout(@PathVariable(name = "seatId") Long seatId) {
+                seatService.forceCheckout(seatId);
+                return ResponseEntity.ok(ApiResponse.success("강제 퇴실 처리가 완료되었습니다."));
+        }
 }

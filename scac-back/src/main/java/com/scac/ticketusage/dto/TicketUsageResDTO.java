@@ -14,6 +14,7 @@ public class TicketUsageResDTO {
   private final Long usageId;
   private final Long userId;
   private final Long ticketId;
+  private final Long reservationId;
   private final TicketType ticketType;
   private final Integer remainingTime;
   private final TicketUsageStatus usageStatus;
@@ -25,6 +26,7 @@ public class TicketUsageResDTO {
     this.usageId = ticketUsage.getUsageId();
     this.userId = ticketUsage.getUserId();
     this.ticketId = ticketUsage.getTicketId();
+    this.reservationId = ticketUsage.getReservationId();
     this.ticketType = ticketUsage.getTicketType();
     this.remainingTime = ticketUsage.getRemainingTime();
     this.usageStatus = ticketUsage.getStatus();

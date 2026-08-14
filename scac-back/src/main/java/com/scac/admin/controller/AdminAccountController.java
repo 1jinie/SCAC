@@ -33,19 +33,11 @@ public class AdminAccountController {
      * 1. 관리자 계정 생성
      */
     @PostMapping
-    @AutoLog(
-        logType = "ADMIN", 
-        action = "CREATE", 
-        targetType = "ADMIN_ACCOUNT", 
-        content = "신규 관리자 계정 생성"
-    )
+    @AutoLog(logType = "ADMIN", action = "CREATE", targetType = "ADMIN_ACCOUNT", content = "신규 관리자 계정 생성")
     public ResponseEntity<ApiResponse<AdminAccountRes>> createAdminAccount(
-            @Valid @RequestBody AdminAccountCreateReq req
-    ) {
+        @Valid @RequestBody AdminAccountCreateReq req) {
         AdminAccountRes created = adminAccountService.createAdminAccount(req);
-        return ResponseEntity.ok(
-                ApiResponse.success("관리자 계정 생성이 완료되었습니다.", created)
-        );
+        return ResponseEntity.ok(ApiResponse.success("관리자 계정 생성이 완료되었습니다.", created));
     }
 
     /**
@@ -54,9 +46,7 @@ public class AdminAccountController {
     @GetMapping
     public ResponseEntity<ApiResponse<List<AdminAccountRes>>> getAllAdminAccounts() {
         List<AdminAccountRes> accounts = adminAccountService.getAllAdminAccounts();
-        return ResponseEntity.ok(
-                ApiResponse.success("관리자 계정 목록 조회를 완료했습니다.", accounts)
-        );
+        return ResponseEntity.ok(ApiResponse.success("관리자 계정 목록 조회를 완료했습니다.", accounts));
     }
 
     /**
@@ -64,50 +54,30 @@ public class AdminAccountController {
      */
     @GetMapping("/{adminId}")
     public ResponseEntity<ApiResponse<AdminAccountRes>> getAdminAccount(
-            @PathVariable Long adminId
-    ) {
+        @PathVariable(name = "adminId") Long adminId) {
         AdminAccountRes account = adminAccountService.getAdminAccount(adminId);
-        return ResponseEntity.ok(
-                ApiResponse.success("관리자 계정 조회를 완료했습니다.", account)
-        );
+        return ResponseEntity.ok(ApiResponse.success("관리자 계정 조회를 완료했습니다.", account));
     }
 
     /**
      * 4. 관리자 권한 / 비밀번호 수정
      */
     @PatchMapping("/{adminId}")
-    @AutoLog(
-        logType = "ADMIN", 
-        action = "UPDATE", 
-        targetType = "ADMIN_ACCOUNT", 
-        content = "관리자 계정 정보 및 권한 수정"
-    )
-    public ResponseEntity<ApiResponse<Void>> updateAdminAccount(
-            @PathVariable Long adminId,
-            @RequestBody AdminAccountUpdateReq req
-    ) {
+    @AutoLog(logType = "ADMIN", action = "UPDATE", targetType = "ADMIN_ACCOUNT", content = "관리자 계정 정보 및 권한 수정")
+    public ResponseEntity<ApiResponse<Void>> updateAdminAccount(@PathVariable(name = "adminId") Long adminId,
+        @RequestBody AdminAccountUpdateReq req) {
         adminAccountService.updateAdminAccount(adminId, req);
-        return ResponseEntity.ok(
-                ApiResponse.success("관리자 계정 정보 변경이 완료되었습니다.")
-        );
+        return ResponseEntity.ok(ApiResponse.success("관리자 계정 정보 변경이 완료되었습니다."));
     }
 
     /**
      * 5. 관리자 계정 삭제
      */
     @DeleteMapping("/{adminId}")
-    @AutoLog(
-        logType = "ADMIN", 
-        action = "DELETE", 
-        targetType = "ADMIN_ACCOUNT", 
-        content = "관리자 계정 삭제"
-    )
+    @AutoLog(logType = "ADMIN", action = "DELETE", targetType = "ADMIN_ACCOUNT", content = "관리자 계정 삭제")
     public ResponseEntity<ApiResponse<Void>> deleteAdminAccount(
-            @PathVariable Long adminId
-    ) {
+        @PathVariable(name = "adminId") Long adminId) {
         adminAccountService.deleteAdminAccount(adminId);
-        return ResponseEntity.ok(
-                ApiResponse.success("관리자 계정이 삭제되었습니다.")
-        );
+        return ResponseEntity.ok(ApiResponse.success("관리자 계정이 삭제되었습니다."));
     }
 }
