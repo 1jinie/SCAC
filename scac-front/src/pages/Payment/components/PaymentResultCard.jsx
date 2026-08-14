@@ -7,6 +7,7 @@ import { useResetStore } from '../../../hooks/useResetStore';
 import { reservationApi } from '../../../api/reservationApi';
 import TicketPaymentResult from './TicketPaymentResult';
 import ReservationPaymentResult from './ReservationPaymentResult';
+import { useAuthStore } from '../../../store/authStore';
 
 export default function PaymentResultCard({ isSuccess, errorMessage }) {
   const [payment, setPayment] = useState(null);
@@ -19,6 +20,7 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
   const { state } = useLocation();
   const paymentId = state?.paymentId;
   const [closeTimer, setCloseTimer] = useState(10);
+  const resetData = useResetStore();
 
   useEffect(() => {
     if (!isSuccess || paymentId == null) {
@@ -90,7 +92,7 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
   }, [navi, resetAll, closeTimer]);
 
   const handleContinue = () => {
-    resetAll();
+    resetData();
     navi('/loginhome', { replace: true });
   };
 
@@ -176,10 +178,10 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
             handleExit();
           }}
         >
-          종료하기
+          로그아웃
         </button>
         <p className="payment_auto_exit">
-          {closeTimer}초 후 자동으로 종료됩니다.
+          {closeTimer}초 후 자동으로 로그아웃 됩니다.
         </p>
       </div>
     </div>

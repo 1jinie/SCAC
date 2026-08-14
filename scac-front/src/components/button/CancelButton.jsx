@@ -12,11 +12,11 @@ import { useResetStore } from '../../hooks/useResetStore';
 
 export default function CancelButton({ text, nextPage }) {
   const navi = useNavigate();
-  const resetAll = useResetStore();
+  const resetData = useResetStore();
 
   const handleClear = () => {
     // 결제정보 초기화
-    resetAll();
+    resetData();
     navi(nextPage);
   };
 
