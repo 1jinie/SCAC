@@ -57,6 +57,37 @@ export default function AdminTicketDetail({
     });
   };
 
+  const handleStatusChange = async (e) => {
+    const isActive = e.target.checked;
+
+    try {
+      await ticketApi.updateTicketStatus(ticket.ticketId, isActive);
+
+      setTicket((prev) => ({
+        ...prev,
+        isActive,
+      }));
+
+      await fetchTickets();
+
+      alert(
+        isActive
+          ? '이용권 판매를 시작했습니다.'
+          : '이용권 판매를 중지했습니다.',
+      );
+    } catch (error) {
+      console.error(
+        '이용권 판매 상태 변경 실패:',
+        error.response?.data ?? error,
+      );
+
+      alert(
+        error.response?.data?.message ??
+          '이용권 판매 상태 변경에 실패했습니다.',
+      );
+    }
+  };
+
   const handleSave = async () => {
     if (!ticket.ticketName.trim()) {
       alert('이용권명을 입력해주세요.');
@@ -204,7 +235,7 @@ export default function AdminTicketDetail({
                 type="checkbox"
                 name="isActive"
                 checked={ticket.isActive}
-                onChange={handleChange}
+                onChange={handleStatusChange}
               />
 
               <span className="admin_ticket_checkbox_box" aria-hidden="true" />

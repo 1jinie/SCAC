@@ -58,7 +58,7 @@
 }
 
 .admin_login_card {
-  width: min(440px, 100%);
+  width: min(480px, 100%);
   padding: 48px;
 
   border: 1px solid #e2e7e9;
@@ -111,7 +111,7 @@
 }
 
 .admin_login_form input {
-  width: 100%;
+  width: 90%;
   height: 52px;
 
   padding: 0 16px;

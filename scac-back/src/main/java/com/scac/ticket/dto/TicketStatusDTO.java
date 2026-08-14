@@ -1,13 +1,15 @@
 package com.scac.ticket.dto;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
-@AllArgsConstructor
+@Setter
+@NoArgsConstructor
 public class TicketStatusDTO {
 
   @NotNull(message = "판매여부 선택은 필수입니다.")
-  private final Boolean isActive;
+  private Boolean isActive;
 }
