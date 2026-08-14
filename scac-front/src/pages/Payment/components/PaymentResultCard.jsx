@@ -78,16 +78,26 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
   }, [isSuccess, paymentId]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setCloseTimer(closeTimer - 1);
-      console.log('timer' + closeTimer);
-    }, 1000);
-    if (closeTimer <= 0) {
+    if (closeTimer < 0) {
       resetAll();
-      navi('/');
-      return () => clearTimeout(timer);
+      navi('/', { replace: true });
+      return;
     }
+    const timer = setTimeout(() => {
+      setCloseTimer((t) => t - 1);
+    }, 1000);
+    return () => clearTimeout(timer);
   }, [navi, resetAll, closeTimer]);
+
+  const handleContinue = () => {
+    resetAll();
+    navi('/loginhome', { replace: true });
+  };
+
+  const handleExit = () => {
+    resetAll();
+    navi('/', { replace: true });
+  };
   return (
     <div className={`payment_status_box ${isSuccess ? 'success' : 'fail'}`}>
       <img
@@ -150,12 +160,25 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
           다시 확인해 주세요.
         </p>
       )}
-      <p className="payment_timer">{closeTimer}초 후 자동으로 종료됩니다</p>
-      <SelectButton
-        nextPage={'/'}
-        text={'홈으로 돌아가기'}
-        onClickAction={resetAll}
-      />
+
+      <div className="btn_place">
+        <button
+          className="btn_loginhome"
+          onClick={() => {
+            handleContinue();
+          }}
+        >
+          이어서 이용하기
+        </button>
+        <button
+          className="btn_mainhome"
+          onClick={() => {
+            handleExit();
+          }}
+        >
+          {closeTimer}초 후 자동으로 종료됩니다
+        </button>
+      </div>
     </div>
   );
 }
