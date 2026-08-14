@@ -201,9 +201,11 @@ function LoginHomePage() {
       setAlertModal({
         title: '로그아웃',
         message: '안전하게 로그아웃되었습니다.',
-        onClose: () => setAlertModal(null),
+        onClose: () => {
+          setAlertModal(null);
+          navigate('/');
+        },
       });
-      navigate('/');
     }
   };
 

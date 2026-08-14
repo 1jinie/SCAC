@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
+import KioskAlertModal from '../../components/modal/KioskAlertModal';
 import '../../styles/Auth.css';
 
 function LoginPage() {
@@ -9,6 +10,7 @@ function LoginPage() {
   const navigate = useNavigate();
 
   // 입력 필드를 제어하기 위한 로컬 상태 (useState)
+  const [alertModal, setAlertModal] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -28,12 +30,24 @@ function LoginPage() {
     const result = await login(phoneNumber, password);
 
     if (result.success) {
-      alert('로그인이 성공적으로 완료되었습니다!');
-
       if (result.role === 'ADMIN') {
-        navigate('/admin');
+        setAlertModal({
+          title: '로그인 성공',
+          message: '로그인이 성공적으로 완료되었습니다!',
+          onClose: () => {
+            setAlertModal(null);
+            navigate('/admin');
+          },
+        });
       } else {
-        navigate('/loginhome'); // 요구 사항: /loginhome 경로 이동
+        setAlertModal({
+          title: '로그인 성공',
+          message: '로그인이 성공적으로 완료되었습니다!',
+          onClose: () => {
+            setAlertModal(null);
+            navigate('/loginhome'); // 요구 사항: /loginhome 경로 이동
+          },
+        });
       }
     } else {
       // 로그인 실패 시 에러 핸들링
@@ -101,6 +115,13 @@ function LoginPage() {
           </button>
         </div>
       </div>
+      {alertModal && (
+        <KioskAlertModal
+          title={alertModal.title}
+          message={alertModal.message}
+          onClose={alertModal.onClose}
+        />
+      )}
     </div>
   );
 }
