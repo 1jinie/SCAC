@@ -55,7 +55,8 @@ public class AdminSystemLogController {
          * 3. 특정 선택 좌석 로그 확인
          */
         @GetMapping("/seat/{seatId}")
-        public ResponseEntity<ApiResponse<List<SeatLogRes>>> getSeatLogs(@PathVariable Long seatId) {
+        public ResponseEntity<ApiResponse<List<SeatLogRes>>> getSeatLogs(
+                @PathVariable(name = "seatId") Long seatId) {
                 return ResponseEntity.ok(ApiResponse.success("선택 좌석 로그 조회를 완료했습니다.",
                         systemLogService.getLogsByTarget("SEAT", seatId)));
         }

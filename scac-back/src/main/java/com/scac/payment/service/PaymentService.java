@@ -13,8 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.scac.global.enums.PaymentMethod;
 import com.scac.global.enums.PaymentStatus;
+import com.scac.global.enums.ReservationStatus;
 import com.scac.global.enums.TicketUsageStatus;
 import com.scac.global.exception.ResourceNotFoundException;
+import com.scac.meetingroom.domain.MeetingRoomReservation;
 import com.scac.meetingroom.dto.ReservationPaymentInfoDTO;
 import com.scac.meetingroom.service.MeetingRoomReservationService;
 import com.scac.payment.client.TossPaymentClient;
@@ -56,7 +58,7 @@ public class PaymentService {
   // id로 Payment 찾기
   private Payment getPayment(Long paymentId) {
     return paymentRepository.findById(paymentId)
-        .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 결제 내역입니다."));
+      .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 결제 내역입니다."));
   }
 
   // TicketId나 ReservationId 둘 중 하나는 반드시 존재하는지 확인
@@ -66,8 +68,7 @@ public class PaymentService {
       throw new IllegalArgumentException("결제 대상 정보가 없습니다.");
     }
     if (dto.getTicketId() != null && dto.getReservationId() != null) {
-      throw new IllegalArgumentException(
-          "이용권과 예약을 동시에 결제할 수 없습니다.");
+      throw new IllegalArgumentException("이용권과 예약을 동시에 결제할 수 없습니다.");
     }
   }
 
@@ -90,17 +91,12 @@ public class PaymentService {
   private void handlePaymentSuccess(Payment payment) {
     TicketUsageResDTO usage;
     if (payment.getTicketId() != null) {
-      usage = ticketUsageService.issueTicket(
-          payment.getUserId(),
-          payment.getTicketId());
+      usage = ticketUsageService.issueTicket(payment.getUserId(), payment.getTicketId());
     } else if (payment.getReservationId() != null) {
-      usage = ticketUsageService.issueReservation(
-          payment.getUserId(),
-          payment.getReservationId());
+      usage = ticketUsageService.issueReservation(payment.getUserId(), payment.getReservationId());
       meetingRoomReservationService.confirmReservation(payment.getReservationId());
     } else {
-      throw new IllegalStateException(
-          "결제 대상 정보가 존재하지 않습니다.");
+      throw new IllegalStateException("결제 대상 정보가 존재하지 않습니다.");
     }
     payment.assignUsage(usage.getUsageId());
   }
@@ -124,29 +120,34 @@ public class PaymentService {
       if (!ticket.getTicketPrice().equals(dto.getAmount())) {
         throw new IllegalArgumentException("결제 금액이 이용권 가격과 일치하지 않습니다.");
       }
-      payment = Payment.createTicketPayment(
-          currentUserId, ticket.getTicketId(), ticket.getTicketPrice(), dto.getPaymentMethod());
+      payment = Payment.createTicketPayment(currentUserId, ticket.getTicketId(), ticket.getTicketPrice(),
+        dto.getPaymentMethod());
     } else {
 
       // ReservationId 결제 (스터디룸 예약)
-      ReservationPaymentInfoDTO reservation = meetingRoomReservationService.getPaymentInfo(dto.getReservationId());
+      ReservationPaymentInfoDTO reservation = meetingRoomReservationService
+        .getPaymentInfo(dto.getReservationId());
 
       // 본인의 예약인지 검증
       if (!Objects.equals(reservation.getUserId(), currentUserId)) {
-        throw new AccessDeniedException(
-            "본인의 예약만 결제할 수 있습니다.");
+        throw new AccessDeniedException("본인의 예약만 결제할 수 있습니다.");
+      }
+      // 예약 상태가 PENDING_PAYMENT인지 검증
+      if (reservation.getStatus() != ReservationStatus.PENDING_PAYMENT) {
+        throw new IllegalStateException("결제 대기 중인 예약만 결제할 수 있습니다.");
+      }
+
+      // 이미 결제가 생성된 예약인지 검증
+      if (paymentRepository.existsByReservationId(reservation.getReservationId())) {
+        throw new IllegalStateException("이미 결제가 생성된 예약입니다.");
       }
 
       // 프론트에서 전달한 금액과 실제 예약 금액 비교
       if (!reservation.getAmount().equals(dto.getAmount())) {
-        throw new IllegalArgumentException(
-            "결제 금액이 예약 금액과 일치하지 않습니다.");
+        throw new IllegalArgumentException("결제 금액이 예약 금액과 일치하지 않습니다.");
       }
-      payment = Payment.createReservationPayment(
-          currentUserId,
-          reservation.getReservationId(),
-          reservation.getAmount(),
-          dto.getPaymentMethod());
+      payment = Payment.createReservationPayment(currentUserId, reservation.getReservationId(),
+        reservation.getAmount(), dto.getPaymentMethod());
     }
 
     // 아직 결제가 완료되지 않았으므로 결제 상태는 PENDING으로 설정됩니다.
@@ -160,7 +161,7 @@ public class PaymentService {
   @Transactional
   public PaymentResDTO confirm(PaymentConfirmDTO request, Long currentUserId) {
     Payment payment = paymentRepository.findByOrderId(request.getOrderId())
-        .orElseThrow(() -> new ResourceNotFoundException("주문 정보를 찾을 수 없습니다."));
+      .orElseThrow(() -> new ResourceNotFoundException("주문 정보를 찾을 수 없습니다."));
 
     validatePaymentOwner(payment, currentUserId);
     validateTossPaymentMethod(payment);
@@ -174,19 +175,19 @@ public class PaymentService {
     }
 
     TossPaymentResponse tossResponse = tossPaymentClient.confirm(request.getPaymentKey(),
-        request.getOrderId(), request.getAmount());
+      request.getOrderId(), request.getAmount());
 
     if (!"DONE".equals(tossResponse.getStatus())) {
       throw new IllegalStateException("결제가 정상적으로 승인되지 않았습니다.");
     }
 
     if (!payment.getOrderId().equals(tossResponse.getOrderId())
-        || !payment.getAmount().equals(tossResponse.getTotalAmount())) {
+      || !payment.getAmount().equals(tossResponse.getTotalAmount())) {
       throw new IllegalStateException("토스 승인 결과가 주문 정보와 일치하지 않습니다.");
     }
 
     payment.approve(tossResponse.getPaymentKey(), tossResponse.getApproveNo(),
-        tossResponse.getApprovedAt() != null ? tossResponse.getApprovedAt().toLocalDateTime() : null);
+      tossResponse.getApprovedAt() != null ? tossResponse.getApprovedAt().toLocalDateTime() : null);
 
     handlePaymentSuccess(payment);
     return PaymentResDTO.from(payment);
@@ -226,7 +227,7 @@ public class PaymentService {
   // 모든 결제내역 가져오기
   public List<PaymentHistoryDTO> findAll(Long userId) {
     List<PaymentHistoryDTO> payments = userId == null ? paymentMapper.findAllPaymentHistory()
-        : paymentMapper.findByUserId(userId);
+      : paymentMapper.findByUserId(userId);
 
     return payments;
   }
@@ -279,14 +280,23 @@ public class PaymentService {
   @Transactional
   public PaymentResDTO cancel(Long paymentId, PaymentCancelDTO form) {
     Payment payment = getPayment(paymentId);
-    String cancelReason = form.getCancelReason().trim();
+    String cancelReason = form.getCancelReason();
     validateCancel(payment, cancelReason);
+    cancelReason = cancelReason.trim();
     if (payment.getUsageId() == null) {
       throw new IllegalStateException("결제에 연결된 이용권 정보가 없습니다.");
     }
     TicketUsage ticketUsage = ticketUsageService.findTicketUsage(payment.getUsageId());
     validateTicketUsageCancel(ticketUsage);
 
+    if (payment.getReservationId() != null) {
+      MeetingRoomReservation reservation = meetingRoomReservationService
+        .getReservationEntity(payment.getReservationId());
+
+      if (reservation.getStatus() != ReservationStatus.CONFIRMED) {
+        throw new IllegalStateException("예약 완료 상태에서만 결제를 취소할 수 있습니다.");
+      }
+    }
     switch (payment.getPaymentMethod()) {
       case CARD -> cancelMockCard(payment, cancelReason);
       case TOSSPAY -> cancelTossPayment(payment, cancelReason);
@@ -296,8 +306,7 @@ public class PaymentService {
 
     // 예약 결제 취소 시 예약 상태를 CANCELED로 변경
     if (payment.getReservationId() != null) {
-      meetingRoomReservationService.cancel(
-          payment.getReservationId());
+      meetingRoomReservationService.cancel(payment.getReservationId());
     }
     return PaymentResDTO.from(payment);
   }

@@ -391,7 +391,7 @@
    Reservation Status
 ========================= */
 
-.admin_status_badge.reservation_reserved {
+.admin_status_badge.reservation_confirmed {
   background: #e7f5ed;
   color: var(--color-using);
 }
@@ -406,7 +406,7 @@
   color: #697176;
 }
 
-.admin_status_badge.reservation_user_canceled,
+.admin_status_badge.reservation_canceled,
 .admin_status_badge.reservation_admin_canceled {
   background: #fde7e7;
   color: #b94747;

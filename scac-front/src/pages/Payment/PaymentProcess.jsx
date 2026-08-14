@@ -213,7 +213,10 @@ export default function PaymentProcess() {
     <>
       <div className="overlay">
         <div className="payment_modal">
-          <CloseButton nextPage="/ticket" text="결제취소" />
+          <CloseButton
+            nextPage={isReservationPayment ? '/room' : '/ticket'}
+            text="결제취소"
+          />
 
           <h2>결제정보 확인</h2>
 
