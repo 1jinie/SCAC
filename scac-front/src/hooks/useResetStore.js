@@ -3,6 +3,9 @@ import { usePaymentStore } from '../store/paymentStore';
 import { useTicketStore } from '../store/ticketStore';
 import { reservationStore } from '../store/reservationStore';
 import { useAuthStore } from '../store/authStore';
+import { checkInStore } from '../store/checkInStore';
+import { seatStore } from '../store/seatStore';
+import { useUserStore } from '../store/userStore';
 
 // 사용법 const { resetAll, resetData } = useResetStore(); 또는 const resetAll = useResetStore((state) => state.resetAll); const resetData = useResetStore((state) => state.resetData);
 export const useResetStore = () => {
@@ -10,20 +13,34 @@ export const useResetStore = () => {
   const resetTicket = useTicketStore((state) => state.resetStore);
   const clearReservation = reservationStore((state) => state.clearReservation);
   const logout = useAuthStore((state) => state.logout);
+  const clearCheckIn = checkInStore((state) => state.clearCheckIn);
+  const clearSelected = seatStore((state) => state.clearSelected);
+  const clearUserData = useUserStore((state) => state.clearUserData);
 
   // 모든 스토어 상태 초기화 및 로그아웃
   const resetAll = useCallback(() => {
     resetPayment();
     resetTicket();
     clearReservation();
+    clearCheckIn();
+    clearSelected();
+    clearUserData();
     logout();
-  }, [resetPayment, resetTicket, clearReservation, logout]);
+  }, [
+    resetPayment,
+    resetTicket,
+    clearReservation,
+    logout,
+    clearCheckIn,
+    clearSelected,
+    clearUserData,
+  ]);
 
-  // 결제, 이용권, 예약정보 초기화
-  const resetData = useCallback(() => {
+  // 결제관련 데이터 초기화
+  const resetPayData = useCallback(() => {
     resetPayment();
     resetTicket();
     clearReservation();
   }, [resetPayment, resetTicket, clearReservation]);
-  return { resetAll, resetData };
+  return { resetAll, resetPayData };
 };

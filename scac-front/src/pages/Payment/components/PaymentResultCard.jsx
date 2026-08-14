@@ -20,7 +20,7 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
   const { state } = useLocation();
   const paymentId = state?.paymentId;
   const [closeTimer, setCloseTimer] = useState(10);
-  const resetData = useResetStore();
+  const resetPayData = useResetStore();
 
   useEffect(() => {
     if (!isSuccess || paymentId == null) {
@@ -92,7 +92,7 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
   }, [navi, resetAll, closeTimer]);
 
   const handleContinue = () => {
-    resetData();
+    resetPayData();
     navi('/loginhome', { replace: true });
   };
 
