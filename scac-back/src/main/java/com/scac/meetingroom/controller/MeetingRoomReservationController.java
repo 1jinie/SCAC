@@ -30,83 +30,68 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 @RequestMapping("/api/meeting-rooms")
 public class MeetingRoomReservationController {
-    private final MeetingRoomReservationService reservationService;
+        private final MeetingRoomReservationService reservationService;
 
-    // 전체 예약 조회
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<MeetingRoomReservationResponse>>> getAllReservations() {
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        "전체 예약을 조회했습니다",
-                        reservationService.getAllReservations()));
-    }
+        // 전체 예약 조회
+        @GetMapping
+        public ResponseEntity<ApiResponse<List<MeetingRoomReservationResponse>>> getAllReservations() {
+                return ResponseEntity
+                        .ok(ApiResponse.success("전체 예약을 조회했습니다", reservationService.getAllReservations()));
+        }
 
-    // 스터디룸 예약
-    @PostMapping("/reservations")
-    public ResponseEntity<ApiResponse<MeetingRoomReservationResponse>> reserve(
-            @RequestBody MeetingRoomReservationRequest request,
-            @AuthenticationPrincipal UserPrincipal currentUser) {
+        // 스터디룸 예약
+        @PostMapping("/reservations")
+        public ResponseEntity<ApiResponse<MeetingRoomReservationResponse>> reserve(
+                @RequestBody MeetingRoomReservationRequest request,
+                @AuthenticationPrincipal UserPrincipal currentUser) {
 
-        MeetingRoomReservationResponse reservation = reservationService.reserve(request, currentUser.id());
+                MeetingRoomReservationResponse reservation = reservationService.reserve(request,
+                        currentUser.id());
 
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        "스터디룸 임시 예약이 생성되었습니다.",
-                        reservation));
-    }
+                return ResponseEntity.ok(ApiResponse.success("스터디룸 임시 예약이 생성되었습니다.", reservation));
+        }
 
-    // 예약 취소
-    @PatchMapping("/reservations/{reservationId}/cancel")
-    public ResponseEntity<ApiResponse<MeetingRoomReservationResponse>> cancel(@PathVariable Long reservationId) {
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        "스터디룸 예약 취소가 완료되었습니다",
-                        reservationService.cancel(reservationId)));
-    }
+        // 예약 취소
+        @PatchMapping("/reservations/{reservationId}/cancel")
+        public ResponseEntity<ApiResponse<MeetingRoomReservationResponse>> cancel(
+                @PathVariable(name = "reservationId") Long reservationId) {
+                return ResponseEntity.ok(
+                        ApiResponse.success("스터디룸 예약 취소가 완료되었습니다", reservationService.cancel(reservationId)));
+        }
 
-    // 예약 가능 시간 조회
-    @GetMapping("/{roomId}/availability")
-    public ResponseEntity<ApiResponse<List<MeetingRoomAvailabilityResponse>>> getAvailability(@PathVariable Long roomId,
-            @RequestParam LocalDate date) {
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        "예약 가능 시간을 조회했습니다",
+        // 예약 가능 시간 조회
+        @GetMapping("/{roomId}/availability")
+        public ResponseEntity<ApiResponse<List<MeetingRoomAvailabilityResponse>>> getAvailability(
+                @PathVariable(name = "roomId") Long roomId, @RequestParam(name = "date") LocalDate date) {
+                return ResponseEntity.ok(ApiResponse.success("예약 가능 시간을 조회했습니다",
                         reservationService.getAvailability(roomId, date)));
-    }
+        }
 
-    // 현재 사용자 예약 조회
-    @GetMapping("/current")
-    public ResponseEntity<ApiResponse<MeetingRoomReservationResponse>> getCurrentReservation(
-            Authentication authentication) {
-        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+        // 현재 사용자 예약 조회
+        @GetMapping("/current")
+        public ResponseEntity<ApiResponse<MeetingRoomReservationResponse>> getCurrentReservation(
+                Authentication authentication) {
+                UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
 
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        "현재 예약 조회 성공",
+                return ResponseEntity.ok(ApiResponse.success("현재 예약 조회 성공",
                         reservationService.findCurrentReservation(principal.id())));
-    }
+        }
 
-    // 관리자 예약 조회
-    @GetMapping("/admin/reservations")
-    public ResponseEntity<ApiResponse<List<AdminReservationResponse>>> getAdminReservations() {
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        reservationService.getAdminReservationList()));
-    }
+        // 관리자 예약 조회
+        @GetMapping("/admin/reservations")
+        public ResponseEntity<ApiResponse<List<AdminReservationResponse>>> getAdminReservations() {
+                return ResponseEntity.ok(ApiResponse.success(reservationService.getAdminReservationList()));
+        }
 
-    // 예약 단건 조회
-    @GetMapping("/reservations/{reservationId}")
-    public ResponseEntity<ApiResponse<MeetingRoomReservationResponse>> getReservation(
-            @PathVariable Long reservationId,
-            @AuthenticationPrincipal UserPrincipal currentUser) {
+        // 예약 단건 조회
+        @GetMapping("/reservations/{reservationId}")
+        public ResponseEntity<ApiResponse<MeetingRoomReservationResponse>> getReservation(
+                @PathVariable(name = "reservationId") Long reservationId,
+                @AuthenticationPrincipal UserPrincipal currentUser) {
 
-        MeetingRoomReservationResponse reservation = reservationService.getMyReservation(
-                reservationId,
-                currentUser.id());
+                MeetingRoomReservationResponse reservation = reservationService
+                        .getMyReservation(reservationId, currentUser.id());
 
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        "스터디룸 예약을 조회했습니다.",
-                        reservation));
-    }
+                return ResponseEntity.ok(ApiResponse.success("스터디룸 예약을 조회했습니다.", reservation));
+        }
 }
