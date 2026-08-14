@@ -33,7 +33,11 @@ export default function AdminMainPage() {
         const logs = logResponse.data?.data ?? [];
         setRecentLogs(logs.slice(0, 5));
       } catch (error) {
-        console.error('대시보드 데이터 조회 실패:', error);
+        console.error(
+          '대시보드 데이터 조회 실패:',
+          error.response?.status,
+          error.response?.data ?? error,
+        );
       } finally {
         setIsLoading(false);
       }
