@@ -40,7 +40,8 @@ function SeatPage({ mode }) {
 
     // 스터디룸 페이지
     if (mode === 'room') {
-      if (seat.type !== 'room' || seat.status !== 'available') return;
+      // 스터디룸 사용 중에도 다른 시간을 예약할 수 있으니 선택가능
+      if (seat.type !== 'room') return;
     }
 
     selectSeat(seat.id);
