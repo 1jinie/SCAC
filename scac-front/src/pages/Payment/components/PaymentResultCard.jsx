@@ -18,6 +18,7 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
   const resetAll = useResetStore();
   const { state } = useLocation();
   const paymentId = state?.paymentId;
+  const [closeTimer, setCloseTimer] = useState(10);
 
   useEffect(() => {
     if (!isSuccess || paymentId == null) {
@@ -78,12 +79,15 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
 
   useEffect(() => {
     const timer = setTimeout(() => {
+      setCloseTimer(closeTimer - 1);
+      console.log('timer' + closeTimer);
+    }, 1000);
+    if (closeTimer <= 0) {
       resetAll();
       navi('/');
-    }, 10000);
-
-    return () => clearTimeout(timer);
-  }, [navi, resetAll]);
+      return () => clearTimeout(timer);
+    }
+  }, [navi, resetAll, closeTimer]);
   return (
     <div className={`payment_status_box ${isSuccess ? 'success' : 'fail'}`}>
       <img
@@ -95,8 +99,6 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
         alt={isSuccess ? '결제 성공' : '결제 실패'}
         className="payment_result_icon"
       />
-
-      <h2>{isSuccess ? '결제 완료' : '결제 실패'}</h2>
 
       <div className="payment_status_container">
         <div className="payment_status_row">
@@ -148,7 +150,7 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
           다시 확인해 주세요.
         </p>
       )}
-      <p className="payment_timer">10초 후 자동으로 종료됩니다</p>
+      <p className="payment_timer">{closeTimer}초 후 자동으로 종료됩니다</p>
       <SelectButton
         nextPage={'/'}
         text={'홈으로 돌아가기'}
