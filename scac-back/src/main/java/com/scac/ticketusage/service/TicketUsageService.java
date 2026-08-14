@@ -83,17 +83,8 @@ public class TicketUsageService {
           current.ready();
 
           usage.startPeriod(ticket.getValidDays());
-
-          // 현재 입실 중이면 check_inout의 usage_id 변경
-          checkinRepository
-              .findFirstByUserIdAndCheckinStatusInOrderByCheckinAtDesc(userId,
-                  List.of(CheckinStatus.USING, CheckinStatus.AWAY))
-              .ifPresent(checkin -> checkin.changeUsage(usage.getUsageId()));
         }
-      } else {
-        // 현재 USING 이용권 없으면 새 기간권 바로 사용
-        usage.startPeriod(ticket.getValidDays());
-      }
+      } 
 
       // 기간권 사용시 check_inout 테이블의 usage_id 전환
       TicketUsage savedUsage = ticketUsageRepository.save(usage);
