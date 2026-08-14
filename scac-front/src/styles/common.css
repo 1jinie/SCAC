@@ -106,4 +106,8 @@
   font-size: 36px;
   margin-top: 36px;
   margin-right: 36px;
+  z-index: 1;
+  position: absolute;
+  right: 16px;
+  top: 16px;
 }
