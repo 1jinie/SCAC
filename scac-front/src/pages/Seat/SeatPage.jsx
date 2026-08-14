@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../store/authStore';
 import { seatStore } from '../../store/seatStore';
 import { roomStore } from '../../store/roomStore';
 import { reservationStore } from '../../store/reservationStore';
@@ -10,6 +11,7 @@ import { checkInStore } from '../../store/checkInStore';
 
 function SeatPage({ mode }) {
   const [alertModal, setAlertModal] = useState(null);
+  const logout = useAuthStore((state) => state.logout);
   const seats = seatStore((state) => state.seats);
   const fetchSeats = seatStore((state) => state.fetchSeats);
   const selected = seatStore((state) => state.selectedSeat);
@@ -78,6 +80,8 @@ function SeatPage({ mode }) {
       });
       return;
     }
+
+    await logout();
 
     // 입실 성공
     checkInSeat(selected);

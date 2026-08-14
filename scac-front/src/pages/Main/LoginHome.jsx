@@ -62,6 +62,8 @@ function LoginHomePage() {
         return;
       }
 
+      await logout();
+
       setAlertModal({
         title: '입실',
         message: '재입실되었습니다',
@@ -148,6 +150,7 @@ function LoginHomePage() {
         },
       });
 
+      await logout();
       setShowChooseInModal(false);
     } catch (error) {
       console.error(error);
@@ -162,14 +165,23 @@ function LoginHomePage() {
   const handleMemberGoOut = async () => {
     const result = await memberGoOut();
 
+    if (!result.success) {
+      setAlertModal({
+        title: '외출 실패',
+        message: result.message,
+        onClose: () => setAlertModal(null),
+      });
+      return;
+    }
+
+    await logout();
+
     setAlertModal({
-      title: result.success ? '외출' : '외출 실패',
-      message: result.message,
+      title: '외출',
+      message: '외출 처리되었습니다',
       onClose: () => {
         setAlertModal(null);
-        if (result.success) {
-          navigate('/');
-        }
+        navigate('/');
       },
     });
   };
@@ -177,14 +189,24 @@ function LoginHomePage() {
   const handleMemberCheckOut = async () => {
     const result = await memberCheckOut();
 
+    if (!result.success) {
+      setAlertModal({
+        title: '퇴실 실패',
+        message: result.message,
+        onClose: () => {
+          setAlertModal(null);
+        },
+      });
+    }
+
+    await logout();
+
     setAlertModal({
-      title: result.success ? '퇴실' : '퇴실 실패',
-      message: result.message,
+      title: '퇴실',
+      message: '퇴실 처리되었습니다',
       onClose: () => {
         setAlertModal(null);
-        if (result.success) {
-          navigate('/');
-        }
+        navigate('/');
       },
     });
   };
