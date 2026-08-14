@@ -1,746 +1,345 @@
-# ☕ SCAC Backend
+# ☕ SCAC
 
-> **Study Cafe Access Control Backend**
-
----
-
-### ⚙️ Spring Boot REST API Server
-
-SCAC 키오스크 및 관리자 시스템의 비즈니스 로직과 데이터를 처리하는  
-Spring Boot 기반 백엔드 애플리케이션입니다.
+> **Study Cafe Access Control**  
+> 스터디카페 키오스크, 관리자 웹, Spring Boot API 서버와 RTOS 장치 연동 실습을 하나의 프로젝트로 구성한 풀스택 팀 프로젝트입니다.
 
 ---
 
 ## 📖 프로젝트 소개
 
-SCAC Backend는 스터디카페 키오스크와 관리자 웹 애플리케이션에서  
-공통으로 사용하는 REST API 서버입니다.
+SCAC는 스터디카페의 **회원/비회원 이용, 좌석 입·퇴실, 이용권 구매, 스터디룸 예약·결제, 관리자 운영 기능, 장치 상태 관리**를 통합하는 시스템입니다.
 
-회원과 인증, 이용권, 결제, 좌석, 입·퇴실, 스터디룸 예약, 관리자 기능과  
-장치 상태 및 로그를 처리하며 MySQL 데이터베이스와 연동하여 서비스 데이터를 관리합니다.
+프로젝트는 사용자 키오스크, 관리자 웹, 백엔드 서버, RTOS 연동 코드로 분리되어 있습니다.
 
-단순한 데이터 등록·수정·삭제 및 상태 변경에는 **Spring Data JPA**를 사용하고,  
-복잡한 조회가 필요한 일부 기능에는 **MyBatis**를 함께 사용합니다.
+```text
+SCAC
+├── scac-front    # 사용자용 Kiosk Frontend
+├── scac-admin    # 관리자용 Web Frontend
+├── scac-back     # Spring Boot REST API Server
+├── scac-rtos     # FreeRTOS POSIX 기반 장치 연동 실습 코드
+└── docs          # 작업 기록 및 프로젝트 문서
+```
 
 ---
 
-## 🎯 프로젝트 목표
+## 🎯 주요 목표
 
-- 키오스크와 관리자 애플리케이션을 위한 REST API 제공
-- 사용자와 관리자의 인증 흐름 분리
-- 회원, 이용권, 결제, 좌석 및 예약 데이터 관리
-- 입실·퇴실·외출·복귀 상태 관리
-- 실시간 좌석 및 스터디룸 현황 제공
-- 관리자용 회원·좌석·결제·로그·장치 관리 기능 제공
-- JWT 기반 인증 및 비밀번호 암호화 적용
-- 일관된 요청 검증과 공통 응답·예외 처리
-- AOP 기반 시스템 로그 기록
-- 유지보수와 협업이 쉬운 도메인 중심 구조 설계
+- 회원/비회원이 키오스크에서 좌석 및 스터디룸 서비스를 이용할 수 있는 흐름 구현
+- 시간권/기간권 구매와 스터디룸 예약 결제를 하나의 결제 도메인으로 통합
+- 관리자 웹에서 좌석, 예약, 이용권, 회원, 결제, 장치, 로그, 메모를 관리
+- JWT 기반 사용자/관리자 인증 및 권한 분리
+- JPA와 MyBatis를 역할에 맞게 함께 사용
+- Toss Payments 연동 및 개발용 Mock 카드 결제 지원
+- 이용권 만료 예정 SMS 알림과 시스템 스케줄러 구성
+- RTOS 장치 이벤트/명령 연동을 위한 통신 구조 실습
 
 ---
 
 ## ✨ 주요 기능
 
-### 👤 회원 및 인증
+### 👤 사용자 / 인증
 
 - 회원가입 및 비회원 등록
-- 사용자 로그인·토큰 재발급·로그아웃
-- 관리자 로그인·토큰 재발급·로그아웃
-- 회원 정보 조회
-- 입실 비밀번호 확인 및 변경
-- BCrypt 기반 비밀번호 암호화
-- JWT 기반 사용자 인증 및 인가
-- 관리자 전용 접근 제어 보완 진행 중
+- 전화번호 기반 로그인
+- JWT Access Token / Refresh Token 발급 및 재발급
+- 사용자 / 관리자 인증 흐름 분리
+- 입실 비밀번호 검증 및 변경
+- SMS 인증번호 발송 및 검증
+
+### 🪑 좌석 / 입·퇴실
+
+- 전체 좌석 및 사용 중 좌석 조회
+- 좌석 선택 후 입실
+- 외출 / 복귀 / 퇴실
+- 시간권 잔여시간 1분 단위 차감
+- 이용권 소진 시 다음 이용권 자동 전환 또는 자동 퇴실
+- 관리자 좌석 상태 변경 및 강제 퇴실
 
 ### 🎫 이용권
 
-- 이용권 목록 및 상세 조회
-- 이용권 등록·수정·삭제
-- 이용권 판매 상태 변경
-- 사용자 이용권 발급
-- 시간권 및 기간권 사용 상태 관리
-
-### 💳 결제
-
-- 결제 요청 생성
-- Toss Payments 결제 승인
-- 개발용 Mock 카드 결제 승인
-- 결제 단건 및 전체 내역 조회
-- 사용자별 결제 내역 조회
-- 결제 취소 및 취소 사유 관리
-- 결제 내역 삭제
-- 관리자 결제 조회·취소 권한 보완 진행 중
-- 기간·상태·결제수단별 검색 및 매출 통계 예정
-
-### 결제 취소 정책
-
-- 결제가 완료된 거래는 관리자 페이지에서 취소할 수 있습니다.
-- 결제 취소 시 PG 결제 취소와 함께 `Payment` 상태를 `CANCELED`로 변경합니다.
-- 해당 결제로 발급된 `TicketUsage`도 함께 `CANCELED` 처리됩니다.
-- 이미 사용 중이거나 사용 완료된 이용권은 결제 취소 대상에서 제외합니다.
-- 부분 환불은 지원하지 않으며, 미사용 이용권에 대한 전체 취소만 지원합니다.
-
-### 🪑 좌석 및 입·퇴실
-
-- 전체 좌석 현황 및 상세 조회
-- 사용 중인 좌석 조회
-- 회원·비회원 입실 준비 및 입실 처리
-- 외출·복귀·퇴실 처리
-- 관리자 좌석 상태 변경
-- 관리자 강제 퇴실
-- 이용시간 차감 및 시간 만료 처리 스케줄러 보완 중
+- 시간권 / 기간권 목록 조회
+- 관리자 이용권 등록·수정·삭제
+- 판매 상태 변경
+- 결제 완료 시 `TicketUsage` 발급
+- 좌석 이용 가능 이용권 보유 여부 확인
 
 ### 🏠 스터디룸 예약
 
 - 스터디룸 목록 및 상세 조회
-- 전체 예약 내역 조회
 - 날짜별 예약 가능 시간 조회
-- 스터디룸 예약 및 예약 취소
-- 관리자 예약 관리 기능 보완 중
+- 스터디룸 임시 예약 생성
+- 예약 결제 완료 후 `CONFIRMED` 처리
+- 결제 대기 30분 초과 시 자동 취소
+- 이용 시간에 따라 `IN_USE` → `COMPLETED` 상태 자동 전환
+- 사용자 및 관리자 예약 조회/취소
+
+### 💳 결제
+
+- 좌석 이용권 결제와 스터디룸 예약 결제 지원
+- 결제 요청 시 서버에서 상품/예약 금액 재검증
+- 실물 카드 단말기 흐름을 대신하는 Mock 카드 승인
+- Toss Payments 간편결제 승인 및 취소
+- 결제 완료 시 이용권/예약 이용내역 발급
+- 관리자 결제 내역 조회 및 취소
+- MyBatis View 기반 결제 이력 조회
 
 ### 🛠 관리자
 
-- 관리자 계정 관리
-- 대시보드 요약 정보 조회
-- 회원 목록·상세 조회 및 페널티 관리
-- 좌석 현황·이용자 정보·강제 퇴실 관리
-- 이용권·결제·예약 관리
-- 인수인계 메모 CRUD
-- 시스템 로그 및 좌석 로그 조회
+- 대시보드 요약 통계
+- 좌석 관리
+- 스터디룸 예약 관리
+- 이용권 관리
+- 회원 검색 및 제재
+- 결제 검색·필터·취소
 - 장치 상태 및 장치 로그 관리
+- 시스템 로그 조회
+- 인수인계 메모 CRUD
 
-### 🖨 장치 및 시스템
+### 🔔 알림 / 스케줄링
 
-- 장치 전체·상세 상태 조회
-- 장치별 로그 조회
-- 관리자 장치 상태 변경
-- RTOS 장치 이벤트 수신 및 로그 저장
-- AOP 기반 관리자 시스템 로그 기록
-- 출입문 작동 신호 연동 예정
-
----
-
-## 🛠 Tech Stack
-
-### Backend
-
-- Java 21
-- Spring Boot 3.5.16
-- Spring Web
-- Spring Security
-- Spring Data JPA
-- MyBatis 3.0.5
-- Bean Validation
-- JJWT 0.13.0
-- Lombok
-- Spring Dotenv
-- Gradle
-
-### External API
-
-- Toss Payments API
-
-### Database
-
-- MySQL
-
-### Development Tools
-
-- Visual Studio Code
-- Postman
-- MySQL Workbench
-- Git
-- GitHub
+- 시간권 잔여 30분 이하 만료 예정 문자 알림
+- 기간권 24시간 이내 만료 예정 문자 알림
+- SOLAPI 발송 결과 동기화
+- 사용자 제재 기간 만료 자동 해제
+- 좌석 이용시간 차감 및 자동 퇴실
+- 스터디룸 예약 상태 자동 갱신
 
 ---
 
 ## 🏗 System Architecture
 
 ```text
-┌──────────────────────┐
-│   SCAC Kiosk React   │
-│     scac-front       │
-└──────────┬───────────┘
-           │
-           │ REST API / JWT
-           │
-           ▼
-┌─────────────────────────────┐
-│      SCAC Spring Boot       │
-│          scac-back          │
-│                             │
-│  Controller                 │
-│      ↓                      │
-│  Service                    │
-│      ↓                      │
-│  Repository / Mapper        │
-└─────────────┬───────────────┘
-              │
-              │ JPA / MyBatis
-              │
-              ▼
-┌─────────────────────────────┐
-│            MySQL            │
-└─────────────────────────────┘
-              ▲
-              │
-              │ REST API / JWT
-              │
-┌─────────────┴───────────────┐
-│     SCAC Admin React        │
-│        scac-admin           │
-└─────────────────────────────┘
-
-SCAC Backend ───── Toss Payments API
-      │
-      └─────────── RTOS Device Event API
+┌──────────────────────┐        ┌──────────────────────┐
+│  SCAC Kiosk Frontend │        │  SCAC Admin Frontend │
+│     scac-front       │        │     scac-admin       │
+│   React / Zustand    │        │   React / Zustand    │
+└──────────┬───────────┘        └──────────┬───────────┘
+           │ REST API / JWT                         │
+           └──────────────────┬─────────────────────┘
+                              ▼
+                  ┌────────────────────────┐
+                  │      scac-back         │
+                  │ Spring Boot REST API   │
+                  │ JPA + MyBatis + JWT    │
+                  └───────────┬────────────┘
+                              │
+              ┌───────────────┼────────────────┐
+              ▼               ▼                ▼
+          ┌───────┐     ┌──────────────┐   ┌─────────┐
+          │ MySQL │     │ Toss Payments│   │ SOLAPI  │
+          └───────┘     └──────────────┘   └─────────┘
+                              ▲
+                              │ HTTP 연동 실습
+                       ┌──────┴───────┐
+                       │  scac-rtos   │
+                       │ FreeRTOS/C   │
+                       └──────────────┘
 ```
 
 ---
 
-## 📂 Project Structure
+## 🛠 Tech Stack
+
+| 영역           | 기술                                                                                                                |
+| -------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Kiosk Frontend | React 19.2.7, React Router 7.18.1, Axios, Zustand, React Hook Form, Toss Payments SDK, QRCode React, CSS            |
+| Admin Frontend | React 19.2.7, React Router 7.18.1, Axios, Zustand, CSS                                                              |
+| Backend        | Java 21, Spring Boot 3.5.16, Spring Security, Spring Data JPA, MyBatis 3.0.5, Bean Validation, JJWT, Lombok, Gradle |
+| Database       | MySQL                                                                                                               |
+| External API   | Toss Payments, SOLAPI, SMS Provider(Mock / CoolSMS / Naver SENS)                                                    |
+| RTOS           | C11, FreeRTOS POSIX Port, CMake 3.16+, pthread                                                                      |
+| Collaboration  | Git, GitHub, Figma, Postman, MySQL Workbench                                                                        |
+
+---
+
+## 📂 Repository Structure
 
 ```text
-scac-back
-├── src
-│   ├── main
-│   │   ├── java
-│   │   │   └── com
-│   │   │       └── scac
-│   │   │           ├── admin
-│   │   │           ├── auth
-│   │   │           ├── checkin
-│   │   │           ├── device
-│   │   │           ├── global
-│   │   │           │   ├── config
-│   │   │           │   ├── controller
-│   │   │           │   ├── enums
-│   │   │           │   ├── exception
-│   │   │           │   ├── log
-│   │   │           │   ├── response
-│   │   │           │   └── scheduler
-│   │   │           ├── meetingroom
-│   │   │           ├── memo
-│   │   │           ├── payment
-│   │   │           ├── seat
-│   │   │           ├── system
-│   │   │           ├── ticket
-│   │   │           ├── ticketusage
-│   │   │           └── user
-│   │   │
-│   │   └── resources
-│   │       ├── mappers
-│   │       │   └── payment
-│   │       │       └── PaymentMapper.xml
-│   │       └── application.properties
-│   │
-│   └── test
-│       └── java
-│           └── com
-│               └── scac
-│                   └── ScacBackApplicationTests.java
-│
-├── .gitignore
-├── build.gradle
-├── gradlew
-├── gradlew.bat
-├── settings.gradle
-└── README.md
+.
+├── README.md
+├── .env example
+├── docs
+│   └── worklog
+│       ├── 2026-07.md
+│       └── 2026-08.md
+├── scac-front
+│   ├── public
+│   ├── src
+│   ├── package.json
+│   └── README.md
+├── scac-admin
+│   ├── public
+│   ├── src
+│   ├── package.json
+│   └── README.md
+├── scac-back
+│   ├── src
+│   ├── http
+│   ├── build.gradle
+│   └── README.md
+└── scac-rtos
+    ├── config
+    ├── src
+    ├── CMakeLists.txt
+    └── Makefile
 ```
-
-> 실제 폴더 구조는 기능 구현과 리팩터링에 따라 변경될 수 있습니다.
-
-> 공통 설정과 예외, 응답, Enum, 로그 기능은 `global` 패키지에서 관리합니다.
-
----
-
-## 📦 Domain Structure
-
-각 기능은 도메인 단위로 분리하여 관리합니다.
-
-```text
-payment
-├── client
-│   └── TossPaymentClient.java
-├── controller
-│   └── PaymentController.java
-├── dto
-│   ├── PaymentRequestDTO.java
-│   ├── PaymentConfirmDTO.java
-│   ├── PaymentCancelDTO.java
-│   ├── PaymentHistoryDTO.java
-│   ├── PaymentResDTO.java
-│   └── TossPaymentResponse.java
-├── entity
-│   └── Payment.java
-├── mapper
-│   └── PaymentMapper.java
-├── repository
-│   └── PaymentRepository.java
-└── service
-    └── PaymentService.java
-```
-
-- `client`: 외부 API 요청 처리
-- `controller`: HTTP 요청 및 응답 처리
-- `dto`: 요청·응답 및 계층 간 데이터 전달
-- `domain` / `entity`: 데이터베이스 테이블과 매핑되는 객체
-- `repository`: JPA 기반 CRUD 및 단순 조회
-- `mapper`: MyBatis 기반 복잡한 조회
-- `service`: 비즈니스 로직 및 트랜잭션 처리
-- `scheduler`: 정기 실행이 필요한 작업 처리
-
----
-
-## 🔄 Request Flow
-
-```text
-Client Request
-      ↓
-Security Filter / JWT Validation
-      ↓
-Controller
-      ↓
-Request DTO Validation
-      ↓
-Service
-      ↓
-Repository / Mapper / External API Client
-      ↓
-MySQL / External API
-      ↓
-Response DTO
-      ↓
-ApiResponse
-      ↓
-Client Response
-```
-
----
-
-## 📬 Common Response
-
-대부분의 API는 공통 응답 객체인 `ApiResponse`를 사용합니다.
-
-```json
-{
-  "success": true,
-  "message": "요청을 성공적으로 처리했습니다.",
-  "data": {}
-}
-```
-
-요청 검증 실패, 존재하지 않는 리소스, 비즈니스 예외 등은  
-`GlobalExceptionHandler`에서 공통 형식으로 처리합니다.
-
----
-
-## 🗃 JPA & MyBatis
-
-SCAC Backend는 JPA와 MyBatis를 함께 사용합니다.
-
-| 구분             | 사용 기술 | 주요 용도                          |
-| ---------------- | --------- | ---------------------------------- |
-| 등록·수정·삭제   | JPA       | 엔티티 저장 및 상태 변경           |
-| 단건 조회        | JPA       | 식별자를 이용한 기본 조회          |
-| 단순 목록 조회   | JPA       | 단일 조건 또는 연관관계 기반 조회  |
-| 복잡한 검색      | MyBatis   | 여러 테이블과 조건이 결합된 조회   |
-| 관리자 목록 조회 | MyBatis   | 결제 내역 등 화면에 맞춘 복합 조회 |
-
-### 사용 원칙
-
-```text
-단순 CRUD 및 데이터 변경
-→ Spring Data JPA
-
-복잡한 조건 검색 및 화면 맞춤 조회
-→ MyBatis
-```
-
-같은 기능을 JPA와 MyBatis로 중복 구현하지 않으며,  
-복잡한 조회가 필요한 시점에 해당 도메인의 Mapper를 추가합니다.
-
----
-
-## 📡 API
-
-기본 API 주소:
-
-```text
-http://localhost:8888/api
-```
-
-### 주요 API 영역
-
-| Domain        | Base Path            | Description                         |
-| ------------- | -------------------- | ----------------------------------- |
-| User Auth     | `/api/auth`          | 사용자 로그인·토큰 재발급·로그아웃  |
-| Admin Auth    | `/api/admin/auth`    | 관리자 로그인·토큰 재발급·로그아웃  |
-| Users         | `/api/users`         | 회원가입·비회원 등록·회원 정보 관리 |
-| Tickets       | `/api/tickets`       | 이용권 관리                         |
-| Ticket Usages | `/api/ticket-usages` | 사용자 이용권 발급 및 사용 관리     |
-| Payments      | `/api/payments`      | 결제 생성·승인·조회·취소 관리       |
-| Seats         | `/api/seats`         | 좌석 현황 조회                      |
-| Check-in      | `/api/checkin`       | 입실·외출·복귀·퇴실 관리            |
-| Rooms         | `/api/rooms`         | 스터디룸 조회                       |
-| Reservations  | `/api/meeting-rooms` | 스터디룸 예약 및 가능 시간 조회     |
-| Admin         | `/api/admin`         | 관리자 대시보드·회원·좌석·계정 관리 |
-| Admin Memos   | `/api/admin/memos`   | 관리자 인수인계 메모 관리           |
-| Admin Logs    | `/api/admin/logs`    | 시스템 및 좌석 로그 조회            |
-| Devices       | `/api/devices`       | 장치 상태·로그·RTOS 이벤트 관리     |
-| Test          | `/api/test`          | 서버 연결 확인                      |
-
-> 전체 엔드포인트와 요청·응답 명세는 프로젝트 사이트의 API 명세서에서 관리합니다.
-
----
-
-## 💳 Payment API
-
-| Method   | Endpoint                                 | Description                       | Authentication         |
-| -------- | ---------------------------------------- | --------------------------------- | ---------------------- |
-| `POST`   | `/api/payments`                          | 결제 요청 생성                    | 사용자 또는 비회원 JWT |
-| `POST`   | `/api/payments/confirm`                  | Toss Payments 결제 승인           | 사용자 또는 비회원 JWT |
-| `POST`   | `/api/payments/{paymentId}/mock-confirm` | 개발용 Mock 카드 결제 승인        | 사용자 또는 비회원 JWT |
-| `GET`    | `/api/payments/{paymentId}`              | 결제 단건 조회                    | 관리자 권한 보완 중    |
-| `GET`    | `/api/payments`                          | 전체 또는 사용자별 결제 내역 조회 | 관리자 권한 보완 중    |
-| `PATCH`  | `/api/payments/{paymentId}/cancel`       | 결제 취소                         | 관리자 권한 보완 중    |
-| `DELETE` | `/api/payments/{paymentId}`              | 결제 내역 삭제                    | 관리자 권한 보완 중    |
-
-사용자별 결제 내역은 Query Parameter로 조회합니다.
-
-```http
-GET /api/payments?userId=1
-```
-
-### 결제 요청 생성 예시
-
-```http
-POST /api/payments
-Authorization: Bearer {accessToken}
-Content-Type: application/json
-```
-
-```json
-{
-  "ticketId": 1,
-  "amount": 4000,
-  "paymentMethod": "CARD"
-}
-```
-
-### Toss 결제 승인 예시
-
-```http
-POST /api/payments/confirm
-Authorization: Bearer {accessToken}
-Content-Type: application/json
-```
-
-```json
-{
-  "paymentKey": "test-payment-key",
-  "orderId": "order-20260805-001",
-  "amount": 4000
-}
-```
-
-### Mock 카드 결제 승인 예시
-
-```http
-POST /api/payments/1/mock-confirm
-Authorization: Bearer {accessToken}
-```
-
-### 결제 취소 요청 예시
-
-```http
-PATCH /api/payments/1/cancel
-Content-Type: application/json
-```
-
-```json
-{
-  "cancelReason": "사용자 요청"
-}
-```
-
-> 취소 사유는 필수이며 최대 200자까지 입력할 수 있습니다.
-
-> 실제 서비스에서는 결제 내역을 삭제하기보다  
-> 상태를 `CANCELED`로 변경하고 취소 정보를 보존하는 것을 기본 원칙으로 합니다.
-
----
-
-## 🔐 Authentication API
-
-### 사용자 인증
-
-| Method | Endpoint            | Description                |
-| ------ | ------------------- | -------------------------- |
-| `POST` | `/api/auth/login`   | 사용자 로그인              |
-| `POST` | `/api/auth/refresh` | 사용자 Access Token 재발급 |
-| `POST` | `/api/auth/logout`  | 사용자 로그아웃            |
-
-### 관리자 인증
-
-| Method | Endpoint                  | Description                |
-| ------ | ------------------------- | -------------------------- |
-| `POST` | `/api/admin/auth/login`   | 관리자 로그인              |
-| `POST` | `/api/admin/auth/refresh` | 관리자 Access Token 재발급 |
-| `POST` | `/api/admin/auth/logout`  | 관리자 로그아웃            |
-
-인증이 필요한 요청은 다음 형식으로 Access Token을 전달합니다.
-
-```http
-Authorization: Bearer {accessToken}
-```
-
----
-
-## 🖨 Device API
-
-| Method  | Endpoint                         | Description              |
-| ------- | -------------------------------- | ------------------------ |
-| `GET`   | `/api/devices`                   | 전체 장치 현재 상태 조회 |
-| `GET`   | `/api/devices/{deviceId}`        | 특정 장치 현재 상태 조회 |
-| `GET`   | `/api/devices/{deviceId}/logs`   | 특정 장치 로그 조회      |
-| `PATCH` | `/api/devices/{deviceId}/status` | 장치 상태 변경           |
-| `POST`  | `/api/devices/events`            | RTOS 장치 이벤트 수신    |
-
-> 관리자 화면과 장치 API의 최종 경로 및 접근 권한을 통합 점검 중입니다.
 
 ---
 
 ## 🚀 Getting Started
 
-### 1. Repository Clone
+### 1. Backend
 
-```bash
-git clone [SCAC Repository URL]
-cd SCAC-main/scac-back
-```
+필수 환경:
 
-또는 백엔드 저장소를 별도로 Clone한 경우:
+- Java 21
+- MySQL
 
-```bash
-git clone [SCAC Backend Repository URL]
-cd scac-back
-```
-
-### 2. Environment Variables
-
-`scac-back` 최상위 경로에 `.env` 파일을 생성합니다.
+`scac-back/.env` 예시:
 
 ```env
 DB_URL=jdbc:mysql://localhost:3306/scac
-DB_USERNAME=your_username
+DB_USERNAME=scac
 DB_PASSWORD=your_password
-JWT_SECRET=your_jwt_secret
-TOSS_SECRET_KEY=your_toss_secret_key
+JWT_SECRET=your_long_random_secret
+TOSS_SECRET_KEY=test_sk_...
+
+# 이용권 만료 알림을 실제 발송할 담당자만 true
+NOTIFICATION_ENABLED=false
+SOLAPI_API_KEY=
+SOLAPI_API_SECRET=
+SOLAPI_SENDER_NUMBER=
 ```
 
-> 실제 `.env` 파일과 비밀키는 Git에 업로드하지 않습니다.
-
-> 공용 데이터베이스를 사용하는 경우 팀에서 공유한 접속 정보를 입력합니다.
-
-### 3. Run Application
-
-#### Windows
+실행:
 
 ```bash
-gradlew.bat bootRun
-```
+cd scac-back
 
-#### macOS / Linux
+# Windows
+./gradlew.bat bootRun
 
-```bash
+# macOS / Linux
 ./gradlew bootRun
 ```
 
-또는 `ScacBackApplication.java`의 `main()` 메서드를 실행합니다.
-
-### 4. Server Address
+기본 주소:
 
 ```text
 http://localhost:8888
 ```
 
-### 5. Connection Test
-
-```http
-GET http://localhost:8888/api/test
-```
-
-정상적으로 실행된 경우 서버 연결 성공 응답을 반환합니다.
-
----
-
-## ⚙️ Application Configuration
-
-현재 `application.properties`의 주요 설정은 다음과 같습니다.
-
-```properties
-spring.application.name=scac-back
-server.port=8888
-
-spring.datasource.url=${DB_URL}
-spring.datasource.username=${DB_USERNAME}
-spring.datasource.password=${DB_PASSWORD}
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-
-spring.jpa.hibernate.ddl-auto=none
-spring.jpa.show-sql=false
-spring.jpa.open-in-view=false
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
-
-jwt.secret=${JWT_SECRET}
-jwt.access-expiration=1800000
-jwt.refresh-expiration=604800000
-
-mybatis.mapper-locations=classpath:mappers/**/*.xml
-mybatis.configuration.map-underscore-to-camel-case=true
-
-spring.config.import=optional:file:.env[.properties]
-
-app.frontend-url=http://localhost:3000,http://localhost:3001
-
-toss.secret-key=${TOSS_SECRET_KEY}
-```
-
-- Access Token 유효시간: 30분
-- Refresh Token 유효시간: 7일
-- 키오스크 개발 서버: `http://localhost:3000`
-- 관리자 개발 서버: `http://localhost:3001`
-
-> 공용 데이터베이스의 테이블이 임의로 변경되지 않도록  
-> `spring.jpa.hibernate.ddl-auto=none`을 사용합니다.
-
----
-
-## 🧪 Test
-
-### Compile
-
-#### Windows
+### 2. Kiosk Frontend
 
 ```bash
-gradlew.bat clean compileJava
+cd scac-front
+npm install
+npm start
 ```
 
-#### macOS / Linux
+`.env` 예시:
 
-```bash
-./gradlew clean compileJava
+```env
+PORT=3000
+REACT_APP_API_URL=http://localhost:8888
+REACT_APP_TOSS_CLIENT_KEY=test_ck_...
 ```
 
-### 전체 테스트
-
-#### Windows
-
-```bash
-gradlew.bat test
-```
-
-#### macOS / Linux
-
-```bash
-./gradlew test
-```
-
-### API 테스트
-
-API 요청과 응답은 Postman을 이용하여 확인합니다.
-
-주요 확인 항목:
-
-- 회원·비회원 로그인 및 JWT 발급
-- 이용권 목록과 상태 변경
-- 결제 생성·승인·취소
-- 입실·외출·복귀·퇴실 흐름
-- 관리자 화면 API 연동
-- 장치 상태 및 로그 수신
-- 권한이 없는 요청의 차단 여부
-
----
-
-## 🔐 Security
-
-- 사용자와 관리자의 인증 API를 분리합니다.
-- 인증이 필요한 요청에는 JWT Access Token을 사용합니다.
-- Refresh Token을 이용하여 Access Token을 재발급합니다.
-- 비밀번호는 BCrypt로 암호화하여 저장합니다.
-- 세션을 사용하지 않는 Stateless 방식으로 동작합니다.
-- CORS 허용 Origin은 키오스크와 관리자 개발 서버로 제한합니다.
-- 환경변수와 비밀키는 `.env`로 관리합니다.
-- 클라이언트 요청값은 Bean Validation으로 검증합니다.
-- 관리자 전용 API의 세부 권한 정책은 통합 테스트와 함께 보완 중입니다.
-
----
-
-## 🧾 Logging & Scheduling
-
-### Logging
-
-- `ApiResponse`를 이용한 공통 응답 형식
-- `GlobalExceptionHandler`를 이용한 공통 예외 처리
-- `@AutoLog`와 `SystemLogAspect`를 이용한 관리자 작업 로그 저장
-- 장치 이벤트 수신 시 장치 로그 저장
-
-### Scheduling
-
-- 이용권 잔여시간 차감 및 시간 만료 처리
-- 사용자 페널티 상태 갱신
-
-> 스케줄러의 세부 만료 조건과 강제 퇴실 흐름은 통합 테스트를 진행하며 보완하고 있습니다.
-
----
-
-## 📌 Development Convention
-
-### Package
+기본 개발 주소:
 
 ```text
-com.scac.{domain}.{layer}
+http://localhost:3000
 ```
 
-예시:
+### 3. Admin Frontend
+
+```bash
+cd scac-admin
+npm install
+npm start
+```
+
+`.env` 예시:
+
+```env
+PORT=3001
+REACT_APP_API_URL=http://localhost:8888
+```
+
+관리자 개발 주소:
 
 ```text
-com.scac.payment.controller
-com.scac.payment.dto
-com.scac.payment.entity
-com.scac.payment.repository
-com.scac.payment.service
+http://localhost:3001
 ```
 
-### Naming
+> `REACT_APP_API_URL`을 생략하면 현재 브라우저 hostname의 `:8888`을 API 서버로 사용합니다.
 
-| Type         | Convention                                              | Example                                       |
-| ------------ | ------------------------------------------------------- | --------------------------------------------- |
-| Class        | PascalCase                                              | `PaymentService`                              |
-| Method       | camelCase                                               | `cancelPayment`                               |
-| Variable     | camelCase                                               | `paymentId`                                   |
-| Database     | snake_case                                              | `payment_id`                                  |
-| Constant     | UPPER_SNAKE_CASE                                        | `PAYMENT_COMPLETED`                           |
-| Request DTO  | `{Domain}Request` 또는 `{Domain}Req`                    | `CheckinRequest`, `LoginReq`                  |
-| Response DTO | `{Domain}Response`, `{Domain}Res` 또는 `{Domain}ResDTO` | `CheckinResponse`, `UserRes`, `PaymentResDTO` |
+### 4. RTOS
 
-> DTO 명명 방식은 기존 도메인별 구현 차이가 있어  
-> 최종 리팩터링 시 하나의 규칙으로 통일할 예정입니다.
+`scac-rtos`는 FreeRTOS POSIX 포트를 사용한 장치 연동 실습 코드입니다. **현재 스냅샷은 백엔드 API 계약과 빌드 코드 정리가 필요한 연동 진행 상태**입니다.
 
-### API
+필요 환경:
 
-- URL에는 명사를 사용합니다.
-- 리소스는 가능한 한 복수형으로 표현합니다.
-- HTTP Method로 작업의 종류를 구분합니다.
-- 요청과 응답에 Entity를 직접 노출하지 않고 DTO를 사용합니다.
-- 성공 응답은 가능한 한 `ApiResponse` 형식으로 통일합니다.
+- Linux / Ubuntu
+- GCC
+- CMake 3.16+
+- FreeRTOS-Kernel
 
-```text
-GET    /api/payments
-POST   /api/payments
-PATCH  /api/payments/{paymentId}/cancel
+현재 백엔드 기본 포트는 `8888`이므로 실행 시 서버 URL을 명시하는 편이 안전합니다.
+
+```bash
+cd scac-rtos
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+cmake --build build -j
+./build/day05_rtos http://localhost:8888
 ```
+
+---
+
+## 🔐 Authentication & Security
+
+- 사용자 권한: `USER`, `GUEST`
+- 관리자 권한: `SUPER_ADMIN`, `STAFF`
+- JWT 기반 Stateless 인증
+- Access Token: 30분
+- Refresh Token: 7일
+- BCrypt 비밀번호 암호화
+- 관리자 API(`/api/admin/**`)는 백엔드에서 관리자 Role을 요구
+- 프론트 Axios Interceptor에서 Access Token 자동 첨부 및 401 발생 시 Refresh Token 재발급 시도
+
+> 현재 관리자 프론트의 `AdminPrivateRoute` 컴포넌트는 구현되어 있지만 개발 편의를 위해 실제 Router 적용 부분은 주석 처리되어 있습니다.
+
+---
+
+## 📬 Common API Response
+
+백엔드 공통 응답 필드는 `isSuccess`, `message`, `data`입니다.
+
+```json
+{
+  "isSuccess": true,
+  "message": "요청을 성공적으로 처리했습니다.",
+  "data": {}
+}
+```
+
+---
+
+## 📌 Current Integration Notes
+
+2026-08-14 코드 기준으로 다음 내용을 README에 명확히 구분합니다.
+
+- ✅ 좌석 이용권과 스터디룸 예약 결제가 `Payment` 흐름으로 통합됨
+- ✅ 관리자 결제 조회 API가 `/api/admin/payments`로 분리됨
+- ✅ 결제 이력 조회는 `vw_payment_history` + MyBatis 사용
+- ✅ SOLAPI 기반 이용권 만료 예정 알림 코드 추가
+- ✅ 회원관리, 결제 필터, 장치/로그/메모 관리자 화면 존재
+- ⚠️ 관리자 프론트 보호 라우트는 현재 개발용으로 비활성화 상태
+- ⚠️ RTOS 코드가 호출하는 `/api/commands`, `/api/faults`, `/api/devices/health` 경로는 현재 `scac-back`에 구현되어 있지 않아 API 계약 정리가 필요
+- ⚠️ `scac-rtos/Makefile`의 기본 실행 URL은 `8080`이므로 백엔드 `8888`과 맞추어 수정 필요
+- ⚠️ 현재 `scac-rtos/Makefile` 명령부가 탭이 아닌 공백 들여쓰기를 사용하고, `src/main.c`의 Health Check JSON 선언에도 문법 정리가 필요해 RTOS는 바로 통합 실행 가능한 상태가 아님
+- ⚠️ `GET /api/meeting-rooms/**`가 Public으로 허용되어 있어 `/api/meeting-rooms/admin/reservations`도 현재 인증 없이 매칭됨. 관리자 전용 의도라면 Security 경로 정리 필요
+- ⚠️ 실제 배포용 CORS는 현재 모든 Origin 허용 설정을 개발/시연 환경에 맞게 제한해야 함
 
 ---
 
@@ -749,73 +348,29 @@ PATCH  /api/payments/{paymentId}/cancel
 | Name   | Role                                                      |
 | ------ | --------------------------------------------------------- |
 | 김수영 | 회원 · 인증 · 권한 · 입실 비밀번호 관리 · DB 설계 및 관리 |
-| 장원진 | 좌석 · 예약 · 입실/퇴실 · Git 저장소/Vercel 배포 관리     |
+| 장원진 | 좌석 · 예약 · 입실/퇴실 · Git 저장소 및 배포 관리         |
 | 이지현 | 결제 · 이용권 · 관리자 · 장치 관리 · 프로젝트 문서 관리   |
 
 ---
 
 ## 📅 Development Period
 
-2026.07.03 ~ 2026.09.02
-
----
-
-## 📌 Project Status
-
-| Domain                       | Status         |
-| ---------------------------- | -------------- |
-| 프로젝트 기본 설정           | ✅ Complete    |
-| 데이터베이스 연결            | ✅ Complete    |
-| 공통 응답 및 예외 처리       | ✅ Complete    |
-| 이용권 관리 API              | ✅ Complete    |
-| 사용자·관리자 인증 및 권한   | 🟡 In Progress |
-| 결제 및 환불 관리            | 🔵 In Review   |
-| 좌석 및 입·퇴실              | 🔵 In Review   |
-| 스터디룸 예약                | 🔵 In Review   |
-| 관리자 API 연동              | 🟡 In Progress |
-| 장치 상태 및 RTOS 이벤트 API | 🔵 In Review   |
-| Frontend ↔ Backend 통합      | 🟡 In Progress |
-| 통합 테스트 및 버그 수정     | 🟡 In Progress |
-| API 및 프로젝트 문서화       | 🟡 In Progress |
-| 출입문 하드웨어 연동         | ⚪ Pending     |
-
----
-
-## 📅 Development Milestone
-
-| Milestone                      | Target Date | Status         |
-| ------------------------------ | ----------- | -------------- |
-| 백엔드 기본 구조 설정          | 2026.07.23  | ✅ Complete    |
-| 핵심 Backend 기능 구현 및 보완 | 2026.08.14  | 🟡 In Progress |
-| Frontend ↔ Backend 통합        | 2026.08.14  | 🟡 In Progress |
-| 전체 기능 테스트 및 안정화     | 2026.08.28  | 🟡 In Progress |
-| 최종 발표                      | 2026.09.02  | ⚪ Pending     |
-
----
-
-## ⚠️ Known Issues & Pending Tasks
-
-- 관리자 로그인 이후 보호 라우트와 토큰 저장 흐름 통합
-- 관리자 API에 대한 역할 기반 접근 권한 보완
-- 관리자 장치 화면과 Backend API 경로 최종 통일
-- 비회원 등록 후 이용권 구매 흐름 오류 수정
-- 이용시간 만료 및 강제 퇴실 스케줄러 검증
-- 출입문 작동 신호와 실제 하드웨어 연동
-- API 명세서·README·ERD 최종 현행화
+**2026.07.03 ~ 2026.09.02**
 
 ---
 
 ## 📝 Documentation Version
 
-- **README v2.1**
-- Last Updated: 2026.08.05
+- **README v3.0**
+- Last Updated: **2026.08.14**
 
 ### History
 
 - README v1.0 (2026.07.22)
 - README v1.1 (2026.07.23)
-- README v2.0 (2026.08.05) — 8월 4일 프로젝트 구조 및 API 기준 현행화
+- README v2.0 (2026.08.05)
 - README v2.1 (2026.08.05)
+- README v3.0 (2026.08.14)
 
 ---
 
