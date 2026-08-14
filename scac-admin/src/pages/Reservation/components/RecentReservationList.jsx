@@ -9,6 +9,7 @@ const STATUS_LABELS = {
   IN_USE: '이용 중',
   COMPLETED: '이용 완료',
   USER_CANCELED: '사용자 취소',
+  CANCELED: '예약 취소',
 };
 
 export default function RecentReservationList({ reservations, onAdminCancel }) {
@@ -78,7 +79,7 @@ export default function RecentReservationList({ reservations, onAdminCancel }) {
                   </span>
                 </td>
                 <td>
-                  {reservation.status === 'RESERVED' ? (
+                  {reservation.status === 'CONFIRMED' ? (
                     <button
                       type="button"
                       className="admin_table_cancel_button"
