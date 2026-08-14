@@ -1,12 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../store/authStore';
-import { checkInStore } from '../../store/checkInStore';
+
 import { postSendCode, postVerifyCode } from '../../api/authApi';
+import { useAuthStore } from '../../store/authStore';
+
 import './css/NonSignup.css';
 
 function NonmemberSignup() {
   const navigate = useNavigate();
+
+  const guestSignUp = useAuthStore((state) => state.guestSignUp);
+  const login = useAuthStore((state) => state.login);
+
   const [formData, setFormData] = useState({
     phone: '',
     password: '',
@@ -14,23 +19,15 @@ function NonmemberSignup() {
   });
 
   const [errors, setErrors] = useState({});
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
-    }
-  };
 
   const [isVerificationSent, setIsVerificationSent] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
   const [isVerified, setIsVerified] = useState(false);
   const [timer, setTimer] = useState(180);
-  const guestSignUp = useAuthStore((state) => state.guestSignUp);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // 인증번호 타이머
   useEffect(() => {
     let interval = null;
 
@@ -38,16 +35,38 @@ function NonmemberSignup() {
       interval = setInterval(() => {
         setTimer((prev) => prev - 1);
       }, 1000);
-    } else if (timer === 0) {
-      clearInterval(interval);
+    }
+
+    if (timer === 0 && !isVerified) {
       setErrors((prev) => ({
         ...prev,
         verification: '인증 시간이 만료되었습니다. 다시 발송해주세요.',
       }));
     }
 
-    return () => clearInterval(interval);
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
   }, [isVerificationSent, timer, isVerified]);
+
+  // 입력값 변경
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: '',
+      }));
+    }
+  };
 
   // 시간 표시
   const formatTime = (seconds) => {
@@ -81,6 +100,7 @@ function NonmemberSignup() {
 
     try {
       const res = await postSendCode(phone);
+
       if (res.isSuccess) {
         setErrors((prev) => ({
           ...prev,
@@ -89,6 +109,8 @@ function NonmemberSignup() {
         }));
 
         setIsVerificationSent(true);
+        setIsVerified(false);
+        setVerificationCode('');
         setTimer(180);
 
         alert(res.message || '인증번호가 발송되었습니다.');
@@ -101,8 +123,7 @@ function NonmemberSignup() {
     } catch (error) {
       setErrors((prev) => ({
         ...prev,
-        phone:
-          error.response?.data?.message || '인증번호 발송에 실패했습니다.',
+        phone: error.response?.data?.message || '인증번호 발송에 실패했습니다.',
       }));
     }
   };
@@ -114,7 +135,6 @@ function NonmemberSignup() {
         ...prev,
         verification: '인증 시간이 만료되었습니다.',
       }));
-
       return;
     }
 
@@ -128,6 +148,7 @@ function NonmemberSignup() {
 
     try {
       const phone = formData.phone.trim().replace(/-/g, '');
+
       const res = await postVerifyCode(phone, verificationCode);
 
       if (res.isSuccess) {
@@ -137,6 +158,7 @@ function NonmemberSignup() {
           ...prev,
           verification: '',
         }));
+
         alert('전화번호 인증이 완료되었습니다.');
       } else {
         setErrors((prev) => ({
@@ -157,13 +179,11 @@ function NonmemberSignup() {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.phone.trim()) {
+    const phone = formData.phone.trim().replace(/-/g, '');
+
+    if (!phone) {
       newErrors.phone = '전화번호를 입력해주세요.';
-    }
-
-    const phone = formData.phone.replace(/-/g, '');
-
-    if (!/^01\d{8,9}$/.test(phone)) {
+    } else if (!/^01\d{8,9}$/.test(phone)) {
       newErrors.phone = '전화번호 형식이 올바르지 않습니다.';
     }
 
@@ -188,89 +208,72 @@ function NonmemberSignup() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // 회원가입 + 입실 처리
+  // 비회원 등록 → 자동 로그인 → 이용권 선택
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!validateForm()) return;
+    if (isSubmitting) {
+      return;
+    }
+
+    if (!validateForm()) {
+      return;
+    }
+
+    const phoneNumber = formData.phone.trim().replace(/-/g, '');
 
     try {
-      /*
-      POST /api/users/guest-signup
+      setIsSubmitting(true);
 
-      요청
-
-      {
+      // 1. 비회원 계정 생성
+      const signupResult = await guestSignUp({
         phoneNumber,
-        password
-      }
-
-    */
-
-      const result = await guestSignUp({
-        phoneNumber: formData.phone,
-
         password: formData.password,
       });
 
-      if (!result.success) {
+      if (!signupResult.success) {
         setErrors((prev) => ({
           ...prev,
-          general: result.errorMessage || '비회원 등록 실패',
+          general: signupResult.errorMessage || '비회원 등록에 실패했습니다.',
         }));
-
         return;
       }
 
-      const userId = result.userId;
+      // 2. 생성된 비회원 계정으로 자동 로그인
+      const loginResult = await login(phoneNumber, formData.password);
 
-      /*
-       checkIn 생성
+      if (!loginResult.success) {
+        setErrors((prev) => ({
+          ...prev,
+          general:
+            loginResult.message ||
+            '비회원 등록은 완료되었지만 로그인에 실패했습니다.',
+        }));
+        return;
+      }
 
-       추후 백엔드에서는:
-
-       POST /api/usages/check-in
-
-       처리 가능
-    */
-
-      const addCheckIn = checkInStore.getState().addCheckIn;
-
-      addCheckIn({
-        userId: userId,
-
-        seatId: null,
-
-        status: 'USING',
-
-        checkInTime: new Date(),
+      // 3. 이용권 선택 페이지로 이동
+      navigate('/ticket', {
+        replace: true,
       });
-
-      checkInStore.setState({
-        currentUser: {
-          id: userId,
-
-          phone: formData.phone,
-        },
-      });
-
-      alert('비회원 입실 등록이 완료되었습니다.');
-
-      navigate('/loginhome');
     } catch (error) {
-      console.error('guest signup error', error);
+      console.error('비회원 등록 처리 오류:', error.response?.data ?? error);
 
       setErrors((prev) => ({
         ...prev,
-
-        general: '회원가입 처리 중 오류가 발생했습니다.',
+        general:
+          error.response?.data?.message ||
+          '비회원 등록 처리 중 오류가 발생했습니다.',
       }));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="nonmember_signup_page">
       <h2 className="signup_title">사용자 정보 입력</h2>
+
       <header className="nonmember_signup_header">
         <button
           type="button"
@@ -283,6 +286,7 @@ function NonmemberSignup() {
             style={{ width: '60px', height: '70px' }}
           />
         </button>
+
         <span className="header_time" />
       </header>
 
@@ -293,24 +297,21 @@ function NonmemberSignup() {
           </button>
         </div>
 
-        {successMessage && (
-          <div className="success_message">{successMessage}</div>
-        )}
-
         <form className="signup_form" onSubmit={handleSubmit}>
-          {/* 전화번호 입력 (인증번호 발송 포함) */}
+          {/* 전화번호 */}
           <div className="form_group">
             <label className="form_label" htmlFor="phone">
               전화번호
             </label>
-            {/* 🎯 absolute 기준점을 만들어주는 wrapper 추가 */}
+
             <div className="input_wrapper">
               <input
                 id="phone"
                 name="phone"
                 type="tel"
-                /* 💡 버튼 영역을 침범하지 않게 'with_btn' 클래스 유동 추가 */
-                className={`form_input ${errors.phone ? 'input_error' : ''} ${!isVerified ? 'with_btn' : ''}`}
+                className={`form_input ${
+                  errors.phone ? 'input_error' : ''
+                } ${!isVerified ? 'with_btn' : ''}`}
                 placeholder="01012345678"
                 disabled={isVerified}
                 value={formData.phone}
@@ -327,10 +328,11 @@ function NonmemberSignup() {
                 </button>
               )}
             </div>
+
             {errors.phone && <span className="error_text">{errors.phone}</span>}
           </div>
 
-          {/* 인증번호 입력 (발송 완료 시 노출) */}
+          {/* 인증번호 */}
           {isVerificationSent && (
             <div className="form_group">
               <label className="form_label" htmlFor="verificationCode">
@@ -342,17 +344,19 @@ function NonmemberSignup() {
                   id="verificationCode"
                   name="verificationCode"
                   type="text"
-                  className={`form_input ${errors.verification ? 'input_error' : ''} with_btn`}
+                  className={`form_input ${
+                    errors.verification ? 'input_error' : ''
+                  } with_btn`}
                   placeholder="인증번호 6자리 입력"
                   disabled={isVerified}
                   value={verificationCode}
-                  onChange={(e) => setVerificationCode(e.target.value)}
+                  onChange={(event) => setVerificationCode(event.target.value)}
                 />
 
                 {!isVerified ? (
-                  /* 🎯 타이머와 인증확인 버튼 레이아웃 맞춤형 정렬 */
                   <div className="verify_action_container">
                     <span className="verify_timer">{formatTime(timer)}</span>
+
                     <button
                       type="button"
                       className="btn_inner_verify static_btn"
@@ -365,6 +369,7 @@ function NonmemberSignup() {
                   <span className="inner_success_badge">✓ 인증 확인됨</span>
                 )}
               </div>
+
               {errors.verification && (
                 <span className="error_text">{errors.verification}</span>
               )}
@@ -376,15 +381,19 @@ function NonmemberSignup() {
             <label className="form_label" htmlFor="password">
               입실 비밀번호
             </label>
+
             <input
               id="password"
               name="password"
               type="password"
               className={`form_input ${errors.password ? 'input_error' : ''}`}
-              placeholder="숫자 6자리"
+              placeholder="숫자 6자리 입력"
+              maxLength={6}
+              inputMode="numeric"
               value={formData.password}
               onChange={handleChange}
             />
+
             {errors.password && (
               <span className="error_text">{errors.password}</span>
             )}
@@ -395,22 +404,34 @@ function NonmemberSignup() {
             <label className="form_label" htmlFor="confirmPassword">
               비밀번호 확인
             </label>
+
             <input
               id="confirmPassword"
               name="confirmPassword"
               type="password"
-              className={`form_input ${errors.confirmPassword ? 'input_error' : ''}`}
+              className={`form_input ${
+                errors.confirmPassword ? 'input_error' : ''
+              }`}
               placeholder="비밀번호 재입력"
+              maxLength={6}
+              inputMode="numeric"
               value={formData.confirmPassword}
               onChange={handleChange}
             />
+
             {errors.confirmPassword && (
               <span className="error_text">{errors.confirmPassword}</span>
             )}
           </div>
 
-          <button type="submit" className="submit_button">
-            입력 완료
+          {errors.general && <p className="error_text">{errors.general}</p>}
+
+          <button
+            type="submit"
+            className="submit_button"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? '처리 중...' : '입력 완료'}
           </button>
         </form>
       </section>
