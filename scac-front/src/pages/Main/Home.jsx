@@ -17,7 +17,7 @@ function HomePage() {
   const checkOut = checkInStore((state) => state.checkOut);
   const seats = seatStore((state) => state.seats);
   const fetchSeats = seatStore((state) => state.fetchSeats);
-  const resetAll = useResetStore((state) => state.resetAll);
+  const resetData = useResetStore((state) => state.resetData);
   const navigate = useNavigate();
 
   const availableSeats = seats.filter(
@@ -117,9 +117,9 @@ function HomePage() {
   };
   useEffect(() => {
     //홈으로 갈때마다 선택좌석, 결제수단 초기화
-    resetAll();
+    resetData();
     fetchSeats();
-  }, [resetAll, fetchSeats]);
+  }, [resetData, fetchSeats]);
 
   return (
     <div className="kiosk_container">

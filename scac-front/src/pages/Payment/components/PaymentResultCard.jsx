@@ -7,6 +7,7 @@ import { useResetStore } from '../../../hooks/useResetStore';
 import { reservationApi } from '../../../api/reservationApi';
 import TicketPaymentResult from './TicketPaymentResult';
 import ReservationPaymentResult from './ReservationPaymentResult';
+import { useAuthStore } from '../../../store/authStore';
 
 export default function PaymentResultCard({ isSuccess, errorMessage }) {
   const [payment, setPayment] = useState(null);
@@ -18,6 +19,8 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
   const resetAll = useResetStore();
   const { state } = useLocation();
   const paymentId = state?.paymentId;
+  const [closeTimer, setCloseTimer] = useState(10);
+  const resetData = useResetStore();
 
   useEffect(() => {
     if (!isSuccess || paymentId == null) {
@@ -77,13 +80,26 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
   }, [isSuccess, paymentId]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    if (closeTimer < 0) {
       resetAll();
-      navi('/');
-    }, 10000);
-
+      navi('/', { replace: true });
+      return;
+    }
+    const timer = setTimeout(() => {
+      setCloseTimer((t) => t - 1);
+    }, 1000);
     return () => clearTimeout(timer);
-  }, [navi, resetAll]);
+  }, [navi, resetAll, closeTimer]);
+
+  const handleContinue = () => {
+    resetData();
+    navi('/loginhome', { replace: true });
+  };
+
+  const handleExit = () => {
+    resetAll();
+    navi('/', { replace: true });
+  };
   return (
     <div className={`payment_status_box ${isSuccess ? 'success' : 'fail'}`}>
       <img
@@ -95,8 +111,6 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
         alt={isSuccess ? '결제 성공' : '결제 실패'}
         className="payment_result_icon"
       />
-
-      <h2>{isSuccess ? '결제 완료' : '결제 실패'}</h2>
 
       <div className="payment_status_container">
         <div className="payment_status_row">
@@ -148,12 +162,28 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
           다시 확인해 주세요.
         </p>
       )}
-      <p className="payment_timer">10초 후 자동으로 종료됩니다</p>
-      <SelectButton
-        nextPage={'/'}
-        text={'홈으로 돌아가기'}
-        onClickAction={resetAll}
-      />
+
+      <div className="btn_place">
+        <button
+          className="btn_loginhome"
+          onClick={() => {
+            handleContinue();
+          }}
+        >
+          이어서 이용하기
+        </button>
+        <button
+          className="btn_mainhome"
+          onClick={() => {
+            handleExit();
+          }}
+        >
+          로그아웃
+        </button>
+        <p className="payment_auto_exit">
+          {closeTimer}초 후 자동으로 로그아웃 됩니다.
+        </p>
+      </div>
     </div>
   );
 }

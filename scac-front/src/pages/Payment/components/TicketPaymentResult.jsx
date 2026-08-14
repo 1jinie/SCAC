@@ -4,11 +4,6 @@ export default function TicketPaymentResult({ ticket, payment }) {
   return (
     <>
       <div className="payment_status_row">
-        <span>결제 대상</span>
-        <span>좌석 이용권</span>
-      </div>
-
-      <div className="payment_status_row">
         <span>이용권</span>
         <span>{ticket?.ticketName ?? '-'}</span>
       </div>

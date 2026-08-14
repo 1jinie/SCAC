@@ -31,4 +31,14 @@ export const ticketApi = {
 
     return response.data.data;
   },
+  updateTicketStatus: async (ticketId, isActive) => {
+    const response = await axiosInstance.patch(
+      `/api/admin/tickets/${ticketId}/status`,
+      {
+        isActive,
+      },
+    );
+
+    return response.data.data;
+  },
 };
