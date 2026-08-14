@@ -326,3 +326,10 @@
 .btn_mainhome:active {
   transform: scale(0.98);
 }
+.payment_auto_exit {
+  margin: -6px 0 0;
+
+  text-align: center;
+  font-size: 18px;
+  color: #8b8b8b;
+}

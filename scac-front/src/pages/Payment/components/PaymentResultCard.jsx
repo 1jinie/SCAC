@@ -176,8 +176,11 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
             handleExit();
           }}
         >
-          {closeTimer}초 후 자동으로 종료됩니다
+          종료하기
         </button>
+        <p className="payment_auto_exit">
+          {closeTimer}초 후 자동으로 종료됩니다.
+        </p>
       </div>
     </div>
   );
