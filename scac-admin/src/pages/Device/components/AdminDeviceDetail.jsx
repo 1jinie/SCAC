@@ -9,6 +9,8 @@ export default function AdminDeviceDetail({
   deviceLogs,
   onStatusChange,
   isUpdatingStatus,
+  onActiveChange,
+  isUpdatingActive,
 }) {
   if (!selectedDevice) {
     return (
@@ -42,6 +44,12 @@ export default function AdminDeviceDetail({
         <div>
           <dt>장치 ID</dt>
           <dd>{selectedDevice.deviceId}</dd>
+        </div>
+
+        <div>
+          <dt>운영 여부</dt>
+
+          <dd>{selectedDevice.isActive ? '사용 중' : '비활성'}</dd>
         </div>
 
         <div>
@@ -98,6 +106,22 @@ export default function AdminDeviceDetail({
           {isUpdatingStatus ? '처리 중...' : '정상 처리'}
         </button>
       )}
+      <button
+        type="button"
+        className={
+          selectedDevice.isActive
+            ? 'admin_device_inactive_button'
+            : 'admin_device_active_button'
+        }
+        onClick={onActiveChange}
+        disabled={isUpdatingActive}
+      >
+        {isUpdatingActive
+          ? '처리 중...'
+          : selectedDevice.isActive
+            ? '장치 비활성화'
+            : '장치 다시 활성화'}
+      </button>
     </aside>
   );
 }

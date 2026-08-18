@@ -22,10 +22,11 @@ public class DeviceResDTO {
   private final LocalDateTime lastConnectedAt;
   private final LocalDateTime createdAt;
   private final String serialNumber;
+  private final Boolean isActive;
 
   public static DeviceResDTO from(Device device) {
     return new DeviceResDTO(device.getDeviceId(), device.getDeviceName(), device.getDeviceType(),
       device.getStatus(), device.getLocation(), device.getIpAddress(), device.getLastConnectedAt(),
-      device.getCreatedAt(), device.getSerialNumber());
+      device.getCreatedAt(), device.getSerialNumber(), device.getIsActive());
   }
 }

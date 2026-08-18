@@ -14,13 +14,15 @@ export default function AdminDevicePage() {
   const [isLogLoading, setIsLogLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [includeInactive, setIncludeInactive] = useState(false);
+  const [isUpdatingActive, setIsUpdatingActive] = useState(false);
 
   // 전체 장치 조회
   const fetchDevices = useCallback(async () => {
     try {
       setIsDeviceLoading(true);
       setErrorMessage('');
-      const data = await deviceApi.getDevices();
+      const data = await deviceApi.getDevices(includeInactive);
       setDevices(data);
     } catch (error) {
       console.error(
@@ -35,7 +37,7 @@ export default function AdminDevicePage() {
     } finally {
       setIsDeviceLoading(false);
     }
-  }, []);
+  }, [includeInactive]);
 
   useEffect(() => {
     fetchDevices();
@@ -97,6 +99,48 @@ export default function AdminDevicePage() {
       );
     } finally {
       setIsUpdatingStatus(false);
+    }
+  };
+
+  const handleActiveChange = async () => {
+    if (!selectedDevice || isUpdatingActive) {
+      return;
+    }
+    const deviceActive = !selectedDevice.isActive;
+
+    const message = deviceActive
+      ? '이 장치를 다시 활성화하시겠습니까?'
+      : '이 장치를 비활성화하시겠습니까?\n비활성화된 장치는 기본 목록에서 숨겨집니다.';
+    if (!window.confirm(message)) {
+      return;
+    }
+
+    try {
+      setIsUpdatingActive(true);
+      const updatedDevice = await deviceApi.updateDeviceActive(
+        selectedDevice.deviceId,
+        deviceActive,
+      );
+      setSelectedDevice(updatedDevice);
+      await fetchDevices();
+
+      // 장치 비활성화 선택시 상세 선택 해제
+      if (!deviceActive && !includeInactive) {
+        setSelectedDevice(null);
+        setDeviceLogs([]);
+      }
+    } catch (error) {
+      console.error(
+        '장치 활성 상태 변경 실패:',
+        error.response?.data?.message ?? error,
+      );
+
+      window.alert(
+        error.response?.data?.message ??
+          '장치 상태 변경 중 오류가 발생했습니다.',
+      );
+    } finally {
+      setIsUpdatingActive(false);
     }
   };
 
@@ -188,31 +232,35 @@ export default function AdminDevicePage() {
       <AdminSummary items={summaryItems} />
 
       <section className="admin_device_workspace">
-        <AdminDeviceList
-          devices={devices}
-          selectedDevice={selectedDevice}
-          onDeviceSelect={handleDeviceSelect}
-          isDeviceLoading={isDeviceLoading}
-          errorMessage={errorMessage}
-        />
-
+        <div className="admin_device_left_column">
+          <AdminDeviceList
+            devices={devices}
+            selectedDevice={selectedDevice}
+            onDeviceSelect={handleDeviceSelect}
+            isDeviceLoading={isDeviceLoading}
+            errorMessage={errorMessage}
+            includeInactive={includeInactive}
+            onIncludeInactiveChange={setIncludeInactive}
+          />
+          {selectedDevice &&
+            (isLogLoading ? (
+              <div className="admin_device_log_section">
+                <p className="admin_device_log_empty">
+                  로그를 불러오는 중입니다.
+                </p>
+              </div>
+            ) : (
+              <AdminDeviceLogList logs={deviceLogs} />
+            ))}
+        </div>
         <AdminDeviceDetail
           selectedDevice={selectedDevice}
           deviceLogs={deviceLogs}
           onStatusChange={handleStatusChange}
           isUpdatingStatus={isUpdatingStatus}
+          onActiveChange={handleActiveChange}
+          isUpdatingActive={isUpdatingActive}
         />
-
-        {selectedDevice &&
-          (isLogLoading ? (
-            <div className="admin_device_log_section">
-              <p className="admin_device_log_empty">
-                로그를 불러오는 중입니다.
-              </p>
-            </div>
-          ) : (
-            <AdminDeviceLogList logs={deviceLogs} />
-          ))}
       </section>
     </div>
   );
