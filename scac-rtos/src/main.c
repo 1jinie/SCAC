@@ -136,7 +136,10 @@ static int handle_print_receipt(const work_t *work, char *result, size_t result_
     printf("+--------------------------------------+\n\n");
     time_t now = tiem(NULL);
     struct tm tm_now;
-    localtime_s(&tm_now, &now);
+    if(localtime_r(&now, &tm_now) == NULL){
+        snprintf(result, result_size, "failed to get local time");
+        return -1;
+    }
     char datetime[32];
     strftime(datetime, sizeof(datetime), "%Y-%m-%d %H:%M", &tm_now);
     printf("  발행 일시 : %s\n", datetime);
