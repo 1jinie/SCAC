@@ -33,14 +33,14 @@ public class SystemLogService {
      * 전체 로그 목록 조회 (최신순)
      */
     public List<SystemLog> getAllLogs() {
-        return systemLogRepository.findAll();
+        return systemLogRepository.findAllByOrderByCreatedAtDesc();
     }
 
     /**
-     * 로그 레벨별 조회 (INFO, WARNING, ERROR, CRITICAL)
+     * 로그 레벨별 조회 (INFO, WARNING, ERROR, CRITICAL) (최신순)
      */
     public List<SystemLog> getLogsByLevel(String logLevel) {
-        return systemLogRepository.findByLogLevel(logLevel);
+        return systemLogRepository.findByLogLevelOrderByCreatedAtDesc(logLevel);
     }
 
     /**

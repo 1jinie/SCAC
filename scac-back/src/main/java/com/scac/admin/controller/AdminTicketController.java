@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.scac.global.log.annotation.AutoLog;
 import com.scac.global.response.ApiResponse;
 import com.scac.ticket.dto.TicketCreateDTO;
 import com.scac.ticket.dto.TicketResDTO;
@@ -28,6 +29,7 @@ public class AdminTicketController {
   private final TicketService ticketService;
 
   // 관리자 이용권 생성
+  @AutoLog(logType = "TICKET", action = "CREATE", targetType = "TICKET", content = "신규 이용권 상품 생성")
   @PostMapping
   public ResponseEntity<ApiResponse<TicketResDTO>> create(@Valid @RequestBody TicketCreateDTO form) {
     TicketResDTO ticket = ticketService.create(form);
@@ -36,6 +38,7 @@ public class AdminTicketController {
   }
 
   // 관리자 이용권 수정
+  @AutoLog(logType = "TICKET", action = "UPDATE", targetType = "TICKET", content = "이용권 상품 정보 수정")
   @PutMapping("/{ticketId}")
   public ResponseEntity<ApiResponse<TicketResDTO>> update(@PathVariable("ticketId") Long ticketId,
     @Valid @RequestBody TicketUpdateDTO form) {
@@ -45,6 +48,7 @@ public class AdminTicketController {
   }
 
   // 관리자 이용권 판매 상태 변경
+  @AutoLog(logType = "TICKET", action = "UPDATE_STATUS", targetType = "TICKET", content = "이용권 판매 상태 변경")
   @PatchMapping("/{ticketId}/status")
   public ResponseEntity<ApiResponse<TicketResDTO>> updateStatus(@PathVariable("ticketId") Long ticketId,
     @Valid @RequestBody TicketStatusDTO form) {
@@ -54,6 +58,7 @@ public class AdminTicketController {
   }
 
   // 관리자 이용권 삭제
+  @AutoLog(logType = "TICKET", action = "DELETE", targetType = "TICKET", content = "이용권 상품 삭제")
   @DeleteMapping("/{ticketId}")
   public ResponseEntity<ApiResponse<Void>> delete(@PathVariable("ticketId") Long ticketId) {
     ticketService.delete(ticketId);

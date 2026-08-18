@@ -36,11 +36,14 @@ public class VerificationCodeService {
         String code = String.format("%06d", random.nextInt(1000000));
         LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(CODE_EXPIRATION_MINUTES);
 
+        // 만료된 이전 인증 정보 정리 (메모리 누수 방지)
+        verificationStore.entrySet().removeIf(entry -> LocalDateTime.now().isAfter(entry.getValue().expiresAt()));
+
         verificationStore.put(cleanPhone, new VerificationInfo(code, expiresAt));
 
         log.info("[SMS 인증번호 발송] 전화번호: {}, 생성된 코드: {}, 만료시간: {}", cleanPhone, code, expiresAt);
 
-        // SMS 발송 처리 (Mock 또는 CoolSMS / Naver SENS)
+        // SMS 발송 처리 (Mock 또는 Solapi)
         String smsMessage = "[SCAC] 인증번호는 [" + code + "] 입니다. (3분 이내 입력)";
         smsSender.sendSms(cleanPhone, smsMessage);
 

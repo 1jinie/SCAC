@@ -5,7 +5,6 @@
 .admin_memo_page {
   width: 100%;
   max-width: 1500px;
-
   margin: 0 auto;
 }
 
@@ -13,21 +12,16 @@
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) minmax(360px, 0.8fr);
   gap: 24px;
-
   align-items: start;
 }
 
 .admin_memo_list_section,
 .admin_memo_detail {
   min-height: 640px;
-
   padding: 26px;
-
   border: 1px solid #e3e7ea;
   border-radius: 18px;
-
   background: #fff;
-
   box-shadow: 0 8px 24px rgb(28 46 55 / 5%);
 }
 
@@ -37,16 +31,78 @@
 }
 
 /* =========================
-   Section Header
+   Section Header & Compact Search Bar
 ========================= */
 
 .admin_section_header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 20px;
-
+  align-items: center;
+  gap: 16px;
   margin-bottom: 24px;
+}
+
+.admin_memo_search_bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  max-width: 380px;
+}
+
+.admin_memo_search_bar input {
+  flex: 1;
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid #d9dfe3;
+  border-radius: 10px;
+  font-size: 13.5px;
+  background: #fcfdfe;
+  box-sizing: border-box;
+  transition: 0.2s;
+}
+
+.admin_memo_search_bar input:focus {
+  border-color: var(--color-primary, #0c768a);
+  background: #fff;
+  outline: none;
+}
+
+.admin_memo_search_btn {
+  height: 42px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 10px;
+  background: var(--color-primary, #0c768a);
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.2s;
+}
+
+.admin_memo_search_btn:hover {
+  opacity: 0.9;
+}
+
+.admin_memo_search_reset {
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid #d9dfe3;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.2s;
+}
+
+.admin_memo_search_reset:hover {
+  background: #e2e8f0;
+  color: #1e293b;
 }
 
 /* =========================
@@ -55,37 +111,30 @@
 
 .admin_memo_add {
   margin-left: auto;
-
   display: inline-flex;
   justify-content: center;
   align-items: center;
-
-  min-width: 140px;
+  min-width: 120px;
   height: 42px;
-
   padding: 0 18px;
-
-  border: 1px solid var(--color-important);
+  border: 1px solid var(--color-important, #e76c6c);
   border-radius: 10px;
-
   background: #fff;
-
-  color: var(--color-important);
+  color: var(--color-important, #e76c6c);
   font-size: 14px;
   font-weight: 700;
-
   cursor: pointer;
-
   transition: 0.2s;
+  white-space: nowrap;
 }
 
 .admin_memo_add:hover {
-  background: var(--color-important);
+  background: var(--color-important, #e76c6c);
   color: white;
 }
 
 /* =========================
-   Memo Grid
+   Memo Grid & Cards
 ========================= */
 
 .admin_memo_grid {
@@ -94,26 +143,16 @@
   gap: 20px;
 }
 
-/* =========================
-   Memo Card
-========================= */
-
 .admin_memo_card {
   display: flex;
   flex-direction: column;
-
   min-height: 220px;
-
   padding: 18px;
-
   border-radius: 10px;
-
   background: #fff8b5;
-
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
-
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.09);
   cursor: pointer;
-
   transition: 0.2s;
 }
 
@@ -126,11 +165,39 @@
 }
 
 .admin_memo_card:hover {
-  transform: translateY(-5px) scale(1.02);
+  transform: translateY(-5px) scale(1.02) !important;
 }
 
 .admin_memo_card.selected {
-  outline: 3px solid var(--color-primary);
+  outline: 3px solid var(--color-primary, #0c768a);
+}
+
+/* =========================
+   완료(Completed) 카드 스타일 (어둡게 처리 & 취소선)
+========================= */
+
+.admin_memo_card.completed {
+  background: #cbd5e1 !important;
+  border: 1px solid #94a3b8 !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+  opacity: 0.78;
+  filter: contrast(0.95);
+  transform: rotate(0deg) !important;
+}
+
+.admin_memo_card.completed .admin_memo_content {
+  color: #475569;
+  text-decoration: line-through;
+}
+
+.admin_memo_done_tag {
+  display: inline-block;
+  padding: 2px 6px;
+  background: #475569;
+  color: #fff;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 /* =========================
@@ -141,9 +208,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   margin-bottom: 12px;
-
   color: #666;
   font-size: 12px;
 }
@@ -162,16 +227,12 @@
 
 .admin_memo_content {
   flex: 1;
-
   white-space: pre-wrap;
   word-break: break-word;
-
   color: #333;
   font-size: 15px;
   line-height: 1.7;
-
   overflow: hidden;
-
   display: -webkit-box;
   -webkit-line-clamp: 6;
   -webkit-box-orient: vertical;
@@ -184,22 +245,33 @@
 .admin_memo_footer {
   margin-top: 16px;
   padding-top: 12px;
-
   border-top: 1px dashed rgba(0, 0, 0, 0.15);
-
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   color: #777;
   font-size: 13px;
 }
 
+.admin_memo_author_tag {
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.admin_memo_updated {
+  font-size: 11px;
+  color: #888;
+}
+
 /* =========================
-   Detail
+   Detail Form
 ========================= */
 
 .admin_memo_detail h3 {
   margin: 0 0 24px;
-
   font-size: 18px;
   font-weight: 700;
+  color: #1e293b;
 }
 
 .admin_memo_form {
@@ -210,7 +282,6 @@
 
 .admin_memo_form label {
   color: #666;
-
   font-size: 14px;
   font-weight: 600;
 }
@@ -218,62 +289,45 @@
 .admin_memo_form input,
 .admin_memo_form textarea {
   width: 100%;
-
   margin-top: 8px;
-
   padding: 14px;
-
   border: 1px solid #d9dfe3;
   border-radius: 10px;
-
   box-sizing: border-box;
-
   font-size: 14px;
 }
 
 .admin_memo_form textarea {
   min-height: 260px;
-
   resize: vertical;
 }
 
 .admin_memo_form input:focus,
 .admin_memo_form textarea:focus {
-  border-color: var(--color-primary);
-
+  border-color: var(--color-primary, #0c768a);
   outline: none;
 }
 
-/* =========================
-   Buttons
-========================= */
-
+/* Buttons */
 .admin_memo_button_group {
   display: flex;
-  gap: 12px;
-
+  gap: 10px;
   margin-top: 20px;
 }
 
 .admin_memo_button_group button {
   flex: 1;
-
   height: 46px;
-
   border-radius: 10px;
-
   font-size: 14px;
   font-weight: 700;
-
   cursor: pointer;
-
   transition: 0.2s;
 }
 
 .admin_memo_save {
   border: none;
-
-  background: var(--color-primary);
+  background: var(--color-primary, #0c768a);
   color: white;
 }
 
@@ -281,11 +335,31 @@
   opacity: 0.9;
 }
 
+.admin_memo_complete_toggle {
+  border: 1px solid #64748b;
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.admin_memo_complete_toggle:hover {
+  background: #e2e8f0;
+}
+
+.admin_memo_complete_toggle.is_completed {
+  border: 1px solid #0284c7;
+  background: #f0f9ff;
+  color: #0369a1;
+}
+
+.admin_memo_complete_toggle.is_completed:hover {
+  background: #e0f2fe;
+}
+
 .admin_memo_delete {
   border: 1px solid #e76c6c;
-
   background: #fde7e7;
   color: #b94747;
+  max-width: 90px;
 }
 
 .admin_memo_delete:hover {
@@ -299,9 +373,7 @@
 .admin_memo_empty {
   display: grid;
   place-items: center;
-
   min-height: 400px;
-
   color: #999;
   font-size: 15px;
 }
@@ -317,5 +389,21 @@
 
   .admin_memo_detail {
     position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin_section_header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin_memo_search_bar {
+    max-width: 100%;
+  }
+
+  .admin_memo_add {
+    margin-left: 0;
+    width: 100%;
   }
 }

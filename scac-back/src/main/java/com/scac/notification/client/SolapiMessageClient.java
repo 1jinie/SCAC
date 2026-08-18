@@ -101,7 +101,7 @@ public class SolapiMessageClient {
     return SolapiClient.INSTANCE.createInstance(apiKey, apiSecret);
   }
 
-  private boolean isConfigured() {
+  public boolean isConfigured() {
     return apiKey != null && !apiKey.isBlank()
       && apiSecret != null && !apiSecret.isBlank()
       && senderNumber != null && !senderNumber.isBlank();

@@ -118,32 +118,56 @@ export default function AdminLogDetailPage() {
         </section>
 
         <section className="admin_log_detail_section">
-          <h3>사용자 / 관리자 정보</h3>
+          <h3>행위자 정보</h3>
 
           <div className="admin_log_detail_grid">
             <div>
-              <span>사용자 ID</span>
+              <span>행위 주체</span>
               <strong>
-                {selectedLog.userId ? `#${selectedLog.userId}` : "-"}
+                {selectedLog.adminId != null ? (
+                  <span className="admin_log_actor is_admin">
+                    관리자 #{selectedLog.adminId}
+                  </span>
+                ) : selectedLog.userId != null ? (
+                  <span className="admin_log_actor is_user">
+                    사용자 #{selectedLog.userId}
+                  </span>
+                ) : (
+                  <span className="admin_log_actor is_system">시스템 (자동)</span>
+                )}
               </strong>
             </div>
 
             <div>
-              <span>전화번호</span>
-              <strong>{selectedLog.phoneNumber ?? "-"}</strong>
+              <span>접속 IP</span>
+              <strong>{selectedLog.ipAddress ?? "-"}</strong>
             </div>
 
-            <div>
-              <span>관리자 ID</span>
-              <strong>
-                {selectedLog.adminId ? `#${selectedLog.adminId}` : "-"}
-              </strong>
-            </div>
+            {selectedLog.adminId != null ? (
+              <>
+                <div>
+                  <span>관리자 ID</span>
+                  <strong>#{selectedLog.adminId}</strong>
+                </div>
 
-            <div>
-              <span>관리자 계정</span>
-              <strong>{selectedLog.adminLoginId ?? "-"}</strong>
-            </div>
+                <div>
+                  <span>관리자 계정</span>
+                  <strong>{selectedLog.adminLoginId ?? "-"}</strong>
+                </div>
+              </>
+            ) : selectedLog.userId != null ? (
+              <>
+                <div>
+                  <span>사용자 ID</span>
+                  <strong>#{selectedLog.userId}</strong>
+                </div>
+
+                <div>
+                  <span>전화번호</span>
+                  <strong>{selectedLog.phoneNumber ?? "-"}</strong>
+                </div>
+              </>
+            ) : null}
           </div>
         </section>
 

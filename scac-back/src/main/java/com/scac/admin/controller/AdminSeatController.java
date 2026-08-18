@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.scac.admin.dto.request.SeatStatusRequest;
+import com.scac.global.log.annotation.AutoLog;
 import com.scac.global.response.ApiResponse;
 import com.scac.seat.dto.SeatUserInfoRes;
 import com.scac.seat.service.SeatService;
@@ -37,6 +38,7 @@ public class AdminSeatController {
         /**
          * 2. 좌석 상태 수동 변경 (점검중/사용가능 등)
          */
+        @AutoLog(logType = "SEAT", action = "UPDATE", targetType = "SEAT", content = "관리자에 의한 좌석 상태 수동 변경")
         @PatchMapping("/{seatId}/status")
         public ResponseEntity<ApiResponse<Void>> updateSeatStatus(@PathVariable(name = "seatId") Long seatId,
                 @Valid @RequestBody SeatStatusRequest request) {
@@ -47,6 +49,7 @@ public class AdminSeatController {
         /**
          * 3. 강제 퇴실 조치
          */
+        @AutoLog(logType = "SEAT", action = "FORCE_CHECKOUT", targetType = "SEAT", content = "관리자에 의한 좌석 강제 퇴실 처리")
         @PostMapping("/{seatId}/force-checkout")
         public ResponseEntity<ApiResponse<Void>> forceCheckout(@PathVariable(name = "seatId") Long seatId) {
                 seatService.forceCheckout(seatId);
