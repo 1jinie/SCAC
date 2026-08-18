@@ -16,7 +16,7 @@ import com.scac.admin.dto.request.AdminAccountCreateReq;
 import com.scac.admin.dto.request.AdminAccountUpdateReq;
 import com.scac.admin.dto.response.AdminAccountRes;
 import com.scac.admin.service.AdminAccountService;
-import com.scac.global.log.annotation.AutoLog; // 💡 AutoLog 어노테이션 추가
+import com.scac.global.log.annotation.AutoLog;
 import com.scac.global.response.ApiResponse;
 
 import jakarta.validation.Valid;
