@@ -66,7 +66,7 @@ function LoginHomePage() {
 
       setAlertModal({
         title: '입실',
-        message: '재입실되었습니다',
+        message: '재입실되었습니다\n\n자동 로그아웃됩니다',
         onClose: () => {
           setAlertModal(null);
           navigate('/');
@@ -141,16 +141,17 @@ function LoginHomePage() {
         roomId: reservation.roomId,
       });
 
+      await logout();
+
       setAlertModal({
         title: '스터디룸 입실',
-        message: '스터디룸 예약이 확인되었습니다',
+        message: '스터디룸 예약이 확인되었습니다\n\n자동 로그아웃됩니다',
         onClose: () => {
           setAlertModal(null);
           navigate('/');
         },
       });
 
-      await logout();
       setShowChooseInModal(false);
     } catch (error) {
       console.error(error);
@@ -178,7 +179,7 @@ function LoginHomePage() {
 
     setAlertModal({
       title: '외출',
-      message: '외출 처리되었습니다',
+      message: '외출 처리되었습니다\n\n자동 로그아웃됩니다',
       onClose: () => {
         setAlertModal(null);
         navigate('/');
@@ -203,7 +204,7 @@ function LoginHomePage() {
 
     setAlertModal({
       title: '퇴실',
-      message: '퇴실 처리되었습니다',
+      message: '퇴실 처리되었습니다\n\n자동 로그아웃됩니다',
       onClose: () => {
         setAlertModal(null);
         navigate('/');
