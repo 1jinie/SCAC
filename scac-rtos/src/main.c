@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 
 #define RESPONSE_CAPACITY 2048
@@ -118,9 +119,15 @@ static int handle_print_receipt(const work_t *work, char *result, size_t result_
     printf("|          KIOSK RECEIPT               |\n");
     printf("+--------------------------------------+\n");
     printf("  주문 번호 : %s\n", order_id);
-    printf("  주문 상세 : %s\n", items);
+    printf("  품목 : %s\n", items);
     printf("  결제 금액 : %s원\n", amount);
     printf("+--------------------------------------+\n\n");
+    time_t now = tiem(NULL);
+    struct tm tm_now;
+    localtime_s(&tm_now, &now);
+    char datetime[32];
+    strftime(datetime, sizeof(datetime), "%Y-%m-%d %H:%M", &tm_now);
+    printf("  발행 일시 : %s\n", datetime);
     fflush(stdout);
     vTaskDelay(pdMS_TO_TICKS(1200));
     snprintf(result, result_size, "receipt printed: %s", order_id);
