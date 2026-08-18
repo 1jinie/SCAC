@@ -3,8 +3,8 @@ import { deviceApi } from '../../api/deviceApi';
 import AdminSummary from '../../components/common/Summary';
 import AdminDeviceDetail from './components/AdminDeviceDetail';
 import AdminDeviceList from './components/AdminDeviceList';
-import './css/AdminDevicePage.css';
 import AdminDeviceLogList from './components/AdminDeviceLogList';
+import './css/AdminDevicePage.css';
 
 export default function AdminDevicePage() {
   const [devices, setDevices] = useState([]);
@@ -16,6 +16,9 @@ export default function AdminDevicePage() {
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [includeInactive, setIncludeInactive] = useState(false);
   const [isUpdatingActive, setIsUpdatingActive] = useState(false);
+  const [deviceFormMode, setDeviceFormMode] = useState(null); // 장치 추가/수정모드 null, create, edit
+  const [isSavingDevice, setIsSavingDevice] = useState(false);
+  const [isDeletingDevice, setIsDeletingDevice] = useState(false);
 
   // 전체 장치 조회
   const fetchDevices = useCallback(async () => {
@@ -47,6 +50,7 @@ export default function AdminDevicePage() {
   const handleDeviceSelect = async (device) => {
     setSelectedDevice(device);
     setDeviceLogs([]);
+    setDeviceFormMode(null);
 
     setIsLogLoading(true);
     try {
@@ -82,13 +86,10 @@ export default function AdminDevicePage() {
         status,
         message,
       );
-
-      // 상세 화면 즉시 갱신
+      // 상세 화면 갱신
       setSelectedDevice(updatedDevice);
-
       // 장치 목록 갱신
       await fetchDevices();
-
       // 로그 다시 조회
       const logs = await deviceApi.getDeviceLogs(selectedDevice.deviceId);
       setDeviceLogs(logs);
@@ -177,14 +178,119 @@ export default function AdminDevicePage() {
     );
   }, [devices]);
 
+  // 장치추가
+  const handleCreateDevice = () => {
+    setDeviceFormMode('create');
+    setSelectedDevice(null);
+  };
+
+  // 장치수정
+  const handleEditDevice = () => {
+    if (!selectedDevice) {
+      return;
+    }
+    setDeviceFormMode('edit');
+  };
+
+  // 장치 form 닫기
+  const handleCloseDeviceForm = () => {
+    if (isSavingDevice) {
+      return;
+    }
+    setDeviceFormMode(null);
+  };
+
+  // 장치 추가/수정 등록버튼
+  const handleDeviceFormSubmit = async (form) => {
+    if (isSavingDevice) {
+      return;
+    }
+
+    try {
+      setIsSavingDevice(true);
+
+      if (deviceFormMode === 'create') {
+        const createdDevice = await deviceApi.createDevice(form);
+
+        await fetchDevices();
+
+        setSelectedDevice(createdDevice);
+        setDeviceLogs([]);
+
+        window.alert('장치 등록이 완료되었습니다.');
+      }
+
+      if (deviceFormMode === 'edit') {
+        const updatedDevice = await deviceApi.updateDevice(
+          selectedDevice.deviceId,
+          form,
+        );
+
+        setSelectedDevice(updatedDevice);
+
+        await fetchDevices();
+
+        window.alert('장치 정보 수정이 완료되었습니다.');
+      }
+
+      setDeviceFormMode(null);
+    } catch (error) {
+      console.error('장치 저장 실패:', error.response?.data?.message ?? error);
+
+      window.alert(
+        error.response?.data?.message ?? '장치 저장 중 오류가 발생했습니다.',
+      );
+    } finally {
+      setIsSavingDevice(false);
+    }
+  };
+
+  // 장치 삭제
+  const handleDeleteDevice = async () => {
+    if (!selectedDevice || isDeletingDevice) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `"${selectedDevice.deviceName}" 장치를 삭제하시겠습니까?\n\n장치 로그가 존재하는 장치는 삭제할 수 없습니다.`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setIsDeletingDevice(true);
+
+      await deviceApi.deleteDevice(selectedDevice.deviceId);
+
+      setSelectedDevice(null);
+      setDeviceLogs([]);
+
+      await fetchDevices();
+
+      window.alert('장치 삭제가 완료되었습니다.');
+    } catch (error) {
+      console.error('장치 삭제 실패:', error.response?.data?.message ?? error);
+
+      window.alert(
+        error.response?.data?.message ?? '장치 삭제 중 오류가 발생했습니다.',
+      );
+    } finally {
+      setIsDeletingDevice(false);
+    }
+  };
+
   const summaryItems = useMemo(
     () => [
       {
         key: 'total',
-        label: '전체 장치',
+        label: includeInactive ? '전체 장치' : '운영 장치',
         value: deviceSummary.total,
         unit: '대',
-        description: '등록된 장치',
+        description: includeInactive
+          ? '등록된 모든 장치'
+          : '현재 활성화된 장치',
         color: 'blue',
       },
       {
@@ -241,6 +347,8 @@ export default function AdminDevicePage() {
             errorMessage={errorMessage}
             includeInactive={includeInactive}
             onIncludeInactiveChange={setIncludeInactive}
+            onCreateDevice={handleCreateDevice}
+            isCreateMode={deviceFormMode === 'create'}
           />
           {selectedDevice &&
             (isLogLoading ? (
@@ -254,12 +362,22 @@ export default function AdminDevicePage() {
             ))}
         </div>
         <AdminDeviceDetail
+          // 장치 상세정보
           selectedDevice={selectedDevice}
           deviceLogs={deviceLogs}
           onStatusChange={handleStatusChange}
           isUpdatingStatus={isUpdatingStatus}
           onActiveChange={handleActiveChange}
           isUpdatingActive={isUpdatingActive}
+          // 장치 추가, 수정 삭제
+          formMode={deviceFormMode}
+          onCreate={handleCreateDevice}
+          onEdit={handleEditDevice}
+          onCancelForm={handleCloseDeviceForm}
+          onSubmitForm={handleDeviceFormSubmit}
+          isSavingDevice={isSavingDevice}
+          onDelete={handleDeleteDevice}
+          isDeletingDevice={isDeletingDevice}
         />
       </section>
     </div>

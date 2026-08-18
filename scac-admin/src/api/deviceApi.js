@@ -43,4 +43,30 @@ export const deviceApi = {
     );
     return response.data.data;
   },
+
+  // 새로운 장치 추가
+  createDevice: async (form) => {
+    const response = await axiosInstance.post('/api/admin/devices', form);
+
+    return response.data.data;
+  },
+
+  // 장치 정보 업데이트
+  updateDevice: async (deviceId, form) => {
+    const response = await axiosInstance.put(
+      `/api/admin/devices/${deviceId}`,
+      form,
+    );
+
+    return response.data.data;
+  },
+
+  // 장치 삭제
+  deleteDevice: async (deviceId) => {
+    const response = await axiosInstance.delete(
+      `/api/admin/devices/${deviceId}`,
+    );
+
+    return response.data.data;
+  },
 };
