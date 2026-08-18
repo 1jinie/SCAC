@@ -10,6 +10,7 @@ import com.scac.meetingroom.dto.MeetingRoomAvailabilityResponse;
 import com.scac.meetingroom.dto.MeetingRoomReservationRequest;
 import com.scac.meetingroom.dto.MeetingRoomReservationResponse;
 import com.scac.meetingroom.service.MeetingRoomReservationService;
+import com.scac.payment.service.PaymentService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/api/meeting-rooms")
 public class MeetingRoomReservationController {
         private final MeetingRoomReservationService reservationService;
+        private final PaymentService paymentService;
 
         // 전체 예약 조회
         @GetMapping
@@ -55,8 +57,10 @@ public class MeetingRoomReservationController {
         @PatchMapping("/reservations/{reservationId}/cancel")
         public ResponseEntity<ApiResponse<MeetingRoomReservationResponse>> cancel(
                 @PathVariable(name = "reservationId") Long reservationId) {
-                return ResponseEntity.ok(
-                        ApiResponse.success("스터디룸 예약 취소가 완료되었습니다", reservationService.cancel(reservationId)));
+                // 예약 취소 시 결제도 함께 취소
+                paymentService.cancelByReservation(reservationId);
+                MeetingRoomReservationResponse reservation = reservationService.getReservation(reservationId);
+                return ResponseEntity.ok(ApiResponse.success("스터디룸 예약 및 결제 취소가 완료되었습니다.", reservation));
         }
 
         // 예약 가능 시간 조회

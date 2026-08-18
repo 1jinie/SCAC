@@ -27,6 +27,12 @@ public class DeviceService {
   private final DeviceRepository deviceRepository;
   private final DeviceLogRepository deviceLogRepository;
 
+  // Device 엔터티 조회
+  private Device findDevice(Long deviceId) {
+    return deviceRepository.findById(deviceId)
+      .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 장치입니다."));
+  }
+
   // 전체 장치 현재 상태 조회
   public List<DeviceResDTO> findAllCurrentStatus() {
     return deviceRepository.findAll(Sort.by(Sort.Direction.ASC, "deviceId")).stream().map(DeviceResDTO::from)
@@ -82,8 +88,4 @@ public class DeviceService {
     return DeviceLogResDTO.from(savedLog);
   }
 
-  private Device findDevice(Long deviceId) {
-    return deviceRepository.findById(deviceId)
-      .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 장치입니다."));
-  }
 }

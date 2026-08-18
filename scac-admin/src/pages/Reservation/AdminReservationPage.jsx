@@ -1,20 +1,20 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import SeatList from "../../components/seat/SeatList";
-import { seatStore } from "../../store/seatStore";
-import { roomStore } from "../../store/roomStore";
-import { reservationApi } from "../../api/reservationApi"; // 💡 reservationApi 추가
-import { toDateString } from "../../utils/date";
-import AdminRoomDetail from "./components/AdminRoomDetail";
-import RecentReservationList from "./components/RecentReservationList";
-import ReservationDateSlider from "./components/ReservationDateSlider";
-import RoomDailySchedule from "./components/RoomDailySchedule";
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import SeatList from '../../components/seat/SeatList';
+import { seatStore } from '../../store/seatStore';
+import { roomStore } from '../../store/roomStore';
+import { reservationApi } from '../../api/reservationApi'; // 💡 reservationApi 추가
+import { toDateString } from '../../utils/date';
+import AdminRoomDetail from './components/AdminRoomDetail';
+import RecentReservationList from './components/RecentReservationList';
+import ReservationDateSlider from './components/ReservationDateSlider';
+import RoomDailySchedule from './components/RoomDailySchedule';
 
-import "./css/AdminReservationPage.css";
+import './css/AdminReservationPage.css';
 
 const TO_ADMIN_STATUS = {
-  available: "AVB",
-  using: "USR",
-  repair: "BRK",
+  available: 'AVB',
+  using: 'USR',
+  repair: 'BRK',
 };
 
 export default function AdminReservationPage() {
@@ -32,7 +32,7 @@ export default function AdminReservationPage() {
   const rooms = roomStore((state) => state.rooms);
   const fetchRooms = roomStore((state) => state.fetchRooms);
 
-  const mode = "room";
+  const mode = 'room';
 
   // 1. 전체 스터디룸 정보 조회
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function AdminReservationPage() {
       const response = await reservationApi.getAdminReservationList();
       setReservations(response.data?.data ?? []);
     } catch (error) {
-      console.error("예약 목록 조회 실패:", error);
+      console.error('예약 목록 조회 실패:', error);
       setReservations([]);
     }
   }, []);
@@ -58,7 +58,7 @@ export default function AdminReservationPage() {
 
   // 스터디룸 배치도 클릭
   const handleClick = (seat) => {
-    if (seat.type !== "room") {
+    if (seat.type !== 'room') {
       return;
     }
 
@@ -77,7 +77,7 @@ export default function AdminReservationPage() {
       roomNumber: roomInfo.name,
       roomName: roomInfo.name,
       capacity: roomInfo.capacity,
-      status: TO_ADMIN_STATUS[seat.status] ?? "AVB",
+      status: TO_ADMIN_STATUS[seat.status] ?? 'AVB',
     });
   };
 
@@ -93,13 +93,13 @@ export default function AdminReservationPage() {
           Number(reservation.roomId) === Number(selectedRoom.roomId) &&
           reservation.reservationDate === selectedDate,
       )
-      .sort((a, b) => (a.startTime ?? "").localeCompare(b.startTime ?? ""));
+      .sort((a, b) => (a.startTime ?? '').localeCompare(b.startTime ?? ''));
   }, [reservations, selectedRoom, selectedDate]);
 
   // 3. 백엔드 예약 취소 API 연동
   const handleAdminCancel = async (reservationId) => {
     const confirmed = window.confirm(
-      "선택한 예약을 관리자 취소 처리하시겠습니까?",
+      '선택한 예약과 결제를 함께 취소하시겠습니까?',
     );
 
     if (!confirmed) {
@@ -109,13 +109,13 @@ export default function AdminReservationPage() {
     try {
       // 백엔드 PATCH /api/meeting-rooms/reservations/{id}/cancel 호출
       await reservationApi.cancelReservation(reservationId);
-      window.alert("예약 취소가 완료되었습니다.");
+      window.alert('예약 및 결제 취소가 완료되었습니다.');
 
       // 취소 후 최신 목록 재조회
       await fetchReservations();
     } catch (error) {
-      console.error("관리자 예약 취소 실패:", error);
-      window.alert("예약 취소 처리에 실패했습니다.");
+      console.error('관리자 예약 및 결제 취소 실패:', error);
+      window.alert('예약 및 결제 취소 처리에 실패했습니다.');
     }
   };
 
@@ -134,7 +134,7 @@ export default function AdminReservationPage() {
           reservation.reservationDate === selectedDate,
       );
       const isUsing = roomRervations.some((reservation) => {
-        if (reservation.status === "CANCELED") {
+        if (reservation.status === 'CANCELED') {
           return false;
         }
         if (!reservation.startTime || !reservation.endTime) {
@@ -153,7 +153,7 @@ export default function AdminReservationPage() {
 
       return {
         ...room,
-        status: isUsing ? "using" : "available",
+        status: isUsing ? 'using' : 'available',
       };
     });
 

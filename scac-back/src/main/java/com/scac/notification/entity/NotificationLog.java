@@ -67,8 +67,8 @@ public class NotificationLog {
   @Column(name = "sent_at")
   private LocalDateTime sentAt;
 
-  private NotificationLog(Long userId, String phoneNumber, NotificationType notificationType,
-    String title, String content) {
+  private NotificationLog(Long userId, String phoneNumber, NotificationType notificationType, String title,
+    String content) {
     this.userId = userId;
     this.phoneNumber = phoneNumber;
     this.notificationType = notificationType;
@@ -78,8 +78,8 @@ public class NotificationLog {
     this.retryCount = 0;
   }
 
-  public static NotificationLog pending(Long userId, String phoneNumber,
-    NotificationType notificationType, String title, String content) {
+  public static NotificationLog pending(Long userId, String phoneNumber, NotificationType notificationType,
+    String title, String content) {
     return new NotificationLog(userId, phoneNumber, notificationType, title, content);
   }
 
@@ -89,6 +89,7 @@ public class NotificationLog {
     this.errorMessage = null;
   }
 
+  // 알림 발송 성공
   public void succeed(String resultCode, LocalDateTime sentAt) {
     this.status = NotificationStatus.SUCCESS;
     this.resultCode = resultCode;
@@ -96,14 +97,23 @@ public class NotificationLog {
     this.errorMessage = null;
   }
 
+  // 알림 발송 실패
   public void fail(String resultCode, String errorMessage) {
     this.status = NotificationStatus.FAILED;
     this.resultCode = resultCode;
     this.errorMessage = trimError(errorMessage);
   }
 
-  public void increaseRetryCount() {
-    this.retryCount += 1;
+  // 알림 발송 실패 횟수 초과로 더 이상 재시도하지 않음
+  public void retryExhausted(String resultCode, String errorMessage) {
+    this.status = NotificationStatus.RETRY_EXHAUSTED;
+    this.resultCode = resultCode;
+    this.errorMessage = trimError(errorMessage);
+  }
+
+  // 알림 발송 재시도 횟수 카운트
+  public void applyRetryCount(int retryCount) {
+    this.retryCount = Math.max(retryCount, 0);
   }
 
   @PrePersist

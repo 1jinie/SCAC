@@ -94,7 +94,7 @@ public class PaymentService {
       usage = ticketUsageService.issueTicket(payment.getUserId(), payment.getTicketId());
     } else if (payment.getReservationId() != null) {
       usage = ticketUsageService.issueReservation(payment.getUserId(), payment.getReservationId());
-      meetingRoomReservationService.confirmReservation(payment.getReservationId());
+      meetingRoomReservationService.confirmReservation(payment.getReservationId(), payment.getPaymentId());
     } else {
       throw new IllegalStateException("결제 대상 정보가 존재하지 않습니다.");
     }
@@ -329,4 +329,23 @@ public class PaymentService {
     return revenue != null ? revenue : 0L;
   }
 
+  // 스터디룸 예약 취소 시 연결된 결제도 함께 취소
+  @Transactional
+  public void cancelByReservation(Long reservationId) {
+
+    MeetingRoomReservation reservation = meetingRoomReservationService.getReservationEntity(reservationId);
+
+    if (reservation.getStatus() != ReservationStatus.CONFIRMED) {
+      throw new IllegalStateException("예약 완료 상태에서만 취소할 수 있습니다.");
+    }
+
+    if (reservation.getPaymentId() == null) {
+      throw new IllegalStateException("예약에 연결된 결제 정보가 없습니다.");
+    }
+
+    PaymentCancelDTO form = new PaymentCancelDTO();
+    form.setCancelReason("관리자 스터디룸 예약 취소");
+
+    cancel(reservation.getPaymentId(), form);
+  }
 }
