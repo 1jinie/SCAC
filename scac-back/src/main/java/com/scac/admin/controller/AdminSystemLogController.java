@@ -24,26 +24,27 @@ public class AdminSystemLogController {
         private final SystemLogService systemLogService;
 
         /**
-         * 1. 시스템 로그 조회 (엔티티 -> SystemLogRes DTO 변환 반환)
+         * 1. 시스템 로그 목록 조회 (최신순, N+1 최적화 DTO 반환)
          */
         @GetMapping
         public ResponseEntity<ApiResponse<List<SystemLogRes>>> getSystemLogs(
                 @RequestParam(name = "logLevel", required = false) String logLevel) {
-                List<SystemLogRes> logs = ((logLevel != null && !logLevel.isBlank())
-                        ? systemLogService.getLogsByLevel(logLevel)
-                        : systemLogService.getAllLogs())
-                                .stream()
-                                .map(log -> new SystemLogRes(log.getId(), log.getLogType(), log.getLogLevel(),
-                                        log.getAction(), log.getUserId(), log.getAdminId(),
-                                        log.getTargetType(), log.getTargetId(), log.getContent(),
-                                        log.getDetail(), log.getCreatedAt()))
-                                .toList();
-
+                List<SystemLogRes> logs = systemLogService.getAllSystemLogs(logLevel);
                 return ResponseEntity.ok(ApiResponse.success("시스템 로그 조회를 완료했습니다.", logs));
         }
 
         /**
-         * 2. 전체 좌석 로그 확인
+         * 2. 시스템 로그 단일 상세 조회
+         */
+        @GetMapping("/{logId}")
+        public ResponseEntity<ApiResponse<SystemLogRes>> getSystemLogDetail(
+                @PathVariable(name = "logId") Long logId) {
+                SystemLogRes logDetail = systemLogService.getLogDetail(logId);
+                return ResponseEntity.ok(ApiResponse.success("시스템 로그 상세 조회를 완료했습니다.", logDetail));
+        }
+
+        /**
+         * 3. 전체 좌석 로그 확인
          */
         @GetMapping("/seat")
         public ResponseEntity<ApiResponse<List<SeatLogRes>>> getAllSeatLogs() {
@@ -52,7 +53,7 @@ public class AdminSystemLogController {
         }
 
         /**
-         * 3. 특정 선택 좌석 로그 확인
+         * 4. 특정 선택 좌석 로그 확인
          */
         @GetMapping("/seat/{seatId}")
         public ResponseEntity<ApiResponse<List<SeatLogRes>>> getSeatLogs(
