@@ -8,9 +8,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import com.scac.device.dto.DeviceHealthRequest;
 import com.scac.device.entity.TaskCommand;
 import com.scac.device.service.TaskStore;
 import com.scac.global.exception.TaskNotFoundException;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -60,8 +64,8 @@ public class TaskController {
      * 
      * 작업 처리 완료/실패 보고
      */
-    @PatchMapping("/commands/{id}/complete")
-    public TaskCommand complete(@PathVariable("id") long id, @Valid @RequestBody CompleteRequest request) {
+    @PatchMapping("/commands/{id}/finish")
+    public TaskCommand finish(@PathVariable("id") long id, @Valid @RequestBody CompleteRequest request) {
         TaskCommand command;
 
         if("COMPLETED".equalsIgnoreCase(request.status())){
@@ -72,11 +76,37 @@ public class TaskController {
             throw new IllegalArgumentException("지원하지 않는 작업 상태입니다: " + request.status());
         }
 
-        log.info("[RTOS -> Spring] Command completed. id={}, status={}, result={}", 
+        log.info("[RTOS -> Spring] Command finished. id={}, status={}, result={}", 
         id, request.status(), request.result());
         
         return command;
     }
+
+    /**
+     * RTOS -> Spring
+     * 
+     * 장치 상태 보고
+     */
+    @PostMapping("/devices/health")
+    public Map<String, Object> health(@RequestBody DeviceHealthRequest request) {
+        log.info("[RTOS -> Spring] Health check. deviceId={}, status={}, door={}, printer={}",
+            request.deviceId(),
+            request.status(),
+            request.door(),
+            request.cardReader(),
+            request.printer()
+        );
+
+        return Map.of(
+            "success", true,
+            "deviceId", request.deviceId(),
+            "status", request.status(),
+            "door", request.door(),
+            "cardReader", request.cardReader(),
+            "printer", request.printer()
+        );
+    }
+    
 
     @ExceptionHandler(TaskNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -84,7 +114,7 @@ public class TaskController {
         return Map.of("message", exception.getMessage());
     }
 
-    public record CreateRequest(@NotBlank String taskType, @NotBlank String payload) {}
+    public record CreateRequest(@NotBlank String taskType, String payload) {}
     public record CompleteRequest(@NotBlank String status, @NotBlank String result) {}
 }
 

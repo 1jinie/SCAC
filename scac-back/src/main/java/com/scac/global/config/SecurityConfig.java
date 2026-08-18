@@ -58,7 +58,7 @@ public class SecurityConfig {
                                 // 1. PUBLIC GET 요청 (키오스크 및 일반 사용자 노출용)
                                 .requestMatchers(HttpMethod.GET, "/api/users/check-phone", "/api/tickets/**",
                                         "/api/seats/**", "/api/rooms/**", "/api/meeting-rooms/**",
-                                        "/api/checkin/**")
+                                        "/api/checkin/**", "/api/commands/**", "/api/devices/**", "/api/faults/**")
                                 .permitAll()
 
                                 // 2. PUBLIC POST 요청 (회원가입, 게스트 등록, 비밀번호 검증 등)
@@ -66,13 +66,13 @@ public class SecurityConfig {
                                         "/api/auth/logout", "/api/auth/send-code", "/api/auth/verify-code",
                                         "/api/admin/auth/login", "/api/admin/auth/refresh",
                                         "/api/admin/auth/logout", "/api/users/signup", "/api/users/guest",
-                                        "/api/users/entry-password/verify", "/api/checkin", "/api/commands/**",
+                                        "/api/users/entry-password/verify", "/api/checkin", "/api/commands/**", "/api/devices/**", "/api/faults/**",
                                         "/api/checkin/prepare", "/api/checkin/prepare/member")
                                 .permitAll()
 
                                 // 3. PUBLIC PATCH 요청
                                 .requestMatchers(HttpMethod.PATCH, "/api/users/*/entry-password",
-                                        "/api/checkin/away", "/api/checkin/comeback", "/api/commands/**", "/api/checkin/checkout") 
+                                        "/api/checkin/away", "/api/checkin/comeback", "/api/commands/**", "/api/faults/**", "/api/checkin/checkout") 
                                 .permitAll()
 
                                 // 회원 전용 API (JWT 필수)
