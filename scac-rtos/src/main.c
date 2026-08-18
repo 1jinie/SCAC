@@ -68,7 +68,24 @@ static int parse_work(const char *json, work_t *work) {
            json_string(json, "payload", work->payload, sizeof(work->payload)) == 0 ? 1 : -1;
 }
 
+// 도어 닫힘
+static int handle_door_close(
+        const work_t *work,
+        char *result,
+        size_t result_size){
+    (void) work;
+
+    printf("[DOOR] CLOSE\n");
+    fflush(stdout);
+
+    vTaskDelay(pdMS_TO_TICKS(500));
+
+    snprintf(result, result_size, "door closed");
+
+    return 0;
+}
 // 도어 열림
+
 static int handle_door_open(
         const work_t *work,
         char *result,
@@ -97,24 +114,6 @@ static int handle_door_open(
     return 0;
 }
 
-// 도어 닫힘
-static int handle_door_close(
-        const work_t *work,
-        char *result,
-        size_t result_size){
-    (void) work;
-
-    printf("[DOOR] CLOSE\n");
-    fflush(stdout);
-
-    vTaskDelay(pdMS_TO_TICKS(500));
-
-    snprintf(result, result_size, "door closed");
-
-    return 0;
-}
-
-
 static int handle_print_receipt(const work_t *work, char *result, size_t result_size) {
     char payload[sizeof(work->payload)];
     snprintf(payload, sizeof(payload), "%s", work->payload);
@@ -134,7 +133,7 @@ static int handle_print_receipt(const work_t *work, char *result, size_t result_
     printf("  품목 : %s\n", items);
     printf("  결제 금액 : %s원\n", amount);
     printf("+--------------------------------------+\n\n");
-    time_t now = tiem(NULL);
+    time_t now = time(NULL);
     struct tm tm_now;
     if(localtime_r(&now, &tm_now) == NULL){
         snprintf(result, result_size, "failed to get local time");
@@ -211,8 +210,9 @@ static void health_check_task(void *parameter){
             "\"deviceId\":\"KIOSK-01\","
             "\"status\":\"ONLINE\","
             "\"door\":\"CLOSE\","
-            "\"printer\":\"READY\","
-            "}"
+            "\"cardReader\":\"WAITING\","
+            "\"printer\":\"READY\""
+            "}";
         char body[RESPONSE_CAPACITY];
 
         http_response_t response = {0};
@@ -347,7 +347,7 @@ void vApplicationMallocFailedHook(void) { abort(); }
 
 
 int main(int argc, char **argv) {
-    const char *url = argc >= 2 ? argv[1] : "http://localhost:8080";
+    const char *url = argc >= 2 ? argv[1] : "http://localhost:8888";
     if (http_server_parse(url, &spring_server) < 0) return EXIT_FAILURE;
     configASSERT(xTaskCreate(command_poll_task, "CommandPollTask",
             2048, NULL, 2, NULL) == pdPASS);
@@ -355,7 +355,6 @@ int main(int argc, char **argv) {
             2048, NULL, 2, NULL) == pdPASS);
     configASSERT(xTaskCreate(health_check_task, "HealthCheckTask",
             2048, NULL, 2, NULL) == pdPASS);
-    printf("[FreeRTOS] 양방향 명령/장애 예제 시작: %s\n", url);
     vTaskStartScheduler();
     return EXIT_FAILURE;
 }

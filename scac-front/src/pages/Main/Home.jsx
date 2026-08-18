@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { seatStore } from '../../store/seatStore';
 import { checkInStore } from '../../store/checkInStore';
+import { useResetStore } from '../../hooks/useResetStore';
+import { openDoor } from '../../api/deviceApi';
 import InOutModal from '../../components/modal/InOutModal';
 import KioskAlertModal from '../../components/modal/KioskAlertModal';
 import '../../styles/Home.css';
-import { useResetStore } from '../../hooks/useResetStore';
 
 function HomePage() {
   const [alertModal, setAlertModal] = useState(null);
@@ -50,10 +51,16 @@ function HomePage() {
       if (!comebackResult.success) {
         setAlertModal({
           title: '복귀 실패',
-          message: result.message,
+          message: comebackResult.message,
           onClose: () => setAlertModal(null),
         });
         return;
+      }
+
+      try {
+        await openDoor();
+      } catch (error) {
+        console.error('문 열기 명령 전송 실패: ', error);
       }
 
       setAlertModal({
@@ -71,32 +78,67 @@ function HomePage() {
   const handleGoOut = async (phoneNumber, password) => {
     const result = await goOut(phoneNumber, password);
 
+    if (!result.success){
+      setAlertModal({
+        title: '외출 실패',
+        message: result.message,
+        onClose: () => setAlertModal(null),
+      });
+      
+      return;
+    }
+
+    try{
+      await openDoor();
+    } catch(error){
+      console.error('문 열기 명령 전송 실패: ', error);
+      return;
+    }
+
+    setModalType(null);
+
     setAlertModal({
       title: '외출',
       message: result.message,
-      onClose: () => setAlertModal(null),
+      onClose: () => {
+        setAlertModal(null);
+        navigate('/');
+      }
     });
-
-    if (!result.success) return;
-
-    setModalType(null);
   };
 
   // 퇴실 관리
   const handleCheckOut = async (phoneNumber, password) => {
     const result = await checkOut(phoneNumber, password);
 
-    setAlertModal({
-      title: '퇴실',
-      message: result.message,
-      onClose: () => setAlertModal(null),
-    });
+    if (!result.success){
+      setAlertModal({
+        title: '퇴실',
+        message: result.message,
+        onClose: () => setAlertModal(null),
+      });
+      return;
+    }
 
-    if (!result.success) return;
+    try{
+      await openDoor();
+    } catch(error){
+      console.error('문 열기 명령 전송 실패', error);
+      return;
+    }
 
     setModalType(null);
 
     fetchSeats();
+
+    setAlertModal({
+      title: '퇴실',
+      message: result.message,
+      onClose: () => {
+        setAlertModal(null);
+        navigate('/');
+      }
+    });
   };
 
   // 버튼 관리
