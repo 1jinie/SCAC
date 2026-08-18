@@ -81,6 +81,12 @@
   min-width: 0;
 }
 
+.admin_device_left_column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
 /* =========================
    Device List
 ========================= */
@@ -139,6 +145,10 @@
 /* =========================
    Device List Information
 ========================= */
+.admin_device_manage_list {
+  position: relative;
+  min-height: 280px;
+}
 
 .admin_device_manage_item > div:first-child {
   display: flex;

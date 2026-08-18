@@ -61,14 +61,15 @@ public class DeviceService {
       .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 장치입니다."));
   }
 
-  // 현재 운영중인 장치 현재 상태 조회
+  // 현재 운영중인 장치 현재 상태 조회(기존에 이 메서드를 사용중인 곳이 있어서 유지)
   public List<DeviceResDTO> findAllCurrentStatus() {
     return deviceRepository.findAllByIsActiveTrueOrderByDeviceIdAsc().stream().map(DeviceResDTO::from)
       .toList();
 
   }
 
-  // 비활성 장치 포함 모든 장치 조회
+  // includeInactive = false : 현재운영중 장치,
+  // includeInactive = true : 비활성화된 장치 포함 모든 장치 조회
   public List<DeviceResDTO> findAllCurrentStatus(boolean includeInactive) {
 
     List<Device> devices = includeInactive ? deviceRepository.findAllByOrderByDeviceIdAsc()
@@ -107,7 +108,7 @@ public class DeviceService {
     return DeviceResDTO.from(device);
   }
 
-  // RTOS 장치 이벤트 수신
+  // RTOS 장치 이벤트 수신 (비활성화된 장치 이벤트는 처리 안받음)
   @Transactional
   public DeviceLogResDTO handleDeviceEvent(DeviceLogCreateDTO form) {
     Device device = findDevice(form.getDeviceId());

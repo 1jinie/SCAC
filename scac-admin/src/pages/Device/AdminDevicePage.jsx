@@ -232,16 +232,27 @@ export default function AdminDevicePage() {
       <AdminSummary items={summaryItems} />
 
       <section className="admin_device_workspace">
-        <AdminDeviceList
-          devices={devices}
-          selectedDevice={selectedDevice}
-          onDeviceSelect={handleDeviceSelect}
-          isDeviceLoading={isDeviceLoading}
-          errorMessage={errorMessage}
-          includeInactive={includeInactive}
-          onIncludeInactiveChange={setIncludeInactive}
-        />
-
+        <div className="admin_device_left_column">
+          <AdminDeviceList
+            devices={devices}
+            selectedDevice={selectedDevice}
+            onDeviceSelect={handleDeviceSelect}
+            isDeviceLoading={isDeviceLoading}
+            errorMessage={errorMessage}
+            includeInactive={includeInactive}
+            onIncludeInactiveChange={setIncludeInactive}
+          />
+          {selectedDevice &&
+            (isLogLoading ? (
+              <div className="admin_device_log_section">
+                <p className="admin_device_log_empty">
+                  로그를 불러오는 중입니다.
+                </p>
+              </div>
+            ) : (
+              <AdminDeviceLogList logs={deviceLogs} />
+            ))}
+        </div>
         <AdminDeviceDetail
           selectedDevice={selectedDevice}
           deviceLogs={deviceLogs}
@@ -250,17 +261,6 @@ export default function AdminDevicePage() {
           onActiveChange={handleActiveChange}
           isUpdatingActive={isUpdatingActive}
         />
-
-        {selectedDevice &&
-          (isLogLoading ? (
-            <div className="admin_device_log_section">
-              <p className="admin_device_log_empty">
-                로그를 불러오는 중입니다.
-              </p>
-            </div>
-          ) : (
-            <AdminDeviceLogList logs={deviceLogs} />
-          ))}
       </section>
     </div>
   );

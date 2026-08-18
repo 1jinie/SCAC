@@ -1,4 +1,4 @@
-import './AdminSummary.css';
+import './css/AdminSummary.css';
 
 export default function AdminSummary({ items }) {
   return (

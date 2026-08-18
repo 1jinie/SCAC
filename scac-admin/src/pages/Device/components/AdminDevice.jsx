@@ -3,7 +3,7 @@ import {
   DEVICE_TYPE_LABELS,
 } from '../../../constants/device';
 
-export default function AdminDevice({ device, isSelected, onDeviceSelect }) {
+export default function AdminDevice({ device, isSelected, onClick }) {
   const formatDateTime = (dateTime) => {
     if (!dateTime) {
       return '연결 기록 없음';
@@ -16,16 +16,16 @@ export default function AdminDevice({ device, isSelected, onDeviceSelect }) {
     <button
       type="button"
       className={`admin_device_manage_item ${isSelected ? 'is_selected' : ''} ${!device.isActive ? 'is_inactive' : ''}`}
-      onClick={() => onDeviceSelect(device)}
+      onClick={() => onClick(device)}
     >
       <div>
         <strong>{device.deviceName}</strong>
-        {!device.isActive && (
-          <span className="admin_device_inactive_text">비활성 장치</span>
-        )}
         <span>
           {DEVICE_TYPE_LABELS[device.deviceType] ?? device.deviceType}
         </span>
+        {!device.isActive && (
+          <span className="admin_device_inactive_text">비활성 장치</span>
+        )}
       </div>
 
       <div>

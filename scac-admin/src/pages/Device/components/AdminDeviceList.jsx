@@ -1,3 +1,4 @@
+import LoadingOverlay from '../../../components/common/LoadingOverlay';
 import AdminDevice from './AdminDevice';
 
 export default function AdminDeviceList({
@@ -28,17 +29,25 @@ export default function AdminDeviceList({
       </div>
 
       <div className="admin_device_manage_list">
-        {isDeviceLoading && <p>장치 목록을 불러오는 중입니다.</p>}
-        {errorMessage && <p>{errorMessage}</p>}
-        {!isDeviceLoading && !errorMessage && devices.length === 0 && (
-          <p className="admin_device_list_empty">등록된 장치가 없습니다.</p>
+        <LoadingOverlay
+          isLoading={isDeviceLoading}
+          message="장치를 불러오는 중입니다."
+        />
+
+        {errorMessage && !isDeviceLoading && (
+          <div className="admin_device_error">{errorMessage}</div>
         )}
+
+        {!errorMessage && devices.length === 0 && !isDeviceLoading && (
+          <div className="admin_device_empty">등록된 장치가 없습니다.</div>
+        )}
+
         {devices.map((device) => (
           <AdminDevice
             key={device.deviceId}
             device={device}
             isSelected={selectedDevice?.deviceId === device.deviceId}
-            onDeviceSelect={onDeviceSelect}
+            onClick={() => onDeviceSelect(device)}
           />
         ))}
       </div>
