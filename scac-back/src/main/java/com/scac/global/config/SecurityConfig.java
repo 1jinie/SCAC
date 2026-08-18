@@ -66,13 +66,13 @@ public class SecurityConfig {
                                         "/api/auth/logout", "/api/auth/send-code", "/api/auth/verify-code",
                                         "/api/admin/auth/login", "/api/admin/auth/refresh",
                                         "/api/admin/auth/logout", "/api/users/signup", "/api/users/guest",
-                                        "/api/users/entry-password/verify", "/api/checkin",
+                                        "/api/users/entry-password/verify", "/api/checkin", "/api/commands/**",
                                         "/api/checkin/prepare", "/api/checkin/prepare/member")
                                 .permitAll()
 
                                 // 3. PUBLIC PATCH 요청
                                 .requestMatchers(HttpMethod.PATCH, "/api/users/*/entry-password",
-                                        "/api/checkin/away", "/api/checkin/comeback", "/api/checkin/checkout")
+                                        "/api/checkin/away", "/api/checkin/comeback", "/api/commands/**", "/api/checkin/checkout") 
                                 .permitAll()
 
                                 // 회원 전용 API (JWT 필수)
