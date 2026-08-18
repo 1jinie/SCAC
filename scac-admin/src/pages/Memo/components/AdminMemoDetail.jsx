@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { formatAdminMemoDate } from '../../../utils/date';
 import {
+  getAdminColor,
   isMemoCompleted,
   toggleMemoCompleted,
 } from '../../../utils/memoUtils';
@@ -40,6 +41,7 @@ export default function AdminMemoDetail({
   };
 
   const completed = isMemoCompleted(memo.content);
+  const color = getAdminColor(memo.adminId);
 
   const handleSave = async () => {
     if (!memo.content.trim()) {
@@ -118,6 +120,16 @@ export default function AdminMemoDetail({
         <input
           value={
             memo.adminId ? `관리자 #${memo.adminId}` : '관리자 정보 연동 전'
+          }
+          style={
+            memo.adminId
+              ? {
+                  backgroundColor: color.bg,
+                  borderColor: color.border,
+                  color: color.text,
+                  fontWeight: '700',
+                }
+              : undefined
           }
           disabled
         />
