@@ -4,10 +4,11 @@ import { useAuthStore } from '../../store/authStore';
 import { seatStore } from '../../store/seatStore';
 import { roomStore } from '../../store/roomStore';
 import { reservationStore } from '../../store/reservationStore';
+import { checkInStore } from '../../store/checkInStore';
+import { openDoor } from '../../api/deviceApi';
 import KioskAlertModal from '../../components/modal/KioskAlertModal';
 import SeatList from './components/SeatList';
 import '../../styles/seat.css';
-import { checkInStore } from '../../store/checkInStore';
 
 function SeatPage({ mode }) {
   const [alertModal, setAlertModal] = useState(null);
@@ -81,10 +82,16 @@ function SeatPage({ mode }) {
       return;
     }
 
-    await logout();
-
     // 입실 성공
     checkInSeat(selected);
+    try {
+      await openDoor();
+    } catch (error) {
+      console.error('문 열기 명령 전송 실패: ', error);
+    }
+
+    await logout();
+
     setAlertModal({
       title: '입실 완료',
       message: '입실되었습니다',
