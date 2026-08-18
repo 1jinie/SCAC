@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react';
 import { formatAdminMemoDate } from '../../../utils/date';
+import {
+  isMemoCompleted,
+  toggleMemoCompleted,
+} from '../../../utils/memoUtils';
 
 const EMPTY_MEMO = {
   memoId: null,
@@ -35,6 +39,8 @@ export default function AdminMemoDetail({
     }));
   };
 
+  const completed = isMemoCompleted(memo.content);
+
   const handleSave = async () => {
     if (!memo.content.trim()) {
       window.alert('내용을 입력하세요.');
@@ -46,19 +52,32 @@ export default function AdminMemoDetail({
 
       if (selectedMemo) {
         await onUpdateMemo(memo.memoId, memo.content.trim());
-
         window.alert('수정되었습니다.');
       } else {
         await onCreateMemo(memo.content.trim());
-
         window.alert('등록되었습니다.');
       }
     } catch (error) {
       console.error('메모 저장 실패:', error.response?.data ?? error);
-
       window.alert(
         error.response?.data?.message ?? '메모 저장에 실패했습니다.',
       );
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleToggleComplete = async () => {
+    if (!selectedMemo) return;
+
+    try {
+      setIsSaving(true);
+      const nextContent = toggleMemoCompleted(memo.content);
+      await onUpdateMemo(selectedMemo.memoId, nextContent);
+      setMemo((prev) => ({ ...prev, content: nextContent }));
+    } catch (error) {
+      console.error('완료 상태 변경 실패:', error);
+      window.alert('완료 상태 변경에 실패했습니다.');
     } finally {
       setIsSaving(false);
     }
@@ -69,7 +88,9 @@ export default function AdminMemoDetail({
       return;
     }
 
-    const confirmed = window.confirm('정말 삭제하시겠습니까?');
+    const confirmed = window.confirm(
+      '메모를 완전히 삭제하시겠습니까?\n(완료된 메모는 [완료 처리] 버튼을 눌러 어둡게 보관할 수 있습니다.)',
+    );
 
     if (!confirmed) {
       return;
@@ -77,11 +98,9 @@ export default function AdminMemoDetail({
 
     try {
       await onDeleteMemo(selectedMemo.memoId);
-
       window.alert('삭제되었습니다.');
     } catch (error) {
       console.error('메모 삭제 실패:', error.response?.data ?? error);
-
       window.alert(
         error.response?.data?.message ?? '메모 삭제에 실패했습니다.',
       );
@@ -90,7 +109,9 @@ export default function AdminMemoDetail({
 
   return (
     <div className="admin_memo_detail">
-      <h3>{selectedMemo ? '메모 수정' : '메모 등록'}</h3>
+      <h3>
+        {selectedMemo ? (completed ? '메모 수정 (완료됨)' : '메모 수정') : '메모 등록'}
+      </h3>
 
       <div className="admin_memo_form">
         <label>작성자</label>
@@ -110,6 +131,7 @@ export default function AdminMemoDetail({
           }
           disabled
         />
+
         <label>수정일</label>
         <span>
           {memo.updatedAt &&
@@ -131,6 +153,7 @@ export default function AdminMemoDetail({
 
         <div className="admin_memo_button_group">
           <button
+            type="button"
             className="admin_memo_save"
             onClick={handleSave}
             disabled={isSaving}
@@ -140,6 +163,18 @@ export default function AdminMemoDetail({
 
           {selectedMemo && (
             <button
+              type="button"
+              className={`admin_memo_complete_toggle ${completed ? 'is_completed' : ''}`}
+              onClick={handleToggleComplete}
+              disabled={isSaving}
+            >
+              {completed ? '완료 취소' : '완료 처리'}
+            </button>
+          )}
+
+          {selectedMemo && (
+            <button
+              type="button"
               className="admin_memo_delete"
               onClick={handleDelete}
               disabled={isSaving}
