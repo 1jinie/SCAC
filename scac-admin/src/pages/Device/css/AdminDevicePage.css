@@ -273,6 +273,17 @@
   overflow-wrap: anywhere;
 }
 
+.admin_device_manage_item.is_inactive {
+  opacity: 0.58;
+  background: #f7f7f7;
+}
+
+.admin_device_inactive_text {
+  color: var(--color-text-light);
+  font-size: 11px;
+  font-weight: 700;
+}
+
 /* =========================
    Device Log
 ========================= */
@@ -385,7 +396,7 @@
 }
 
 /* =========================
-   Normal Button
+   Button
 ========================= */
 
 .admin_device_normal_button {
@@ -436,6 +447,33 @@
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+}
+
+.admin_device_inactive_button,
+.admin_device_active_button {
+  width: 100%;
+  min-height: 46px;
+
+  margin-top: 10px;
+
+  border-radius: 10px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.admin_device_inactive_button {
+  border: 1px solid var(--color-error);
+  background: var(--color-white);
+  color: var(--color-error);
+}
+
+.admin_device_active_button {
+  border: 1px solid var(--color-primary);
+  background: var(--color-white);
+  color: var(--color-primary);
 }
 
 /* =========================

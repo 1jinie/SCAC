@@ -54,6 +54,10 @@ public class Device {
   @Column(name = "serial_number", unique = true, length = 100)
   private String serialNumber;
 
+  // 생성시 기본값은 true
+  @Column(name = "is_active", nullable = false)
+  private Boolean isActive;
+
   private Device(String deviceName, DeviceType deviceType, String location, String ipAddress,
     String serialNumber) {
     this.deviceName = deviceName;
@@ -62,6 +66,7 @@ public class Device {
     this.location = location;
     this.ipAddress = ipAddress;
     this.serialNumber = serialNumber;
+    this.isActive = true;
   }
 
   public static Device create(String deviceName, DeviceType deviceType, String location, String ipAddress,
@@ -84,5 +89,15 @@ public class Device {
 
   public void updateLastConnectedAt(LocalDateTime lastConnectedAt) {
     this.lastConnectedAt = lastConnectedAt;
+  }
+
+  // 장치 활성화
+  public void activate() {
+    this.isActive = true;
+  }
+
+  // 장치 비활성화
+  public void deactivate() {
+    this.isActive = false;
   }
 }

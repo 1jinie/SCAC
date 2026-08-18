@@ -15,12 +15,14 @@ export default function AdminDevice({ device, isSelected, onDeviceSelect }) {
   return (
     <button
       type="button"
-      className={`admin_device_manage_item ${isSelected ? 'is_selected' : ''}`}
+      className={`admin_device_manage_item ${isSelected ? 'is_selected' : ''} ${!device.isActive ? 'is_inactive' : ''}`}
       onClick={() => onDeviceSelect(device)}
     >
       <div>
         <strong>{device.deviceName}</strong>
-
+        {!device.isActive && (
+          <span className="admin_device_inactive_text">비활성 장치</span>
+        )}
         <span>
           {DEVICE_TYPE_LABELS[device.deviceType] ?? device.deviceType}
         </span>
