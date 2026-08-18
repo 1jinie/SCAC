@@ -11,15 +11,23 @@
 
 .admin_log_search {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-end;
+  justify-content: space-between;
   gap: 16px;
-
   padding: 20px 24px;
-
   border: 1px solid var(--color-border);
   border-radius: 16px;
-
   background: var(--color-white);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.admin_log_search_form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 14px;
+  flex: 1;
 }
 
 .admin_log_search_group {
@@ -28,8 +36,9 @@
   gap: 8px;
 }
 
-.admin_log_search_group:first-child {
+.admin_log_search_group.is_keyword {
   flex: 1;
+  min-width: 220px;
 }
 
 .admin_log_search_group label {
@@ -42,14 +51,12 @@
 .admin_log_search_group select {
   height: 42px;
   padding: 0 14px;
-
   border: 1px solid var(--color-border);
   border-radius: 10px;
-
   background: var(--color-white);
   color: var(--color-text);
-
   font-size: 14px;
+  box-sizing: border-box;
 }
 
 .admin_log_search_group input:focus,
@@ -58,18 +65,98 @@
   outline: none;
 }
 
-.admin_log_reset_button {
+.admin_log_search_actions {
+  display: flex;
+  gap: 8px;
+}
+
+.admin_log_search_submit_btn {
   height: 42px;
   padding: 0 20px;
+  border: none;
+  border-radius: 10px;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+  white-space: nowrap;
+}
 
+.admin_log_search_submit_btn:hover {
+  opacity: 0.9;
+}
+
+.admin_log_reset_button {
+  height: 42px;
+  padding: 0 16px;
   border: 1px solid var(--color-border);
   border-radius: 10px;
-
-  background: var(--color-white);
+  background: #f8fafc;
   color: var(--color-text);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+  white-space: nowrap;
+}
 
+.admin_log_reset_button:hover {
+  background: #e2e8f0;
+}
+
+/* Excel Download Button */
+.admin_log_search_extra {
+  display: flex;
+  align-items: flex-end;
+}
+
+.admin_log_excel_button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 18px;
+  border: 1px solid #16a34a;
+  border-radius: 10px;
+  background: #f0fdf4;
+  color: #15803d;
+  font-size: 13.5px;
   font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
 
+.admin_log_excel_button:hover {
+  background: #16a34a;
+  color: #fff;
+}
+
+/* Search Notice Bar */
+.admin_log_search_notice {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 18px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  font-size: 13.5px;
+  color: #166534;
+}
+
+.admin_log_search_notice strong {
+  font-weight: 700;
+}
+
+.admin_log_search_notice_reset {
+  background: none;
+  border: none;
+  color: #15803d;
+  font-weight: 700;
+  text-decoration: underline;
   cursor: pointer;
 }
 
@@ -80,33 +167,28 @@
 .admin_log_table_wrap {
   width: 100%;
   overflow-x: auto;
-
   border: 1px solid var(--color-border);
   border-radius: 16px;
-
   background: var(--color-white);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.03);
 }
 
 .admin_log_table {
   width: 100%;
   min-width: 1100px;
-
   border-collapse: collapse;
 }
 
 .admin_log_table th,
 .admin_log_table td {
   padding: 16px 18px;
-
   border-bottom: 1px solid var(--color-border);
-
   text-align: left;
   vertical-align: middle;
 }
 
 .admin_log_table th {
   background: #f7f9fa;
-
   color: var(--color-text-sub);
   font-size: 13px;
   font-weight: 700;
@@ -133,14 +215,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   min-width: 58px;
   min-height: 28px;
-
   padding: 0 10px;
-
   border-radius: 999px;
-
   font-size: 12px;
   font-weight: 700;
 }
@@ -163,12 +241,9 @@
 .admin_log_empty,
 .admin_log_detail_empty {
   padding: 60px 24px;
-
   border: 1px solid var(--color-border);
   border-radius: 16px;
-
   background: var(--color-white);
-
   text-align: center;
 }
 
@@ -178,10 +253,8 @@
 
 .admin_log_detail_card {
   padding: 28px;
-
   border: 1px solid var(--color-border);
   border-radius: 16px;
-
   background: var(--color-white);
 }
 
@@ -189,16 +262,13 @@
   display: grid;
   grid-template-columns: 140px 1fr;
   align-items: center;
-
   padding: 18px 0;
-
   border-bottom: 1px solid var(--color-border);
 }
 
 .admin_log_detail_row > span,
 .admin_log_detail_description > span {
   color: var(--color-text-sub);
-
   font-size: 13px;
   font-weight: 700;
 }
@@ -210,50 +280,74 @@
 .admin_log_detail_description {
   display: grid;
   grid-template-columns: 140px 1fr;
-
   padding: 20px 0;
 }
 
 .admin_log_detail_description p {
   margin: 0;
-
   line-height: 1.7;
 }
 
 .admin_log_detail_actions {
   display: flex;
   justify-content: flex-end;
-
   margin-top: 20px;
 }
 
 .admin_log_back_button {
   min-width: 110px;
   height: 42px;
-
   border: 1px solid var(--color-primary);
   border-radius: 10px;
-
   background: var(--color-white);
   color: var(--color-primary);
-
   font-weight: 700;
-
   cursor: pointer;
 }
 
 /* =========================
-   Log User / Target
+   Log User / Target / Actor
 ========================= */
 
-.admin_log_user,
+.admin_log_actor_cell {
+  display: inline-flex;
+  align-items: center;
+}
+
+.admin_log_actor {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.admin_log_actor.is_admin {
+  background: #ede9fe;
+  color: #6d28d9;
+  border: 1px solid #ddd6fe;
+}
+
+.admin_log_actor.is_user {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.admin_log_actor.is_system {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
 .admin_log_target {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.admin_log_user small,
 .admin_log_target small {
   color: var(--color-text-sub);
   font-size: 12px;
@@ -261,9 +355,7 @@
 
 .admin_log_content {
   max-width: 360px;
-
   overflow: hidden;
-
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -276,12 +368,9 @@
   display: flex;
   flex-direction: column;
   gap: 28px;
-
   padding: 28px;
-
   border: 1px solid var(--color-border);
   border-radius: 16px;
-
   background: var(--color-white);
 }
 
@@ -293,13 +382,11 @@
 
 .admin_log_detail_section:not(:last-child) {
   padding-bottom: 28px;
-
   border-bottom: 1px solid var(--color-border);
 }
 
 .admin_log_detail_section h3 {
   margin: 0;
-
   font-size: 17px;
   font-weight: 700;
 }
@@ -319,7 +406,6 @@
 .admin_log_detail_grid span,
 .admin_log_detail_message > span {
   color: var(--color-text-sub);
-
   font-size: 13px;
   font-weight: 700;
 }
@@ -337,7 +423,6 @@
 .admin_log_detail_message strong,
 .admin_log_detail_message p {
   margin: 0;
-
   line-height: 1.7;
 }
 
@@ -349,14 +434,21 @@
 .admin_log_back_button {
   min-width: 110px;
   height: 42px;
-
   border: 1px solid var(--color-primary);
   border-radius: 10px;
-
   background: var(--color-white);
   color: var(--color-primary);
-
   font-weight: 700;
-
   cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+  .admin_log_search {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin_log_search_extra {
+    justify-content: flex-end;
+  }
 }
