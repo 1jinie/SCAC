@@ -37,7 +37,7 @@ import { useResetStore } from '../../hooks/useResetStore';
 export default function KioskErrorPage({ status: statusProp }) {
   const routeError = useRouteError();
   const navi = useNavigate();
-  const resetAll = useResetStore();
+  const { resetAll } = useResetStore();
 
   const status = statusProp ?? routeError?.status ?? 500;
 

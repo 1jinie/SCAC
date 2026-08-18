@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { paymentApi } from '../../../api/paymentApi';
-import { ticketApi } from '../../../api/ticketApi';
-import SelectButton from '../../../components/button/SelectButton';
-import { useResetStore } from '../../../hooks/useResetStore';
 import { reservationApi } from '../../../api/reservationApi';
-import TicketPaymentResult from './TicketPaymentResult';
+import { ticketApi } from '../../../api/ticketApi';
+import { useResetStore } from '../../../hooks/useResetStore';
 import ReservationPaymentResult from './ReservationPaymentResult';
-import { useAuthStore } from '../../../store/authStore';
+import TicketPaymentResult from './TicketPaymentResult';
 
 export default function PaymentResultCard({ isSuccess, errorMessage }) {
   const [payment, setPayment] = useState(null);
@@ -16,11 +14,11 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
   const [isLoading, setIsLoading] = useState(false);
   const [resultError, setResultError] = useState('');
   const navi = useNavigate();
-  const resetAll = useResetStore();
+  const { resetAll } = useResetStore();
   const { state } = useLocation();
   const paymentId = state?.paymentId;
   const [closeTimer, setCloseTimer] = useState(10);
-  const resetPayData = useResetStore();
+  const { resetPayData } = useResetStore();
 
   useEffect(() => {
     if (!isSuccess || paymentId == null) {
