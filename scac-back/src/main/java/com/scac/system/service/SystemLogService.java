@@ -55,7 +55,8 @@ public class SystemLogService {
      * 특정 좌석 로그 조회 (N+1 최적화)
      */
     public List<SeatLogRes> getLogsByTarget(String targetType, Long targetId) {
-        List<SystemLog> logs = systemLogRepository.findByTargetTypeAndTargetIdOrderByCreatedAtDesc(targetType, targetId);
+        List<SystemLog> logs = systemLogRepository.findByTargetTypeAndTargetIdOrderByCreatedAtDesc(targetType,
+            targetId);
         return mapToSeatLogResList(logs);
     }
 
@@ -63,17 +64,14 @@ public class SystemLogService {
      * N+1 조회를 방지하기 위한 공통 변환 메서드
      */
     private List<SeatLogRes> mapToSeatLogResList(List<SystemLog> logs) {
-        Set<Long> userIds = logs.stream()
-                .map(SystemLog::getUserId)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+        Set<Long> userIds = logs.stream().map(SystemLog::getUserId).filter(Objects::nonNull)
+            .collect(Collectors.toSet());
 
         Map<Long, String> userPhoneMap = userRepository.findAllById(userIds).stream()
-                .collect(Collectors.toMap(User::getId, User::getPhoneNumber));
+            .collect(Collectors.toMap(User::getId, User::getPhoneNumber));
 
-        return logs.stream()
-                .map(log -> SeatLogRes.from(log, userPhoneMap.getOrDefault(log.getUserId(), "-")))
-                .toList();
+        return logs.stream().map(log -> SeatLogRes.from(log, userPhoneMap.getOrDefault(log.getUserId(), "-")))
+            .toList();
     }
 
     /**

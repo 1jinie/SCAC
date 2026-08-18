@@ -23,4 +23,6 @@ public interface DeviceLogRepository extends JpaRepository<DeviceLog, Long> {
   // 특정 장치 로그 최신 한건
   Optional<DeviceLog> findFirstByDeviceDeviceIdOrderByCreatedAtDescLogIdDesc(Long deviceId);
 
+  // Device_id 중복 확인
+  boolean existsByDeviceDeviceId(Long deviceId);
 }
