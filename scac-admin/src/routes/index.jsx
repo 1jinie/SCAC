@@ -21,8 +21,6 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      // 관리자 로그인이 완성되기까지 개발편의를 위해 냅두는 용도
-      // <AdminLayout />
       <AdminPrivateRoute>
         <AdminLayout />
       </AdminPrivateRoute>
