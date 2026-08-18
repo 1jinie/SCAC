@@ -14,6 +14,7 @@ import com.scac.device.dto.DeviceLogResDTO;
 import com.scac.device.dto.DeviceResDTO;
 import com.scac.device.dto.DeviceStatusDTO;
 import com.scac.device.service.DeviceService;
+import com.scac.global.log.annotation.AutoLog;
 import com.scac.global.response.ApiResponse;
 
 import jakarta.validation.Valid;
@@ -54,6 +55,7 @@ public class AdminDeviceController {
   }
 
   // 관리자 장치 상태 변경
+  @AutoLog(logType = "DEVICE", action = "UPDATE", targetType = "DEVICE", content = "관리자에 의한 장치 상태 수동 변경")
   @PatchMapping("/{deviceId}/status")
   public ResponseEntity<ApiResponse<DeviceResDTO>> updateStatus(@PathVariable("deviceId") Long deviceId,
     @Valid @RequestBody DeviceStatusDTO form) {
