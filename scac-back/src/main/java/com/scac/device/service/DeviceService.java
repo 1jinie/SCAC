@@ -31,17 +31,11 @@ public class DeviceService {
 
   // 시리얼번호와 device_id 중복확인
   private void validateSerialNumber(String serialNumber, Long deviceId) {
-    String normalizedSerialNumber = normalize(serialNumber);
-    if (normalizedSerialNumber == null) {
+    if (serialNumber == null) {
       return;
     }
-    boolean duplicated;
-    if (deviceId == null) {
-      duplicated = deviceRepository.existsBySerialNumber(normalizedSerialNumber);
-    } else {
-      duplicated = deviceRepository.existsBySerialNumberAndDeviceIdNot(normalizedSerialNumber, deviceId);
-    }
-
+    boolean duplicated = deviceId == null ? deviceRepository.existsBySerialNumber(serialNumber)
+      : deviceRepository.existsBySerialNumberAndDeviceIdNot(serialNumber, deviceId);
     if (duplicated) {
       throw new IllegalArgumentException("이미 등록된 시리얼 번호입니다.");
     }
@@ -135,26 +129,28 @@ public class DeviceService {
   @Transactional
   public DeviceResDTO create(DeviceCreateDTO form) {
 
-    validateSerialNumber(form.getSerialNumber(), null);
+    String serialNumber = normalize(form.getSerialNumber());
 
-    Device device = Device.create(form.getDeviceName(), form.getDeviceType(), form.getLocation(),
-      form.getIpAddress(), normalize(form.getSerialNumber()));
+    validateSerialNumber(serialNumber, null);
 
-    Device savedDevice = deviceRepository.save(device);
+    Device device = Device.create(form.getDeviceName().trim(), form.getDeviceType(),
+      normalize(form.getLocation()), normalize(form.getIpAddress()), serialNumber);
 
-    return DeviceResDTO.from(savedDevice);
+    return DeviceResDTO.from(deviceRepository.save(device));
   }
 
-  // 관리자 장치 정보 수정
+  // 관리자 장치 수정
   @Transactional
   public DeviceResDTO update(Long deviceId, DeviceUpdateDTO form) {
 
     Device device = findDevice(deviceId);
 
-    validateSerialNumber(form.getSerialNumber(), deviceId);
+    String serialNumber = normalize(form.getSerialNumber());
 
-    device.update(form.getDeviceName(), form.getDeviceType(), form.getLocation(), form.getIpAddress(),
-      normalize(form.getSerialNumber()));
+    validateSerialNumber(serialNumber, deviceId);
+
+    device.update(form.getDeviceName().trim(), form.getDeviceType(), normalize(form.getLocation()),
+      normalize(form.getIpAddress()), serialNumber);
 
     return DeviceResDTO.from(device);
   }

@@ -295,6 +295,65 @@
 }
 
 /* =========================
+   장치 등록/수정 input
+========================= */
+
+.admin_device_info_list input,
+.admin_device_info_list select {
+  width: 100%;
+  min-height: 42px;
+
+  padding: 9px 12px;
+
+  border: 1px solid #d9dee7;
+  border-radius: 8px;
+
+  background-color: #fff;
+
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 500;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.admin_device_info_list input::placeholder {
+  color: #a8afb9;
+  font-weight: 400;
+}
+
+.admin_device_info_list input:hover,
+.admin_device_info_list select:hover {
+  border-color: #b8c0cc;
+}
+
+.admin_device_info_list input:focus,
+.admin_device_info_list select:focus {
+  outline: none;
+
+  border-color: var(--color-primary);
+
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+
+.admin_device_info_list input:disabled,
+.admin_device_info_list select:disabled {
+  background-color: #f5f6f8;
+  color: #9aa1aa;
+  cursor: not-allowed;
+}
+.admin_device_info_list dd input,
+.admin_device_info_list dd select {
+  max-width: 100%;
+}
+
+/* =========================
    Device Log
 ========================= */
 
@@ -409,6 +468,12 @@
    Button
 ========================= */
 
+.admin_device_list_actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
 .admin_device_normal_button {
   width: 100%;
   min-height: 46px;
@@ -484,6 +549,156 @@
   border: 1px solid var(--color-primary);
   background: var(--color-white);
   color: var(--color-primary);
+}
+
+.admin_device_form_actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+
+  margin-top: 18px;
+}
+
+.admin_device_form_actions button {
+  min-height: 46px;
+
+  border-radius: 10px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.1s ease,
+    opacity 0.2s ease;
+}
+
+.admin_device_form_actions button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.admin_device_form_actions button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.admin_device_form_cancel_button {
+  border: 1px solid #d9dee7;
+
+  background-color: #fff;
+
+  color: var(--color-text);
+}
+
+.admin_device_form_cancel_button:hover:not(:disabled) {
+  background-color: #f7f8fa;
+  border-color: #c5cbd4;
+}
+
+.admin_device_form_submit_button {
+  border: 1px solid var(--color-primary);
+
+  background-color: var(--color-primary);
+
+  color: #fff;
+}
+
+.admin_device_form_submit_button:hover:not(:disabled) {
+  filter: brightness(0.95);
+}
+
+.admin_device_edit_button {
+  width: 100%;
+  min-height: 46px;
+
+  margin-top: 10px;
+
+  border: 1px solid var(--color-primary);
+  border-radius: 10px;
+
+  background-color: #fff;
+  color: var(--color-primary);
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.admin_device_edit_button:hover {
+  background-color: color-mix(in srgb, var(--color-primary) 7%, #fff);
+}
+
+.admin_device_create_button {
+  min-height: 34px;
+  padding: 0 14px;
+
+  border: 1px solid var(--color-primary);
+  border-radius: 8px;
+
+  background-color: #fff;
+  color: var(--color-primary);
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.admin_device_create_button:hover,
+.admin_device_create_button.is_active {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+.admin_device_delete_button {
+  width: 100%;
+  min-height: 42px;
+
+  margin-top: 10px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+
+  background-color: #fff;
+  color: #8b919b;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.admin_device_delete_button:hover:not(:disabled) {
+  border-color: var(--color-error);
+  background-color: #fff7f6;
+  color: var(--color-error);
+}
+
+.admin_device_delete_button:disabled {
+  background-color: #f7f8fa;
+  border-color: #e5e7eb;
+  color: #b8bdc5;
+
+  cursor: not-allowed;
 }
 
 /* =========================

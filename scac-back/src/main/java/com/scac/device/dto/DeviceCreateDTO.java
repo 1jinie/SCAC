@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class DeviceCreateDTO {
 
   @NotBlank(message = "장치명은 필수입니다.")
-  @Size(max = 50)
+  @Size(max = 50, message = "장치명은 50자 이하로 입력해 주세요.")
   private String deviceName;
 
   @NotNull(message = "장치 유형은 필수입니다.")
