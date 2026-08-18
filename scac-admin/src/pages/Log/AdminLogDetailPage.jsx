@@ -17,25 +17,24 @@ export default function AdminLogDetailPage() {
   const [selectedLog, setSelectedLog] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // 💡 단일 로그 조회 (전체 목록에서 해당 ID 검색)
+  // 단일 로그 상세 조회 (GET /api/admin/logs/{logId})
   useEffect(() => {
     const fetchLogDetail = async () => {
       try {
         setIsLoading(true);
-        const response = await axiosInstance.get("/api/admin/logs");
-        const logs = response.data?.data ?? [];
-        const foundLog = logs.find(
-          (log) => Number(log.id ?? log.logId) === Number(logId),
-        );
-        setSelectedLog(foundLog ?? null);
+        const response = await axiosInstance.get(`/api/admin/logs/${logId}`);
+        setSelectedLog(response.data?.data ?? null);
       } catch (error) {
         console.error("로그 상세 조회 실패:", error);
+        setSelectedLog(null);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchLogDetail();
+    if (logId) {
+      fetchLogDetail();
+    }
   }, [logId]);
 
   if (isLoading) {
@@ -78,14 +77,14 @@ export default function AdminLogDetailPage() {
           <div className="admin_log_detail_grid">
             <div>
               <span>로그 번호</span>
-              <strong>#{selectedLog.id ?? selectedLog.logId}</strong>
+              <strong>#{selectedLog.logId ?? selectedLog.id}</strong>
             </div>
 
             <div>
               <span>발생 시간</span>
               <strong>
                 {selectedLog.createdAt
-                  ? String(selectedLog.createdAt).replace("T", " ")
+                  ? String(selectedLog.createdAt).replace("T", " ").slice(0, 19)
                   : "-"}
               </strong>
             </div>
@@ -152,7 +151,7 @@ export default function AdminLogDetailPage() {
 
                 <div>
                   <span>관리자 계정</span>
-                  <strong>{selectedLog.adminLoginId ?? "-"}</strong>
+                  <strong>{selectedLog.adminLoginId ? `@${selectedLog.adminLoginId}` : "-"}</strong>
                 </div>
               </>
             ) : selectedLog.userId != null ? (

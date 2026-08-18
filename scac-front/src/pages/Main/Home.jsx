@@ -18,7 +18,7 @@ function HomePage() {
   const checkOut = checkInStore((state) => state.checkOut);
   const seats = seatStore((state) => state.seats);
   const fetchSeats = seatStore((state) => state.fetchSeats);
-  const { resetPayData } = useResetStore((state) => state.resetPayData);
+  const { resetAll } = useResetStore();
   const navigate = useNavigate();
 
   const availableSeats = seats.filter(
@@ -158,10 +158,10 @@ function HomePage() {
     }
   };
   useEffect(() => {
-    //홈으로 갈때마다 선택좌석, 결제수단 초기화
-    resetPayData();
+    // 홈 화면 진입 시 이전 사용자의 로그인 세션, 선택 좌석, 결제/예약 데이터 완전 초기화
+    resetAll();
     fetchSeats();
-  }, [resetPayData, fetchSeats]);
+  }, [resetAll, fetchSeats]);
 
   return (
     <div className="kiosk_container">

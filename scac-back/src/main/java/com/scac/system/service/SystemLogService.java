@@ -13,6 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.scac.admin.dto.response.SystemLogRes;
+import com.scac.admin.entity.AdminAccount;
+import com.scac.admin.repository.AdminAccountRepository;
+import com.scac.global.exception.ResourceNotFoundException;
 import com.scac.system.dto.SeatLogRes;
 import com.scac.system.entity.SystemLog;
 import com.scac.system.repository.SystemLogRepository;
@@ -27,20 +31,56 @@ import lombok.RequiredArgsConstructor;
 public class SystemLogService {
 
     private final UserRepository userRepository;
+    private final AdminAccountRepository adminAccountRepository;
     private final SystemLogRepository systemLogRepository;
 
     /**
-     * 전체 로그 목록 조회 (최신순)
+     * 전체 로그 목록 조회 (최신순 엔티티 반환)
      */
     public List<SystemLog> getAllLogs() {
         return systemLogRepository.findAllByOrderByCreatedAtDesc();
     }
 
     /**
-     * 로그 레벨별 조회 (INFO, WARNING, ERROR, CRITICAL) (최신순)
+     * 로그 레벨별 조회 (INFO, WARNING, ERROR, CRITICAL) (최신순 엔티티 반환)
      */
     public List<SystemLog> getLogsByLevel(String logLevel) {
         return systemLogRepository.findByLogLevelOrderByCreatedAtDesc(logLevel);
+    }
+
+    /**
+     * 관리자용 시스템 로그 목록 조회 (DTO 변환 및 N+1 최적화)
+     */
+    public List<SystemLogRes> getAllSystemLogs(String logLevel) {
+        List<SystemLog> logs = (logLevel != null && !logLevel.isBlank())
+                ? systemLogRepository.findByLogLevelOrderByCreatedAtDesc(logLevel)
+                : systemLogRepository.findAllByOrderByCreatedAtDesc();
+
+        return mapToSystemLogResList(logs);
+    }
+
+    /**
+     * 관리자용 단일 시스템 로그 상세 조회
+     */
+    public SystemLogRes getLogDetail(Long logId) {
+        SystemLog log = systemLogRepository.findById(logId)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 시스템 로그를 찾을 수 없습니다. ID: " + logId));
+
+        String userPhone = null;
+        if (log.getUserId() != null) {
+            userPhone = userRepository.findById(log.getUserId())
+                    .map(User::getPhoneNumber)
+                    .orElse(null);
+        }
+
+        String adminLoginId = null;
+        if (log.getAdminId() != null) {
+            adminLoginId = adminAccountRepository.findById(log.getAdminId())
+                    .map(AdminAccount::getLoginId)
+                    .orElse(null);
+        }
+
+        return SystemLogRes.from(log, userPhone, adminLoginId);
     }
 
     /**
@@ -61,7 +101,36 @@ public class SystemLogService {
     }
 
     /**
-     * N+1 조회를 방지하기 위한 공통 변환 메서드
+     * 시스템 로그 DTO 변환 시 N+1 방지를 위한 공통 맵핑 메서드
+     */
+    private List<SystemLogRes> mapToSystemLogResList(List<SystemLog> logs) {
+        Set<Long> userIds = logs.stream()
+                .map(SystemLog::getUserId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        Set<Long> adminIds = logs.stream()
+                .map(SystemLog::getAdminId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        Map<Long, String> userPhoneMap = userRepository.findAllById(userIds).stream()
+                .collect(Collectors.toMap(User::getId, User::getPhoneNumber));
+
+        Map<Long, String> adminLoginIdMap = adminAccountRepository.findAllById(adminIds).stream()
+                .collect(Collectors.toMap(AdminAccount::getId, AdminAccount::getLoginId));
+
+        return logs.stream()
+                .map(log -> SystemLogRes.from(
+                        log,
+                        userPhoneMap.get(log.getUserId()),
+                        adminLoginIdMap.get(log.getAdminId())
+                ))
+                .toList();
+    }
+
+    /**
+     * N+1 조회를 방지하기 위한 좌석 로그 공통 변환 메서드
      */
     private List<SeatLogRes> mapToSeatLogResList(List<SystemLog> logs) {
         Set<Long> userIds = logs.stream().map(SystemLog::getUserId).filter(Objects::nonNull)
