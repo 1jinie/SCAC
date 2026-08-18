@@ -75,12 +75,24 @@ static int handle_door_open(
         size_t result_size){
     (void) work;
 
+    // 문 열기
     printf("[DOOR] OPEN\n");
     fflush(stdout);
 
     vTaskDelay(pdMS_TO_TICKS(500));
 
-    snprintf(result, result_size, "door opened");
+    // 5초 동안 문을 열어둠
+    printf("[DOOR] OPEN 유지 - 5초 후 자동 닫힘\n");
+    fflush(stdout);
+
+    vTaskDelay(pdMS_TO_TICKS(5000));
+
+    // 문 닫기
+    char close_result[RESULT_CAPACITY] = {0};
+
+    handle_door_close(work, close_result, sizeof(close_result));
+
+    snprintf(result, result_size, "door opened and automatically closed after 5 sec");
 
     return 0;
 }
