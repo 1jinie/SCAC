@@ -19,6 +19,7 @@ import com.scac.admin.dto.request.AdminMemoUpdateDTO;
 import com.scac.admin.dto.response.AdminMemoResDTO;
 import com.scac.admin.service.AdminMemoService;
 import com.scac.auth.jwt.UserPrincipal;
+import com.scac.global.log.annotation.AutoLog;
 import com.scac.global.response.ApiResponse;
 
 import jakarta.validation.Valid;
@@ -40,6 +41,7 @@ public class AdminMemoController {
   }
 
   // 관리자 메모 등록
+  @AutoLog(logType = "ADMIN", action = "CREATE", targetType = "ADMIN_MEMO", content = "관리자 인수인계 메모 등록")
   @PostMapping
   public ResponseEntity<ApiResponse<AdminMemoResDTO>> create(@Valid @RequestBody AdminMemoCreateDTO form,
     @AuthenticationPrincipal UserPrincipal currentAdmin) {
@@ -50,6 +52,7 @@ public class AdminMemoController {
   }
 
   // 관리자 메모 수정
+  @AutoLog(logType = "ADMIN", action = "UPDATE", targetType = "ADMIN_MEMO", content = "관리자 인수인계 메모 수정")
   @PutMapping("/{memoId}")
   public ResponseEntity<ApiResponse<AdminMemoResDTO>> update(@PathVariable("memoId") Long memoId,
     @Valid @RequestBody AdminMemoUpdateDTO form, @AuthenticationPrincipal UserPrincipal currentAdmin) {
@@ -59,6 +62,7 @@ public class AdminMemoController {
   }
 
   // 관리자 메모 삭제
+  @AutoLog(logType = "ADMIN", action = "DELETE", targetType = "ADMIN_MEMO", content = "관리자 인수인계 메모 삭제")
   @DeleteMapping("/{memoId}")
   public ResponseEntity<ApiResponse<Void>> delete(@PathVariable("memoId") Long memoId) {
     adminMemoService.delete(memoId);
