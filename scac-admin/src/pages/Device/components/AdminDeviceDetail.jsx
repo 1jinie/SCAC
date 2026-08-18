@@ -327,19 +327,22 @@ export default function AdminDeviceDetail({
                   ? '장치 비활성화'
                   : '장치 다시 활성화'}
             </button>
-            <button
-              type="button"
-              className="admin_device_delete_button"
-              onClick={onDelete}
-              disabled={isDeletingDevice || deviceLogs.length > 0}
+            <span
               title={
                 deviceLogs.length > 0
                   ? '장치 로그가 존재하는 장치는 삭제할 수 없습니다.'
-                  : '장치를 삭제합니다.'
+                  : ''
               }
             >
-              {isDeletingDevice ? '삭제 중...' : '장치 삭제'}
-            </button>
+              <button
+                type="button"
+                className="admin_device_delete_button"
+                onClick={onDelete}
+                disabled={isDeletingDevice || deviceLogs.length > 0}
+              >
+                {isDeletingDevice ? '삭제 중...' : '장치 삭제'}
+              </button>
+            </span>
           </>
         )}
       </form>
