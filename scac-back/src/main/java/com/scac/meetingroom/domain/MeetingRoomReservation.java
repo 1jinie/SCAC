@@ -38,13 +38,8 @@ public class MeetingRoomReservation {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public MeetingRoomReservation(
-            Long roomId,
-            Long userId,
-            Long paymentId,
-            LocalDate reservationDate,
-            Integer startHour,
-            Integer endHour) {
+    public MeetingRoomReservation(Long roomId, Long userId, Long paymentId, LocalDate reservationDate,
+        Integer startHour, Integer endHour) {
         this.roomId = roomId;
         this.userId = userId;
         this.paymentId = paymentId;
@@ -69,12 +64,18 @@ public class MeetingRoomReservation {
     }
 
     // 결제 완료 시 예약 상태를 CONFIRMED로 변경
-    public void confirmPayment() {
+    public void confirmPayment(Long paymentId) {
         if (status != ReservationStatus.PENDING_PAYMENT) {
             throw new IllegalStateException("결제 대기 중인 예약만 확정할 수 있습니다.");
         }
 
+        if (paymentId == null) {
+            throw new IllegalArgumentException("결제 ID는 필수입니다.");
+        }
+
+        this.paymentId = paymentId;
         this.status = ReservationStatus.CONFIRMED;
+        this.updatedAt = LocalDateTime.now();
     }
 
     // 결제 만료 시 예약 상태를 CANCELED로 변경

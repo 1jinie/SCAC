@@ -94,7 +94,7 @@ public class PaymentService {
       usage = ticketUsageService.issueTicket(payment.getUserId(), payment.getTicketId());
     } else if (payment.getReservationId() != null) {
       usage = ticketUsageService.issueReservation(payment.getUserId(), payment.getReservationId());
-      meetingRoomReservationService.confirmReservation(payment.getReservationId());
+      meetingRoomReservationService.confirmReservation(payment.getReservationId(), payment.getPaymentId());
     } else {
       throw new IllegalStateException("결제 대상 정보가 존재하지 않습니다.");
     }
