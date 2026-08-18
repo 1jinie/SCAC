@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.scac.global.log.annotation.AutoLog;
 import com.scac.global.response.ApiResponse;
 import com.scac.payment.dto.PaymentCancelDTO;
 import com.scac.payment.dto.PaymentHistoryDTO;
@@ -47,6 +48,7 @@ public class AdminPaymentController {
   }
 
   // 결제 취소
+  @AutoLog(logType = "PAYMENT", action = "CANCEL", targetType = "PAYMENT", content = "관리자에 의한 결제 취소 처리")
   @PatchMapping("/{paymentId}/cancel")
   public ResponseEntity<ApiResponse<PaymentResDTO>> cancel(@PathVariable("paymentId") Long paymentId,
       @Valid @RequestBody PaymentCancelDTO form) {
@@ -56,6 +58,7 @@ public class AdminPaymentController {
   }
 
   // 결제내역 삭제
+  @AutoLog(logType = "PAYMENT", action = "DELETE", targetType = "PAYMENT", content = "관리자에 의한 결제 내역 삭제")
   @DeleteMapping("/{paymentId}")
   public ResponseEntity<ApiResponse<Void>> delete(@PathVariable("paymentId") Long paymentId) {
     paymentService.delete(paymentId);
