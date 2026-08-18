@@ -197,7 +197,7 @@ export const checkInStore = create((set, get) => ({
 
       return {
         success: true,
-        message: '퇴실되었습니다\n오늘도 수고하셨습니다',
+        message: '퇴실되었습니다\n\n오늘도 수고하셨습니다',
       };
     } catch (error) {
       return {
@@ -218,7 +218,7 @@ export const checkInStore = create((set, get) => ({
 
       return {
         success: true,
-        message: '퇴실되었습니다\n\n\n오늘도 수고하셨습니다',
+        message: '퇴실되었습니다\n\n오늘도 수고하셨습니다',
       };
     } catch (error) {
       return {
