@@ -11,9 +11,13 @@ import com.scac.system.entity.SystemLog;
 
 public interface SystemLogRepository extends JpaRepository<SystemLog, Long> {
 
+        List<SystemLog> findAllByOrderByCreatedAtDesc();
+
         List<SystemLog> findByLogType(String logType);
 
         List<SystemLog> findByLogLevel(String logLevel);
+
+        List<SystemLog> findByLogLevelOrderByCreatedAtDesc(String logLevel);
 
         List<SystemLog> findByUserId(Long userId);
 
