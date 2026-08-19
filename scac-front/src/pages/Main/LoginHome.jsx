@@ -11,6 +11,7 @@ import InOutModal from '../../components/modal/InOutModal';
 import KioskAlertModal from '../../components/modal/KioskAlertModal';
 import ChooseInModal from '../../components/modal/ChooseInModal';
 import '../../styles/LoginHome.css';
+import { useResetStore } from '../../hooks/useResetStore';
 
 function LoginHomePage() {
   const navigate = useNavigate();
@@ -37,6 +38,7 @@ function LoginHomePage() {
     (seat) => seat.type === 'seat' && seat.status === 'available',
   ).length;
   const totalSeats = seats.filter((seat) => seat.type === 'seat').length;
+  const { resetPayData } = useResetStore();
   const handleMemberCheckIn = async () => {
     // 현재 사용자 입실 상태 확인
     const result = await prepareMemberCheckIn();
@@ -228,6 +230,11 @@ function LoginHomePage() {
   useEffect(() => {
     fetchSeats();
   }, [fetchSeats]);
+
+  // login home으로 돌아오면 결제정보 초기화
+  useEffect(() => {
+    resetPayData();
+  }, [resetPayData]);
 
   // 로그아웃 공통 로직 처리
   const handleLogoutClick = async () => {

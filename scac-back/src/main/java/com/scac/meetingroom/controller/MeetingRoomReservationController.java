@@ -98,4 +98,15 @@ public class MeetingRoomReservationController {
 
                 return ResponseEntity.ok(ApiResponse.success("스터디룸 예약을 조회했습니다.", reservation));
         }
+
+        // 결제 전 임시 예약 취소
+        @PatchMapping("/reservations/{reservationId}/cancel-pending")
+        public ResponseEntity<ApiResponse<MeetingRoomReservationResponse>> cancelPending(
+                @PathVariable Long reservationId, @AuthenticationPrincipal UserPrincipal currentUser) {
+
+                MeetingRoomReservationResponse reservation = reservationService.cancelPending(reservationId,
+                        currentUser.id());
+
+                return ResponseEntity.ok(ApiResponse.success("결제 대기 중인 스터디룸 예약을 취소했습니다.", reservation));
+        }
 }

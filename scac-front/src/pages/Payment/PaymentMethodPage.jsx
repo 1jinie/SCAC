@@ -3,17 +3,47 @@ import CloseButton from '../../components/button/CloseButton';
 import { PAYMENT_METHOD } from '../../constants/payment';
 import { usePaymentStore } from '../../store/paymentStore';
 import './css/PaymentMethod.css';
+import { useTicketStore } from '../../store/ticketStore';
+import { reservationStore } from '../../store/reservationStore';
+import { useResetStore } from '../../hooks/useResetStore';
+import { reservationApi } from '../../api/reservationApi';
 
 export default function PaymentMethodPage() {
   const navi = useNavigate();
   const setPaymentMethod = usePaymentStore((state) => state.setPaymentMethod);
+  const reservation = reservationStore((state) => state.reservation);
+  const { resetPayData } = useResetStore();
   const handleMethod = (method) => {
     setPaymentMethod(method);
     navi(`process`);
   };
+  const targetType = useTicketStore((state) => state.targetType);
+
+  const isReservationPayment = targetType === 'MEETING_ROOM';
+
+  const handleCancelPayment = async () => {
+    try {
+      if (targetType === 'MEETING_ROOM' && reservation.reservationId) {
+        await reservationApi.cancelPendingReservation(
+          reservation.reservationId,
+        );
+      }
+      resetPayData();
+      navi(targetType === 'MEETING_ROOM' ? '/room' : '/ticket', {
+        replace: true,
+      });
+    } catch (error) {
+      console.error('결제 대기 예약 취소 실패:', error);
+
+      alert(
+        error.response?.data?.message ??
+          '예약 취소에 실패했습니다. 다시 시도해 주세요.',
+      );
+    }
+  };
   return (
     <div className="payment_method_box">
-      <CloseButton nextPage={'/ticket'} text="결제취소" />
+      <CloseButton onClose={handleCancelPayment} text="결제취소" />
       <h2 className="payment_method_title">결제 수단 선택</h2>
       <p className="payment_method_text">이용하실 결제 수단을 선택해주세요</p>
       <button

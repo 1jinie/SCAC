@@ -1,13 +1,9 @@
-import { useNavigate } from 'react-router-dom';
-
-export default function CloseButton({ nextPage, text }) {
-  const navigate = useNavigate();
-
+export default function CloseButton({ onClose, text }) {
   return (
     <button
       type="button"
       className="btn_close"
-      onClick={() => navigate(nextPage)}
+      onClick={() => onClose()}
       aria-label={text}
     >
       ×

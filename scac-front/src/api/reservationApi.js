@@ -33,4 +33,10 @@ export const reservationApi = {
 
     return response.data.data;
   },
+
+  // 결제 전 임시 예약 취소
+  cancelPendingReservation: (reservationId) =>
+    axiosInstance.patch(
+      `/api/meeting-rooms/reservations/${reservationId}/cancel-pending`,
+    ),
 };
