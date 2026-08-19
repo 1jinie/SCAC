@@ -199,10 +199,19 @@ public class DeviceService {
   private void updateHealth(DeviceType deviceType, DeviceStatus newStatus, LocalDateTime connectedAt) {
     // 현재는 키오스크 1대 및 장치 타입별 1대 기준으로 처리
     deviceRepository.findFirstByDeviceTypeAndIsActiveTrueOrderByDeviceIdAsc(deviceType).ifPresent(device -> {
+      DeviceStatus previousStatus = device.getStatus();
+      // Heartbeat 수신 시 마지막 통신 시간은 항상 갱신
       device.updateLastConnectedAt(connectedAt);
-      if (device.getStatus() != newStatus) {
-        device.updateStatus(newStatus);
+      // 상태 변화가 없으면 로그를 저장하지 않음
+      if (previousStatus == newStatus) {
+        return;
       }
+      // 현재 상태 갱신
+      device.updateStatus(newStatus);
+      // 상태가 실제로 변경된 경우에만 로그 저장
+      DeviceLog log = DeviceLog.create(device, "HEALTH_STATUS_CHANGE", newStatus,
+        deviceType + " Health Check 상태 변경: " + previousStatus + " → " + newStatus);
+      deviceLogRepository.save(log);
     });
   }
 

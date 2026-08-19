@@ -19,8 +19,6 @@ export default function PaymentMethodPage() {
   };
   const targetType = useTicketStore((state) => state.targetType);
 
-  const isReservationPayment = targetType === 'MEETING_ROOM';
-
   const handleCancelPayment = async () => {
     try {
       if (targetType === 'MEETING_ROOM' && reservation.reservationId) {
