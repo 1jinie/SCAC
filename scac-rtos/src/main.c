@@ -36,11 +36,6 @@ typedef struct {
 static http_server_t spring_server;
 static volatile BaseType_t worker_running = pdFALSE;
 
-
-/* 장애 예제는 실제 GPIO 대신 시작 5초 뒤 프린터 용지 부족을 한 번 발생시킵니다. */
-static volatile BaseType_t paper_empty = pdTRUE;
-
-
 static const char *json_value(const char *json, const char *key) {
     static char pattern[64];
     snprintf(pattern, sizeof(pattern), "\"%s\":", key);
@@ -167,48 +162,12 @@ static int handle_print_receipt(const work_t *work, char *result, size_t result_
     return 0;
 }
 
-
-static int handle_recover_fault(const work_t *work, char *result, size_t result_size) {
-    unsigned long fault_id = strtoul(work->payload, NULL, 10);
-    if (fault_id == 0) {
-        snprintf(result, result_size, "fault id must be a positive number");
-        return -1;
-    }
-
-
-    printf("[Recovery Handler] 프린터 용지 보충 및 센서 재확인 중...\n");
-    vTaskDelay(pdMS_TO_TICKS(1200));
-    paper_empty = pdFALSE;
-
-
-    if (paper_empty) {
-        snprintf(result, result_size, "fault remains active: %lu", fault_id);
-        return -1;
-    }
-
-
-    char path[96], body[RESPONSE_CAPACITY];
-    http_response_t response = {0};
-    snprintf(path, sizeof(path), "/api/faults/%lu/resolve", fault_id);
-    if (http_request(&spring_server, "PATCH", path, "{}",
-            body, sizeof(body), &response) < 0 || response.status_code != 200) {
-        snprintf(result, result_size, "failed to report resolved fault: %lu", fault_id);
-        return -1;
-    }
-
-
-    snprintf(result, result_size, "fault resolved after sensor check: %lu", fault_id);
-    return 0;
-}
-
-
 /* 새 작업을 추가할 때 Handler를 구현하고 이 테이블에 한 줄 등록합니다. */
 static const task_handler_mapping_t task_handlers[] = {
     {"DOOR_OPEN", handle_door_open},
     {"DOOR_CLOSE", handle_door_close},
     {"CARD_READING", handle_card_reading},
     {"PRINT_RECEIPT", handle_print_receipt},
-    {"RECOVER_FAULT", handle_recover_fault},
 };
 
 
@@ -221,19 +180,71 @@ static task_handler_t find_task_handler(const char *task_type) {
     return NULL;
 }
 
+static int fetch_printer_status(void) {
+    char body[RESPONSE_CAPACITY];
+    http_response_t response = {0};
+
+    int result = http_request(
+        &spring_server,
+        "GET",
+        "/api/devices/1/status",
+        NULL,
+        body,
+        sizeof(body),
+        &response
+    );
+
+    if (result != 0 || response.status_code != 200) {
+        printf(
+            "[PrinterStatus] 상태 조회 실패: HTTP %d\n",
+            response.status_code
+        );
+
+        // 상태를 알 수 없으면 일단 EMPTY로 취급
+        return 0;
+    }
+
+    char status[32] = {0};
+
+    if (json_string(body, "status", status, sizeof(status)) != 0) {
+        printf("[PrinterStatus] status 파싱 실패\n");
+        return 0;
+    }
+
+    if (strcmp(status, "NORMAL") == 0) {
+        return 1;   // READY
+    }
+
+    if (strcmp(status, "ERROR") == 0) {
+        return 0;   // EMPTY
+    }
+
+    // NORMAL / ERROR 이외의 상태도 안전하게 EMPTY 처리
+    return 0;
+}
+
 static void health_check_task(void *parameter){
     (void) parameter;
 
     for(;;){
-        const char *json =
+        int printer_ready = fetch_printer_status();
+        const char *printer_status = printer_ready ? "READY" : "EMPTY";
+        char json[512];
+
+        snprintf(
+            json,
+            sizeof(json),
             "{"
             "\"kioskId\":1,"
             "\"kioskName\":\"KIOSK-01\","
             "\"status\":\"ONLINE\","
             "\"door\":\"CLOSE\","
             "\"cardReader\":\"WAITING\","
-            "\"printer\":\"READY\""
-            "}";
+            "\"printer\":\"%s\""
+            "}",
+            printer_status
+        );
+
         char body[RESPONSE_CAPACITY];
 
         http_response_t response = {0};
@@ -329,44 +340,12 @@ static void command_poll_task(void *parameter) {
     }
 }
 
-
-static void fault_monitor_task(void *parameter) {
-    (void) parameter;
-    vTaskDelay(pdMS_TO_TICKS(5000));
-
-
-    if (paper_empty) {
-        const char *json = "{\"deviceId\":\"PRINTER-01\","
-                "\"faultType\":\"PAPER_EMPTY\","
-                "\"message\":\"Printer paper is empty\","
-                "\"severity\":\"CRITICAL\"}";
-        char body[RESPONSE_CAPACITY];
-        http_response_t response = {0};
-        if (http_request(&spring_server, "POST", "/api/faults", json,
-                body, sizeof(body), &response) == 0 && response.status_code == 201) {
-            printf("[FaultMonitorTask -> Spring] PAPER_EMPTY 장애 전송 완료\n");
-        } else {
-
-
-            fprintf(stderr, "[FaultMonitorTask] 장애 전송 실패: HTTP %d, body=%s\n",
-                    response.status_code, body);
-        }
-    }
-
-
-    vTaskDelete(NULL);
-}
-
-
 void vApplicationMallocFailedHook(void) { abort(); }
-
 
 int main(int argc, char **argv) {
     const char *url = argc >= 2 ? argv[1] : "http://localhost:8888";
     if (http_server_parse(url, &spring_server) < 0) return EXIT_FAILURE;
     configASSERT(xTaskCreate(command_poll_task, "CommandPollTask",
-            2048, NULL, 2, NULL) == pdPASS);
-    configASSERT(xTaskCreate(fault_monitor_task, "FaultMonitorTask",
             2048, NULL, 2, NULL) == pdPASS);
     configASSERT(xTaskCreate(health_check_task, "HealthCheckTask",
             2048, NULL, 2, NULL) == pdPASS);

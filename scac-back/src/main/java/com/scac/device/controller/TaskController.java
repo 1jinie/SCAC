@@ -96,7 +96,7 @@ public class TaskController {
     public ResponseEntity<ApiResponse<Void>> handleHealthCheck(@RequestBody DeviceHealthRequest request) {
         log.info(
             "[RTOS -> Spring] Health Check. kioskId={}, kioskName={}, status={}, door={}, cardReader={}, printer={}",
-            request.kioskId(), request.kioskName(), // dto 수정 후 주석 해제
+            request.kioskId(), request.kioskName(),
             request.status(), request.door(), request.cardReader(), request.printer());
         deviceService.handleHealthCheck(request);
 

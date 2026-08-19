@@ -66,6 +66,14 @@ public class MeetingRoomReservationService {
                         throw new BusinessException("이전 날짜는 예약할 수 없습니다");
                 }
 
+                // 오늘인 경우 지난 시간 예약 불가
+                LocalDate today = LocalDate.now();
+                int currentHour = LocalDateTime.now().getHour();
+
+                if(request.getReservationDate().isEqual(today) && request.getStartHour() <= currentHour){
+                        throw new BusinessException("이미 지난 시간은 예약할 수 없습니다");
+                }
+
                 // 예약시간 검증
                 if (request.getStartHour() >= request.getEndHour()) {
                         throw new BusinessException("시작시간이 더 빨라야합니다");

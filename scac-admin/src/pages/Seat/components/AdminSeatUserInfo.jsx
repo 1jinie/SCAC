@@ -25,7 +25,7 @@ export default function AdminSeatUserInfo({ user }) {
         <div>
           <dt>남은 이용시간</dt>
           <dd>
-            {user.ticketType == "TIME_PACK"
+            {user.ticketType === "TIME_PACK"
               ? formatfullClock(user.remainingTime)
               : `${user.remainingDays}일`}
           </dd>
