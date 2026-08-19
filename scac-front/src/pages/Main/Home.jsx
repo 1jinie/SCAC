@@ -88,13 +88,6 @@ function HomePage() {
       return;
     }
 
-    try{
-      await openDoor();
-    } catch(error){
-      console.error('문 열기 명령 전송 실패: ', error);
-      return;
-    }
-
     setModalType(null);
 
     setAlertModal({
@@ -117,13 +110,6 @@ function HomePage() {
         message: result.message,
         onClose: () => setAlertModal(null),
       });
-      return;
-    }
-
-    try{
-      await openDoor();
-    } catch(error){
-      console.error('문 열기 명령 전송 실패', error);
       return;
     }
 

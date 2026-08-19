@@ -4,12 +4,13 @@ import { useAuthStore } from '../../store/authStore';
 import { useUserStore } from '../../store/userStore';
 import { seatStore } from '../../store/seatStore';
 import { checkInStore } from '../../store/checkInStore';
+import { reservationStore } from '../../store/reservationStore';
 import { getCurrentUser } from '../../api/userApi';
+import { openDoor } from '../../api/deviceApi';
 import InOutModal from '../../components/modal/InOutModal';
 import KioskAlertModal from '../../components/modal/KioskAlertModal';
 import ChooseInModal from '../../components/modal/ChooseInModal';
 import '../../styles/LoginHome.css';
-import { reservationStore } from '../../store/reservationStore';
 
 function LoginHomePage() {
   const navigate = useNavigate();
@@ -60,6 +61,12 @@ function LoginHomePage() {
           onClose: () => setAlertModal(null),
         });
         return;
+      }
+
+      try {
+        await openDoor();
+      } catch (error) {
+        console.error('문 열기 명령 전송 실패: ', error);
       }
 
       await logout();
@@ -140,6 +147,12 @@ function LoginHomePage() {
       setReservation({
         roomId: reservation.roomId,
       });
+
+      try {
+        await openDoor();
+      } catch (error) {
+        console.error('문 열기 명령 전송 실패: ', error);
+      }
 
       await logout();
 
