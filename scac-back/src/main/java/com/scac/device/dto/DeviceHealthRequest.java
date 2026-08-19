@@ -1,7 +1,8 @@
 package com.scac.device.dto;
 
 public record DeviceHealthRequest(
-    String deviceId,
+    Long kioskId,
+    String kioskName,
     String status,
     String door,
     String cardReader,
