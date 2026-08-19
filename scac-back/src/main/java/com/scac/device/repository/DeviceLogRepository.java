@@ -25,4 +25,5 @@ public interface DeviceLogRepository extends JpaRepository<DeviceLog, Long> {
 
   // Device_id 중복 확인
   boolean existsByDeviceDeviceId(Long deviceId);
+
 }

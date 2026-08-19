@@ -31,8 +31,8 @@ public class ReservationScheduler {
         int currentHour = LocalTime.now().getHour();
 
         // CONFIRMED -> IN_USE : 현재 시간이 startHour ~ endHour 사이면 사용중 변경
-        List<MeetingRoomReservation> confirmedReservations = reservationRepository.findByReservationDateAndStatus(
-                today, ReservationStatus.CONFIRMED);
+        List<MeetingRoomReservation> confirmedReservations = reservationRepository
+            .findByReservationDateAndStatus(today, ReservationStatus.CONFIRMED);
 
         confirmedReservations.forEach(r -> {
             if (currentHour >= r.getStartHour() && currentHour < r.getEndHour()) {
@@ -44,8 +44,8 @@ public class ReservationScheduler {
         });
 
         // IN_USE -> COMPLETED : 현재 시간이 endHour 이상이면 예약 종료
-        List<MeetingRoomReservation> usingReservations = reservationRepository.findByReservationDateAndStatus(
-                today, ReservationStatus.IN_USE);
+        List<MeetingRoomReservation> usingReservations = reservationRepository
+            .findByReservationDateAndStatus(today, ReservationStatus.IN_USE);
 
         usingReservations.forEach(r -> {
             if (currentHour >= r.getEndHour()) {
@@ -55,13 +55,12 @@ public class ReservationScheduler {
             }
         });
 
-        // PENDING_PAYMENT -> CANCELED : 결제 대기 상태에서 30분 이상 경과 시 예약 취소
-        List<MeetingRoomReservation> expiredReservations = reservationRepository.findByStatusAndCreatedAtBefore(
-                ReservationStatus.PENDING_PAYMENT,
-                LocalDateTime.now().minusMinutes(30));
+        // PENDING_PAYMENT -> CANCELED : 결제 대기 상태에서 5분 이상 경과 시 예약 취소
+        List<MeetingRoomReservation> expiredReservations = reservationRepository
+            .findByStatusAndCreatedAtBefore(ReservationStatus.PENDING_PAYMENT,
+                LocalDateTime.now().minusMinutes(5));
 
-        expiredReservations.forEach(
-                MeetingRoomReservation::expirePayment);
+        expiredReservations.forEach(MeetingRoomReservation::expirePayment);
 
     }
 }
