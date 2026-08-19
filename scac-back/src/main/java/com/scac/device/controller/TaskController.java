@@ -12,8 +12,6 @@ import com.scac.device.dto.DeviceHealthRequest;
 import com.scac.device.entity.TaskCommand;
 import com.scac.device.service.TaskStore;
 import com.scac.global.exception.TaskNotFoundException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 
 @CrossOrigin(origins = "http://localhost:5173")
@@ -89,8 +87,9 @@ public class TaskController {
      */
     @PostMapping("/devices/health")
     public Map<String, Object> health(@RequestBody DeviceHealthRequest request) {
-        log.info("[RTOS -> Spring] Health check. deviceId={}, status={}, door={}, printer={}",
-            request.deviceId(),
+        log.info("[RTOS -> Spring] Health check. kioskId={}, kioskName={}, status={}, door={}, cardReader={}, printer={}",
+            request.kioskId(),
+            request.kioskName(),
             request.status(),
             request.door(),
             request.cardReader(),
@@ -99,7 +98,8 @@ public class TaskController {
 
         return Map.of(
             "success", true,
-            "deviceId", request.deviceId(),
+            "kioskId", request.kioskId(),
+            "kioskName", request.kioskName(),
             "status", request.status(),
             "door", request.door(),
             "cardReader", request.cardReader(),
