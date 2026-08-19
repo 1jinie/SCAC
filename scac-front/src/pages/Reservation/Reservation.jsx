@@ -10,8 +10,9 @@ import {
   hasUnavailableTime,
   isTimeSelected,
 } from '../../utils/reservationUtils';
-import '../../styles/reservation.css';
 import { formatHour } from '../../utils/formatter';
+import KioskAlertModal from '../../components/modal/KioskAlertModal'
+import '../../styles/reservation.css';
 
 const Reservation = () => {
   const userId = reservationStore((state) => state.reservation.userId);
@@ -21,6 +22,7 @@ const Reservation = () => {
   const room = rooms.find((room) => room.id === roomId);
   const setPurchaseType = useTicketStore((state) => state.setPurchaseType);
 
+  const [alertModal, setAlertModal] = useState(null);
   const [dates, setDates] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTimes, setSelectedTimes] = useState([]);
@@ -90,9 +92,36 @@ const Reservation = () => {
     setEndTime(null);
   };
 
+  // 현재 시간 이전인지 판단
+  const isPastTime = (time) => {
+    if(!selectedDate) return false;
+
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+
+    // 오늘 아니면 과거 시간 제한 x
+    if(selectedDate !== today) return false;
+
+    const selectedHour = Number(time.split(':')[0]);
+    const currentHour = now.getHours();
+
+    return selectedHour <= currentHour;
+  }
+
   // 시간 클릭 이벤트
   const handleTimeClick = (time) => {
     if (!time.available) return;
+
+    // 지난 시간 선택 시
+    if(isPastTime(time.time)){
+      setAlertModal({
+        title: '예약 불가',
+        message: '현재 시간 이후의 시간만 예약할 수 있습니다',
+        onClose: () => setAlertModal(null)
+      });
+
+      return;
+    }
 
     // 처음 선택
     if (!startTime) {
@@ -117,6 +146,13 @@ const Reservation = () => {
       // 선택 해제
       setStartTime(null);
       setEndTime(null);
+
+      setAlertModal({
+        title: '예약 불가',
+        message: '선택한 시간에 예약 불가 시간이 포함되어 있습니다',
+        onClose: () => setAlertModal(null)
+      });
+
       return;
     }
     setStartTime(selectedTimes[startIndex].time);
@@ -207,17 +243,23 @@ const Reservation = () => {
       </div>
 
       <div className="time_selector">
-        {selectedTimes.map((item) => (
-          <button
-            key={item.time}
-            onClick={() => handleTimeClick(item)}
-            className={`time_btn 
-                ${isSelected(item.time) ? 'active' : ''}
-                ${!item.available ? 'disabled' : ''}`}
-          >
-            {item.time}
-          </button>
-        ))}
+        {selectedTimes.map((item) => {
+          const past = isPastTime(item.time);
+          const disabled = !item.available || past;
+          
+          return (
+            <button
+              key={item.time}
+              disabled={disabled}
+              onClick={() => handleTimeClick(item)}
+              className={`time_btn 
+                  ${isSelected(item.time) ? 'active' : ''}
+                  ${disabled ? 'disabled' : ''}`}
+            >
+              {item.time}
+            </button>
+          );
+        })}
       </div>
       <div className="room_info">
         <div className="preview_img">
@@ -234,6 +276,20 @@ const Reservation = () => {
       >
         {isCreatingReservation ? '예약 확인 중...' : '선택완료'}
       </button>
+      {reservationError && (
+        <KioskAlertModal
+          title='예약 실패'
+          message={reservationError}
+          onClose={() => setReservationError('')}
+        />
+      )}
+      {alertModal && (
+        <KioskAlertModal
+          title={alertModal.title}
+          message={alertModal.message}
+          onClose={alertModal.onClose}
+        />
+      )}
     </div>
   );
 };
