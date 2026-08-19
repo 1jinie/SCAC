@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { paymentApi } from '../../api/paymentApi';
+import { readCard } from '../../api/deviceApi';
 import './css/KioskCardPayment.css';
 
 export default function KioskCardPayment() {
@@ -22,30 +23,53 @@ export default function KioskCardPayment() {
       return;
     }
 
-    const timer = window.setTimeout(async () => {
-      try {
-        setStatus('PROCESSING');
+    let timer;
 
-        const result = await paymentApi.mockConfirmPayment(paymentId);
-
-        navi('/payment/result/success', {
-          replace: true,
-          state: {
-            paymentId: result.paymentId,
-          },
-        });
-      } catch (error) {
+    const startCardReading = async () => {
+      try{
+        await readCard();
+        
+        timer = window.setTimeout(async () => {
+          try {
+            setStatus('PROCESSING');
+    
+            const result = await paymentApi.mockConfirmPayment(paymentId);
+    
+            navi('/payment/result/success', {
+              replace: true,
+              state: {
+                paymentId: result.paymentId,
+              },
+            });
+          } catch (error) {
+            navi('/payment/result/fail', {
+              replace: true,
+              state: {
+                message:
+                  error.response?.data?.message ?? '카드 결제에 실패했습니다.',
+              },
+            });
+          }
+        }, 5000);
+      } catch(error){
+        console.error('카드 리더기 명령 전송 실패: ', error);
+        
         navi('/payment/result/fail', {
           replace: true,
           state: {
-            message:
-              error.response?.data?.message ?? '카드 결제에 실패했습니다.',
-          },
+            message: '카드 리더기와 연결할 수 없습니다'
+          }
         });
       }
-    }, 5000);
+    };
 
-    return () => window.clearTimeout(timer);
+    startCardReading();
+
+    return () => {
+      if(timer){
+        window.clearTimeout(timer);
+      }
+    }
   }, [paymentId, navi]);
 
   return (
