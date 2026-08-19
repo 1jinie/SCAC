@@ -96,7 +96,7 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
       setCloseTimer((t) => t - 1);
     }, 1000);
     return () => clearTimeout(timer);
-  }, [navi, resetAll, closeTimer]);
+  }, [navi, resetAll, closeTimer, isPrintingReceipt]);
 
   // 계속 이어하기 버튼함수 (결제 데이터만 리셋, loginhome으로 이동)
   const handleContinue = () => {
