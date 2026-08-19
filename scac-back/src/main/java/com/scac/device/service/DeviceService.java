@@ -270,4 +270,31 @@ public class DeviceService {
     updateHealth(DeviceType.PRINTER, convertPrinterStatus(request.printer()), now);
   }
 
+  // Health Check 미수신 장치 OFFLINE 처리
+  @Transactional
+  public void checkOfflineDevices() {
+    LocalDateTime offlineThreshold = LocalDateTime.now().minusSeconds(20);
+    List<Device> devices = deviceRepository.findAllByIsActiveTrueOrderByDeviceIdAsc();
+    for (Device device : devices) {
+      LocalDateTime lastConnectedAt = device.getLastConnectedAt();
+      // 아직 Health Check를 한 번도 받지 않은 장치는 일단 제외
+      if (lastConnectedAt == null) {
+        continue;
+      }
+      // 마지막 통신이 20초 이내라면 정상
+      if (!lastConnectedAt.isBefore(offlineThreshold)) {
+        continue;
+      }
+      // 이미 OFFLINE이면 반복 처리하지 않음
+      if (device.getStatus() == DeviceStatus.OFFLINE) {
+        continue;
+      }
+      DeviceStatus previousStatus = device.getStatus();
+      device.updateStatus(DeviceStatus.OFFLINE);
+      DeviceLog log = DeviceLog.create(device, "HEALTH_TIMEOUT", DeviceStatus.OFFLINE,
+        "Health Check 미수신으로 상태 변경: " + previousStatus + " → " + DeviceStatus.OFFLINE);
+      deviceLogRepository.save(log);
+    }
+  }
+
 }
