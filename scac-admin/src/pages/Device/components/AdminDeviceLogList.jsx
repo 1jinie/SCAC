@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import Pagination from '../../../components/common/Pagination';
 import { DEVICE_STATUS_LABELS } from '../../../constants/device';
+import LoadingOverlay from '../../../components/common/LoadingOverlay';
 
 const PAGE_SIZE = 5;
 
-export default function AdminDeviceLogList({ logs }) {
+export default function AdminDeviceLogList({ logs, isLoading }) {
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = Math.ceil(logs.length / PAGE_SIZE);
@@ -36,6 +37,10 @@ export default function AdminDeviceLogList({ logs }) {
 
         <span>{logs.length}건</span>
       </div>
+      <LoadingOverlay
+        isLoading={isLoading}
+        message="로그를 불러오는 중입니다"
+      />
 
       {logs.length === 0 ? (
         <p className="admin_device_log_empty">기록된 장치 로그가 없습니다.</p>
