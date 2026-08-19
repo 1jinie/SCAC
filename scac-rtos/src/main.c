@@ -137,8 +137,8 @@ static int handle_print_receipt(const work_t *work, char *result, size_t result_
     snprintf(payload, sizeof(payload), "%s", work->payload);
     char *order_id = strtok(payload, "|");
     char *items = strtok(NULL, "|");
-    char *amount = strtok(NULL, "|");
-    if (order_id == NULL || items == NULL || amount == NULL) {
+    char *price = strtok(NULL, "|");
+    if (order_id == NULL || items == NULL || price == NULL) {
         snprintf(result, result_size, "invalid receipt payload");
         return -1;
     }
@@ -149,7 +149,7 @@ static int handle_print_receipt(const work_t *work, char *result, size_t result_
     printf("+--------------------------------------+\n");
     printf("  주문 번호 : %s\n", order_id);
     printf("  품목 : %s\n", items);
-    printf("  결제 금액 : %s원\n", amount);
+    printf("  결제 금액 : %s원\n", price);
     printf("+--------------------------------------+\n\n");
     time_t now = time(NULL);
     struct tm tm_now;
@@ -160,6 +160,7 @@ static int handle_print_receipt(const work_t *work, char *result, size_t result_
     char datetime[32];
     strftime(datetime, sizeof(datetime), "%Y-%m-%d %H:%M", &tm_now);
     printf("  발행 일시 : %s\n", datetime);
+    printf("+--------------------------------------+\n\n");
     fflush(stdout);
     vTaskDelay(pdMS_TO_TICKS(1200));
     snprintf(result, result_size, "receipt printed: %s", order_id);
@@ -226,7 +227,8 @@ static void health_check_task(void *parameter){
     for(;;){
         const char *json =
             "{"
-            "\"deviceId\":\"KIOSK-01\","
+            "\"kioskId\":1,"
+            "\"kioskName\":\"KIOSK-01\","
             "\"status\":\"ONLINE\","
             "\"door\":\"CLOSE\","
             "\"cardReader\":\"WAITING\","
