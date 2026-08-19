@@ -16,9 +16,12 @@ import { roomStore } from '../../store/roomStore';
 import './css/PaymentProcess.css';
 import './css/TossPayment.css';
 import { formatPrice } from '../../utils/formatter';
+import { reservationApi } from '../../api/reservationApi';
+import { useResetStore } from '../../hooks/useResetStore';
 
 export default function PaymentProcess() {
   const navi = useNavigate();
+  const { resetPayData } = useResetStore();
 
   const targetType = useTicketStore((state) => state.targetType);
   const selectedTicketId = useTicketStore((state) => state.selectedTicketId);
@@ -164,6 +167,27 @@ export default function PaymentProcess() {
     }
   };
 
+  const handleCancelPayment = async () => {
+    try {
+      if (targetType === 'MEETING_ROOM' && reservation.reservationId) {
+        await reservationApi.cancelPendingReservation(
+          reservation.reservationId,
+        );
+      }
+      resetPayData();
+      navi(targetType === 'MEETING_ROOM' ? '/room' : '/ticket', {
+        replace: true,
+      });
+    } catch (error) {
+      console.error('결제 대기 예약 취소 실패:', error);
+
+      alert(
+        error.response?.data?.message ??
+          '예약 취소에 실패했습니다. 다시 시도해 주세요.',
+      );
+    }
+  };
+
   // 화면 자체를 구성할 수 없는 오류
   if (isTicketPayment && !selectedTicketId) {
     return (
@@ -213,10 +237,7 @@ export default function PaymentProcess() {
     <>
       <div className="overlay">
         <div className="payment_modal">
-          <CloseButton
-            nextPage={isReservationPayment ? '/room' : '/ticket'}
-            text="결제취소"
-          />
+          <CloseButton onClose={handleCancelPayment} text="결제취소" />
 
           <h2>결제정보 확인</h2>
 

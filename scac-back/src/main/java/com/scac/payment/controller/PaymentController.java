@@ -65,19 +65,4 @@ public class PaymentController {
         return ResponseEntity.ok(ApiResponse.success("결제 내역 조회를 완료했습니다.", payment));
     }
 
-    // 스터디룸 예약 결제 요청
-    // @PostMapping("/reservation")
-    // public ResponseEntity<ApiResponse<PaymentResDTO>> createReservationPayment(
-    // @Valid @RequestBody MeetingRoomReservationRequest form, @RequestBody
-    // PaymentMethod paymentMethod,
-    // @AuthenticationPrincipal UserPrincipal currentUser) {
-    // PaymentResDTO payment = paymentService.createReservationPayment2(form,
-    // currentUser.id(),
-    // paymentMethod);
-
-    // return ResponseEntity.created(URI.create("/api/payments/" +
-    // payment.getPaymentId()))
-    // .body(ApiResponse.success("스터디룸 예약 결제 요청을 생성했습니다.", payment));
-    // }
-
 }

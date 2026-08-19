@@ -5,6 +5,7 @@ import AdminDeviceDetail from './components/AdminDeviceDetail';
 import AdminDeviceList from './components/AdminDeviceList';
 import AdminDeviceLogList from './components/AdminDeviceLogList';
 import './css/AdminDevicePage.css';
+import LoadingOverlay from '../../components/common/LoadingOverlay';
 
 export default function AdminDevicePage() {
   const [devices, setDevices] = useState([]);
@@ -49,7 +50,7 @@ export default function AdminDevicePage() {
   // 장치 선택 + 해당 장치 로그 조회
   const handleDeviceSelect = async (device) => {
     setSelectedDevice(device);
-    setDeviceLogs([]);
+    // setDeviceLogs([]);
     setDeviceFormMode(null);
 
     setIsLogLoading(true);
@@ -350,16 +351,9 @@ export default function AdminDevicePage() {
             onCreateDevice={handleCreateDevice}
             isCreateMode={deviceFormMode === 'create'}
           />
-          {selectedDevice &&
-            (isLogLoading ? (
-              <div className="admin_device_log_section">
-                <p className="admin_device_log_empty">
-                  로그를 불러오는 중입니다.
-                </p>
-              </div>
-            ) : (
-              <AdminDeviceLogList logs={deviceLogs} />
-            ))}
+          {selectedDevice && (
+            <AdminDeviceLogList logs={deviceLogs} isLoading={isLogLoading} />
+          )}
         </div>
         <AdminDeviceDetail
           // 장치 상세정보

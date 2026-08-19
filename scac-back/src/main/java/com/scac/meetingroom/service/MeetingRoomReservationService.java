@@ -205,4 +205,15 @@ public class MeetingRoomReservationService {
 
                 return MeetingRoomReservationResponse.from(reservation);
         }
+
+        // 결제 전 임시 예약 취소
+        public MeetingRoomReservationResponse cancelPending(Long reservationId, Long userId) {
+                MeetingRoomReservation reservation = reservationRepository.findById(reservationId)
+                        .orElseThrow(() -> new ResourceNotFoundException("예약 정보가 없습니다."));
+                if (!reservation.getUserId().equals(userId)) {
+                        throw new AccessDeniedException("본인의 예약만 취소할 수 있습니다.");
+                }
+                reservation.cancelPendingPayment();
+                return MeetingRoomReservationResponse.from(reservation);
+        }
 }
