@@ -8,3 +8,12 @@ export const openDoor = async () => {
 
   return response.data;
 };
+
+export const readCard = async () => {
+  const response = await axiosInstance.post('/api/commands', {
+    taskType: 'CARD_READING',
+    payload: ''
+  });
+
+  return response.data;
+}

@@ -84,8 +84,8 @@ static int handle_door_close(
 
     return 0;
 }
-// 도어 열림
 
+// 도어 열림
 static int handle_door_open(
         const work_t *work,
         char *result,
@@ -110,6 +110,24 @@ static int handle_door_open(
     handle_door_close(work, close_result, sizeof(close_result));
 
     snprintf(result, result_size, "door opened and automatically closed after 5 sec");
+
+    return 0;
+}
+
+// 카드 리더기
+static int handle_card_reading(const work_t *work, char *result, size_t result_size){
+    (void) work;
+
+    printf("[CARD READER] 카드 인식 대기 중...\n");
+    fflush(stdout);
+
+    // 카드 인식 시뮬레이션
+    vTaskDelay(pdMS_TO_TICKS(5000));
+
+    printf("[CARD READER] 카드 인식 완료\n");
+    fflush(stdout);
+
+    snprintf(result, result_size, "card reading completed");
 
     return 0;
 }
@@ -187,6 +205,7 @@ static int handle_recover_fault(const work_t *work, char *result, size_t result_
 static const task_handler_mapping_t task_handlers[] = {
     {"DOOR_OPEN", handle_door_open},
     {"DOOR_CLOSE", handle_door_close},
+    {"CARD_READING", handle_card_reading},
     {"PRINT_RECEIPT", handle_print_receipt},
     {"RECOVER_FAULT", handle_recover_fault},
 };
@@ -264,11 +283,7 @@ static void worker_task(void *parameter) {
     vPortFree(parameter);
     char result[RESULT_CAPACITY] = {0};
 
-
-    printf("[WorkerTask] Handler 검색: id=%u, taskType=%s\n",
-            work.id, work.task_type);
     task_handler_t handler = find_task_handler(work.task_type);
-
 
     if (handler == NULL) {
         snprintf(result, sizeof(result), "unsupported taskType: %s", work.task_type);
@@ -304,8 +319,6 @@ static void command_poll_task(void *parameter) {
                             work, 3, NULL) != pdPASS) {
                         worker_running = pdFALSE;
                         vPortFree(work);
-                    } else {
-                        printf("[CommandPollTask] WorkerTask 등록: id=%u\n", parsed.id);
                     }
                 }
             }
