@@ -50,7 +50,7 @@ export default function AdminDevicePage() {
   // 장치 선택 + 해당 장치 로그 조회
   const handleDeviceSelect = async (device) => {
     setSelectedDevice(device);
-    setDeviceLogs([]);
+    // setDeviceLogs([]);
     setDeviceFormMode(null);
 
     setIsLogLoading(true);
