@@ -7,7 +7,7 @@ import { checkInStore } from '../store/checkInStore';
 import { seatStore } from '../store/seatStore';
 import { useUserStore } from '../store/userStore';
 
-// 사용법 const { resetAll, resetPayData } = useResetStore(); 또는 const {resetAll} = useResetStore((state) => state.resetAll); const {resetPayData} = useResetStore((state) => state.resetPayData);
+// 사용법 const { resetAll, resetPayData } = useResetStore(); 선언 후 필요한곳에 resetAll(); 쓰시면돼요
 export const useResetStore = () => {
   const resetPayment = usePaymentStore((state) => state.resetStore);
   const resetTicket = useTicketStore((state) => state.resetStore);
