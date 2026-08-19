@@ -24,3 +24,33 @@ export const PAYMENT_PRODUCT_TYPE_LABELS = {
   PERIOD_PACK: '좌석 기간권',
   MEETING_ROOM: '스터디룸 예약',
 };
+
+// 이용권/스터디룸 상태 → 결제 상품 공통 상태
+export const PAYMENT_PRODUCT_STATUS_MAP = {
+  //이용권
+  PENDING: 'PENDING',
+  READY: 'READY',
+  USING: 'USING',
+  EXPIRED: 'COMPLETED', // 시간 소진 또는 기간 만료
+
+  //스터디룸
+  PENDING_PAYMENT: 'PENDING',
+  CONFIRMED: 'READY',
+  IN_USE: 'USING',
+  COMPLETED: 'COMPLETED',
+
+  //공통취소
+  CANCELED: 'CANCELED',
+};
+
+// UI 표시용
+export const PAYMENT_PRODUCT_STATUS_LABELS = {
+  READY: '사용 전',
+  USING: '이용 중',
+  COMPLETED: '이용 완료',
+
+  // 아직 결제 완료 안됨
+  PENDING: '결제 진행 중',
+  // 결제 취소
+  CANCELED: '취소 완료',
+};

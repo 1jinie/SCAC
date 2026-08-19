@@ -4,8 +4,10 @@ import java.time.LocalDateTime;
 
 import com.scac.global.enums.PaymentMethod;
 import com.scac.global.enums.PaymentStatus;
+import com.scac.global.enums.ReservationStatus;
 import com.scac.global.enums.TargetType;
 import com.scac.global.enums.TicketType;
+import com.scac.global.enums.TicketUsageStatus;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +21,9 @@ public class PaymentHistoryDTO {
   private String phoneNumber;
 
   private Long usageId;
+
+  private TicketUsageStatus usageStatus;
+  private ReservationStatus reservationStatus;
 
   private Long ticketId;
   private Long reservationId;

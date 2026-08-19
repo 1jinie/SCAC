@@ -5,12 +5,21 @@ import {
 } from '../../../constants/payment';
 import { formatfullDateTime } from '../../../utils/date';
 import { formatPhoneNumber, formatPrice } from '../../../utils/formatter';
+import {
+  canCancelPayment,
+  getPaymentProductStatusLabel,
+  getPaymentCancelUnavailableReason,
+} from '../utils/paymentUtils';
 
 export default function AdminPaymentDetail({
   selectedPayment,
   onCancelPayment,
   isCanceling,
 }) {
+  const statusLabel = getPaymentProductStatusLabel(selectedPayment);
+  const canCancel = canCancelPayment(selectedPayment);
+  const cancelUnavailableReason =
+    getPaymentCancelUnavailableReason(selectedPayment);
   if (!selectedPayment) {
     return (
       <aside className="admin_panel admin_payment_detail is_empty">
@@ -83,6 +92,14 @@ export default function AdminPaymentDetail({
               '-'}
           </dd>
         </div>
+        <div>
+          <dt>결제 상태</dt>
+          <dd>{PAYMENT_STATUS_LABELS[selectedPayment.status] ?? '-'}</dd>
+        </div>
+        <div>
+          <dt>상품 이용 상태</dt>
+          <dd>{statusLabel}</dd>
+        </div>
 
         <div>
           <dt>결제 일시</dt>
@@ -101,11 +118,6 @@ export default function AdminPaymentDetail({
             </div>
           </>
         )}
-
-        <div>
-          <dt>결제 상태</dt>
-          <dd>{PAYMENT_STATUS_LABELS[selectedPayment.status] ?? '-'}</dd>
-        </div>
       </dl>
 
       {selectedPayment.status === 'PAID' && (
@@ -114,15 +126,19 @@ export default function AdminPaymentDetail({
             결제 취소 후에는 되돌릴 수 없습니다. 결제 정보를 확인한 후 처리해
             주세요.
           </p>
-
-          <button
-            type="button"
-            className="admin_payment_cancel_button"
-            onClick={() => onCancelPayment(selectedPayment.paymentId)}
-            disabled={isCanceling}
+          <span
+            title={!canCancel ? cancelUnavailableReason : ''}
+            className="admin_payment_cancel_button_wrapper"
           >
-            {isCanceling ? '취소 처리 중...' : '결제 취소'}
-          </button>
+            <button
+              type="button"
+              className="admin_payment_cancel_button"
+              onClick={() => onCancelPayment(selectedPayment.paymentId)}
+              disabled={!canCancel || isCanceling}
+            >
+              {isCanceling ? '취소 처리 중...' : '결제 취소'}
+            </button>
+          </span>
         </div>
       )}
 

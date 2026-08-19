@@ -5,6 +5,7 @@ import {
 } from '../../../constants/payment';
 import { formatAdminMemoDate } from '../../../utils/date';
 import { formatPhoneNumber, formatPrice } from '../../../utils/formatter';
+import { getPaymentProductStatusLabel } from '../utils/paymentUtils';
 
 export default function AdminPaymentList({
   payments,
@@ -33,21 +34,22 @@ export default function AdminPaymentList({
               <th>결제 상품</th>
               <th>결제 금액</th>
               <th>결제 수단</th>
+              <th>결제 상태</th>
+              <th>이용 상태</th>
               <th>결제 일시</th>
-              <th>상태</th>
             </tr>
           </thead>
 
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan="7" className="admin_payment_message">
+                <td colSpan="8" className="admin_payment_message">
                   결제 내역을 불러오고 있습니다.
                 </td>
               </tr>
             ) : payments.length === 0 ? (
               <tr>
-                <td colSpan="7" className="admin_payment_empty">
+                <td colSpan="8" className="admin_payment_empty">
                   조회된 결제 내역이 없습니다.
                 </td>
               </tr>
@@ -81,8 +83,6 @@ export default function AdminPaymentList({
                         '-'}
                     </td>
 
-                    <td>{formatAdminMemoDate(payment.paidAt)}</td>
-
                     <td>
                       <span
                         className={`admin_payment_status status_${payment.status.toLowerCase() ?? '-'}`}
@@ -92,6 +92,8 @@ export default function AdminPaymentList({
                           '-'}
                       </span>
                     </td>
+                    <td>{getPaymentProductStatusLabel(payment)}</td>
+                    <td>{formatAdminMemoDate(payment.paidAt)}</td>
                   </tr>
                 );
               })
