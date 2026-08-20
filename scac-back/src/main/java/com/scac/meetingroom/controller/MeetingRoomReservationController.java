@@ -102,7 +102,8 @@ public class MeetingRoomReservationController {
         // 결제 전 임시 예약 취소
         @PatchMapping("/reservations/{reservationId}/cancel-pending")
         public ResponseEntity<ApiResponse<MeetingRoomReservationResponse>> cancelPending(
-                @PathVariable Long reservationId, @AuthenticationPrincipal UserPrincipal currentUser) {
+                @PathVariable(name = "reservationId") Long reservationId,
+                @AuthenticationPrincipal UserPrincipal currentUser) {
 
                 MeetingRoomReservationResponse reservation = reservationService.cancelPending(reservationId,
                         currentUser.id());

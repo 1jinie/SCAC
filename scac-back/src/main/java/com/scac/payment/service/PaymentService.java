@@ -132,9 +132,13 @@ public class PaymentService {
       if (!Objects.equals(reservation.getUserId(), currentUserId)) {
         throw new AccessDeniedException("본인의 예약만 결제할 수 있습니다.");
       }
+      if (reservation.getStatus() == ReservationStatus.CANCELED) {
+        throw new IllegalArgumentException("결제 시간이 초과되어 예약이 취소되었습니다. 다시 예약해 주세요.");
+      }
+
       // 예약 상태가 PENDING_PAYMENT인지 검증
       if (reservation.getStatus() != ReservationStatus.PENDING_PAYMENT) {
-        throw new IllegalStateException("결제 대기 중인 예약만 결제할 수 있습니다.");
+        throw new IllegalArgumentException("결제를 진행할 수 없는 예약 상태입니다.");
       }
 
       // 이미 결제가 생성된 예약인지 검증
