@@ -90,6 +90,9 @@ public class MeetingRoomReservation {
 
     // 결제 전 임시 예약 취소
     public void cancelPendingPayment() {
+        if (this.status == ReservationStatus.CANCELED) {
+            return;
+        }
         if (this.status != ReservationStatus.PENDING_PAYMENT) {
             throw new BusinessException("결제 대기 중인 예약만 취소할 수 있습니다.");
         }
