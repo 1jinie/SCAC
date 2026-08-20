@@ -5,7 +5,6 @@ import AdminDeviceDetail from './components/AdminDeviceDetail';
 import AdminDeviceList from './components/AdminDeviceList';
 import AdminDeviceLogList from './components/AdminDeviceLogList';
 import './css/AdminDevicePage.css';
-import LoadingOverlay from '../../components/common/LoadingOverlay';
 
 export default function AdminDevicePage() {
   const [devices, setDevices] = useState([]);

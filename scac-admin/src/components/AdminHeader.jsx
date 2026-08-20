@@ -23,7 +23,6 @@ export default function AdminHeader() {
   const location = useLocation();
   const logout = useAuthStore((state) => state.logout);
   const user = useAuthStore((state) => state.user);
-  console.log(user);
 
   const pageTitle =
     ADMIN_PAGE_TITLES[location.pathname] ||

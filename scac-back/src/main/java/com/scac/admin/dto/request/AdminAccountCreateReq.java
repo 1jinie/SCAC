@@ -1,7 +1,5 @@
 package com.scac.admin.dto.request;
 
-import com.scac.global.enums.AdminRole;
-
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
