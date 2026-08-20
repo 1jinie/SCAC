@@ -13,6 +13,8 @@ import AdminErrorPage from '../pages/Error/AdminErrorPage';
 import AdminUserPage from '../pages/User/AdminUserPage';
 import AdminMemoPage from '../pages/Memo/AdminMemoPage';
 import AdminPrivateRoute from './AdminPrivateRoute';
+import AdminAccountPage from '../pages/Account/AdminAccountPage';
+import SuperAdminRoute from './SuperAdminRoute';
 
 const router = createBrowserRouter([
   // ============================
@@ -70,6 +72,19 @@ const router = createBrowserRouter([
           {
             index: true,
             element: <AdminSeatPage />,
+          },
+        ],
+      },
+      {
+        path: 'account',
+        children: [
+          {
+            index: true,
+            element: (
+              <SuperAdminRoute>
+                <AdminAccountPage />
+              </SuperAdminRoute>
+            ),
           },
         ],
       },

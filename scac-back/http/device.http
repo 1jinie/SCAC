@@ -117,3 +117,29 @@ Content-Type: application/json
   "cardReader": "WAITING",
   "printer": "READY"
 }
+
+### RTOS Health Check - 정상
+POST {{baseUrl}}/api/devices/health
+Content-Type: application/json
+
+{
+  "kioskId": 1,
+  "kioskName": "KIOSK-01",
+  "status": "ONLINE",
+  "door": "CLOSE",
+  "cardReader": "WAITING",
+  "printer": "READY"
+}
+
+### RTOS Health Check - Validation 실패
+POST {{baseUrl}}/api/devices/health
+Content-Type: application/json
+
+{
+  "kioskId": 1,
+  "kioskName": "KIOSK-01",
+  "status": "",
+  "door": "",
+  "cardReader": "",
+  "printer": ""
+}

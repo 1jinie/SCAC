@@ -1,16 +1,16 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 import {
   postLogin,
   postAdminLogin,
   postLogout,
   postAdminLogout,
-} from "../api/authApi";
-import { postSignUp, postGuestSignUp } from "../api/userApi";
+} from '../api/authApi';
+import { postSignUp, postGuestSignUp } from '../api/userApi';
 
 export const useAuthStore = create((set, get) => ({
-  accessToken: localStorage.getItem("accessToken") || null,
-  user: JSON.parse(localStorage.getItem("userInfo")) || null,
-  isAuthenticated: !!localStorage.getItem("accessToken"),
+  accessToken: localStorage.getItem('accessToken') || null,
+  user: JSON.parse(localStorage.getItem('userInfo')) || null,
+  isAuthenticated: !!localStorage.getItem('accessToken'),
   isLoading: false,
 
   // 1. 일반 사용자 로그인
@@ -29,9 +29,9 @@ export const useAuthStore = create((set, get) => ({
           isAdmin: false,
         };
 
-        localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("refreshToken", refreshToken);
-        localStorage.setItem("userInfo", JSON.stringify(userObj));
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('userInfo', JSON.stringify(userObj));
 
         set({
           accessToken,
@@ -44,12 +44,12 @@ export const useAuthStore = create((set, get) => ({
       set({ isLoading: false });
       return {
         success: false,
-        message: res.message || "로그인에 실패했습니다.",
+        message: res.message || '로그인에 실패했습니다.',
       };
     } catch (error) {
       set({ isLoading: false });
       const message =
-        error.response?.data?.message || "로그인 중 오류가 발생했습니다.";
+        error.response?.data?.message || '로그인 중 오류가 발생했습니다.';
       return { success: false, message };
     }
   },
@@ -60,18 +60,20 @@ export const useAuthStore = create((set, get) => ({
     try {
       const res = await postAdminLogin(loginId, password);
       if (res.isSuccess && res.data) {
-        const { accessToken, refreshToken, adminId, loginId, role } = res.data;
+        const { accessToken, refreshToken, adminId, loginId, name, role } =
+          res.data;
 
         const userObj = {
           adminId,
           loginId,
           role: role, // 'SUPER_ADMIN' 또는 'STAFF'
+          name,
           isAdmin: true,
         };
 
-        localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("refreshToken", refreshToken);
-        localStorage.setItem("userInfo", JSON.stringify(userObj));
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('userInfo', JSON.stringify(userObj));
 
         set({
           accessToken,
@@ -84,13 +86,13 @@ export const useAuthStore = create((set, get) => ({
       set({ isLoading: false });
       return {
         success: false,
-        message: res.message || "관리자 로그인에 실패했습니다.",
+        message: res.message || '관리자 로그인에 실패했습니다.',
       };
     } catch (error) {
       set({ isLoading: false });
       const message =
         error.response?.data?.message ||
-        "관리자 로그인 중 오류가 발생했습니다.";
+        '관리자 로그인 중 오류가 발생했습니다.';
       return { success: false, message };
     }
   },
@@ -106,13 +108,13 @@ export const useAuthStore = create((set, get) => ({
       }
       return {
         success: false,
-        errorMessage: res.message || "회원가입에 실패했습니다.",
+        errorMessage: res.message || '회원가입에 실패했습니다.',
       };
     } catch (error) {
       set({ isLoading: false });
       const errorMessage =
         error.response?.data?.message ||
-        "회원가입 처리 중 오류가 발생했습니다.";
+        '회원가입 처리 중 오류가 발생했습니다.';
       return { success: false, errorMessage };
     }
   },
@@ -128,7 +130,7 @@ export const useAuthStore = create((set, get) => ({
       }
       return {
         success: false,
-        errorMessage: res.message || "비회원 등록에 실패했습니다.",
+        errorMessage: res.message || '비회원 등록에 실패했습니다.',
       };
     } catch (error) {
       set({ isLoading: false });
@@ -136,7 +138,7 @@ export const useAuthStore = create((set, get) => ({
         success: false,
         errorMessage:
           error.response?.data?.message ??
-          "비회원 등록 처리 중 오류가 발생했습니다.",
+          '비회원 등록 처리 중 오류가 발생했습니다.',
       };
     }
   },
@@ -151,7 +153,7 @@ export const useAuthStore = create((set, get) => ({
         await postLogout();
       }
     } catch (e) {
-      console.warn("Logout API Call Error:", e);
+      console.warn('Logout API Call Error:', e);
     } finally {
       localStorage.clear();
       set({ accessToken: null, user: null, isAuthenticated: false });
