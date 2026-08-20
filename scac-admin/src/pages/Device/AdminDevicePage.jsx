@@ -59,7 +59,7 @@ export default function AdminDevicePage() {
     fetchDevices();
   }, [fetchDevices]);
 
-  // 5초마다 장치 상태 확인
+  // 3초마다 장치 상태 확인
   useEffect(() => {
     const interval = setInterval(() => {
       fetchDevicesSilently();
