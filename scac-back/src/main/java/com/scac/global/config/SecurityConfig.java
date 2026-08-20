@@ -88,6 +88,8 @@ public class SecurityConfig {
                                 .hasAnyRole("USER", "GUEST")
 
                                 // 관리자 전용 경로 통제
+                                // 관리자 계정 관리는 SUPER_ADMIN만 가능 나머지는 SUPER_ADMIN, STAFF
+                                .requestMatchers("/api/admin/accounts/**").hasRole("SUPER_ADMIN")
                                 .requestMatchers("/api/admin/**", "/api/meeting-rooms/admin/**",
                                         "/api/meeting-rooms/reservations/*/cancel")
                                 .hasAnyRole("SUPER_ADMIN", "STAFF")

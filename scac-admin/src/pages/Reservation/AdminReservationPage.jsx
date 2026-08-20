@@ -62,7 +62,6 @@ export default function AdminReservationPage() {
       return;
     }
 
-    console.log(seat);
     selectSeat(seat.id);
 
     // roomStore에서 방 정보 찾기

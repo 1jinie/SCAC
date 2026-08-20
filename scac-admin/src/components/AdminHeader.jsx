@@ -1,6 +1,9 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import HeaderTime from './HeaderTime';
 import { useAuthStore } from '../store/authStore';
+import { adminApi } from '../api/adminApi';
+import { useEffect } from 'react';
+import { ADMIN_ROLE_LABELS } from '../constants/admin';
 
 const ADMIN_PAGE_TITLES = {
   '/': '관리자 메인',
@@ -10,6 +13,7 @@ const ADMIN_PAGE_TITLES = {
   '/ticket': '이용권 관리',
   '/payment': '결제 관리',
   '/user': '회원 관리',
+  '/account': '관리자 계정 관리',
   '/memo': '관리자 메모',
   '/seat': '좌석 관리',
 };
@@ -18,6 +22,7 @@ export default function AdminHeader() {
   const navigate = useNavigate();
   const location = useLocation();
   const logout = useAuthStore((state) => state.logout);
+  const user = useAuthStore((state) => state.user);
 
   const pageTitle =
     ADMIN_PAGE_TITLES[location.pathname] ||
@@ -29,7 +34,7 @@ export default function AdminHeader() {
 
   const handleLogout = async () => {
     await logout();
-    navigate('/admin/login', { replace: true });
+    navigate('/login', { replace: true });
   };
 
   return (
@@ -56,8 +61,10 @@ export default function AdminHeader() {
         <HeaderTime />
 
         <div className="admin_user_info">
-          <span className="admin_user_role">관리자</span>
-          <span className="admin_user_name">관리자이름</span>
+          <span className="admin_user_role">
+            {ADMIN_ROLE_LABELS[user?.role] ?? '관리자'}
+          </span>
+          <span className="admin_user_name">{user?.name ?? '-'}</span>
         </div>
 
         <button
