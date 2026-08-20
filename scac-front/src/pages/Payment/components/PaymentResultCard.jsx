@@ -126,9 +126,20 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
         ticket?.ticketName ??
         (reservation ? `스터디룸 ${reservation.roomId}번 예약` : '결제 상품');
 
+      // 스터디룸 예약인 경우 사용시간 생성
+      let startTime = '';
+      let endTime = '';
+
+      if(reservation){
+        startTime = `${String(reservation.startHour).padStart(2, '0')}:00`;
+        endTime = `${String(reservation.endHour).padStart(2, '0')}:00`;
+      }
+
       const command = await printReceipt({
         orderId: payment.orderId ?? `PAYMENT-${payment.paymentId}`,
         itemName,
+        startTime,
+        endTime,
         amount: payment.amount,
       });
 

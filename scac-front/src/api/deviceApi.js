@@ -10,10 +10,10 @@ export const openDoor = async () => {
 };
 
 // 영수증 출력 명령
-export const printReceipt = async ({ orderId, itemName, amount }) => {
+export const printReceipt = async ({ orderId, itemName, amount, startTime, endTime }) => {
   const response = await axiosInstance.post('/api/commands', {
     taskType: 'PRINT_RECEIPT',
-    payload: `${orderId}|${itemName}|${amount}`,
+    payload: `${orderId}|${itemName}|${startTime ?? ''}|${endTime ?? ''}|${amount}`,
   });
 
   return response.data;
@@ -31,6 +31,16 @@ export const readCard = async () => {
     taskType: 'CARD_READING',
     payload: ''
   });
+
+  return response.data;
+}
+
+// -------------- 시연용 --------------
+// 프린터 상태변경
+export const updatePrinterStatus = async (status) => {
+  const response = await axiosInstance.patch('/api/devices/1/status', {
+    status
+  })
 
   return response.data;
 }

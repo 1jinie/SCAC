@@ -57,7 +57,7 @@ public class SecurityConfig {
 
                                 // 1. PUBLIC GET 요청 (키오스크 및 일반 사용자 노출용)
                                 .requestMatchers(HttpMethod.GET, "/api/users/check-phone", "/api/tickets/**",
-                                        "/api/seats/**", "/api/rooms/**", "/api/meeting-rooms/**",
+                                        "/api/seats/**", "/api/rooms/**", "/api/meeting-rooms", "/api/meeting-rooms/*/availability",
                                         "/api/checkin/**", "/api/commands/**", "/api/devices/**", "/api/faults/**")
                                 .permitAll()
 
@@ -67,16 +67,19 @@ public class SecurityConfig {
                                         "/api/admin/auth/login", "/api/admin/auth/refresh",
                                         "/api/admin/auth/logout", "/api/users/signup", "/api/users/guest",
                                         "/api/users/entry-password/verify", "/api/checkin", "/api/commands/**", "/api/devices/**", "/api/faults/**",
-                                        "/api/checkin/prepare", "/api/checkin/prepare/member")
+                                        "/api/checkin/prepare")
                                 .permitAll()
 
                                 // 3. PUBLIC PATCH 요청
                                 .requestMatchers(HttpMethod.PATCH, "/api/users/*/entry-password",
-                                        "/api/checkin/away", "/api/checkin/comeback", "/api/commands/**", "/api/faults/**", "/api/checkin/checkout") 
+                                        "/api/checkin/away", "/api/checkin/comeback", "/api/commands/**", "/api/faults/**", "/api/checkin/checkout",
+                                        "/api/devices/*/status") 
                                 .permitAll()
 
                                 // 회원 전용 API (JWT 필수)
-                                .requestMatchers("/api/checkin/prepare/member", "/api/users/me")
+                                .requestMatchers("/api/checkin/prepare/member", "/api/users/me", "/api/meeting-rooms/reservations",
+                                        "/api/meeting-rooms/current", "/api/meeting-rooms/reservations/*", "/api/meeting-rooms/reservations/cancel-pending"
+                                )
                                 .hasAnyRole("USER", "GUEST")
 
                                 // 사용자 결제 관련 - 결제 요청 시 USER 또는 GUEST 권한 필요 (ADMIN 권한은 불필요)
@@ -85,7 +88,7 @@ public class SecurityConfig {
                                 .hasAnyRole("USER", "GUEST")
 
                                 // 관리자 전용 경로 통제
-                                .requestMatchers("/api/admin/**", "/api/meeting-rooms/admin/reservations",
+                                .requestMatchers("/api/admin/**", "/api/meeting-rooms/admin/**",
                                         "/api/meeting-rooms/reservations/*/cancel")
                                 .hasAnyRole("SUPER_ADMIN", "STAFF")
 

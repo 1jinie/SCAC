@@ -4,6 +4,7 @@ import { seatStore } from '../../store/seatStore';
 import { checkInStore } from '../../store/checkInStore';
 import { useResetStore } from '../../hooks/useResetStore';
 import { openDoor } from '../../api/deviceApi';
+import { updatePrinterStatus } from '../../api/deviceApi';
 import InOutModal from '../../components/modal/InOutModal';
 import KioskAlertModal from '../../components/modal/KioskAlertModal';
 import '../../styles/Home.css';
@@ -11,6 +12,8 @@ import '../../styles/Home.css';
 function HomePage() {
   const [alertModal, setAlertModal] = useState(null);
   const [modalType, setModalType] = useState(null);
+  // -------------- 시연용 --------------
+  const [printerStatus, setPrinterStatus] = useState('NORMAL');
   const prepareCheckIn = checkInStore((state) => state.prepareCheckIn);
   const setPreparedInfo = checkInStore((state) => state.setPreparedInfo);
   const goOut = checkInStore((state) => state.goOut);
@@ -149,11 +152,28 @@ function HomePage() {
     fetchSeats();
   }, [resetAll, fetchSeats]);
 
+  // -------------- 시연용 --------------
+  // 로고 클릭
+  const handlePrinterTest = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try{
+      const nextStatus = printerStatus === 'NORMAL' ? 'ERROR' : 'NORMAL';
+
+      await updatePrinterStatus(nextStatus);
+    } catch(error){
+      console.error('프린터 상태 변경 실패', error);
+    }
+  };
+
   return (
     <div className="kiosk_container">
       {/* 상단 헤더 / 로고 영역 */}
       <header className="kiosk_header">
-        <div className="logo_box">
+        <div 
+          className="logo_box"
+          onClick={handlePrinterTest}
+        >
           <div className="logo_icon">
             <img src="/logo/logo.png" alt="로고 아이콘" className="logo_img" />
           </div>
