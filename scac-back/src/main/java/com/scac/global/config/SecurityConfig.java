@@ -72,7 +72,8 @@ public class SecurityConfig {
 
                                 // 3. PUBLIC PATCH 요청
                                 .requestMatchers(HttpMethod.PATCH, "/api/users/*/entry-password",
-                                        "/api/checkin/away", "/api/checkin/comeback", "/api/commands/**", "/api/faults/**", "/api/checkin/checkout") 
+                                        "/api/checkin/away", "/api/checkin/comeback", "/api/commands/**", "/api/faults/**", "/api/checkin/checkout",
+                                        "/api/devices/*/status") 
                                 .permitAll()
 
                                 // 회원 전용 API (JWT 필수)

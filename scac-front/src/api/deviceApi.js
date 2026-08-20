@@ -34,3 +34,13 @@ export const readCard = async () => {
 
   return response.data;
 }
+
+// -------------- 시연용 --------------
+// 프린터 상태변경
+export const updatePrinterStatus = async (status) => {
+  const response = await axiosInstance.patch('/api/devices/1/status', {
+    status
+  })
+
+  return response.data;
+}
