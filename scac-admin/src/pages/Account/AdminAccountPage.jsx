@@ -1,6 +1,9 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { adminApi } from '../../api/adminApi';
 import './css/AdminAccountPage.css';
+import { useAuthStore } from '../../store/authStore';
+import AdminAccountList from './components/AdminAccountList';
+import AdminAccountDetail from './components/AdminAccountDetail';
 
 const INITIAL_FORM = {
   loginId: '',
@@ -13,6 +16,43 @@ export default function AdminAccountPage() {
   const [formData, setFormData] = useState(INITIAL_FORM);
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [accounts, setAccounts] = useState([]);
+  const [isAccountLoading, setIsAccountLoading] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState(null);
+
+  const [mode, setMode] = useState('VIEW');
+  // VIEW | CREATE | EDIT
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const user = useAuthStore((state) => state.user);
+
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
+
+  // 어드민 계정 목록 조회
+  const fetchAdminAccounts = useCallback(async () => {
+    try {
+      setIsAccountLoading(true);
+
+      const data = await adminApi.getAdminAccounts();
+
+      setAccounts(data);
+    } catch (error) {
+      console.error(
+        '관리자 계정 목록 조회 실패:',
+        error.response?.data ?? error,
+      );
+
+      setErrorMessage(
+        error.response?.data?.message ??
+          '관리자 계정 목록을 불러오지 못했습니다.',
+      );
+    } finally {
+      setIsAccountLoading(false);
+    }
+  }, []);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -49,6 +89,7 @@ export default function AdminAccountPage() {
     return '';
   };
 
+  // 계정 생성
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -75,6 +116,7 @@ export default function AdminAccountPage() {
       window.alert(response.message ?? '관리자 계정이 생성되었습니다.');
 
       setFormData(INITIAL_FORM);
+      await fetchAdminAccounts();
     } catch (error) {
       console.error('관리자 계정 생성 실패:', error.response?.data ?? error);
 
@@ -87,17 +129,69 @@ export default function AdminAccountPage() {
     }
   };
 
+  // 추가모드 버튼
+  const handleCreate = () => {
+    setSelectedAccount(null);
+    setMode('CREATE');
+  };
+  // 계정 상세확인
+  const handleSelectAccount = (account) => {
+    setSelectedAccount(account);
+    setMode('VIEW');
+  };
+
+  //수정모드
+  const handleEdit = () => {
+    setMode('EDIT');
+  };
+
+  //취소버튼
+  const handleCancel = () => {
+    setMode('VIEW');
+  };
+
+  useEffect(() => {
+    fetchAdminAccounts();
+  }, [fetchAdminAccounts]);
+
   return (
     <div className="admin_account_page">
       <div className="admin_page_heading">
         <div>
           <p className="admin_page_eyebrow">ADMIN ACCOUNT</p>
 
-          <h2>관리자 계정 등록</h2>
+          <h2>관리자 계정 관리</h2>
 
-          <p>SCAC 관리자 페이지를 이용할 관리자 계정을 등록합니다.</p>
+          <p>SCAC 관리자 페이지를 이용할 관리자 계정을 관리합니다.</p>
         </div>
       </div>
+      <section className="admin_device_workspace">
+        <div className="admin_device_left_column">
+          <AdminAccountList
+            accounts={accounts}
+            selectedAccount={selectedAccount}
+            onAccountSelect={handleSelectAccount}
+            isAccountLoading={isAccountLoading}
+            errorMessage={errorMessage}
+            isCreateMode={mode === 'create'}
+          />
+        </div>
+        <AdminAccountDetail
+          // 계정 상세정보
+          selectedAccount={selectedAccount}
+          onStatusChange={handleChange}
+          // 계정 추가, 수정 삭제
+          formMode={mode}
+          isSuperAdmin={isSuperAdmin}
+          onCreate={handleCreate}
+          onEdit={handleEdit}
+          onCancel={handleCancel}
+          onSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+          // onDelete={handleDelete}
+          // isDeletingDevice={isDeletingDevice}
+        />
+      </section>
 
       <section className="admin_panel admin_account_panel">
         <div className="admin_panel_header">

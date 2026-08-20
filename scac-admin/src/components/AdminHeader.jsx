@@ -3,6 +3,7 @@ import HeaderTime from './HeaderTime';
 import { useAuthStore } from '../store/authStore';
 import { adminApi } from '../api/adminApi';
 import { useEffect } from 'react';
+import { ADMIN_ROLE_LABELS } from '../constants/admin';
 
 const ADMIN_PAGE_TITLES = {
   '/': '관리자 메인',
@@ -15,11 +16,6 @@ const ADMIN_PAGE_TITLES = {
   '/account': '관리자 계정 관리',
   '/memo': '관리자 메모',
   '/seat': '좌석 관리',
-};
-
-const ADMIN_ROLE_LABELS = {
-  SUPER_ADMIN: '최고 관리자',
-  STAFF: '일반 관리자',
 };
 
 export default function AdminHeader() {

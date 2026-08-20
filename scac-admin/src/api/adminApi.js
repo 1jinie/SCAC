@@ -25,8 +25,15 @@ export const adminApi = {
 
   getAdminProfile: () => axiosInstance.get('/api/admin/profile'),
 
+  // 관리자 계정 생성(super_admin만 가능하며 생성된 계정의 role 기본값은 staff)
   createAdminAccount: async (data) => {
     const response = await axiosInstance.post('/api/admin/accounts', data);
     return response.data;
+  },
+
+  // 관리자 계정 목록 조회
+  getAdminAccounts: async () => {
+    const response = await axiosInstance.get('/api/admin/accounts');
+    return response.data.data;
   },
 };
