@@ -195,6 +195,27 @@
   box-shadow: inset 3px 0 0 var(--color-primary);
 }
 
+.admin_payment_table tbody tr.is_canceled {
+  background-color: #fafbfc;
+}
+
+.admin_payment_table tbody tr.is_canceled td {
+  color: #8c9398;
+}
+
+.admin_payment_table tbody tr.is_canceled:hover {
+  background-color: #f2f5f7;
+}
+
+.admin_payment_table tbody tr.is_canceled.is_selected {
+  background-color: #edf7f5;
+}
+
+.admin_payment_table tbody tr.is_canceled .payment_amount {
+  text-decoration: line-through;
+  color: #a0a6aa;
+}
+
 .admin_payment_empty {
   height: 160px;
 

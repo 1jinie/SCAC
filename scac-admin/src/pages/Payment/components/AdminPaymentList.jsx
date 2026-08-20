@@ -57,11 +57,12 @@ export default function AdminPaymentList({
               payments.map((payment) => {
                 const isSelected =
                   selectedPayment?.paymentId === payment.paymentId;
+                const isCanceled = payment.status === 'CANCELED';
 
                 return (
                   <tr
                     key={payment.paymentId}
-                    className={isSelected ? 'is_selected' : ''}
+                    className={`${isSelected ? 'is_selected' : ''} ${isCanceled ? 'is_canceled' : ''}`.trim()}
                     onClick={() => onPaymentSelect(payment)}
                   >
                     <td>{payment.paymentId}</td>
@@ -75,7 +76,7 @@ export default function AdminPaymentList({
                       <td>올바르지 않은 정보입니다</td>
                     )}
 
-                    <td>{formatPrice(payment.paymentAmount)}</td>
+                    <td className="payment_amount">{formatPrice(payment.paymentAmount)}</td>
 
                     <td>
                       {PAYMENT_METHOD_LABELS[payment.paymentMethod] ??

@@ -1,6 +1,7 @@
 package com.scac.user.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,7 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.scac.admin.dto.request.AdminUserSearchReq;
 import com.scac.admin.dto.request.UserPenaltyReq;
 import com.scac.admin.dto.response.AdminUserRes;
+import com.scac.global.enums.NotificationType;
 import com.scac.global.enums.UserStatus;
+import com.scac.notification.service.NotificationService;
 import com.scac.system.entity.SystemLog;
 import com.scac.system.service.SystemLogService;
 import com.scac.ticketusage.service.TicketUsageService;
@@ -35,6 +38,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final SystemLogService systemLogService;
     private final TicketUsageService ticketUsageService;
+    private final NotificationService notificationService;
 
     @Transactional(readOnly = true)
     public boolean existsByPhoneNumber(String phoneNumber) {
@@ -168,6 +172,9 @@ public class UserService {
             } catch (Exception e) {
                 log.error("회원 ID: {} 제재 자동 해제 로그 기록 실패: {}", user.getId(), e.getMessage());
             }
+
+            // 자동 해제 안내 문자 발송
+            sendPenaltyNotification(user, UserStatus.ACTIVE, null);
         }
 
         return expiredUsers.size();
@@ -213,16 +220,49 @@ public class UserService {
      */
     public void applyUserPenalty(Long userId, UserPenaltyReq req) {
         User user = findUser(userId);
+        UserStatus prevStatus = user.getUserStatus();
 
         if (req.getUserStatus() == UserStatus.BANNED) {
             user.ban();
+            sendPenaltyNotification(user, UserStatus.BANNED, null);
         } else if (req.getUserStatus() == UserStatus.SUSPENDED) {
             if (req.getPenaltyEndDate() == null) {
                 throw new IllegalArgumentException("정지 상태 설정 시 정지 종료일은 필수입니다.");
             }
             user.applyPenalty(req.getPenaltyEndDate());
+            sendPenaltyNotification(user, UserStatus.SUSPENDED, req.getPenaltyEndDate());
         } else if (req.getUserStatus() == UserStatus.ACTIVE) {
             user.activate();
+            if (prevStatus == UserStatus.SUSPENDED || prevStatus == UserStatus.BANNED) {
+                sendPenaltyNotification(user, UserStatus.ACTIVE, null);
+            }
+        }
+    }
+
+    /**
+     * 회원 상태 변경 시 실시간 SMS 알림 발송 (예외 발생 시에도 상태 변경 트랜잭션 유지)
+     */
+    private void sendPenaltyNotification(User user, UserStatus status, LocalDate penaltyEndDate) {
+        try {
+            String title;
+            String content;
+
+            if (status == UserStatus.SUSPENDED) {
+                title = "이용 정지 안내";
+                content = String.format("[SCAC] 회원님의 계정이 이용 정지 처리되었습니다. (정지 종료일: %s)", penaltyEndDate);
+            } else if (status == UserStatus.BANNED) {
+                title = "영구 정지 안내";
+                content = "[SCAC] 회원님의 계정이 영구 이용 정지(탈퇴) 처리되었습니다. 관리자에게 문의 바랍니다.";
+            } else if (status == UserStatus.ACTIVE) {
+                title = "이용 정지 해제 안내";
+                content = "[SCAC] 회원님의 이용 정지가 해제되어 정상 이용이 가능합니다.";
+            } else {
+                return;
+            }
+
+            notificationService.sendToUser(user.getId(), NotificationType.PENALTY_NOTICE, title, content, LocalDateTime.now());
+        } catch (Exception e) {
+            log.error("회원 ID: {} 상태 변경 알림 문자 발송 실패: {}", user.getId(), e.getMessage());
         }
     }
 }
