@@ -4,91 +4,212 @@
 
 .admin_account_page {
   width: 100%;
-  max-width: 900px;
+  max-width: 1400px;
 
   margin: 0 auto;
-}
-
-.admin_account_panel {
-  max-width: 720px;
-  margin: 0 auto;
-}
-
-.admin_account_panel .admin_panel_header {
-  padding-bottom: 18px;
-  margin-bottom: 24px;
-
-  border-bottom: 1px solid var(--color-reserv-time-disavailable);
 }
 
 /* =========================
-   Form
+   Account Workspace
 ========================= */
 
-.admin_account_form {
+.admin_account_workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(380px, 1fr);
+  gap: 24px;
+
+  align-items: start;
+}
+
+.admin_account_workspace .admin_panel {
+  min-width: 0;
+}
+
+.admin_account_left_column {
+  min-width: 0;
+}
+
+/* =========================
+   Account List
+========================= */
+
+.admin_account_manage_list {
+  position: relative;
+
+  min-height: 280px;
+
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
 }
 
-.admin_account_field {
-  display: grid;
-  grid-template-columns: 130px minmax(0, 1fr);
-  gap: 20px;
-  align-items: center;
-}
-
-.admin_account_field label {
-  color: var(--color-text);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.admin_account_field input,
-.admin_account_field select {
+.admin_account_manage_item {
   width: 100%;
-  min-height: 44px;
+  min-height: 78px;
 
-  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
 
-  border: 1px solid #d9dee7;
-  border-radius: 8px;
+  padding: 16px 18px;
+
+  border: 1px solid var(--color-reserv-stroke);
+  border-radius: 12px;
 
   background: var(--color-white);
 
   color: var(--color-text);
-  font-size: 14px;
+  text-align: left;
 
-  box-sizing: border-box;
+  cursor: pointer;
 
   transition:
     border-color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.15s ease,
     box-shadow 0.2s ease;
 }
 
-.admin_account_field input::placeholder {
-  color: #a8afb9;
+.admin_account_manage_item:hover {
+  border-color: var(--color-sub);
+  background: var(--color-pay-white);
+
+  transform: translateY(-1px);
+
+  box-shadow: 0 4px 12px rgb(28 46 55 / 6%);
 }
 
-.admin_account_field input:focus,
-.admin_account_field select:focus {
-  outline: none;
-
+.admin_account_manage_item.is_selected {
   border-color: var(--color-primary);
 
-  box-shadow: 0 0 0 3px
-    color-mix(in srgb, var(--color-primary) 14%, transparent);
+  background: #f1f8f7;
+
+  box-shadow: 0 0 0 1px var(--color-primary);
 }
 
 /* =========================
-   Error
+   Account List Information
 ========================= */
+
+.admin_account_manage_info {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.admin_account_manage_info strong {
+  color: var(--color-text);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.admin_account_manage_info span {
+  color: var(--color-text-light);
+  font-size: 12px;
+}
+
+.admin_account_manage_info small {
+  margin-top: 2px;
+
+  color: var(--color-text-light);
+  font-size: 11px;
+}
+
+/* =========================
+   Role Badge
+========================= */
+
+.admin_account_role {
+  min-width: 76px;
+  height: 26px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  padding: 0 10px;
+
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.admin_account_role.is_super_admin {
+  background: #e7f5ed;
+  color: var(--color-primary);
+}
+
+.admin_account_role.is_staff {
+  background: #f3f4f6;
+  color: var(--color-text-light);
+}
+
+/* =========================
+   Create Button
+========================= */
+
+.admin_account_create_button {
+  min-height: 34px;
+
+  padding: 0 14px;
+
+  border: 1px solid var(--color-primary);
+  border-radius: 8px;
+
+  background: var(--color-white);
+  color: var(--color-primary);
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.admin_account_create_button:hover,
+.admin_account_create_button.is_active {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.admin_account_create_button:active {
+  transform: translateY(1px);
+}
+
+/* =========================
+   Empty / Error
+========================= */
+
+.admin_account_empty {
+  min-height: 220px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 24px;
+
+  color: var(--color-text-light);
+  font-size: 13px;
+
+  text-align: center;
+}
 
 .admin_account_error {
   margin: 0;
-  padding: 12px 14px;
+  padding: 14px 16px;
 
-  border-radius: 8px;
+  border-radius: 10px;
 
   background: #fff7f6;
 
@@ -98,21 +219,138 @@
 }
 
 /* =========================
-   Actions
+   Account Detail
 ========================= */
 
-.admin_account_actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+.admin_account_detail {
+  position: sticky;
+  top: 120px;
 
-  margin-top: 10px;
+  min-height: 360px;
 }
 
-.admin_account_actions button {
+.admin_account_detail .admin_panel_header {
+  padding-bottom: 18px;
+  margin-bottom: 4px;
+
+  border-bottom: 1px solid var(--color-reserv-time-disavailable);
+}
+
+.admin_account_detail_empty {
+  min-height: 300px;
+
+  display: grid;
+  place-items: center;
+
+  color: var(--color-text-light);
+  font-size: 14px;
+
+  text-align: center;
+}
+
+.admin_account_detail_description {
+  margin: 6px 0 0;
+
+  color: var(--color-text-light);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* =========================
+   Account Information
+========================= */
+
+.admin_account_info_list {
+  margin: 0;
+}
+
+.admin_account_info_list > div {
+  min-height: 56px;
+
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+
+  border-bottom: 1px solid var(--color-reserv-time-disavailable);
+}
+
+.admin_account_info_list dt {
+  color: var(--color-text-light);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.admin_account_info_list dd {
+  min-width: 0;
+  margin: 0;
+
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 700;
+
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+/* =========================
+   Account Form Input
+========================= */
+
+.admin_account_info_list input,
+.admin_account_info_list select {
+  width: 100%;
+  min-height: 42px;
+
+  padding: 9px 12px;
+
+  border: 1px solid #d9dee7;
+  border-radius: 8px;
+
+  background-color: var(--color-white);
+
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 500;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.admin_account_info_list input:hover,
+.admin_account_info_list select:hover {
+  border-color: #b8c0cc;
+}
+
+.admin_account_info_list input:focus,
+.admin_account_info_list select:focus {
+  outline: none;
+
+  border-color: var(--color-primary);
+
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+
+/* =========================
+   Form Actions
+========================= */
+
+.admin_account_form_actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+
+  margin-top: 18px;
+}
+
+.admin_account_form_actions button {
   min-height: 46px;
 
-  border-radius: 9px;
+  border-radius: 10px;
 
   font-size: 14px;
   font-weight: 700;
@@ -122,47 +360,165 @@
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease,
-    color 0.2s ease;
+    transform 0.1s ease,
+    opacity 0.2s ease;
 }
 
-.admin_account_reset_button {
+.admin_account_form_actions button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.admin_account_form_actions button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.admin_account_form_cancel_button {
   border: 1px solid #d9dee7;
 
   background: var(--color-white);
   color: var(--color-text);
 }
 
-.admin_account_reset_button:hover:not(:disabled) {
+.admin_account_form_cancel_button:hover:not(:disabled) {
+  border-color: #c5cbd4;
   background: #f7f8fa;
 }
 
-.admin_account_submit_button {
+.admin_account_form_submit_button {
   border: 1px solid var(--color-primary);
 
   background: var(--color-primary);
   color: var(--color-white);
 }
 
-.admin_account_submit_button:hover:not(:disabled) {
+.admin_account_form_submit_button:hover:not(:disabled) {
   filter: brightness(0.95);
 }
 
-.admin_account_actions button:disabled {
+/* =========================
+   Password Edit Button
+========================= */
+
+.admin_account_edit_button {
+  width: 100%;
+  min-height: 46px;
+
+  margin-top: 20px;
+
+  border: 1px solid var(--color-primary);
+  border-radius: 10px;
+
+  background: var(--color-white);
+  color: var(--color-primary);
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.admin_account_edit_button:hover {
+  background: color-mix(in srgb, var(--color-primary) 7%, var(--color-white));
+}
+
+.admin_account_edit_button:active {
+  transform: translateY(1px);
+}
+
+/* =========================
+   Delete Button
+========================= */
+
+.admin_account_delete_button {
+  width: 100%;
+  min-height: 44px;
+
+  margin-top: 10px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+
+  background: var(--color-white);
+  color: #8b919b;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.admin_account_delete_button:hover:not(:disabled) {
+  border-color: var(--color-error);
+  background: #fff7f6;
+  color: var(--color-error);
+}
+
+.admin_account_delete_button:disabled {
   opacity: 0.55;
+
   cursor: not-allowed;
+}
+
+/* =========================
+   Super Admin Notice
+========================= */
+
+.admin_account_protected_message {
+  margin: 12px 0 0;
+  padding: 12px 14px;
+
+  border: 1px solid var(--color-reserv-time-disavailable);
+  border-radius: 9px;
+
+  background: #f7f8fa;
+
+  color: var(--color-text-light);
+  font-size: 12px;
+  line-height: 1.5;
+
+  text-align: center;
 }
 
 /* =========================
    Responsive
 ========================= */
 
-@media (max-width: 700px) {
-  .admin_account_field {
+@media (max-width: 1360px) {
+  .admin_account_workspace {
     grid-template-columns: 1fr;
-    gap: 8px;
   }
 
-  .admin_account_actions {
+  .admin_account_detail {
+    position: static;
+  }
+}
+
+@media (max-width: 700px) {
+  .admin_account_manage_item {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .admin_account_role {
+    align-self: flex-start;
+  }
+
+  .admin_account_info_list > div {
+    grid-template-columns: 90px minmax(0, 1fr);
+  }
+
+  .admin_account_form_actions {
     grid-template-columns: 1fr;
   }
 }

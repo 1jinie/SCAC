@@ -65,7 +65,7 @@ public class AdminAccountController {
     @PatchMapping("/{adminId}")
     @AutoLog(logType = "ADMIN", action = "UPDATE", targetType = "ADMIN_ACCOUNT", content = "관리자 계정 정보 및 권한 수정")
     public ResponseEntity<ApiResponse<Void>> updateAdminAccount(@PathVariable(name = "adminId") Long adminId,
-        @RequestBody AdminAccountUpdateReq req) {
+        @Valid @RequestBody AdminAccountUpdateReq req) {
         adminAccountService.updateAdminAccount(adminId, req);
         return ResponseEntity.ok(ApiResponse.success("관리자 계정 정보 변경이 완료되었습니다."));
     }

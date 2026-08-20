@@ -36,4 +36,29 @@ export const adminApi = {
     const response = await axiosInstance.get('/api/admin/accounts');
     return response.data.data;
   },
+  // 관리자 계정 상세
+  getAdminAccount: async (adminId) => {
+    const response = await axiosInstance.get(`/api/admin/accounts/${adminId}`);
+
+    return response.data.data;
+  },
+
+  // 관리자 계정 수정
+  updateAdminAccount: async (adminId, data) => {
+    const response = await axiosInstance.patch(
+      `/api/admin/accounts/${adminId}`,
+      data,
+    );
+
+    return response.data;
+  },
+
+  // 관리자 계정 삭제
+  deleteAdminAccount: async (adminId) => {
+    const response = await axiosInstance.delete(
+      `/api/admin/accounts/${adminId}`,
+    );
+
+    return response.data;
+  },
 };
