@@ -135,8 +135,10 @@ static int handle_print_receipt(const work_t *work, char *result, size_t result_
     snprintf(payload, sizeof(payload), "%s", work->payload);
     char *order_id = strtok(payload, "|");
     char *items = strtok(NULL, "|");
+    char *start_time = strtok(NULL, "|");
+    char *end_time = strtok(NULL, "|");
     char *price = strtok(NULL, "|");
-    if (order_id == NULL || items == NULL || price == NULL) {
+    if (order_id == NULL || items == NULL || start_time == NULL || end_time == NULL || price == NULL) {
         snprintf(result, result_size, "invalid receipt payload");
         return -1;
     }
@@ -147,6 +149,9 @@ static int handle_print_receipt(const work_t *work, char *result, size_t result_
     printf("+--------------------------------------+\n");
     printf("  주문 번호 : %s\n", order_id);
     printf("  품목 : %s\n", items);
+    if(start_time != NULL && end_time != NULL){
+        printf("  사용 시간 : %s ~ %s\n", start_time, end_time);
+    }
     printf("  결제 금액 : %s원\n", price);
     printf("+--------------------------------------+\n\n");
     time_t now = time(NULL);

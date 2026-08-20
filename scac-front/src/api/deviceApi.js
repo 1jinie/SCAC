@@ -10,10 +10,10 @@ export const openDoor = async () => {
 };
 
 // 영수증 출력 명령
-export const printReceipt = async ({ orderId, itemName, amount }) => {
+export const printReceipt = async ({ orderId, itemName, amount, startTime, endTime }) => {
   const response = await axiosInstance.post('/api/commands', {
     taskType: 'PRINT_RECEIPT',
-    payload: `${orderId}|${itemName}|${amount}`,
+    payload: `${orderId}|${itemName}|${startTime ?? ''}|${endTime ?? ''}|${amount}`,
   });
 
   return response.data;
