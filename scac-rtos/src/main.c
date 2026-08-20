@@ -32,9 +32,10 @@ typedef struct {
     task_handler_t handler;
 } task_handler_mapping_t;
 
-
+// 전역 변수
 static http_server_t spring_server;
 static volatile BaseType_t worker_running = pdFALSE;
+static volatile BaseType_t door_open = pdFALSE;
 
 static const char *json_value(const char *json, const char *key) {
     static char pattern[64];
@@ -70,6 +71,7 @@ static int handle_door_close(
         size_t result_size){
     (void) work;
 
+    door_open = pdFALSE;
     printf("[DOOR] CLOSE\n");
     fflush(stdout);
 
@@ -88,6 +90,7 @@ static int handle_door_open(
     (void) work;
 
     // 문 열기
+    door_open = pdTRUE;
     printf("[DOOR] OPEN\n");
     fflush(stdout);
 
@@ -229,6 +232,7 @@ static void health_check_task(void *parameter){
     for(;;){
         int printer_ready = fetch_printer_status();
         const char *printer_status = printer_ready ? "READY" : "EMPTY";
+        const char *door_status = door_open ? "OPEN" : "CLOSE";
         char json[512];
 
         snprintf(
@@ -238,10 +242,11 @@ static void health_check_task(void *parameter){
             "\"kioskId\":1,"
             "\"kioskName\":\"KIOSK-01\","
             "\"status\":\"ONLINE\","
-            "\"door\":\"CLOSE\","
+            "\"door\":\"%s\","
             "\"cardReader\":\"WAITING\","
             "\"printer\":\"%s\""
             "}",
+            door_status,
             printer_status
         );
 
