@@ -16,6 +16,10 @@ import com.scac.device.dto.DeviceStatusDTO;
 import com.scac.device.dto.DeviceUpdateDTO;
 import com.scac.device.entity.Device;
 import com.scac.device.entity.DeviceLog;
+import com.scac.device.enums.CardReaderStatus;
+import com.scac.device.enums.DeviceNetworkStatus;
+import com.scac.device.enums.DoorStatus;
+import com.scac.device.enums.PrinterStatus;
 import com.scac.device.repository.DeviceLogRepository;
 import com.scac.device.repository.DeviceRepository;
 import com.scac.global.enums.DeviceStatus;
@@ -216,48 +220,35 @@ public class DeviceService {
   }
 
   // Health Check 받은 데이터를 DeviceStatus로 변환 (공통)
-  private DeviceStatus convertNetworkStatus(String status) {
-    if ("ONLINE".equalsIgnoreCase(status)) {
-      return DeviceStatus.NORMAL;
-    }
-    if ("OFFLINE".equalsIgnoreCase(status)) {
-      return DeviceStatus.OFFLINE;
-    }
-    return DeviceStatus.ERROR;
+  private DeviceStatus convertNetworkStatus(DeviceNetworkStatus status) {
+    return switch (status){
+      case ONLINE -> DeviceStatus.NORMAL;
+      case OFFLINE -> DeviceStatus.OFFLINE;
+    };
   }
 
   // Health Check - Door
-  private DeviceStatus convertDoorStatus(String status) {
-    if ("OPEN".equalsIgnoreCase(status) || "CLOSE".equalsIgnoreCase(status)
-      || "CLOSED".equalsIgnoreCase(status)) {
-      return DeviceStatus.NORMAL;
-    }
-    if ("OFFLINE".equalsIgnoreCase(status)) {
-      return DeviceStatus.OFFLINE;
-    }
-    return DeviceStatus.ERROR;
+  private DeviceStatus convertDoorStatus(DoorStatus status) {
+    return switch (status){
+      case OPEN, CLOSE, CLOSED -> DeviceStatus.NORMAL;
+      case OFFLINE -> DeviceStatus.OFFLINE;
+    };
   }
 
   // Health Check - Card Reader
-  private DeviceStatus convertCardReaderStatus(String status) {
-    if ("WAITING".equalsIgnoreCase(status) || "READY".equalsIgnoreCase(status)) {
-      return DeviceStatus.NORMAL;
-    }
-    if ("OFFLINE".equalsIgnoreCase(status)) {
-      return DeviceStatus.OFFLINE;
-    }
-    return DeviceStatus.ERROR;
+  private DeviceStatus convertCardReaderStatus(CardReaderStatus status) {
+    return switch (status){
+      case WAITING, READY -> DeviceStatus.NORMAL;
+      case OFFLINE -> DeviceStatus.OFFLINE;
+    };
   }
 
   // Health Check - Printer
-  private DeviceStatus convertPrinterStatus(String status) {
-    if ("READY".equalsIgnoreCase(status)) {
-      return DeviceStatus.NORMAL;
-    }
-    if ("OFFLINE".equalsIgnoreCase(status)) {
-      return DeviceStatus.OFFLINE;
-    }
-    return DeviceStatus.ERROR;
+  private DeviceStatus convertPrinterStatus(PrinterStatus status) {
+    return switch (status){
+      case READY -> DeviceStatus.NORMAL;
+      case OFFLINE -> DeviceStatus.OFFLINE;
+    };
   }
 
   // DeviceHealthRequest 데이터 받아서 HealthCheck하는 통합 메서드
