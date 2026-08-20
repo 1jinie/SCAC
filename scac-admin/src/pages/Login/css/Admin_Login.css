@@ -111,11 +111,11 @@
 }
 
 .admin_login_form input {
-  width: 90%;
+  width: 100%;
+  box-sizing: border-box;
   height: 52px;
 
   padding: 0 16px;
-
   border: 1px solid #cfd5d8;
   border-radius: 10px;
 
