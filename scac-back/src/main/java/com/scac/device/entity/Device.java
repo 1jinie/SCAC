@@ -62,7 +62,7 @@ public class Device {
     String serialNumber) {
     this.deviceName = deviceName;
     this.deviceType = deviceType;
-    this.status = DeviceStatus.NORMAL;
+    this.status = DeviceStatus.OFFLINE;
     this.location = location;
     this.ipAddress = ipAddress;
     this.serialNumber = serialNumber;

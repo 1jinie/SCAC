@@ -282,6 +282,37 @@ export default function AdminDevicePage() {
     }
   };
 
+  // Health Check 상태 자동 갱신용
+  const refreshDevices = useCallback(async () => {
+    try {
+      const data = await deviceApi.getDevices(includeInactive);
+
+      setDevices(data);
+
+      // 선택된 장치가 있다면 상세 상태도 최신 상태로 갱신
+      setSelectedDevice((prev) => {
+        if (!prev) {
+          return prev;
+        }
+
+        return data.find((device) => device.deviceId === prev.deviceId) ?? prev;
+      });
+    } catch (error) {
+      console.error(
+        '장치 자동 갱신 실패:',
+        error.response?.data?.message ?? error,
+      );
+    }
+  }, [includeInactive]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      refreshDevices();
+    }, 5000);
+
+    return () => clearInterval(intervalId);
+  }, [refreshDevices]);
+
   const summaryItems = useMemo(
     () => [
       {

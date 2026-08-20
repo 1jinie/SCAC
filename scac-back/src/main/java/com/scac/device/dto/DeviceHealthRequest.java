@@ -1,10 +1,7 @@
 package com.scac.device.dto;
 
-public record DeviceHealthRequest(
-    Long kioskId,
-    String kioskName,
-    String status,
-    String door,
-    String cardReader,
-    String printer) {
+import jakarta.validation.constraints.NotBlank;
+
+public record DeviceHealthRequest(Long kioskId, String kioskName, @NotBlank String status,
+    @NotBlank String door, @NotBlank String cardReader, @NotBlank String printer) {
 }
