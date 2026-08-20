@@ -2,6 +2,8 @@ package com.scac.device.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,10 @@ import com.scac.device.dto.DeviceStatusDTO;
 import com.scac.device.dto.DeviceUpdateDTO;
 import com.scac.device.entity.Device;
 import com.scac.device.entity.DeviceLog;
+import com.scac.device.enums.CardReaderStatus;
+import com.scac.device.enums.DeviceNetworkStatus;
+import com.scac.device.enums.DoorStatus;
+import com.scac.device.enums.PrinterStatus;
 import com.scac.device.repository.DeviceLogRepository;
 import com.scac.device.repository.DeviceRepository;
 import com.scac.global.enums.DeviceStatus;
@@ -31,6 +37,8 @@ public class DeviceService {
 
   private final DeviceRepository deviceRepository;
   private final DeviceLogRepository deviceLogRepository;
+  // 시연용
+  private final Map<Long, DeviceStatus> demostatuses = new ConcurrentHashMap<>();
 
   // 시리얼번호와 device_id 중복확인
   private void validateSerialNumber(String serialNumber, Long deviceId) {
@@ -181,6 +189,19 @@ public class DeviceService {
       throw new IllegalStateException("비활성화된 장치(device id :" + form.getDeviceId() + ")의 이벤트는 처리할 수 없습니다.");
     }
 
+    // 시연용 강제 상태 설정 장치 상태 덮어쓰기x
+    if(demostatuses.containsKey(device.getDeviceId())){
+      device.updateLastConnectedAt(LocalDateTime.now());
+
+      DeviceLog log = DeviceLog.create(
+        device, 
+        form.getEventType(), 
+        demostatuses.get(device.getDeviceId()), 
+        "시연용 강제 상태 유지: " + demostatuses.get(device.getDeviceId()));
+
+      return DeviceLogResDTO.from(deviceLogRepository.save(log));
+    }
+
     // 장치의 현재 상태 갱신
     device.updateStatus(form.getStatus());
 
@@ -195,10 +216,28 @@ public class DeviceService {
     return DeviceLogResDTO.from(savedLog);
   }
 
+  // 시연용 상태 변경
+  @Transactional
+  public DeviceResDTO updateDemoStatus(Long deviceId, DeviceStatus status){
+    Device device = findDevice(deviceId);
+
+    demostatuses.put(deviceId, status);
+    device.updateStatus(status);
+
+    return DeviceResDTO.from(device);
+  }
+
   // 장치의 LastConnectedAt와 Status 업데이트
   private void updateHealth(DeviceType deviceType, DeviceStatus newStatus, LocalDateTime connectedAt) {
     // 현재는 키오스크 1대 및 장치 타입별 1대 기준으로 처리
     deviceRepository.findFirstByDeviceTypeAndIsActiveTrueOrderByDeviceIdAsc(deviceType).ifPresent(device -> {
+
+      // 시연용 강제 상태가 있으면 Health Check로 덮어쓰기 x
+      if(demostatuses.containsKey(device.getDeviceId())){
+        device.updateLastConnectedAt(connectedAt);
+        return;
+      }
+
       DeviceStatus previousStatus = device.getStatus();
       // Heartbeat 수신 시 마지막 통신 시간은 항상 갱신
       device.updateLastConnectedAt(connectedAt);
@@ -216,48 +255,35 @@ public class DeviceService {
   }
 
   // Health Check 받은 데이터를 DeviceStatus로 변환 (공통)
-  private DeviceStatus convertNetworkStatus(String status) {
-    if ("ONLINE".equalsIgnoreCase(status)) {
-      return DeviceStatus.NORMAL;
-    }
-    if ("OFFLINE".equalsIgnoreCase(status)) {
-      return DeviceStatus.OFFLINE;
-    }
-    return DeviceStatus.ERROR;
+  private DeviceStatus convertNetworkStatus(DeviceNetworkStatus status) {
+    return switch (status){
+      case ONLINE -> DeviceStatus.NORMAL;
+      case OFFLINE -> DeviceStatus.OFFLINE;
+    };
   }
 
   // Health Check - Door
-  private DeviceStatus convertDoorStatus(String status) {
-    if ("OPEN".equalsIgnoreCase(status) || "CLOSE".equalsIgnoreCase(status)
-      || "CLOSED".equalsIgnoreCase(status)) {
-      return DeviceStatus.NORMAL;
-    }
-    if ("OFFLINE".equalsIgnoreCase(status)) {
-      return DeviceStatus.OFFLINE;
-    }
-    return DeviceStatus.ERROR;
+  private DeviceStatus convertDoorStatus(DoorStatus status) {
+    return switch (status){
+      case OPEN, CLOSE, CLOSED -> DeviceStatus.NORMAL;
+      case OFFLINE -> DeviceStatus.OFFLINE;
+    };
   }
 
   // Health Check - Card Reader
-  private DeviceStatus convertCardReaderStatus(String status) {
-    if ("WAITING".equalsIgnoreCase(status) || "READY".equalsIgnoreCase(status)) {
-      return DeviceStatus.NORMAL;
-    }
-    if ("OFFLINE".equalsIgnoreCase(status)) {
-      return DeviceStatus.OFFLINE;
-    }
-    return DeviceStatus.ERROR;
+  private DeviceStatus convertCardReaderStatus(CardReaderStatus status) {
+    return switch (status){
+      case WAITING, READY -> DeviceStatus.NORMAL;
+      case OFFLINE -> DeviceStatus.OFFLINE;
+    };
   }
 
   // Health Check - Printer
-  private DeviceStatus convertPrinterStatus(String status) {
-    if ("READY".equalsIgnoreCase(status)) {
-      return DeviceStatus.NORMAL;
-    }
-    if ("OFFLINE".equalsIgnoreCase(status)) {
-      return DeviceStatus.OFFLINE;
-    }
-    return DeviceStatus.ERROR;
+  private DeviceStatus convertPrinterStatus(PrinterStatus status) {
+    return switch (status){
+      case READY, EMPTY -> DeviceStatus.NORMAL;
+      case OFFLINE -> DeviceStatus.OFFLINE;
+    };
   }
 
   // DeviceHealthRequest 데이터 받아서 HealthCheck하는 통합 메서드
@@ -276,6 +302,12 @@ public class DeviceService {
     LocalDateTime offlineThreshold = LocalDateTime.now().minusSeconds(20);
     List<Device> devices = deviceRepository.findAllByIsActiveTrueOrderByDeviceIdAsc();
     for (Device device : devices) {
+
+      // 시연용 강제 상태가 설정된 장치는 timeout으로 상태 변경 x
+      if(demostatuses.containsKey(device.getDeviceId())){
+        continue;
+      }
+
       LocalDateTime lastConnectedAt = device.getLastConnectedAt();
       // 아직 Health Check를 한 번도 받지 않은 장치는 일단 제외
       if (lastConnectedAt == null) {
