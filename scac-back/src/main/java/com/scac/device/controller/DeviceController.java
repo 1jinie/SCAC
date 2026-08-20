@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.scac.device.dto.DeviceResDTO;
 import com.scac.device.entity.Device;
-import com.scac.device.enums.PrinterStatus;
 import com.scac.device.repository.DeviceRepository;
 import com.scac.device.service.DeviceService;
 import com.scac.global.enums.DeviceStatus;
