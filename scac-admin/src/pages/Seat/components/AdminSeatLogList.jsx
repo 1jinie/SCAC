@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
-import Pagination from "../../../components/common/Pagination";
-import { formatPhoneNumber } from "../../../utils/formatter";
+import { useEffect, useMemo, useState } from 'react';
+import Pagination from '../../../components/common/Pagination';
+import { formatPhoneNumber } from '../../../utils/formatter';
+import { formatfullDateTime } from '../../../utils/date';
 
 export default function AdminSeatLogList({ logs = [], selectedSeat }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -11,11 +12,11 @@ export default function AdminSeatLogList({ logs = [], selectedSeat }) {
     return logs.slice(startIndex, startIndex + PAGE_SIZE);
   }, [logs, currentPage]);
   const ACTION_LABEL = {
-    CHECK_IN: "입실",
-    CHECK_OUT: "퇴실",
-    AUTO_CHECKOUT: "자동퇴실",
-    FORCE_CHECKOUT: "강제퇴실",
-    STATUS_CHANGE: "상태변경",
+    CHECK_IN: '입실',
+    CHECK_OUT: '퇴실',
+    AUTO_CHECKOUT: '자동퇴실',
+    FORCE_CHECKOUT: '강제퇴실',
+    STATUS_CHANGE: '상태변경',
   };
 
   useEffect(() => {
@@ -31,7 +32,7 @@ export default function AdminSeatLogList({ logs = [], selectedSeat }) {
           <p>
             {selectedSeat
               ? `${selectedSeat}번 좌석 이용 내역`
-              : "전체 좌석 이용 내역"}
+              : '전체 좌석 이용 내역'}
           </p>
         </div>
       </div>
@@ -51,7 +52,7 @@ export default function AdminSeatLogList({ logs = [], selectedSeat }) {
             <tbody>
               {currentLogs.map((log) => (
                 <tr key={log.logId}>
-                  <td>{log.createdAt}</td>
+                  <td>{formatfullDateTime(log.createdAt)}</td>
 
                   <td>
                     <span className={`admin_log_type ${log.action}`}>
