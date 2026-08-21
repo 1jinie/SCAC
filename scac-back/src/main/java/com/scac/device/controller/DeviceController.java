@@ -23,30 +23,28 @@ public class DeviceController {
     private final DeviceService deviceService;
     private final DeviceRepository deviceRepository;
 
-    public DeviceController(DeviceRepository deviceRepository, DeviceService deviceService){
+    public DeviceController(DeviceRepository deviceRepository, DeviceService deviceService) {
         this.deviceRepository = deviceRepository;
         this.deviceService = deviceService;
     }
 
     // 장치의 현재 상태 조회
     @GetMapping("/{deviceId}/status")
-    public Map<String, Object> getDeviceStatus(@PathVariable Long deviceId) {
+    public Map<String, Object> getDeviceStatus(@PathVariable("deviceId") Long deviceId) {
         Device device = deviceRepository.findById(deviceId)
             .orElseThrow(() -> new ResourceNotFoundException("장치를 찾을 수 없습니다"));
-        
-        return Map.of(
-            "deviceId", device.getDeviceId(),
-            "status", device.getStatus()
-        );
+
+        return Map.of("deviceId", device.getDeviceId(), "status", device.getStatus());
     }
 
     // -------------- 시연용 --------------
     // 장치 상태 변경
     @PatchMapping("/{deviceId}/status")
-    public DeviceResDTO updateDeviceStatus(@PathVariable Long deviceId, @RequestBody Map<String, String> request){
+    public DeviceResDTO updateDeviceStatus(@PathVariable("deviceId") Long deviceId,
+        @RequestBody Map<String, String> request) {
         DeviceStatus status = DeviceStatus.valueOf(request.get("status"));
 
         return deviceService.updateDemoStatus(deviceId, status);
     }
-    
+
 }
