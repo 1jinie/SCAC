@@ -31,7 +31,7 @@ export default function AdminPaymentDetail({
       </aside>
     );
   }
-
+  console.log(selectedPayment);
   return (
     <aside className="admin_panel admin_payment_detail">
       <div className="admin_panel_header">
