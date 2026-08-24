@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { seatStore } from '../../store/seatStore';
 import { checkInStore } from '../../store/checkInStore';
@@ -13,7 +13,7 @@ function HomePage() {
   const [alertModal, setAlertModal] = useState(null);
   const [modalType, setModalType] = useState(null);
   // -------------- 시연용 --------------
-  const [printerStatus, setPrinterStatus] = useState('NORMAL');
+  const [printerStatus] = useState('NORMAL');
   const prepareCheckIn = checkInStore((state) => state.prepareCheckIn);
   const setPreparedInfo = checkInStore((state) => state.setPreparedInfo);
   const goOut = checkInStore((state) => state.goOut);
@@ -121,7 +121,7 @@ function HomePage() {
     fetchSeats();
 
     setAlertModal({
-      title: '퇴실',
+      title: '퇴실 완료',
       message: result.message,
       onClose: () => {
         setAlertModal(null);
