@@ -7,6 +7,8 @@ import {
 } from '../api/authApi';
 import { postSignUp, postGuestSignUp } from '../api/userApi';
 
+let logoutInProgress = false;
+
 export const useAuthStore = create((set, get) => ({
   accessToken: localStorage.getItem('accessToken') || null,
   user: JSON.parse(localStorage.getItem('userInfo')) || null,
@@ -143,6 +145,9 @@ export const useAuthStore = create((set, get) => ({
 
   // 5. 로그아웃 (관리자/사용자 구분하여 백엔드 DB 토큰 정상 삭제)
   logout: async () => {
+    // 이미 로그아웃 요청 중이면 추가 요청 x
+    if(logoutInProgress) return;
+    logoutInProgress = true;
     const currentUser = get().user;
     try {
       if (currentUser?.isAdmin || currentUser?.adminId) {
@@ -156,5 +161,7 @@ export const useAuthStore = create((set, get) => ({
       localStorage.clear();
       set({ accessToken: null, user: null, isAuthenticated: false });
     }
+
+    logoutInProgress = false;
   },
 }));
