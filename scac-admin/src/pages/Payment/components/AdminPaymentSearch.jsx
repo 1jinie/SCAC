@@ -11,6 +11,29 @@ export default function AdminPaymentSearch({
   onEndDateChange,
   onReset,
 }) {
+  const handleQuickDate = (type) => {
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, "0");
+    const toDateString = (d) =>
+      `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+    const todayStr = toDateString(now);
+
+    if (type === "today") {
+      onStartDateChange(todayStr);
+      onEndDateChange(todayStr);
+    } else if (type === "7days") {
+      const past = new Date();
+      past.setDate(past.getDate() - 7);
+      onStartDateChange(toDateString(past));
+      onEndDateChange(todayStr);
+    } else if (type === "month") {
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      onStartDateChange(toDateString(firstDay));
+      onEndDateChange(todayStr);
+    }
+  };
+
   return (
     <section className="admin_panel admin_payment_search">
       <div className="admin_payment_search_input_wrap">
@@ -56,7 +79,32 @@ export default function AdminPaymentSearch({
       </div>
 
       <div className="admin_payment_date_filter_wrap">
-        <label>결제 기간</label>
+        <div className="admin_payment_date_header">
+          <label>결제 기간</label>
+          <div className="admin_quick_date_buttons">
+            <button
+              type="button"
+              className="admin_quick_date_btn"
+              onClick={() => handleQuickDate("today")}
+            >
+              오늘
+            </button>
+            <button
+              type="button"
+              className="admin_quick_date_btn"
+              onClick={() => handleQuickDate("7days")}
+            >
+              7일
+            </button>
+            <button
+              type="button"
+              className="admin_quick_date_btn"
+              onClick={() => handleQuickDate("month")}
+            >
+              이번달
+            </button>
+          </div>
+        </div>
 
         <div className="admin_payment_date_inputs">
           <input
