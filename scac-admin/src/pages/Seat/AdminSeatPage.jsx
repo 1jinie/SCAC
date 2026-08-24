@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
-import SeatList from "../../components/seat/SeatList";
-import { seatStore } from "../../store/seatStore";
-import { roomStore } from "../../store/roomStore";
-import { adminSeatApi } from "../../api/seatApi"; // 💡 adminSeatApi 추가
-import AdminSeatDetail from "./components/AdminSeatDetail";
-import AdminSeatLogList from "./components/AdminSeatLogList";
-import "./css/AdminSeatPage.css";
+import { useEffect, useState } from 'react';
+import SeatList from '../../components/seat/SeatList';
+import { seatStore } from '../../store/seatStore';
+import { roomStore } from '../../store/roomStore';
+import { adminSeatApi } from '../../api/seatApi'; // 💡 adminSeatApi 추가
+import AdminSeatDetail from './components/AdminSeatDetail';
+import AdminSeatLogList from './components/AdminSeatLogList';
+import './css/AdminSeatPage.css';
 
 export default function AdminSeatPage() {
   const [selectedSeat, setSelectedSeat] = useState(null);
@@ -18,34 +18,34 @@ export default function AdminSeatPage() {
   const selectSeat = seatStore((state) => state.selectSeat);
   const resetSeat = seatStore((state) => state.clearSelected);
   const updateSeatStatus = seatStore((state) => state.updateSeatStatus);
-  const mode = "seat";
+  const mode = 'seat';
 
   const TO_ADMIN_STATUS = {
-    available: "AVB",
-    using: "USR",
-    repair: "BRK",
+    available: 'AVB',
+    using: 'USR',
+    repair: 'BRK',
   };
 
   const TO_SEAT_STATUS = {
-    AVB: "available",
-    USR: "using",
-    BRK: "repair",
+    AVB: 'available',
+    USR: 'using',
+    BRK: 'repair',
   };
 
   const handleClick = async (seat) => {
-    if (seat.type !== "seat") return;
+    if (seat.type !== 'seat') return;
 
     selectSeat(seat.id);
 
     let user = null;
 
-    if (seat.status === "using") {
+    if (seat.status === 'using') {
       try {
         const response = await adminSeatApi.getSeatUser(seat.id);
 
         user = response.data.data;
       } catch (error) {
-        console.error("현재 이용자 조회 실패", error);
+        console.error('현재 이용자 조회 실패', error);
       }
     }
 
@@ -61,7 +61,7 @@ export default function AdminSeatPage() {
 
       setLogs(response.data);
     } catch (error) {
-      console.error("좌석 로그 조회 실패", error);
+      console.error('좌석 로그 조회 실패', error);
       setLogs([]);
     }
   };
@@ -92,7 +92,7 @@ export default function AdminSeatPage() {
 
       setLogs(response.data.data);
     } catch (error) {
-      console.error("전체 좌석 로그 조회 실패", error);
+      console.error('전체 좌석 로그 조회 실패', error);
       setLogs([]);
     }
   };
@@ -169,7 +169,6 @@ export default function AdminSeatPage() {
           onSeatChange={handleSeatStatusChange}
         />
       </section>
-
       <AdminSeatLogList logs={logs} selectedSeat={selected} />
     </div>
   );

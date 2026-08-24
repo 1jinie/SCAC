@@ -1,0 +1,4 @@
+export const ADMIN_ROLE_LABELS = {
+  SUPER_ADMIN: 'SUPER ADMIN',
+  STAFF: 'STAFF',
+};

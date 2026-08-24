@@ -399,8 +399,8 @@
 
 .admin_device_log_item {
   display: grid;
-  grid-template-columns: 180px minmax(0, 1fr) auto;
-  gap: 18px;
+  grid-template-columns: 165px 64px minmax(0, 1fr) 155px;
+  gap: 14px;
   align-items: center;
 
   padding: 14px 16px;
@@ -409,6 +409,7 @@
   border-radius: 10px;
 
   background: var(--color-white);
+
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease;
@@ -434,27 +435,6 @@
   font-weight: 700;
 }
 
-.admin_device_log_item p {
-  min-width: 0;
-  margin: 0;
-
-  color: var(--color-text-light);
-  font-size: 12px;
-  line-height: 1.5;
-
-  overflow-wrap: anywhere;
-}
-
-.admin_device_log_item small {
-  display: block;
-
-  color: var(--color-text-light);
-  font-size: 11px;
-
-  text-align: right;
-  white-space: nowrap;
-}
-
 .admin_device_log_empty {
   margin: 0;
   padding: 24px 12px;
@@ -464,6 +444,44 @@
 
   text-align: center;
   position: relative;
+}
+.admin_device_log_type {
+  min-width: 0;
+
+  color: var(--color-text);
+  font-size: 12px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.admin_device_log_status {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.admin_device_log_message {
+  min-width: 0;
+  margin: 0;
+
+  color: var(--color-text-light);
+  font-size: 12px;
+  line-height: 1.5;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin_device_log_date {
+  display: block;
+
+  color: var(--color-text-light);
+  font-size: 11px;
+
+  text-align: right;
+  white-space: nowrap;
 }
 
 /* =========================
@@ -741,11 +759,25 @@
     grid-template-columns: 80px minmax(0, 1fr);
   }
   .admin_device_log_item {
-    grid-template-columns: 1fr;
-    gap: 8px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px 12px;
   }
 
-  .admin_device_log_item small {
-    text-align: left;
+  .admin_device_log_status {
+    justify-content: flex-end;
+  }
+
+  .admin_device_log_message {
+    grid-column: 1 / -1;
+
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+  }
+
+  .admin_device_log_date {
+    grid-column: 1 / -1;
+
+    text-align: right;
   }
 }

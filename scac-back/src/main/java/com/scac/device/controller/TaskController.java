@@ -93,11 +93,12 @@ public class TaskController {
      */
     // RTOS Health Check 수신
     @PostMapping("/devices/health")
-    public ResponseEntity<ApiResponse<Void>> handleHealthCheck(@RequestBody DeviceHealthRequest request) {
+    public ResponseEntity<ApiResponse<Void>> handleHealthCheck(
+        @Valid @RequestBody DeviceHealthRequest request) {
         log.info(
             "[RTOS -> Spring] Health Check. kioskId={}, kioskName={}, status={}, door={}, cardReader={}, printer={}",
-            request.kioskId(), request.kioskName(),
-            request.status(), request.door(), request.cardReader(), request.printer());
+            request.kioskId(), request.kioskName(), request.status(), request.door(), request.cardReader(),
+            request.printer());
         deviceService.handleHealthCheck(request);
 
         return ResponseEntity.ok(ApiResponse.success("장치 Health Check 처리를 완료했습니다.", null));

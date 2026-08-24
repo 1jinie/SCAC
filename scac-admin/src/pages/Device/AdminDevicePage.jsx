@@ -5,7 +5,6 @@ import AdminDeviceDetail from './components/AdminDeviceDetail';
 import AdminDeviceList from './components/AdminDeviceList';
 import AdminDeviceLogList from './components/AdminDeviceLogList';
 import './css/AdminDevicePage.css';
-import LoadingOverlay from '../../components/common/LoadingOverlay';
 
 export default function AdminDevicePage() {
   const [devices, setDevices] = useState([]);
@@ -43,9 +42,46 @@ export default function AdminDevicePage() {
     }
   }, [includeInactive]);
 
+  // 주기적 상태 조회
+  const fetchDevicesSilently = useCallback(async () => {
+    try{
+      const data = await deviceApi.getDevices(includeInactive);
+      setDevices(data);
+    } catch (error){
+      console.error(
+        '장치 상태 주기적 조회 실패',
+        error.response?.data?.message ?? error
+      );
+    }
+  }, [includeInactive])
+
   useEffect(() => {
     fetchDevices();
   }, [fetchDevices]);
+
+  // 3초마다 장치 상태 확인
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchDevicesSilently();
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [fetchDevicesSilently]);
+
+  const errorDeviceIds = useMemo(() => 
+    devices.filter((device) => device.status === 'ERROR')
+    .map((device) => device.deviceId).sort((a, b) => a - b), [devices]
+  );
+
+  const errorDeviceKey = errorDeviceIds.join(',');
+
+  
+  useEffect(() => {
+    if(errorDeviceIds.length === 0){
+      return;
+    }
+    window.alert(`장치 오류가 발생했습니다.\n해당 장치를 확인해주세요.`);
+  }, [errorDeviceKey]);
 
   // 장치 선택 + 해당 장치 로그 조회
   const handleDeviceSelect = async (device) => {
@@ -281,6 +317,37 @@ export default function AdminDevicePage() {
       setIsDeletingDevice(false);
     }
   };
+
+  // Health Check 상태 자동 갱신용
+  const refreshDevices = useCallback(async () => {
+    try {
+      const data = await deviceApi.getDevices(includeInactive);
+
+      setDevices(data);
+
+      // 선택된 장치가 있다면 상세 상태도 최신 상태로 갱신
+      setSelectedDevice((prev) => {
+        if (!prev) {
+          return prev;
+        }
+
+        return data.find((device) => device.deviceId === prev.deviceId) ?? prev;
+      });
+    } catch (error) {
+      console.error(
+        '장치 자동 갱신 실패:',
+        error.response?.data?.message ?? error,
+      );
+    }
+  }, [includeInactive]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      refreshDevices();
+    }, 5000);
+
+    return () => clearInterval(intervalId);
+  }, [refreshDevices]);
 
   const summaryItems = useMemo(
     () => [

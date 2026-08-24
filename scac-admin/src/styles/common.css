@@ -205,6 +205,8 @@
 
   background: var(--color-white);
   border-right: 1px solid #e3e7ea;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .sidebar_logo_img {
@@ -222,6 +224,7 @@
   padding: 0 12px 28px;
 
   border-bottom: 1px solid #e8ecef;
+  flex-shrink: 0;
 }
 
 .admin_sidebar_logo_mark {
@@ -244,6 +247,10 @@
   gap: 8px;
 
   padding-top: 28px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .admin_navigation_item {

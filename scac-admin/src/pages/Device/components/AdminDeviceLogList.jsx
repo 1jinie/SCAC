@@ -49,9 +49,11 @@ export default function AdminDeviceLogList({ logs, isLoading }) {
           <ul className="admin_device_log_list">
             {currentLogs.map((log) => (
               <li key={log.logId} className="admin_device_log_item">
-                <div className="admin_device_log_info">
-                  <strong>{log.eventType}</strong>
+                <strong className="admin_device_log_type">
+                  {log.eventType}
+                </strong>
 
+                <div className="admin_device_log_status">
                   <span
                     className={`admin_status_badge is_${log.status.toLowerCase()}`}
                   >
@@ -59,9 +61,11 @@ export default function AdminDeviceLogList({ logs, isLoading }) {
                   </span>
                 </div>
 
-                <p>{log.message ?? '-'}</p>
+                <p className="admin_device_log_message">{log.message ?? '-'}</p>
 
-                <small>{formatDateTime(log.createdAt)}</small>
+                <small className="admin_device_log_date">
+                  {formatDateTime(log.createdAt)}
+                </small>
               </li>
             ))}
           </ul>
