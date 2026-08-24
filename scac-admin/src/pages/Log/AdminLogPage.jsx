@@ -26,6 +26,8 @@ export default function AdminLogPage() {
     keyword: '',
     typeFilter: 'ALL',
     levelFilter: 'ALL',
+    startDate: '',
+    endDate: '',
   });
 
   const fetchLogs = useCallback(async () => {
@@ -65,13 +67,15 @@ export default function AdminLogPage() {
       keyword: '',
       typeFilter: 'ALL',
       levelFilter: 'ALL',
+      startDate: '',
+      endDate: '',
     });
     setCurrentPage(1);
   };
 
   // 확정된 appliedFilters 기준으로만 필터링 수행 (실시간 자동 필터링 X)
   const filteredLogs = useMemo(() => {
-    const { keyword, typeFilter, levelFilter } = appliedFilters;
+    const { keyword, typeFilter, levelFilter, startDate, endDate } = appliedFilters;
     const normalizedKeyword = keyword.trim().toLowerCase();
 
     return logs.filter((log) => {
@@ -87,7 +91,15 @@ export default function AdminLogPage() {
       const matchesLevel =
         levelFilter === 'ALL' || log.logLevel === levelFilter;
 
-      return matchesKeyword && matchesType && matchesLevel;
+      const logDate = log.createdAt
+        ? String(log.createdAt).slice(0, 10)
+        : '';
+      const matchesStartDate =
+        startDate === '' || (logDate !== '' && logDate >= startDate);
+      const matchesEndDate =
+        endDate === '' || (logDate !== '' && logDate <= endDate);
+
+      return matchesKeyword && matchesType && matchesLevel && matchesStartDate && matchesEndDate;
     });
   }, [logs, appliedFilters]);
 
@@ -251,7 +263,9 @@ export default function AdminLogPage() {
   const isFiltered =
     appliedFilters.keyword ||
     appliedFilters.typeFilter !== 'ALL' ||
-    appliedFilters.levelFilter !== 'ALL';
+    appliedFilters.levelFilter !== 'ALL' ||
+    appliedFilters.startDate !== '' ||
+    appliedFilters.endDate !== '';
 
   return (
     <div className="admin_log_page">

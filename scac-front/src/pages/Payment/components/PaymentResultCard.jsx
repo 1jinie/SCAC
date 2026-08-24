@@ -147,7 +147,7 @@ export default function PaymentResultCard({ isSuccess, errorMessage }) {
       for (let i = 0; i < 20; i += 1) {
         await new Promise((resolve) => setTimeout(resolve, 500));
 
-        const result = await getCommand(command.id);
+        const result = await getCommand(command.commandId);
 
         if (result.status === 'COMPLETED') {
           setIsReceiptPrinted(true);
