@@ -57,7 +57,7 @@ static int json_string(const char *json, const char *key, char *out, size_t size
 
 static int parse_work(const char *json, work_t *work) {
     if (strstr(json, "[]") != NULL) return 0;
-    const char *id_value = json_value(json, "id");
+    const char *id_value = json_value(json, "commandId");
     if (id_value == NULL) return -1;
     work->id = (uint32_t) strtoul(id_value, NULL, 10);
     return json_string(json, "taskType", work->task_type, sizeof(work->task_type)) == 0 &&
@@ -77,7 +77,7 @@ static int handle_door_close(
 
     vTaskDelay(pdMS_TO_TICKS(500));
 
-    snprintf(result, result_size, "door closed");
+    snprintf(result, result_size, "문이 닫힙니다");
 
     return 0;
 }
@@ -107,7 +107,7 @@ static int handle_door_open(
 
     handle_door_close(work, close_result, sizeof(close_result));
 
-    snprintf(result, result_size, "door opened and automatically closed after 5 sec");
+    snprintf(result, result_size, "문이 열리고 5초 후 닫혔습니다");
 
     return 0;
 }
@@ -125,7 +125,7 @@ static int handle_card_reading(const work_t *work, char *result, size_t result_s
     printf("[CARD READER] 카드 인식 완료\n");
     fflush(stdout);
 
-    snprintf(result, result_size, "card reading completed");
+    snprintf(result, result_size, "카드 읽기 성공");
 
     return 0;
 }
@@ -139,7 +139,7 @@ static int handle_print_receipt(const work_t *work, char *result, size_t result_
     char *end_time = strtok(NULL, "|");
     char *price = strtok(NULL, "|");
     if (order_id == NULL || items == NULL || start_time == NULL || end_time == NULL || price == NULL) {
-        snprintf(result, result_size, "invalid receipt payload");
+        snprintf(result, result_size, "유효하지 않은 영수증");
         return -1;
     }
 
@@ -157,7 +157,7 @@ static int handle_print_receipt(const work_t *work, char *result, size_t result_
     time_t now = time(NULL);
     struct tm tm_now;
     if(localtime_r(&now, &tm_now) == NULL){
-        snprintf(result, result_size, "failed to get local time");
+        snprintf(result, result_size, "시간 획득에 실패했습니다");
         return -1;
     }
     char datetime[32];
@@ -166,7 +166,7 @@ static int handle_print_receipt(const work_t *work, char *result, size_t result_
     printf("+--------------------------------------+\n\n");
     fflush(stdout);
     vTaskDelay(pdMS_TO_TICKS(1200));
-    snprintf(result, result_size, "receipt printed: %s", order_id);
+    snprintf(result, result_size, "영수증 출력: %s", order_id);
     return 0;
 }
 
