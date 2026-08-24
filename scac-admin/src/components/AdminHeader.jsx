@@ -18,6 +18,7 @@ export default function AdminHeader() {
   const navigate = useNavigate();
   const location = useLocation();
   const logout = useAuthStore((state) => state.logout);
+  const user = useAuthStore((state) => state.user);
 
   const pageTitle =
     ADMIN_PAGE_TITLES[location.pathname] ||
@@ -56,8 +57,16 @@ export default function AdminHeader() {
         <HeaderTime />
 
         <div className="admin_user_info">
-          <span className="admin_user_role">관리자</span>
-          <span className="admin_user_name">관리자이름</span>
+          <span className="admin_user_role">
+            {user?.role === 'SUPER_ADMIN'
+              ? '최고 관리자'
+              : user?.role === 'STAFF'
+                ? '매니저'
+                : '관리자'}
+          </span>
+          <span className="admin_user_name">
+            {user?.loginId || (user?.adminId ? `Admin #${user.adminId}` : '관리자')}
+          </span>
         </div>
 
         <button
