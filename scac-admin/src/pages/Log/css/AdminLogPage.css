@@ -59,6 +59,56 @@
   box-sizing: border-box;
 }
 
+.admin_log_search_group.is_date {
+  min-width: 280px;
+}
+
+.admin_log_date_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin_quick_date_buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.admin_quick_date_btn {
+  padding: 2px 6px;
+  border: 1px solid var(--color-border, #cfd5d8);
+  border-radius: 6px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin_quick_date_btn:hover {
+  border-color: var(--color-primary, #4b9da9);
+  background: #edf7f5;
+  color: var(--color-primary, #4b9da9);
+}
+
+.admin_log_date_inputs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin_log_date_inputs input {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin_log_date_inputs span {
+  color: #94a3b8;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
 .admin_log_search_group input:focus,
 .admin_log_search_group select:focus {
   border-color: var(--color-primary);

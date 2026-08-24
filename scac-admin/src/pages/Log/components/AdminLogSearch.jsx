@@ -11,6 +11,31 @@ export default function AdminLogSearch({
   const [keyword, setKeyword] = useState(initialValues.keyword || '');
   const [typeFilter, setTypeFilter] = useState(initialValues.typeFilter || 'ALL');
   const [levelFilter, setLevelFilter] = useState(initialValues.levelFilter || 'ALL');
+  const [startDate, setStartDate] = useState(initialValues.startDate || '');
+  const [endDate, setEndDate] = useState(initialValues.endDate || '');
+
+  const handleQuickDate = (type) => {
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    const toDateString = (d) =>
+      `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+    const todayStr = toDateString(now);
+
+    if (type === 'today') {
+      setStartDate(todayStr);
+      setEndDate(todayStr);
+    } else if (type === '7days') {
+      const past = new Date();
+      past.setDate(past.getDate() - 7);
+      setStartDate(toDateString(past));
+      setEndDate(todayStr);
+    } else if (type === 'month') {
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      setStartDate(toDateString(firstDay));
+      setEndDate(todayStr);
+    }
+  };
 
   const handleSearchSubmit = (e) => {
     if (e) e.preventDefault();
@@ -18,6 +43,8 @@ export default function AdminLogSearch({
       keyword: keyword.trim(),
       typeFilter,
       levelFilter,
+      startDate,
+      endDate,
     });
   };
 
@@ -25,6 +52,8 @@ export default function AdminLogSearch({
     setKeyword('');
     setTypeFilter('ALL');
     setLevelFilter('ALL');
+    setStartDate('');
+    setEndDate('');
     onReset();
   };
 
@@ -72,6 +101,50 @@ export default function AdminLogSearch({
               </option>
             ))}
           </select>
+        </div>
+
+        <div className="admin_log_search_group is_date">
+          <div className="admin_log_date_header">
+            <label>발생 기간</label>
+            <div className="admin_quick_date_buttons">
+              <button
+                type="button"
+                className="admin_quick_date_btn"
+                onClick={() => handleQuickDate('today')}
+              >
+                오늘
+              </button>
+              <button
+                type="button"
+                className="admin_quick_date_btn"
+                onClick={() => handleQuickDate('7days')}
+              >
+                7일
+              </button>
+              <button
+                type="button"
+                className="admin_quick_date_btn"
+                onClick={() => handleQuickDate('month')}
+              >
+                이번달
+              </button>
+            </div>
+          </div>
+          <div className="admin_log_date_inputs">
+            <input
+              type="date"
+              value={startDate}
+              max={endDate || undefined}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+            <span>~</span>
+            <input
+              type="date"
+              value={endDate}
+              min={startDate || undefined}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+          </div>
         </div>
 
         <div className="admin_log_search_actions">
