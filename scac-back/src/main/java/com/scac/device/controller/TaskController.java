@@ -38,10 +38,14 @@ public class TaskController {
     @ResponseStatus(HttpStatus.CREATED)
     public TaskCommand create(@Valid @RequestBody CreateRequest request) {
 
-        TaskCommand command = store.create(request.taskType(), request.payload());
+        TaskCommand command = store.create(request.deviceId(), request.taskType(), request.payload());
 
-        log.info("[React -> Spring] Command created. id={}, taskType={}, payload={}", command.id(),
-            command.taskType(), command.payload());
+        log.info("[React -> Spring] Command created. id={}, deviceId={}, taskType={}, payload={}", 
+            command.getCommandId(), 
+            command.getDeviceId(), 
+            command.getTaskType(),
+            command.getPayload()    
+        );
         return command;
     }
 
@@ -49,10 +53,22 @@ public class TaskController {
      * RTOS -> Spring
      * 
      * 처리해야 할 작업 1개 조회
+     * PENDING 상태의 가장 오래된 작업을 조회하고 PROCESSING 상태로 변경한 뒤 RTOS 반환
      */
     @GetMapping("/commands/pending")
     public TaskCommand pending() {
-        return store.pending();
+        TaskCommand command = store.pending();
+
+        if(command != null){
+            log.info("[RTOS -> Spring] Command processing. id={}, deviceId={}, taskType={}, status={}",
+                command.getCommandId(),
+                command.getDeviceId(),
+                command.getTaskType(),
+                command.getStatus()
+            );
+        }
+
+        return command;
     }
 
     /**
@@ -67,6 +83,7 @@ public class TaskController {
      * RTOS -> Spring
      * 
      * 작업 처리 완료/실패 보고
+     * PROCESSING 상태의 작업을 COMPLETED 또는 FAILED 상태로 변경
      */
     @PatchMapping("/commands/{id}/finish")
     public TaskCommand finish(@PathVariable("id") long id, @Valid @RequestBody CompleteRequest request) {
@@ -80,8 +97,11 @@ public class TaskController {
             throw new IllegalArgumentException("지원하지 않는 작업 상태입니다: " + request.status());
         }
 
-        log.info("[RTOS -> Spring] Command finished. id={}, status={}, result={}", id, request.status(),
-            request.result());
+        log.info("[RTOS -> Spring] Command finished. id={}, status={}, result={}", 
+            id, 
+            request.status(),
+            request.result()
+        );
 
         return command;
     }
@@ -97,22 +117,39 @@ public class TaskController {
         @Valid @RequestBody DeviceHealthRequest request) {
         log.info(
             "[RTOS -> Spring] Health Check. kioskId={}, kioskName={}, status={}, door={}, cardReader={}, printer={}",
-            request.kioskId(), request.kioskName(), request.status(), request.door(), request.cardReader(),
+            request.kioskId(), 
+            request.kioskName(), 
+            request.status(), 
+            request.door(), 
+            request.cardReader(),
             request.printer());
         deviceService.handleHealthCheck(request);
 
         return ResponseEntity.ok(ApiResponse.success("장치 Health Check 처리를 완료했습니다.", null));
     }
 
+    /**
+     * 작업을 찾을 수 없는 경우
+     */
     @ExceptionHandler(TaskNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> notFound(TaskNotFoundException exception) {
         return Map.of("message", exception.getMessage());
     }
 
-    public record CreateRequest(@NotBlank String taskType, String payload) {
+    /**
+     * React -> Spring
+     * 
+     * 장치 작업 생성 요청
+     */
+    public record CreateRequest(Long deviceId, @NotBlank String taskType, String payload) {
     }
 
+    /**
+     * RTOS -> Spring
+     * 
+     * 작업 완료/실패 결과
+     */
     public record CompleteRequest(@NotBlank String status, @NotBlank String result) {
     }
 }

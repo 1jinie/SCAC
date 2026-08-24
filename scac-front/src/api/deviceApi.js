@@ -2,6 +2,7 @@ import axiosInstance from './axiosInstance';
 
 export const openDoor = async () => {
   const response = await axiosInstance.post('/api/commands', {
+    deviceId: 3,
     taskType: 'DOOR_OPEN',
     payload: '',
   });
@@ -18,6 +19,7 @@ export const printReceipt = async ({
   endTime,
 }) => {
   const response = await axiosInstance.post('/api/commands', {
+    deviceId: 1,
     taskType: 'PRINT_RECEIPT',
     payload: `${orderId}|${itemName}|${startTime || '-'}|${endTime || '-'}|${amount}`,
   });
@@ -34,6 +36,7 @@ export const getCommand = async (commandId) => {
 
 export const readCard = async () => {
   const response = await axiosInstance.post('/api/commands', {
+    deviceId: 2,
     taskType: 'CARD_READING',
     payload: '',
   });
