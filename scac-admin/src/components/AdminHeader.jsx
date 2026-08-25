@@ -1,8 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import HeaderTime from "./HeaderTime";
 import { useAuthStore } from "../store/authStore";
-import { adminApi } from "../api/adminApi";
-import { useEffect } from "react";
 import { ADMIN_ROLE_LABELS } from "../constants/admin";
 
 const ADMIN_PAGE_TITLES = {
