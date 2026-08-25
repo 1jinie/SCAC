@@ -12,6 +12,7 @@ import '../../styles/seat.css';
 
 function SeatPage({ mode }) {
   const [alertModal, setAlertModal] = useState(null);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const logout = useAuthStore((state) => state.logout);
   const seats = seatStore((state) => state.seats);
   const fetchSeats = seatStore((state) => state.fetchSeats);
@@ -90,11 +91,13 @@ function SeatPage({ mode }) {
       console.error('문 열기 명령 전송 실패: ', error);
     }
 
-    await logout();
+    if(isAuthenticated){
+      await logout();
+    }
 
     setAlertModal({
       title: '입실 완료',
-      message: '입실되었습니다',
+      message: isAuthenticated ? '입실되었습니다\n\n자동 로그아웃됩니다' : "입실되었습니다",
       onClose: () => {
         setAlertModal(null);
         navigate('/');
