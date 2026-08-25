@@ -88,6 +88,7 @@ public class CheckinService {
         // 외출 복귀면 기존 이용권 사용
         if(awayCheckin != null){
             ticketUsage = ticketUsageRepository.findById(awayCheckin.getUsageId())
+                .filter(TicketUsage::isAvailable)
                 .orElse(null);
         }
 
@@ -120,6 +121,15 @@ public class CheckinService {
         if(ticketUsage == null){
             throw new ResourceNotFoundException("사용 가능한 이용권이 없습니다.");
         }
+
+        System.out.println(
+            "usageId=" + ticketUsage.getUsageId()
+            + ", userId=" + ticketUsage.getUserId()
+            + ", ticketType=" + ticketUsage.getTicketType()
+            + ", status=" + ticketUsage.getStatus()
+            + ", remainingTime=" + ticketUsage.getRemainingTime()
+            + ", endAt=" + ticketUsage.getEndAt()
+        );
 
         if (!ticketUsage.isAvailable()) {
             throw new BusinessException("사용 가능한 이용권이 없습니다.");
@@ -183,7 +193,7 @@ public class CheckinService {
         seat.assignUser(request.getUserId());
 
         // 입실 저장
-        Checkin checkin = new Checkin(request.getUserId(), request.getSeatId(), request.getUsageId(),
+        Checkin checkin = new Checkin(request.getUserId(), request.getSeatId(), ticketUsage.getUsageId(),
             LocalDateTime.now(), CheckinStatus.USING);
 
         Checkin savedCheckin = checkinRepository.save(checkin);

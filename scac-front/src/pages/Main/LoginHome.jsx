@@ -74,7 +74,7 @@ function LoginHomePage() {
       await logout();
 
       setAlertModal({
-        title: '입실',
+        title: '입실 완료',
         message: '재입실되었습니다\n\n자동 로그아웃됩니다',
         onClose: () => {
           setAlertModal(null);
@@ -159,7 +159,7 @@ function LoginHomePage() {
       await logout();
 
       setAlertModal({
-        title: '스터디룸 입실',
+        title: '스터디룸 입실 완료',
         message: '스터디룸 예약이 확인되었습니다\n\n자동 로그아웃됩니다',
         onClose: () => {
           setAlertModal(null);
@@ -193,7 +193,7 @@ function LoginHomePage() {
     await logout();
 
     setAlertModal({
-      title: '외출',
+      title: '외출 완료',
       message: '외출 처리되었습니다\n\n자동 로그아웃됩니다',
       onClose: () => {
         setAlertModal(null);
@@ -220,7 +220,7 @@ function LoginHomePage() {
     await logout();
 
     setAlertModal({
-      title: '퇴실',
+      title: '퇴실 완료',
       message: '퇴실 처리되었습니다\n\n자동 로그아웃됩니다',
       onClose: () => {
         setAlertModal(null);
