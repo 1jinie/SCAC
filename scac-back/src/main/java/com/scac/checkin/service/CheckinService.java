@@ -93,7 +93,7 @@ public class CheckinService {
 
         // 이용권 확인(1순위 : USING 기간권)
         if(ticketUsage == null) {
-            ticketUsageRepository.findFirstByUserIdAndStatusAndTicketTypeOrderByCreatedAtAsc(
+            ticketUsage = ticketUsageRepository.findFirstByUserIdAndStatusAndTicketTypeOrderByCreatedAtAsc(
                 user.getId(), 
                 TicketUsageStatus.USING, 
                 TicketType.PERIOD_PACK).orElse(null);
