@@ -71,6 +71,15 @@ public class CheckinScheduler {
             .findAllByCheckinStatusIn(List.of(CheckinStatus.USING, CheckinStatus.AWAY));
 
         for (Checkin checkin : usingList) {
+            // 외출 후 3시간 초과 여부 확인
+            if(checkin.getCheckinStatus() == CheckinStatus.AWAY
+                && checkin.getAwayStartAt() != null
+                && LocalDateTime.now().isAfter(checkin.getAwayStartAt().plusHours(3))
+            ){
+                autoCheckout(checkin);
+                continue;
+            }
+
             // 현재 사용중 이용권
             TicketUsage usage = ticketUsageRepository
                 .findFirstByUserIdAndStatusAndTicketIdIsNotNullOrderByCreatedAtDesc(checkin.getUserId(),
