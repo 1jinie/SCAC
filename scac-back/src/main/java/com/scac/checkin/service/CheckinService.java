@@ -122,15 +122,6 @@ public class CheckinService {
             throw new ResourceNotFoundException("사용 가능한 이용권이 없습니다.");
         }
 
-        System.out.println(
-            "usageId=" + ticketUsage.getUsageId()
-            + ", userId=" + ticketUsage.getUserId()
-            + ", ticketType=" + ticketUsage.getTicketType()
-            + ", status=" + ticketUsage.getStatus()
-            + ", remainingTime=" + ticketUsage.getRemainingTime()
-            + ", endAt=" + ticketUsage.getEndAt()
-        );
-
         if (!ticketUsage.isAvailable()) {
             throw new BusinessException("사용 가능한 이용권이 없습니다.");
         }

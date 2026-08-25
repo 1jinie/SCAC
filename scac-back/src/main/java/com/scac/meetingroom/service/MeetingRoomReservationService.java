@@ -175,16 +175,6 @@ public class MeetingRoomReservationService {
                 LocalDate today = LocalDate.now();
                 int currentHour = LocalDateTime.now().getHour();
 
-                System.out.println("===== 현재 예약 조회 =====");
-                System.out.println("userId = " + userId);
-                System.out.println("today = " + today);
-                System.out.println("currentHour = " + currentHour);
-
-                Optional<MeetingRoomReservation> result = reservationRepository.findCurrentReservation(userId,
-                        today, ReservationStatus.IN_USE, currentHour);
-
-                System.out.println("reservation = " + result);
-
                 MeetingRoomReservation reservation = reservationRepository
                         .findCurrentReservation(userId, today, ReservationStatus.IN_USE, currentHour)
                         .orElseThrow(() -> new ResourceNotFoundException("현재 입실 가능한 스터디룸 예약이 없습니다"));
