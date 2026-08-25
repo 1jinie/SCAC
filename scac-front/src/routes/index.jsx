@@ -16,6 +16,7 @@ import Seat from '../pages/Seat/Seat';
 import NonmemberSignup from '../pages/Signup/NonmemberSignup';
 import SignUpPage from '../pages/Signup/Signup';
 import TicketPage from '../pages/Ticket/TicketPage';
+import UserPrivateRoute from './UserPrivateRoute';
 // import DevErrorPage from '../pages/Error/DevErrorPage';
 
 const router = createBrowserRouter([
@@ -34,8 +35,22 @@ const router = createBrowserRouter([
       { path: 'seat', element: <Seat /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignUpPage /> },
-      { path: 'loginhome', element: <LoginHomePage /> },
-      { path: 'mypage', element: <MyPage /> },
+      {
+        path: 'loginhome',
+        element: (
+          <UserPrivateRoute>
+            <LoginHomePage />
+          </UserPrivateRoute>
+        ),
+      },
+      {
+        path: 'mypage',
+        element: (
+          <UserPrivateRoute>
+            <MyPage />
+          </UserPrivateRoute>
+        ),
+      },
       { path: 'nonmember-signup', element: <NonmemberSignup /> },
       {
         path: 'room',
