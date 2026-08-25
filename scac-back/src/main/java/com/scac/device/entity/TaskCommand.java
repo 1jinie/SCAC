@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "task_command")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TaskCommand{
+public class TaskCommand {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,20 +46,31 @@ public class TaskCommand{
         this.completedAt = null;
     }
 
-    public void process(){
+    public void process() {
         this.status = CommandStatus.PROCESSING;
     }
 
+    //
+    private void validateProcessing() {
+        if (this.status != CommandStatus.PROCESSING) {
+            throw new IllegalStateException("PROCESSING 상태의 작업만 완료 또는 실패 처리할 수 있습니다. 현재 상태: " + this.status);
+        }
+    }
+
     public void complete(String result) {
+        validateProcessing();
+
         this.status = CommandStatus.COMPLETED;
         this.result = result;
         this.completedAt = Instant.now();
     }
 
-    public void fail(String result){
+    public void fail(String result) {
+        validateProcessing();
+
         this.status = CommandStatus.FAILED;
         this.result = result;
         this.completedAt = Instant.now();
     }
-}
 
+}
