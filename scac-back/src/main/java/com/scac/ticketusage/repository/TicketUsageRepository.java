@@ -43,4 +43,7 @@ public interface TicketUsageRepository extends JpaRepository<TicketUsage, Long> 
 
         // 예약 이용권 존재 여부 확인
         boolean existsByReservationId(Long reservationId);
+
+        // 예약 ID에 따른 데이터 조회
+        Optional<TicketUsage> findByReservationId(Long reservationId);
 }

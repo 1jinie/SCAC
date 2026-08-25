@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -174,16 +173,6 @@ public class MeetingRoomReservationService {
         public MeetingRoomReservationResponse findCurrentReservation(Long userId) {
                 LocalDate today = LocalDate.now();
                 int currentHour = LocalDateTime.now().getHour();
-
-                System.out.println("===== 현재 예약 조회 =====");
-                System.out.println("userId = " + userId);
-                System.out.println("today = " + today);
-                System.out.println("currentHour = " + currentHour);
-
-                Optional<MeetingRoomReservation> result = reservationRepository.findCurrentReservation(userId,
-                        today, ReservationStatus.IN_USE, currentHour);
-
-                System.out.println("reservation = " + result);
 
                 MeetingRoomReservation reservation = reservationRepository
                         .findCurrentReservation(userId, today, ReservationStatus.IN_USE, currentHour)

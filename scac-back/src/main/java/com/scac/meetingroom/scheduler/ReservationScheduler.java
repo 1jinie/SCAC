@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 
 import com.scac.global.enums.ReservationStatus;
 import com.scac.global.enums.SeatStatus;
+import com.scac.global.enums.TicketUsageStatus;
 import com.scac.meetingroom.domain.MeetingRoomReservation;
 import com.scac.meetingroom.repository.MeetingRoomRepository;
 import com.scac.meetingroom.repository.MeetingRoomReservationRepository;
+import com.scac.ticketusage.repository.TicketUsageRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReservationScheduler {
     private final MeetingRoomRepository roomRepository;
+    private final TicketUsageRepository ticketUsageRepository;
     private final MeetingRoomReservationRepository reservationRepository;
 
     // 1분마다 실행
@@ -30,28 +33,33 @@ public class ReservationScheduler {
         LocalDate today = LocalDate.now();
         int currentHour = LocalTime.now().getHour();
 
-        // CONFIRMED -> IN_USE : 현재 시간이 startHour ~ endHour 사이면 사용중 변경
-        List<MeetingRoomReservation> confirmedReservations = reservationRepository
-            .findByReservationDateAndStatus(today, ReservationStatus.CONFIRMED);
+        List<MeetingRoomReservation> reservations = reservationRepository
+            .findByReservationDate(today);
 
-        confirmedReservations.forEach(r -> {
-            if (currentHour >= r.getStartHour() && currentHour < r.getEndHour()) {
-                r.updateReservationStatus(ReservationStatus.IN_USE);
-                roomRepository.findById(r.getRoomId()).ifPresent(room -> {
-                    room.updateStatus(SeatStatus.USR);
-                });
-            }
-        });
-
-        // IN_USE -> COMPLETED : 현재 시간이 endHour 이상이면 예약 종료
-        List<MeetingRoomReservation> usingReservations = reservationRepository
-            .findByReservationDateAndStatus(today, ReservationStatus.IN_USE);
-
-        usingReservations.forEach(r -> {
+        reservations.forEach(r -> {
+            // 예약 종료
             if (currentHour >= r.getEndHour()) {
                 r.updateReservationStatus(ReservationStatus.COMPLETED);
-
-                roomRepository.findById(r.getRoomId()).ifPresent(room -> room.updateStatus(SeatStatus.AVB));
+                roomRepository.findById(r.getRoomId()).ifPresent(room -> {
+                    room.updateStatus(SeatStatus.AVB);
+                });
+                ticketUsageRepository.findByReservationId(r.getReservationId())
+                    .ifPresent(ticketUsage -> {
+                        if(ticketUsage.getStatus() != TicketUsageStatus.EXPIRED
+                            && ticketUsage.getStatus() != TicketUsageStatus.CANCELED){
+                            ticketUsage.expire();
+                        }
+                    });
+            } else if (currentHour >= r.getStartHour()){
+                // 예약 사용중
+                r.updateReservationStatus(ReservationStatus.IN_USE);
+                roomRepository.findById(r.getRoomId()).ifPresent(room -> room.updateStatus(SeatStatus.USR));
+                ticketUsageRepository.findByReservationId(r.getReservationId())
+                    .ifPresent(ticketUsage -> {
+                        if(ticketUsage.getStatus() == TicketUsageStatus.READY){
+                            ticketUsage.start();
+                        }
+                    });
             }
         });
 
