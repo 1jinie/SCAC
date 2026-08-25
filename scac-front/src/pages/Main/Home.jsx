@@ -67,7 +67,7 @@ function HomePage() {
       }
 
       setAlertModal({
-        title: '입실',
+        title: '입실 완료',
         message: '재입실되었습니다',
         onClose: () => setAlertModal(null),
       });
@@ -94,7 +94,7 @@ function HomePage() {
     setModalType(null);
 
     setAlertModal({
-      title: '외출',
+      title: '외출 완료',
       message: result.message,
       onClose: () => {
         setAlertModal(null);
