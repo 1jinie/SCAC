@@ -213,6 +213,8 @@ function LoginHomePage() {
           setAlertModal(null);
         },
       });
+
+      return;
     }
 
     await logout();

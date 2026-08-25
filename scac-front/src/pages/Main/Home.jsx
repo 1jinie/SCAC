@@ -95,7 +95,7 @@ function HomePage() {
 
     setAlertModal({
       title: '외출 완료',
-      message: result.message,
+      message: `${result.message}\n3시간 내에 복귀하지 않으면 자동 퇴실됩니다.`,
       onClose: () => {
         setAlertModal(null);
         navigate('/');
