@@ -56,8 +56,8 @@ public class MeetingRoomReservationService {
         // 예약 생성
         public MeetingRoomReservationResponse reserve(MeetingRoomReservationRequest request,
                 Long currentUserId) {
-                // 스터디룸 존재 확인
-                meetingRoomRepository.findById(request.getRoomId())
+                // 스터디룸 확인 및 잠그기
+                meetingRoomRepository.findByIdForUpdate(request.getRoomId())
                         .orElseThrow(() -> new ResourceNotFoundException("없는 스터디룸입니다"));
 
                 // 이전 날짜 예약 불가

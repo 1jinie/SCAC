@@ -68,4 +68,6 @@ public interface MeetingRoomReservationRepository extends JpaRepository<MeetingR
         List<MeetingRoomReservation> findByStatusAndCreatedAtBefore(ReservationStatus status,
                 LocalDateTime createdAt);
 
+        // 예약 상태에 따른 조회
+        List<MeetingRoomReservation> findByStatusIn(List<ReservationStatus> statuses);
 }

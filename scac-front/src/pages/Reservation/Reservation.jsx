@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { formatDate, addOneHour } from '../../utils/date';
 import { reservationApi } from '../../api/reservationApi';
 import { roomStore } from '../../store/roomStore';
@@ -15,11 +15,13 @@ import KioskAlertModal from '../../components/modal/KioskAlertModal'
 import '../../styles/reservation.css';
 
 const Reservation = () => {
-  const userId = reservationStore((state) => state.reservation.userId);
+  const { roomId: urlRoomId } = useParams();
   const roomId = reservationStore((state) => state.reservation.roomId);
+  const actualRoomId = roomId || Number(urlRoomId);
   const setReservation = reservationStore((state) => state.setReservation);
   const rooms = roomStore((state) => state.rooms);
-  const room = rooms.find((room) => room.id === roomId);
+  const fetchRooms = roomStore((state) => state.fetchRooms);
+  const room = rooms.find((room) => Number(room.id) === actualRoomId);
   const setPurchaseType = useTicketStore((state) => state.setPurchaseType);
 
   const [alertModal, setAlertModal] = useState(null);
@@ -54,16 +56,17 @@ const Reservation = () => {
 
     setDates(dateList);
     setSelectedDate(dateList[0]);
-  }, []);
+    fetchRooms();
+  }, [fetchRooms]);
 
   // 현재 선택 날짜의 예약 가능 시간 조회
   useEffect(() => {
-    if (!roomId || !selectedDate) return;
+    if (!actualRoomId || !selectedDate) return;
 
     const fetchAvailableTime = async () => {
       try {
         const response = await reservationApi.getAvailableTime(
-          roomId,
+          actualRoomId,
           selectedDate,
         );
 
@@ -83,7 +86,7 @@ const Reservation = () => {
     // 날짜 변경 시 기존 선택 초기화
     setStartTime(null);
     setEndTime(null);
-  }, [roomId, selectedDate]);
+  }, [actualRoomId, selectedDate]);
 
   // 날짜 클릭 이벤트
   const handleDateClick = (date) => {
@@ -175,7 +178,7 @@ const Reservation = () => {
     const finalEndTime = addOneHour(endTime ?? startTime);
 
     const requestData = {
-      roomId,
+      roomId: actualRoomId,
       reservationDate: selectedDate,
       startHour: formatHour(startTime),
       endHour: formatHour(finalEndTime),

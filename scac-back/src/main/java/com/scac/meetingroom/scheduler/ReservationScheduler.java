@@ -33,10 +33,28 @@ public class ReservationScheduler {
         LocalDate today = LocalDate.now();
         int currentHour = LocalTime.now().getHour();
 
-        List<MeetingRoomReservation> reservations = reservationRepository
+        List<MeetingRoomReservation> allReservations = reservationRepository.findByStatusIn(List.of(ReservationStatus.CONFIRMED, ReservationStatus.IN_USE));
+        List<MeetingRoomReservation> todayReservations = reservationRepository
             .findByReservationDate(today);
 
-        reservations.forEach(r -> {
+        // 날짜 지난 예약 만료 처리
+        allReservations.forEach(r -> {
+            if (today.isAfter(r.getReservationDate())) {
+                r.updateReservationStatus(ReservationStatus.COMPLETED);
+                roomRepository.findById(r.getRoomId()).ifPresent(room -> {
+                    room.updateStatus(SeatStatus.AVB);
+                });
+                ticketUsageRepository.findByReservationId(r.getReservationId())
+                    .ifPresent(ticketUsage -> {
+                        if(ticketUsage.getStatus() != TicketUsageStatus.EXPIRED
+                            && ticketUsage.getStatus() != TicketUsageStatus.CANCELED){
+                            ticketUsage.expire();
+                        }
+                    });
+            }
+        });
+
+        todayReservations.forEach(r -> {
             // 예약 종료
             if (currentHour >= r.getEndHour()) {
                 r.updateReservationStatus(ReservationStatus.COMPLETED);
