@@ -162,39 +162,40 @@ function SignUpPage() {
             <img
               src="/icons/common/home.svg"
               alt="홈"
-              style={{ width: '90px', height: '150px' }}
+              style={{ width: '76px', height: '76px' }}
             />
           </button>
         </header>
 
         <form id="signup_form" onSubmit={handleSignUpSubmit}>
-          {/* 1. 전화번호 입력 그룹 (FHD 시안 맞춤형 절대 위치 배치 반영) */}
+          {/* 1. 전화번호 입력 그룹 */}
           <div className="input_group">
             <label htmlFor="reg_phone" className="input_guide_label">
               전화번호
             </label>
-            <input
-              id="reg_phone"
-              /* 🎯 중요: 일반 input_field 외에 우측 여백 확보용 input_field_with_btn 클래스 추가 */
-              className={`input_field ${!isVerified ? 'input_field_with_btn' : ''}`}
-              type="text"
-              placeholder="01012345678 (숫자만 입력)"
-              disabled={isVerified} // 인증 완료 시 수정 불가
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-            />
-            {!isVerified && (
-              <button
-                type="button"
-                className="btn_inner_verify1"
-                onClick={handleSendVerification}
-              >
-                {isVerificationSent ? '재발송' : '인증번호 발송'}
-              </button>
-            )}
+            <div className="input_field_wrapper">
+              <input
+                id="reg_phone"
+                className={`input_field ${!isVerified ? 'input_field_with_btn' : ''}`}
+                type="text"
+                placeholder="01012345678 (숫자만 입력)"
+                disabled={isVerified} // 인증 완료 시 수정 불가
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+              />
+              {!isVerified && (
+                <button
+                  type="button"
+                  className="btn_inner_verify"
+                  onClick={handleSendVerification}
+                >
+                  {isVerificationSent ? '재발송' : '인증번호 발송'}
+                </button>
+              )}
+            </div>
           </div>
 
-          {/* 🎯 2. 인증번호 입력 그룹 (발송 완료 시에만 조건부 노출) */}
+          {/* 2. 인증번호 입력 그룹 (발송 완료 시에만 조건부 노출) */}
           {isVerificationSent && (
             <div className="input_group">
               <label htmlFor="verification_code">인증번호 입력</label>
@@ -210,7 +211,7 @@ function SignUpPage() {
                 />
 
                 {!isVerified ? (
-                  <>
+                  <div className="verify_action_container">
                     <span className="verification_timer">
                       {formatTime(timer)}
                     </span>
@@ -221,24 +222,11 @@ function SignUpPage() {
                     >
                       인증확인
                     </button>
-                  </>
-                ) : null}
+                  </div>
+                ) : (
+                  <span className="inner_success_badge">✓ 인증 확인됨</span>
+                )}
               </div>
-
-              {isVerified && (
-                <span
-                  className="success_text"
-                  style={{
-                    color: 'var(--color-important)',
-                    fontSize: '24px',
-                    fontWeight: '700',
-                    marginTop: '8px',
-                    paddingLeft: '12px',
-                  }}
-                >
-                  ✓ 인증이 확인되었습니다.
-                </span>
-              )}
             </div>
           )}
 
