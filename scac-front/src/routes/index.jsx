@@ -56,7 +56,7 @@ const router = createBrowserRouter([
         path: 'room',
         children: [
           { index: true, element: <Room /> },
-          { path: 'reservation', element: <Reservation /> },
+          { path: 'reservation/:roomId', element: <Reservation /> },
         ],
       },
       {

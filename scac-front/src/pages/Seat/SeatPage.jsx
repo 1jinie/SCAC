@@ -67,7 +67,7 @@ function SeatPage({ mode }) {
       setReservation({
         roomId: selected,
       });
-      navigate('/room/reservation');
+      navigate(`/room/reservation/${selected}`);
       return;
     }
 
