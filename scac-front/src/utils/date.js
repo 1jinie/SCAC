@@ -37,9 +37,8 @@ export const formatDate = (fullDate) => {
 // 스터디룸 예약 시 두번째 선택한 시간 + 1 반환
 export const addOneHour = (time) => {
   const [hour, minute] = time.split(':').map(Number);
-  const date = new Date(2000, 0, 1, hour, minute);
 
-  date.setHours(date.getHours() + 1);
+  const nextHour = hour + 1;
 
-  return date.toTimeString().slice(0, 5);
+  return `${String(nextHour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
 };
