@@ -1,5 +1,5 @@
 /* ==========================================================
-   SCAC Auth Common Styles (Login & Signup)
+   SCAC Auth Common Styles (Login, Signup & Nonmember Signup)
    Figma Design Scale: 1080 x 1920 Full HD (Kiosk Perfect)
    ========================================================== */
 
@@ -17,8 +17,12 @@ body {
   overflow: hidden;
 }
 
+/* ==========================================================
+   1. 컨테이너 및 뷰포트 스케일링
+   ========================================================== */
 .login_container,
-.signup_container {
+.signup_container,
+.nonmember_signup_page {
   width: 1080px;
   height: 1920px;
   background-color: #ffffff;
@@ -36,20 +40,24 @@ body {
 
 @media (max-height: 1920px), (max-width: 1080px) {
   .login_container,
-  .signup_container {
+  .signup_container,
+  .nonmember_signup_page {
     transform: scale(min(calc(100vh / 1920), calc(100vw / 1080)));
     position: absolute;
   }
 }
 
-/* 상단 헤더 (홈 아이콘 + 디지털 시계) */
-.auth_header {
+/* ==========================================================
+   2. 상단 헤더 & 타이틀
+   ========================================================== */
+.auth_header,
+.nonmember_signup_header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
   margin-top: 20px;
-  margin-bottom: 100px;
+  margin-bottom: 80px;
 }
 
 .btn_home {
@@ -68,8 +76,15 @@ body {
   object-fit: contain;
 }
 
+.header_time {
+  font-size: 32px;
+  color: #000000;
+  font-weight: 500;
+}
+
 .login_box,
-.signup_box {
+.signup_box,
+.signup_card {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -84,26 +99,56 @@ body {
   color: #000000;
   margin: 20px;
   letter-spacing: -1px;
+  text-align: center;
 }
 
+/* 비회원 탭 UI 호환 */
+.signup_tab_group {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 40px;
+}
+
+.signup_tab {
+  width: 350px;
+  height: 80px;
+  border: none;
+  border-radius: 40px;
+  background-color: #ff8f42;
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0px 6px 12px rgba(255, 143, 66, 0.2);
+}
+
+/* ==========================================================
+   3. 메인 입력 폼 & 인풋 필드
+   ========================================================== */
 #login_form,
-#signup_form {
+#signup_form,
+.signup_form {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
-  gap: 40px;
+  width: 720px;
+  gap: 36px;
+  flex-grow: 1;
 }
 
-.input_group {
+.input_group,
+.form_group {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  width: 720px;
+  width: 100%;
   position: relative;
 }
 
-.input_group label {
+.input_group label,
+.form_group .form_label {
   font-size: 32px;
   font-weight: 700;
   color: #000000;
@@ -118,7 +163,14 @@ body {
   margin: 0;
 }
 
-.input_field {
+.input_field_wrapper,
+.input_wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.input_field,
+.form_input {
   width: 100%;
   height: 100px;
   padding: 0 40px;
@@ -129,48 +181,50 @@ body {
   font-weight: 500;
   color: #000000;
   box-sizing: border-box;
-  transition: border-color 0.2s ease;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
-.input_field_with_btn {
-  padding-right: 340px;
-}
-
-.input_field_wrapper {
-  position: relative;
-  width: 100%;
-}
-
-.verification_timer {
-  position: absolute;
-  right: 200px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #ff4444;
-  font-size: 24px;
-  font-weight: 700;
-}
-
-.input_field::placeholder {
+.input_field::placeholder,
+.form_input::placeholder {
   color: #8a8a8a;
   font-weight: 400;
 }
 
-.input_field:focus {
+.input_field:focus,
+.form_input:focus {
   outline: none;
   border-color: #ff985c;
 }
 
+/* [장점 통합] 에러 발생 시 인풋 하이라이트 */
+.input_field.input_error,
+.form_input.input_error,
+.input_error {
+  border-color: #ff4444 !important;
+  background-color: #fff5f5;
+}
+
+/* 우측 버튼 공간 확보용 패딩 */
+.input_field_with_btn,
+.form_input.with_btn,
+.with_btn {
+  padding-right: 340px;
+}
+
+/* ==========================================================
+   4. 인라인 인증 버튼, 타이머, 인증 뱃지 (Flex 레이아웃 통합)
+   ========================================================== */
+.btn_inner_verify,
 .btn_inner_verify1 {
   position: absolute;
   right: 20px;
-  top: 65%;
+  top: 50%;
   transform: translateY(-50%);
   background-color: #ffffff;
   border: 3px solid #ff9d5c;
   border-radius: 28px;
   color: #ff9d5c;
-  padding: 0 10px;
+  padding: 0 16px;
   font-size: 22px;
   font-weight: 700;
   cursor: pointer;
@@ -178,25 +232,99 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.1s ease;
   box-sizing: border-box;
+  white-space: nowrap;
 }
 
-.btn_inner_verify:active {
+.btn_inner_verify:hover,
+.btn_inner_verify1:hover {
+  background-color: #fff6f0;
+}
+
+.btn_inner_verify:active,
+.btn_inner_verify1:active {
   background-color: #ffeae0;
+  transform: translateY(-50%) scale(0.97);
 }
 
+/* [장점 통합] 타이머 + 인증 버튼 정렬 Flex 컨테이너 */
+.verify_action_container {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.verify_action_container .btn_inner_verify,
+.verify_action_container .btn_inner_verify1,
+.btn_inner_verify.static_btn {
+  position: static;
+  right: auto;
+  top: auto;
+  transform: none;
+}
+
+.verify_action_container .btn_inner_verify:active,
+.verify_action_container .btn_inner_verify1:active {
+  transform: scale(0.97);
+}
+
+/* 타이머 */
+.verification_timer,
+.verify_timer {
+  color: #ff4444;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+/* 기존 absolute 방식 타이머 호환용 */
+.input_field_wrapper > .verification_timer {
+  position: absolute;
+  right: 200px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* [장점 통합] 인풋 내부 우측 인증 완료 뱃지 */
+.inner_success_badge {
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #2fb575;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+/* 하단 텍스트 형태 인증 완료 메시지 호환용 */
+.success_text {
+  color: #2fb575;
+  font-size: 24px;
+  font-weight: 700;
+  margin-top: 6px;
+  padding-left: 12px;
+}
+
+/* 에러 메시지 텍스트 */
 .error_text {
   font-size: 26px;
   color: #ff4444;
-  font-weight: 500;
-  margin-top: -10px;
-  margin-bottom: 10px;
+  font-weight: 600;
+  margin-top: 4px;
   text-align: center;
 }
 
-.btn_submit {
-  margin-top: 80px;
+/* ==========================================================
+   5. 하단 제출 버튼 & 링크 푸터
+   ========================================================== */
+.btn_submit,
+.submit_button {
+  margin-top: 40px;
+  margin-bottom: 20px;
   width: 520px;
   height: 100px;
   border: none;
@@ -209,18 +337,29 @@ body {
   box-shadow: 0px 16px 28px rgba(255, 138, 77, 0.4);
   transition:
     transform 0.1s ease,
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
 }
 
-.btn_submit:active {
+.btn_submit:active,
+.submit_button:active {
   transform: scale(0.97);
   box-shadow: 0px 8px 14px rgba(255, 138, 77, 0.3);
+}
+
+.btn_submit:disabled,
+.submit_button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .login_footer,
 .signup_footer {
   width: 100%;
   text-align: center;
+  margin-top: 10px;
 }
 
 .btn_link {
@@ -232,6 +371,7 @@ body {
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 6px;
+  transition: color 0.15s ease;
 }
 
 .btn_link:hover {
