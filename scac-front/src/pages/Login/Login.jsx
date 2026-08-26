@@ -68,7 +68,7 @@ function LoginPage() {
             <img
               src="/icons/common/home.svg"
               alt="홈"
-              style={{ width: '90px', height: '150px' }}
+              style={{ width: '76px', height: '76px' }}
             />
           </button>
         </header>
