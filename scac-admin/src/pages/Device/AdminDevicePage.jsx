@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { deviceApi } from '../../api/deviceApi';
+import { sortDevicesByAbnormalFirst } from '../../constants/device';
 import AdminSummary from '../../components/common/Summary';
 import AdminDeviceDetail from './components/AdminDeviceDetail';
 import AdminDeviceList from './components/AdminDeviceList';
@@ -391,6 +392,10 @@ export default function AdminDevicePage() {
     [deviceSummary],
   );
 
+  const sortedDevices = useMemo(() => {
+    return sortDevicesByAbnormalFirst(devices);
+  }, [devices]);
+
   return (
     <div className="admin_device_page">
       <div className="admin_page_heading">
@@ -408,7 +413,7 @@ export default function AdminDevicePage() {
       <section className="admin_device_workspace">
         <div className="admin_device_left_column">
           <AdminDeviceList
-            devices={devices}
+            devices={sortedDevices}
             selectedDevice={selectedDevice}
             onDeviceSelect={handleDeviceSelect}
             isDeviceLoading={isDeviceLoading}

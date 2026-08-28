@@ -2,6 +2,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminApi } from '../../api/adminApi';
 import { deviceApi } from '../../api/deviceApi';
+import {
+  DEVICE_STATUS_LABELS,
+  sortDevicesByAbnormalFirst,
+} from '../../constants/device';
 import axiosInstance from '../../api/axiosInstance';
 import AdminSummary from '../../components/common/Summary';
 
@@ -88,6 +92,11 @@ export default function AdminMainPage() {
     ];
   }, [dashboard]);
 
+  // 4. 장애/이상 발생 장비 최상단 정렬
+  const sortedDevices = useMemo(() => {
+    return sortDevicesByAbnormalFirst(devices);
+  }, [devices]);
+
   const handleMovePage = (path) => {
     navigate(path);
   };
@@ -134,23 +143,41 @@ export default function AdminMainPage() {
           </div>
 
           <div className="admin_device_list">
-            {devices.map((item) => (
-              <div key={item.deviceId} className="admin_device_item">
-                <div className="admin_device_name_wrap">
-                  <span
-                    className={`admin_status_dot is_${(item.status ?? 'NORMAL').toLowerCase()}`}
-                    aria-hidden="true"
-                  />
-                  <span className="admin_device_name">{item.deviceName}</span>
-                </div>
+            {sortedDevices.length === 0 ? (
+              <p className="admin_device_empty">등록된 장치가 없습니다.</p>
+            ) : (
+              sortedDevices.map((item) => {
+                const statusKey = (item.status ?? 'NORMAL').toUpperCase();
+                const statusClass = statusKey.toLowerCase();
+                const isAbnormal = statusKey === 'ERROR' || statusKey === 'OFFLINE' || statusKey === 'WARNING';
 
-                <span
-                  className={`admin_status_badge is_${(item.status ?? 'NORMAL').toLowerCase()}`}
-                >
-                  {item.status}
-                </span>
-              </div>
-            ))}
+                return (
+                  <div
+                    key={item.deviceId}
+                    className={`admin_device_item is_${statusClass} ${isAbnormal ? 'is_abnormal' : ''}`}
+                    onClick={() => handleMovePage('/device')}
+                    role="button"
+                    tabIndex={0}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <div className="admin_device_name_wrap">
+                      <span
+                        className={`admin_status_dot is_${statusClass}`}
+                        aria-hidden="true"
+                      />
+                      <span className="admin_device_name">{item.deviceName}</span>
+                      {statusKey === 'ERROR' && (
+                        <span className="admin_device_alert_badge">점검 필요</span>
+                      )}
+                    </div>
+
+                    <span className={`admin_status_badge is_${statusClass}`}>
+                      {DEVICE_STATUS_LABELS[statusKey] ?? item.status}
+                    </span>
+                  </div>
+                );
+              })
+            )}
           </div>
         </article>
 

@@ -12,10 +12,14 @@ export default function AdminDevice({ device, isSelected, onClick }) {
     return new Date(dateTime).toLocaleString('ko-KR');
   };
 
+  const statusKey = (device.status ?? 'NORMAL').toUpperCase();
+  const statusClass = statusKey.toLowerCase();
+  const isAbnormal = statusKey === 'ERROR' || statusKey === 'OFFLINE' || statusKey === 'WARNING';
+
   return (
     <button
       type="button"
-      className={`admin_device_manage_item ${isSelected ? 'is_selected' : ''} ${!device.isActive ? 'is_inactive' : ''}`}
+      className={`admin_device_manage_item is_${statusClass} ${isAbnormal ? 'is_abnormal' : ''} ${isSelected ? 'is_selected' : ''} ${!device.isActive ? 'is_inactive' : ''}`}
       onClick={() => onClick(device)}
     >
       <div>

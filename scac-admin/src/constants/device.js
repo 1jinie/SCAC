@@ -25,3 +25,26 @@ export const DEVICE_TYPE_LABELS = {
   DOOR: '출입문',
   NETWORK: '네트워크',
 };
+
+// 장치 상태별 정렬 우선순위 (오류/이상 장비 최상단 노출용: 숫자가 작을수록 우선순위 높음)
+export const DEVICE_STATUS_PRIORITY = {
+  ERROR: 1,
+  OFFLINE: 2,
+  WARNING: 3,
+  NORMAL: 4,
+};
+
+// 장애/이상 발생 장비 최상단 정렬 헬퍼 함수
+export const sortDevicesByAbnormalFirst = (devices = []) => {
+  return [...devices].sort((a, b) => {
+    const priorityA = DEVICE_STATUS_PRIORITY[a.status] ?? 99;
+    const priorityB = DEVICE_STATUS_PRIORITY[b.status] ?? 99;
+
+    if (priorityA !== priorityB) {
+      return priorityA - priorityB;
+    }
+
+    // 동일 상태일 경우 장치 ID 오름차순 정렬
+    return (a.deviceId ?? 0) - (b.deviceId ?? 0);
+  });
+};
