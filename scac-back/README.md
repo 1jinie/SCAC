@@ -635,7 +635,6 @@ http://localhost:8888
 | ------ | -------------------------------------- | ------------------ |
 | GET    | `/api/admin/devices`                   | 장치 목록          |
 | GET    | `/api/admin/devices/{deviceId}`        | 장치 상세          |
-| GET    | `/api/admin/devices/{deviceId}/logs`   | 장치 로그          |
 | POST   | `/api/admin/devices`                   | 장치 등록          |
 | PUT    | `/api/admin/devices/{deviceId}`        | 장치 수정          |
 | DELETE | `/api/admin/devices/{deviceId}`        | 장치 삭제          |
