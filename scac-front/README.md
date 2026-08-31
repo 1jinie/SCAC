@@ -14,78 +14,86 @@ Spring Boot Backend와 연동하며, RTOS 장치 명령 API를 통해
 
 ## ✨ 주요 기능
 
-### 👤 회원
+### 👤 회원 / 인증
 
 - 회원가입
 - 비회원 정보 입력
-- 로그인
+- 전화번호 기반 로그인
 - 내 정보 조회
 - 로그아웃
 - Access Token / Refresh Token 기반 인증
+- `UserPrivateRoute`를 통한 로그인 홈 및 마이페이지 접근 제어
+- Access Token 만료 시 자동 재발급
+- 재발급 실패 시 인증 정보 초기화 및 로그인 화면 이동
 
 ### 🎫 이용권
 
-- 시간권 조회 및 선택
-- 기간권 조회 및 선택
+- 시간권 / 기간권 조회 및 선택
 - 이용권 구매
-- 보유 이용권 확인
-- 결제 완료 시 이용권 발급
+- 보유 이용권 조회
+- 좌석 이용 가능 이용권 확인
+- 결제 완료 시 이용권 자동 발급
 
 ### 💳 결제
 
 - 결제 수단 선택
 - CARD Mock 결제
-- Toss Payments 간편 결제
+- Toss Payments 간편결제
+- 이용권 및 스터디룸 예약 결제
 - RTOS `CARD_READING` 명령 연동
 - 결제 진행 상태 표시
 - 결제 성공 / 실패 처리
+- 중복 승인 방지
 - 결제 완료 후 RTOS 영수증 출력
 
-### 💺 좌석
+### 💺 좌석 / 입·퇴실
 
 - 전체 좌석 현황 조회
 - 좌석 선택
-- 입실
-- 퇴실
-- 외출
-- 외출 복귀
+- 입실 및 퇴실
+- 외출 및 외출 복귀
 - 입·퇴실 시 RTOS 출입문 제어 명령 연동
 
 ### 🏢 스터디룸
 
-- 스터디룸 목록 조회
-- 스터디룸 상세 조회
+- 스터디룸 목록 및 상세 조회
 - 날짜별 예약 가능 시간 조회
 - 시작 / 종료 시간 선택
-- 스터디룸 예약
-- 예약 정보 확인
-- 스터디룸 결제
-- 결제 전 임시 예약 처리
+- 결제 전 임시 예약 생성
+- 예약 정보를 기준으로 결제금액 확인
+- 스터디룸 예약 결제
+- 결제 완료 후 예약 확정
+- 현재 예약 및 예약 상세 조회
+- 새로고침 또는 직접 URL 접근 시 예약 정보 복구
+- 사용자 예약 취소
+- 결제대기 5분 초과 시 예약 자동 취소
 
 ### 🖨 RTOS 장치 연동
 
 - 카드 리딩 명령 생성
 - 출입문 개방 명령 생성
 - 영수증 출력 명령 생성
-- 장치 명령 처리 결과 Polling
-- Spring Boot ↔ RTOS 장치 명령 연동
+- Backend에 장치 Command 생성 요청
+- 장치 명령 처리 상태 Polling
+- `COMPLETED` / `FAILED` 결과에 따른 화면 처리
+- HTTP Polling 기반 Spring Boot ↔ RTOS 연동
 
 ---
 
 ## 🛠 Tech Stack
 
-| Category         | Technology        |
-| ---------------- | ----------------- |
-| Framework        | React             |
-| Language         | JavaScript ES6+   |
-| Routing          | React Router DOM  |
-| HTTP Client      | Axios             |
-| State Management | Zustand           |
-| Form             | React Hook Form   |
-| Payment          | Toss Payments SDK |
-| QR               | QRCode React      |
-| Style            | CSS3              |
-| Build            | React Scripts     |
+| Category         | Technology              |
+| ---------------- | ----------------------- |
+| Framework        | React 19.2.7            |
+| Language         | JavaScript ES6+         |
+| Routing          | React Router DOM 7.18.1 |
+| HTTP Client      | Axios 1.18.1            |
+| State Management | Zustand 5.0.14          |
+| Form             | React Hook Form 7.81.0  |
+| Payment          | Toss Payments SDK 2.7.1 |
+| QR               | QRCode React 4.2.0      |
+| Style            | CSS3                    |
+| Build            | React Scripts 5.0.1     |
 
 ---
 
@@ -107,7 +115,6 @@ scac-front
 ├── src
 │   ├── api                        # API 통신
 │   │   ├── authApi.js
-│   │   ├── axiosInstance.js
 │   │   ├── checkinApi.js
 │   │   ├── deviceApi.js
 │   │   ├── paymentApi.js
@@ -156,6 +163,7 @@ scac-front
 │   │   └── Ticket
 │   │
 │   ├── routes                     # React Router 설정
+│   │   ├── UserPrivateRoute.jsx
 │   │   └── index.jsx
 │   │
 │   ├── store                      # Zustand 전역 상태 관리
@@ -226,16 +234,12 @@ Components     Zustand Store
    Axios Instance
          │
          ▼
-   Spring Boot API
-         │
-         ├──────────────▶ MySQL
-         │
-         ▼
-      RTOS Client
-         │
-         ├── CARD_READING
-         ├── PRINT_RECEIPT
-         └── DOOR_OPEN
+ Spring Boot Backend
+    │           ▲
+    ▼           │
+  MySQL     RTOS Client
+            Command Polling
+            Result / Health Check
 ```
 
 ---
@@ -249,7 +253,7 @@ Login
   ↓
 Access Token / Refresh Token 발급
   ↓
-Zustand + Local Storage 저장
+Zustand Store 및 localStorage에서 인증 정보 관리
   ↓
 Axios Request Interceptor
   ↓
@@ -518,8 +522,7 @@ REACT_APP_TOSS_CLIENT_KEY=토스_테스트_클라이언트_키
 HOST=0.0.0.0
 ```
 
-> 실제 `.env` 파일과 API Key는 Git 저장소에 포함하지 않습니다.
-> 환경 변수 예시는 `.env.example` 파일을 참고합니다.
+> 실제 `.env` 파일과 API Key는 Git 저장소에 포함하지 않으며, 환경변수 형식은 `.env.example`을 참고합니다.
 
 ### 4. Start Development Server
 
@@ -556,18 +559,25 @@ SCAC
 
 ## 👥 Team
 
-| Name   | Role                                                      |
-| ------ | --------------------------------------------------------- |
-| 김수영 | 회원 · 인증 · 권한 · DB 설계 및 관리 · 입실 비밀번호 관리 |
-| 장원진 | 좌석 · 예약 · 입실/퇴실 · Git 저장소 관리 · 배포 관리     |
-| 이지현 | 결제 · 이용권 · 관리자 · 프로젝트 문서 및 QA 관리         |
+| Name   | Role                                                                                                         |
+| ------ | ------------------------------------------------------------------------------------------------------------ |
+| 김수영 | 회원 · 인증 · 권한 · DB · 시스템 로그 · SMS 공통 모듈 및 회원 인증 알림                                      |
+| 장원진 | 좌석 · 입·퇴실 · 스터디룸 예약 · RTOS C Client · 관리자 좌석·예약 화면 · Git 및 배포 관리                    |
+| 이지현 | 결제 · 이용권 · 관리자 주요 화면 · 장치관리 API·화면 연동 · SOLAPI 이용권 만료 알림 및 재시도 정책 · 문서·QA |
+
+---
+
+## 📅 Development Period
+
+**2026.07.03 ~ 2026.09.02**
 
 ---
 
 ## 📝 Documentation Version
 
-**README v3.0**
-**Last Updated: 2026.08.21**
+**README v3.1**
+
+**Last Updated: 2026.08.31**
 
 ### History
 
@@ -581,9 +591,13 @@ SCAC
   - 결제 및 스터디룸 예약 흐름 현행화
   - JWT Refresh Token 처리 반영
   - RTOS 카드 리딩 / 영수증 출력 / 출입문 제어 연동 반영
+- README v3.1 — 2026.08.31
+  - 사용자 보호 라우트 적용 내용 반영
+  - 스터디룸 예약 복구 및 취소 흐름 현행화
+  - 기술 스택 버전 및 실행 환경 최신화
 
 ---
 
-## 📄 License
+## 📄 Project Notice
 
-본 프로젝트는 K-Digital Training 교육 및 팀 프로젝트 목적으로 제작되었습니다.
+본 프로젝트는 K-Digital Training 교육과정의 팀 프로젝트로 제작되었습니다.
