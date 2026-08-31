@@ -525,8 +525,6 @@ Backend의 공통 응답 객체는 `ApiResponse<T>`입니다.
 ### 기술적 한계 및 향후 개선
 
 - 실제 장비 대신 FreeRTOS POSIX 환경에서 장치 동작 시뮬레이션
-- RTOS Command를 In-Memory `TaskStore`에서 관리하여 서버 재시작 시 초기화
-- 완료된 commandId의 영속적인 멱등성 보장 미적용
 - 시연 환경에서는 CORS Origin 전체 허용
 - 실제 운영 시 결제 이력 삭제보다 취소 중심 정책 필요
 
