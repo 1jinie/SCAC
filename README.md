@@ -216,6 +216,20 @@ SCAC
 │
 ├── README.md
 ├── docs
+│   ├── api
+│   │   └── README.md
+│   ├── architecture
+│   │   └── README.md
+│   ├── database
+│   │   ├── README.md
+│   │   └── erd.png
+│   ├── meeting
+│   ├── qa
+│   │   └── README.md
+│   ├── requirements
+│   │   └── README.md
+│   ├── scenarios
+│   │   └── README.md
 │   └── worklog
 │
 ├── scac-front
@@ -242,6 +256,30 @@ SCAC
     ├── CMakeLists.txt
     └── Makefile
 ```
+
+## 📚 Documentation
+
+SCAC 프로젝트의 설계, 요구사항, 테스트 및 개발 과정은 다음 문서에서 확인할 수 있습니다.
+
+| 문서                                                 | 설명                                     |
+| ---------------------------------------------------- | ---------------------------------------- |
+| [System Architecture](./docs/architecture/README.md) | 전체 시스템 구성과 컴포넌트 간 통신 구조 |
+| [요구사항 명세서](./docs/requirements/README.md)     | 기능·비기능 요구사항 및 구현 상태        |
+| [사용자 시나리오](./docs/scenarios/README.md)        | 사용자·관리자·RTOS 주요 이용 흐름        |
+| [API 명세서](./docs/api/README.md)                   | 도메인별 REST API 요청 및 응답 명세      |
+| [Database 설계서](./docs/database/README.md)         | ERD, 테이블 구조 및 주요 관계            |
+| [QA 테스트 결과서](./docs/qa/README.md)              | 기능 테스트 결과와 결함 조치 내역        |
+| [회의록](./docs/meeting/)                            | 프로젝트 회의 및 주요 의사결정 기록      |
+| [작업일지](./docs/worklog/)                          | 팀원별 개발 진행 과정과 작업 기록        |
+
+### 문서화 현황
+
+- 요구사항 48건 정의 및 구현 상태 확인
+- 사용자·관리자·장치 시나리오 22건 정리
+- REST API 88개 명세
+- Database 테이블 18개 및 View 1개 문서화
+- QA 테스트 83건 수행 및 전체 통과
+- 발견 결함 4건 수정 및 재검증 완료
 
 ---
 
@@ -574,7 +612,7 @@ Backend가 20초 이상 통신이 없는 장치를 OFFLINE으로 전환하도록
 
 ## 📝 Documentation Version
 
-**README v4.1**
+**README v4.2**
 **Last Updated: 2026.08.31**
 
 ### History
@@ -586,6 +624,11 @@ Backend가 20초 이상 통신이 없는 장치를 OFFLINE으로 전환하도록
 - README v3.0 — 2026.08.14
 - README v4.0 — 2026.08.21
 - README v4.1 — 2026.08.31
+- README v4.2 — 2026.08.31
+  - 프로젝트 문서 디렉터리 현행화
+  - Architecture / Requirements / Scenarios 문서 추가
+  - API / Database / QA 문서 연결
+  - 회의록 및 작업일지 문서 연결
 
 ---
 
