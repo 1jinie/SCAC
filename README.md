@@ -319,7 +319,7 @@ SCAC 프로젝트의 설계, 요구사항, 테스트 및 개발 과정은 다음
 - 사용자·관리자·장치 시나리오 22건 정리
 - REST API 88개 명세
 - Database 테이블 18개 및 View 1개 문서화
-- QA 테스트 83건 수행 및 전체 통과
+- QA 테스트 84건 수행 및 전체 통과
 - 발견 결함 4건 수정 및 재검증 완료
 
 ---
@@ -653,8 +653,8 @@ Backend가 20초 이상 통신이 없는 장치를 OFFLINE으로 전환하도록
 
 ## 📝 Documentation Version
 
-**README v4.2**
-**Last Updated: 2026.08.31**
+**README v4.3**
+**Last Updated: 2026.09.01**
 
 ### History
 
@@ -666,10 +666,10 @@ Backend가 20초 이상 통신이 없는 장치를 OFFLINE으로 전환하도록
 - README v4.0 — 2026.08.21
 - README v4.1 — 2026.08.31
 - README v4.2 — 2026.08.31
-  - 프로젝트 문서 디렉터리 현행화
-  - Architecture / Requirements / Scenarios 문서 추가
-  - API / Database / QA 문서 연결
-  - 회의록 및 작업일지 문서 연결
+- README v4.3 — 2026.09.01
+  - Demo 및 실제 구현 화면 추가
+  - 입실 비밀번호 변경 API 접근 제어 강화
+  - QA 테스트 84건으로 현행화
 
 ---
 
