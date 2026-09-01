@@ -141,7 +141,7 @@ export default function TicketPage() {
         <button type="button" className="back_btn" onClick={() => navi(-1)}>
           <img
             src="/icons/common/next_black.svg"
-            alt=""
+            alt="뒤로가기"
             className="back_icon"
             aria-hidden="true"
           />

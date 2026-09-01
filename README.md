@@ -23,6 +23,47 @@ SCAC
 
 ---
 
+## 🌐 Demo
+
+사용자 키오스크 Frontend는 Vercel을 통해 확인할 수 있습니다.
+
+- [SCAC Kiosk Live Demo](https://scac-liard.vercel.app)
+
+> 결제, 인증 및 장치 제어 등 일부 기능은 Spring Boot Backend와 RTOS Client의 실행 상태에 따라 제한될 수 있습니다.
+
+---
+
+## 🖼 Screenshots
+
+### 사용자 키오스크
+
+| 메인 화면                                                                                        | RTOS 카드 결제                                                                                            |
+| ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| <img src="./docs/images/screenshots/kiosk-main.png" alt="SCAC 키오스크 메인 화면" width="324" /> | <img src="./docs/images/screenshots/kiosk-card-payment.png" alt="SCAC RTOS 카드 결제 화면" width="331" /> |
+| 좌석 현황과 주요 서비스 선택                                                                     | 카드 리딩 명령 처리 대기                                                                                  |
+
+### 관리자 대시보드
+
+<img
+  src="./docs/images/screenshots/admin-dashboard.png"
+  alt="SCAC 관리자 대시보드"
+  width="1000"
+/>
+
+좌석 이용 현황, 당일 매출, 장치 상태 및 최근 시스템 로그를 통합 조회합니다.
+
+### 관리자 장치 관리
+
+<img
+  src="./docs/images/screenshots/admin-device.png"
+  alt="SCAC 관리자 장치 관리 화면"
+  width="1000"
+/>
+
+RTOS Health Check를 기반으로 장치 상태, 마지막 연결 시각 및 장치별 로그를 확인합니다.
+
+---
+
 ## 🎯 주요 목표
 
 - 회원/비회원이 키오스크에서 스터디카페 서비스를 이용할 수 있는 사용자 흐름 구현
@@ -278,7 +319,7 @@ SCAC 프로젝트의 설계, 요구사항, 테스트 및 개발 과정은 다음
 - 사용자·관리자·장치 시나리오 22건 정리
 - REST API 88개 명세
 - Database 테이블 18개 및 View 1개 문서화
-- QA 테스트 83건 수행 및 전체 통과
+- QA 테스트 84건 수행 및 전체 통과
 - 발견 결함 4건 수정 및 재검증 완료
 
 ---
@@ -612,8 +653,8 @@ Backend가 20초 이상 통신이 없는 장치를 OFFLINE으로 전환하도록
 
 ## 📝 Documentation Version
 
-**README v4.2**
-**Last Updated: 2026.08.31**
+**README v4.3**
+**Last Updated: 2026.09.01**
 
 ### History
 
@@ -625,10 +666,10 @@ Backend가 20초 이상 통신이 없는 장치를 OFFLINE으로 전환하도록
 - README v4.0 — 2026.08.21
 - README v4.1 — 2026.08.31
 - README v4.2 — 2026.08.31
-  - 프로젝트 문서 디렉터리 현행화
-  - Architecture / Requirements / Scenarios 문서 추가
-  - API / Database / QA 문서 연결
-  - 회의록 및 작업일지 문서 연결
+- README v4.3 — 2026.09.01
+  - Demo 및 실제 구현 화면 추가
+  - 입실 비밀번호 변경 API 접근 제어 강화
+  - QA 테스트 84건으로 현행화
 
 ---
 

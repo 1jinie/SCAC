@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useUserStore } from '../../store/userStore';
@@ -26,13 +26,6 @@ function MyPage() {
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [localError, setLocalError] = useState('');
-
-  // 프로필 데이터 로드 상태 확인
-  useEffect(() => {
-    console.log(' userProfile:', userProfile);
-    console.log(' isLoading:', isLoading);
-    console.log(' errorMessage:', errorMessage);
-  }, [userProfile, isLoading, errorMessage]);
 
   /* 내 정보 및 이용권 정보 조회 */
   useEffect(() => {
@@ -81,7 +74,7 @@ function MyPage() {
     }
 
     // 서버로 수정 요청 보낼 데이터 객체
-    const result = await modifyUserPassword(userId, {
+    const result = await modifyUserPassword({
       currentPassword,
       newPassword,
     });
