@@ -47,17 +47,12 @@ export const verifyEntryPassword = async (phoneNumber, password) => {
 };
 
 // 5. 입실 비밀번호 변경 (마이페이지용 - DTO 규격 맞춤)
-export const updateUserPassword = async (
-  userId,
-  { currentPassword, newPassword },
-) => {
-  const response = await axiosInstance.patch(
-    `/api/users/${userId}/entry-password`,
-    {
-      currentPassword,
-      newPassword,
-    },
-  );
+export const updateUserPassword = async ({ currentPassword, newPassword }) => {
+  const response = await axiosInstance.patch('/api/users/me/entry-password', {
+    currentPassword,
+    newPassword,
+  });
+
   return response.data;
 };
 

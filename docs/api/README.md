@@ -390,15 +390,15 @@ RTOS Client는 일정 주기로 장치 상태를 전송합니다. Backend는 마
 
 ## 사용자 API
 
-| Method  | Endpoint                             | 설명                         | 권한   |
-| ------- | ------------------------------------ | ---------------------------- | ------ |
-| `GET`   | `/api/users/check-phone`             | 휴대전화 번호 가입 여부 조회 | Public |
-| `POST`  | `/api/users/signup`                  | 회원가입                     | Public |
-| `POST`  | `/api/users/guest`                   | 비회원 등록                  | Public |
-| `GET`   | `/api/users/me`                      | 현재 로그인 사용자 정보 조회 | User   |
-| `GET`   | `/api/users/{userId}`                | 사용자 프로필 단건 조회      | User   |
-| `POST`  | `/api/users/entry-password/verify`   | 입실 비밀번호 검증           | User   |
-| `PATCH` | `/api/users/{userId}/entry-password` | 입실 비밀번호 변경           | User   |
+| Method  | Endpoint                           | 설명                         | 권한   |
+| ------- | ---------------------------------- | ---------------------------- | ------ |
+| `GET`   | `/api/users/check-phone`           | 휴대전화 번호 가입 여부 조회 | Public |
+| `POST`  | `/api/users/signup`                | 회원가입                     | Public |
+| `POST`  | `/api/users/guest`                 | 비회원 등록                  | Public |
+| `GET`   | `/api/users/me`                    | 현재 로그인 사용자 정보 조회 | User   |
+| `GET`   | `/api/users/{userId}`              | 사용자 프로필 단건 조회      | User   |
+| `POST`  | `/api/users/entry-password/verify` | 입실 비밀번호 검증           | User   |
+| `PATCH` | `/api/users/me/entry-password`     | 입실 비밀번호 변경           | User   |
 
 ---
 

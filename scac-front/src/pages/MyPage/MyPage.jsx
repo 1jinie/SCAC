@@ -81,7 +81,7 @@ function MyPage() {
     }
 
     // 서버로 수정 요청 보낼 데이터 객체
-    const result = await modifyUserPassword(userId, {
+    const result = await modifyUserPassword({
       currentPassword,
       newPassword,
     });

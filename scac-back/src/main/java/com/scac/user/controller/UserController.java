@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,7 +24,7 @@ public class UserController {
          */
         @GetMapping("/check-phone")
         public ResponseEntity<ApiResponse<Boolean>> checkPhoneExists(
-                @RequestParam(name = "phoneNumber") String phoneNumber) {
+                        @RequestParam(name = "phoneNumber") String phoneNumber) {
                 boolean exists = userService.existsByPhoneNumber(phoneNumber);
 
                 return ResponseEntity.ok(ApiResponse.success("전화번호 중복 확인을 완료했습니다.", exists));
@@ -76,7 +77,7 @@ public class UserController {
          */
         @PostMapping("/entry-password/verify")
         public ResponseEntity<ApiResponse<UserRes>> verifyEntryPassword(
-                @Valid @RequestBody PasswordVerifyReq req) {
+                        @Valid @RequestBody PasswordVerifyReq req) {
 
                 User user = userService.verifyPassword(req);
 
@@ -84,13 +85,18 @@ public class UserController {
         }
 
         /**
-         * 5. 입실 비밀번호 변경 (마이페이지용)
+         * 5. 입실 비밀번호 변경
+         * 
+         * JWT에서 인증된 사용자 ID를 사용합니다.
          */
-        @PatchMapping("/{userId}/entry-password")
-        public ResponseEntity<ApiResponse<Void>> changePassword(@PathVariable(name = "userId") Long userId,
-                @Valid @RequestBody PasswordUpdateReq req) {
-                userService.changePassword(userId, req);
+        @PatchMapping("/me/entry-password")
+        public ResponseEntity<ApiResponse<Void>> changePassword(
+                        @AuthenticationPrincipal UserPrincipal principal,
+                        @Valid @RequestBody PasswordUpdateReq req) {
 
-                return ResponseEntity.ok(ApiResponse.success("입실 비밀번호 변경이 완료되었습니다."));
+                userService.changePassword(principal.id(), req);
+
+                return ResponseEntity.ok(
+                                ApiResponse.success("입실 비밀번호 변경이 완료되었습니다."));
         }
 }

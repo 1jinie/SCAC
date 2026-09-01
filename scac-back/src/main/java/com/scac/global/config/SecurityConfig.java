@@ -43,61 +43,76 @@ public class SecurityConfig {
 
                 http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                        .csrf(csrf -> csrf.disable())
+                                .csrf(csrf -> csrf.disable())
 
-                        .sessionManagement(
-                                session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .sessionManagement(
+                                                session -> session
+                                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                        .exceptionHandling(
-                                exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                                .exceptionHandling(
+                                                exception -> exception
+                                                                .authenticationEntryPoint(jwtAuthenticationEntryPoint))
 
-                        .authorizeHttpRequests(auth -> auth
+                                .authorizeHttpRequests(auth -> auth
 
-                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                                // 1. PUBLIC GET 요청 (키오스크 및 일반 사용자 노출용)
-                                .requestMatchers(HttpMethod.GET, "/api/users/check-phone", "/api/tickets/**",
-                                        "/api/seats/**", "/api/rooms/**", "/api/meeting-rooms", "/api/meeting-rooms/*/availability",
-                                        "/api/checkin/**", "/api/commands/**", "/api/devices/**", "/api/faults/**")
-                                .permitAll()
+                                                // 1. PUBLIC GET 요청 (키오스크 및 일반 사용자 노출용)
+                                                .requestMatchers(HttpMethod.GET, "/api/users/check-phone",
+                                                                "/api/tickets/**",
+                                                                "/api/seats/**", "/api/rooms/**", "/api/meeting-rooms",
+                                                                "/api/meeting-rooms/*/availability",
+                                                                "/api/checkin/**", "/api/commands/**",
+                                                                "/api/devices/**", "/api/faults/**")
+                                                .permitAll()
 
-                                // 2. PUBLIC POST 요청 (회원가입, 게스트 등록, 비밀번호 검증 등)
-                                .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/refresh",
-                                        "/api/auth/logout", "/api/auth/send-code", "/api/auth/verify-code",
-                                        "/api/admin/auth/login", "/api/admin/auth/refresh",
-                                        "/api/admin/auth/logout", "/api/users/signup", "/api/users/guest",
-                                        "/api/users/entry-password/verify", "/api/checkin", "/api/commands/**", "/api/devices/**", "/api/faults/**",
-                                        "/api/checkin/prepare")
-                                .permitAll()
+                                                // 2. PUBLIC POST 요청 (회원가입, 게스트 등록, 비밀번호 검증 등)
+                                                .requestMatchers(HttpMethod.POST, "/api/auth/login",
+                                                                "/api/auth/refresh",
+                                                                "/api/auth/logout", "/api/auth/send-code",
+                                                                "/api/auth/verify-code",
+                                                                "/api/admin/auth/login", "/api/admin/auth/refresh",
+                                                                "/api/admin/auth/logout", "/api/users/signup",
+                                                                "/api/users/guest",
+                                                                "/api/users/entry-password/verify", "/api/checkin",
+                                                                "/api/commands/**", "/api/devices/**", "/api/faults/**",
+                                                                "/api/checkin/prepare")
+                                                .permitAll()
 
-                                // 3. PUBLIC PATCH 요청
-                                .requestMatchers(HttpMethod.PATCH, "/api/users/*/entry-password",
-                                        "/api/checkin/away", "/api/checkin/comeback", "/api/commands/**", "/api/faults/**", "/api/checkin/checkout",
-                                        "/api/devices/*/status") 
-                                .permitAll()
+                                                // 3. PUBLIC PATCH 요청
+                                                .requestMatchers(HttpMethod.PATCH,
+                                                                "/api/checkin/away", "/api/checkin/comeback",
+                                                                "/api/commands/**", "/api/faults/**",
+                                                                "/api/checkin/checkout",
+                                                                "/api/devices/*/status")
+                                                .permitAll()
 
-                                // 회원 전용 API (JWT 필수)
-                                .requestMatchers("/api/checkin/prepare/member", "/api/users/me", "/api/meeting-rooms/reservations",
-                                        "/api/meeting-rooms/current", "/api/meeting-rooms/reservations/*", "/api/meeting-rooms/reservations/cancel-pending"
-                                )
-                                .hasAnyRole("USER", "GUEST")
+                                                // 회원 전용 API (JWT 필수)
+                                                .requestMatchers("/api/checkin/prepare/member", "/api/users/me",
+                                                                "/api/users/me/entry-password",
+                                                                "/api/meeting-rooms/reservations",
+                                                                "/api/meeting-rooms/current",
+                                                                "/api/meeting-rooms/reservations/*",
+                                                                "/api/meeting-rooms/reservations/cancel-pending")
+                                                .hasAnyRole("USER", "GUEST")
 
-                                // 사용자 결제 관련 - 결제 요청 시 USER 또는 GUEST 권한 필요 (ADMIN 권한은 불필요)
-                                .requestMatchers(HttpMethod.POST, "/api/payments", "/api/payments/confirm",
-                                        "/api/payments/*/mock-confirm")
-                                .hasAnyRole("USER", "GUEST")
+                                                // 사용자 결제 관련 - 결제 요청 시 USER 또는 GUEST 권한 필요 (ADMIN 권한은 불필요)
+                                                .requestMatchers(HttpMethod.POST, "/api/payments",
+                                                                "/api/payments/confirm",
+                                                                "/api/payments/*/mock-confirm")
+                                                .hasAnyRole("USER", "GUEST")
 
-                                // 관리자 전용 경로 통제
-                                // 관리자 계정 관리는 SUPER_ADMIN만 가능 나머지는 SUPER_ADMIN, STAFF
-                                .requestMatchers("/api/admin/accounts/**").hasRole("SUPER_ADMIN")
-                                .requestMatchers("/api/admin/**", "/api/meeting-rooms/admin/**",
-                                        "/api/meeting-rooms/reservations/*/cancel")
-                                .hasAnyRole("SUPER_ADMIN", "STAFF")
+                                                // 관리자 전용 경로 통제
+                                                // 관리자 계정 관리는 SUPER_ADMIN만 가능 나머지는 SUPER_ADMIN, STAFF
+                                                .requestMatchers("/api/admin/accounts/**").hasRole("SUPER_ADMIN")
+                                                .requestMatchers("/api/admin/**", "/api/meeting-rooms/admin/**",
+                                                                "/api/meeting-rooms/reservations/*/cancel")
+                                                .hasAnyRole("SUPER_ADMIN", "STAFF")
 
-                                // PUBLIC 요청 외 모든 요청은 인증 필요
-                                .anyRequest().authenticated())
+                                                // PUBLIC 요청 외 모든 요청은 인증 필요
+                                                .anyRequest().authenticated())
 
-                        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
                 return http.build();
         }
