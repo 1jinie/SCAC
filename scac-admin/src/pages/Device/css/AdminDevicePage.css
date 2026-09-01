@@ -142,6 +142,44 @@
   box-shadow: 0 0 0 1px var(--color-primary);
 }
 
+/* 장애/이상 발생 장치 강조 스타일 */
+.admin_device_manage_item.is_error {
+  border-color: #fca5a5;
+  background-color: #fff8f8;
+}
+
+.admin_device_manage_item.is_error:hover {
+  border-color: #df6262;
+  background-color: #fff1f1;
+}
+
+.admin_device_manage_item.is_error.is_selected {
+  border-color: #df6262;
+  background-color: #ffebeb;
+  box-shadow: 0 0 0 1px #df6262;
+}
+
+.admin_device_manage_item.is_offline {
+  border-color: #fed7aa;
+  background-color: #fffbf5;
+}
+
+.admin_device_manage_item.is_offline:hover {
+  border-color: #f3a55c;
+  background-color: #fff5e8;
+}
+
+.admin_device_manage_item.is_offline.is_selected {
+  border-color: #f3a55c;
+  background-color: #ffeedd;
+  box-shadow: 0 0 0 1px #f3a55c;
+}
+
+.admin_device_manage_item.is_warning {
+  border-color: #fde047;
+  background-color: #fefce8;
+}
+
 /* =========================
    Device List Information
 ========================= */
