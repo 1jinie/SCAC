@@ -86,7 +86,7 @@ public class UserController {
 
         /**
          * 5. 입실 비밀번호 변경
-         * 
+         *
          * JWT에서 인증된 사용자 ID를 사용합니다.
          */
         @PatchMapping("/me/entry-password")
