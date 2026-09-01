@@ -23,6 +23,47 @@ SCAC
 
 ---
 
+## 🌐 Demo
+
+사용자 키오스크 Frontend는 Vercel을 통해 확인할 수 있습니다.
+
+- [SCAC Kiosk Live Demo](https://scac-liard.vercel.app)
+
+> 결제, 인증 및 장치 제어 등 일부 기능은 Spring Boot Backend와 RTOS Client의 실행 상태에 따라 제한될 수 있습니다.
+
+---
+
+## 🖼 Screenshots
+
+### 사용자 키오스크
+
+| 메인 화면                                                                                        | RTOS 카드 결제                                                                                            |
+| ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| <img src="./docs/images/screenshots/kiosk-main.png" alt="SCAC 키오스크 메인 화면" width="324" /> | <img src="./docs/images/screenshots/kiosk-card-payment.png" alt="SCAC RTOS 카드 결제 화면" width="331" /> |
+| 좌석 현황과 주요 서비스 선택                                                                     | 카드 리딩 명령 처리 대기                                                                                  |
+
+### 관리자 대시보드
+
+<img
+  src="./docs/images/screenshots/admin-dashboard.png"
+  alt="SCAC 관리자 대시보드"
+  width="1000"
+/>
+
+좌석 이용 현황, 당일 매출, 장치 상태 및 최근 시스템 로그를 통합 조회합니다.
+
+### 관리자 장치 관리
+
+<img
+  src="./docs/images/screenshots/admin-device.png"
+  alt="SCAC 관리자 장치 관리 화면"
+  width="1000"
+/>
+
+RTOS Health Check를 기반으로 장치 상태, 마지막 연결 시각 및 장치별 로그를 확인합니다.
+
+---
+
 ## 🎯 주요 목표
 
 - 회원/비회원이 키오스크에서 스터디카페 서비스를 이용할 수 있는 사용자 흐름 구현

@@ -1,0 +1,11 @@
+/mnt/c/ex/project/scac-rtos/build/CMakeFiles/day05_rtos.dir
+/mnt/c/ex/project/scac-rtos/build/CMakeFiles/edit_cache.dir
+/mnt/c/ex/project/scac-rtos/build/CMakeFiles/rebuild_cache.dir
+/mnt/c/ex/project/scac-rtos/build/freertos-kernel/CMakeFiles/freertos_kernel.dir
+/mnt/c/ex/project/scac-rtos/build/freertos-kernel/CMakeFiles/edit_cache.dir
+/mnt/c/ex/project/scac-rtos/build/freertos-kernel/CMakeFiles/rebuild_cache.dir
+/mnt/c/ex/project/scac-rtos/build/freertos-kernel/include/CMakeFiles/edit_cache.dir
+/mnt/c/ex/project/scac-rtos/build/freertos-kernel/include/CMakeFiles/rebuild_cache.dir
+/mnt/c/ex/project/scac-rtos/build/freertos-kernel/portable/CMakeFiles/freertos_kernel_port.dir
+/mnt/c/ex/project/scac-rtos/build/freertos-kernel/portable/CMakeFiles/edit_cache.dir
+/mnt/c/ex/project/scac-rtos/build/freertos-kernel/portable/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,1 @@
+/usr/bin/cc -g -Wl,--dependency-file=CMakeFiles/day05_rtos.dir/link.d CMakeFiles/day05_rtos.dir/src/main.c.o CMakeFiles/day05_rtos.dir/src/http_client.c.o -o day05_rtos  freertos-kernel/libfreertos_kernel.a
