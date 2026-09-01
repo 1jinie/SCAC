@@ -23,6 +23,47 @@ SCAC
 
 ---
 
+## 🌐 Demo
+
+사용자 키오스크 Frontend는 Vercel을 통해 확인할 수 있습니다.
+
+- [SCAC Kiosk Live Demo](https://scac-liard.vercel.app)
+
+> 결제, 인증 및 장치 제어 등 일부 기능은 Spring Boot Backend와 RTOS Client의 실행 상태에 따라 제한될 수 있습니다.
+
+---
+
+## 🖼 Screenshots
+
+### 사용자 키오스크
+
+| 메인 화면                                                                                        | RTOS 카드 결제                                                                                            |
+| ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| <img src="./docs/images/screenshots/kiosk-main.png" alt="SCAC 키오스크 메인 화면" width="324" /> | <img src="./docs/images/screenshots/kiosk-card-payment.png" alt="SCAC RTOS 카드 결제 화면" width="331" /> |
+| 좌석 현황과 주요 서비스 선택                                                                     | 카드 리딩 명령 처리 대기                                                                                  |
+
+### 관리자 대시보드
+
+<img
+  src="./docs/images/screenshots/admin-dashboard.png"
+  alt="SCAC 관리자 대시보드"
+  width="1000"
+/>
+
+좌석 이용 현황, 당일 매출, 장치 상태 및 최근 시스템 로그를 통합 조회합니다.
+
+### 관리자 장치 관리
+
+<img
+  src="./docs/images/screenshots/admin-device.png"
+  alt="SCAC 관리자 장치 관리 화면"
+  width="1000"
+/>
+
+RTOS Health Check를 기반으로 장치 상태, 마지막 연결 시각 및 장치별 로그를 확인합니다.
+
+---
+
 ## 🎯 주요 목표
 
 - 회원/비회원이 키오스크에서 스터디카페 서비스를 이용할 수 있는 사용자 흐름 구현
@@ -34,7 +75,7 @@ SCAC
 - Toss Payments 및 CARD Mock 결제 지원
 - SOLAPI 기반 인증번호 및 이용권 만료 예정 문자 발송
 - Scheduler를 이용한 좌석, 예약, 장치, 제재 상태 자동 관리
-- Spring Boot와 RTOS 간 양방향 장치 명령 처리
+- HTTP Polling 기반 Spring Boot ↔ RTOS 장치 명령 처리
 - RTOS Health Check를 통한 장치 상태 모니터링
 
 ---
@@ -216,6 +257,20 @@ SCAC
 │
 ├── README.md
 ├── docs
+│   ├── api
+│   │   └── README.md
+│   ├── architecture
+│   │   └── README.md
+│   ├── database
+│   │   ├── README.md
+│   │   └── erd.png
+│   ├── meeting
+│   ├── qa
+│   │   └── README.md
+│   ├── requirements
+│   │   └── README.md
+│   ├── scenarios
+│   │   └── README.md
 │   └── worklog
 │
 ├── scac-front
@@ -243,9 +298,35 @@ SCAC
     └── Makefile
 ```
 
+## 📚 Documentation
+
+SCAC 프로젝트의 설계, 요구사항, 테스트 및 개발 과정은 다음 문서에서 확인할 수 있습니다.
+
+| 문서                                                 | 설명                                     |
+| ---------------------------------------------------- | ---------------------------------------- |
+| [System Architecture](./docs/architecture/README.md) | 전체 시스템 구성과 컴포넌트 간 통신 구조 |
+| [요구사항 명세서](./docs/requirements/README.md)     | 기능·비기능 요구사항 및 구현 상태        |
+| [사용자 시나리오](./docs/scenarios/README.md)        | 사용자·관리자·RTOS 주요 이용 흐름        |
+| [API 명세서](./docs/api/README.md)                   | 도메인별 REST API 요청 및 응답 명세      |
+| [Database 설계서](./docs/database/README.md)         | ERD, 테이블 구조 및 주요 관계            |
+| [QA 테스트 결과서](./docs/qa/README.md)              | 기능 테스트 결과와 결함 조치 내역        |
+| [회의록](./docs/meeting/)                            | 프로젝트 회의 및 주요 의사결정 기록      |
+| [작업일지](./docs/worklog/)                          | 팀원별 개발 진행 과정과 작업 기록        |
+
+### 문서화 현황
+
+- 요구사항 48건 정의 및 구현 상태 확인
+- 사용자·관리자·장치 시나리오 22건 정리
+- REST API 88개 명세
+- Database 테이블 18개 및 View 1개 문서화
+- QA 테스트 84건 수행 및 전체 통과
+- 발견 결함 4건 수정 및 재검증 완료
+
 ---
 
 ## 🚀 Getting Started
+
+> `spring.jpa.hibernate.ddl-auto=none`으로 설정되어 있으므로 애플리케이션 실행 전에 SCAC DB 스키마와 `vw_payment_history` View를 생성해야 합니다.
 
 ### 1. Backend
 
@@ -508,38 +589,59 @@ Backend의 공통 응답 객체는 `ApiResponse<T>`입니다.
 
 ---
 
-## 📌 Current Integration Notes
+## 📌 Final Implementation Status
 
-2026-08-21 코드 기준:
+### 구현 완료
 
-- ✅ 사용자 키오스크와 관리자 웹이 Spring Boot API와 연동됨
-- ✅ 좌석 이용권과 스터디룸 예약 결제를 하나의 Payment 흐름으로 관리
-- ✅ 관리자 결제 조회에 `vw_payment_history` + MyBatis 사용
-- ✅ Toss Payments 및 CARD Mock 결제 구현
-- ✅ SOLAPI 기반 인증번호 및 이용권 만료 예정 알림 구현
-- ✅ 관리자 `AdminPrivateRoute` 적용
-- ✅ `SUPER_ADMIN` 전용 관리자 계정 관리 구현
-- ✅ 관리자 장치 등록 / 수정 / 삭제 / 활성화 관리 구현
-- ✅ Spring Boot ↔ RTOS 장치 명령 양방향 통신 구현
-- ✅ `CARD_READING`, `PRINT_RECEIPT`, `DOOR_OPEN` 명령 처리
-- ✅ RTOS 5초 주기 Health Check 구현
-- ✅ 20초 이상 Health Check 미수신 시 장치 OFFLINE 처리
-- ✅ 관리자 장치 페이지에서 상태 및 로그 확인 가능
-- ✅ 예약 결제 대기 5분 초과 시 자동 취소
-- ✅ 알림 반복 실패 2회 도달 시 `RETRY_EXHAUSTED` 처리
-- ⚠️ RTOS는 실제 물리 장비 대신 FreeRTOS POSIX 환경에서 장치 동작을 시뮬레이션
-- ⚠️ RTOS Command는 현재 Backend 메모리의 `TaskStore`에서 관리되어 서버 재시작 시 초기화됨
-- ⚠️ 시연 환경의 Backend CORS는 모든 Origin을 허용하고 있으므로 실제 배포 시 제한 필요
+- 사용자·관리자 JWT 인증 및 Refresh Token 처리
+- 좌석 이용권 및 스터디룸 예약 결제 통합
+- 스터디룸 동시 예약 방지를 위한 비관적 락 적용
+- 결제대기 예약 5분 초과 자동 취소
+- RTOS 장치 명령 Polling 및 처리 결과 반환
+- 장치 Health Check 및 OFFLINE 자동 전환
+- SOLAPI 인증·만료 예정 알림 및 재시도 제한
+
+### 기술적 한계 및 향후 개선
+
+- 실제 장비 대신 FreeRTOS POSIX 환경에서 장치 동작 시뮬레이션
+- 시연 환경에서는 CORS Origin 전체 허용
+- 실제 운영 시 결제 이력 삭제보다 취소 중심 정책 필요
+
+---
+
+## 🔍 Key Engineering Challenges
+
+### 스터디룸 결제 구조 재설계
+
+초기 결제 구조는 `ticketId`를 필수 결제 대상으로 사용했으나,
+스터디룸 정책이 시간당 요금 방식으로 확정되면서 예약 자체를 결제 대상으로 처리해야 했습니다.
+
+이에 Payment가 `ticketId` 또는 `reservationId`를 결제 대상으로 받을 수 있도록 확장하고,
+서버에서 예약 시간과 시간당 금액을 기준으로 결제금액을 재검증하도록 수정했습니다.
+또한 예약 상태, 결제 취소, 이용 이력 및 관리자 결제 조회 구조를 함께 정비했습니다.
+
+### 스터디룸 동시 예약 방지
+
+동일 시간대의 예약 요청이 동시에 들어올 경우 중복 예약이 생성될 수 있어
+MeetingRoom 조회에 비관적 락을 적용하고 트랜잭션 내부에서 예약 가능 여부를 다시 검증했습니다.
+
+### RTOS 장치 상태 관리
+
+RTOS Client가 5초마다 Health Check를 전송하고,
+Backend가 20초 이상 통신이 없는 장치를 OFFLINE으로 전환하도록 구현했습니다.
 
 ---
 
 ## 👥 Team
 
-| Name   | Role                                                          |
-| ------ | ------------------------------------------------------------- |
-| 김수영 | 회원 · 인증 · 권한 · DB 설계 및 관리 · 입실 비밀번호 관리     |
-| 장원진 | 좌석 · 예약 · 입실/퇴실 · Git 저장소 및 배포 관리             |
-| 이지현 | 결제 · 이용권 · 관리자 · 장치 관리 · 프로젝트 문서 및 QA 관리 |
+> 아래 역할은 주요 담당 영역을 기준으로 작성했으며,
+> 관리자 시스템과 도메인 간 통합 기능은 팀원 간 협업으로 구현했습니다.
+
+| Name   | Role                                                                        |
+| ------ | --------------------------------------------------------------------------- |
+| 김수영 | 회원 · 인증 · 권한 · DB · 시스템 로그 · SMS 공통화                          |
+| 장원진 | 좌석 · 입·퇴실 · 스터디룸 예약 · RTOS C Client · Git 및 배포                |
+| 이지현 | 결제 · 이용권 · 관리자 주요 화면 · 장치관리 연동 · SOLAPI 알림 · 문서 및 QA |
 
 ---
 
@@ -551,8 +653,8 @@ Backend의 공통 응답 객체는 `ApiResponse<T>`입니다.
 
 ## 📝 Documentation Version
 
-**README v4.0**
-**Last Updated: 2026.08.21**
+**README v4.3**
+**Last Updated: 2026.09.01**
 
 ### History
 
@@ -562,14 +664,15 @@ Backend의 공통 응답 객체는 `ApiResponse<T>`입니다.
 - README v2.1 — 2026.08.05
 - README v3.0 — 2026.08.14
 - README v4.0 — 2026.08.21
-  - 관리자 인증 및 계정관리 현행화
-  - 장치 관리 CRUD 반영
-  - RTOS 양방향 명령 연동 반영
-  - Health Check 및 OFFLINE 처리 반영
-  - SOLAPI 및 Scheduler 정책 현행화
+- README v4.1 — 2026.08.31
+- README v4.2 — 2026.08.31
+- README v4.3 — 2026.09.01
+  - Demo 및 실제 구현 화면 추가
+  - 입실 비밀번호 변경 API 접근 제어 강화
+  - QA 테스트 84건으로 현행화
 
 ---
 
-## 📄 License
+## 📄 Project Notice
 
 본 프로젝트는 K-Digital Training 교육 및 팀 프로젝트 목적으로 제작되었습니다.

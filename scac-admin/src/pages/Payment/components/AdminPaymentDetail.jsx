@@ -7,8 +7,8 @@ import { formatfullDateTime } from '../../../utils/date';
 import { formatPhoneNumber, formatPrice } from '../../../utils/formatter';
 import {
   canCancelPayment,
-  getPaymentProductStatusLabel,
   getPaymentCancelUnavailableReason,
+  getPaymentProductStatusLabel,
 } from '../utils/paymentUtils';
 
 export default function AdminPaymentDetail({
@@ -31,7 +31,7 @@ export default function AdminPaymentDetail({
       </aside>
     );
   }
-  console.log(selectedPayment);
+
   return (
     <aside className="admin_panel admin_payment_detail">
       <div className="admin_panel_header">

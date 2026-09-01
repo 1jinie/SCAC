@@ -45,16 +45,16 @@ export default function AdminDevicePage() {
 
   // 주기적 상태 조회
   const fetchDevicesSilently = useCallback(async () => {
-    try{
+    try {
       const data = await deviceApi.getDevices(includeInactive);
       setDevices(data);
-    } catch (error){
+    } catch (error) {
       console.error(
         '장치 상태 주기적 조회 실패',
-        error.response?.data?.message ?? error
+        error.response?.data?.message ?? error,
       );
     }
-  }, [includeInactive])
+  }, [includeInactive]);
 
   useEffect(() => {
     fetchDevices();
@@ -69,16 +69,19 @@ export default function AdminDevicePage() {
     return () => clearInterval(interval);
   }, [fetchDevicesSilently]);
 
-  const errorDeviceIds = useMemo(() => 
-    devices.filter((device) => device.status === 'ERROR')
-    .map((device) => device.deviceId).sort((a, b) => a - b), [devices]
+  const errorDeviceIds = useMemo(
+    () =>
+      devices
+        .filter((device) => device.status === 'ERROR')
+        .map((device) => device.deviceId)
+        .sort((a, b) => a - b),
+    [devices],
   );
 
   const errorDeviceKey = errorDeviceIds.join(',');
 
-  
   useEffect(() => {
-    if(errorDeviceIds.length === 0){
+    if (!errorDeviceKey) {
       return;
     }
     window.alert(`장치 오류가 발생했습니다.\n해당 장치를 확인해주세요.`);
@@ -389,7 +392,7 @@ export default function AdminDevicePage() {
         alert: true,
       },
     ],
-    [deviceSummary],
+    [deviceSummary, includeInactive],
   );
 
   const sortedDevices = useMemo(() => {

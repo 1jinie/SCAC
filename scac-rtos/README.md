@@ -27,7 +27,7 @@ Backend에서 생성된 장치 명령을 조회하여 처리한 뒤 결과를 �
 
 ```text
 [WorkerTask -> Spring]
-id=4, status=COMPLETED, result=card reading completed
+id=4, status=COMPLETED, result=카드 읽기 성공
 ```
 
 ---
@@ -43,11 +43,12 @@ id=4, status=COMPLETED, result=card reading completed
 
 ```text
 +--------------------------------------+
-|            KIOSK RECEIPT             |
+|          KIOSK RECEIPT               |
 +--------------------------------------+
-주문 번호 : PAYMENT-15
-상품명    : 2시간 이용권
-결제 금액 : 5,000원
+  주문 번호 : PAYMENT-15
+  품목 : 2시간 이용권
+  사용 시간 : - ~ -
+  결제 금액 : 5000원
 +--------------------------------------+
 ```
 
@@ -57,7 +58,8 @@ id=4, status=COMPLETED, result=card reading completed
 
 - `DOOR_OPEN` 명령 처리
 - 출입문 개방 상태 시뮬레이션
-- 일정 시간 이후 문 닫힘 처리
+- 개방 후 5초가 지나면 자동으로 닫힘 처리
+- 별도의 `DOOR_CLOSE` 명령 처리
 - 입·퇴실 Flow와 연동
 
 ---
@@ -112,6 +114,7 @@ Spring Boot는 전달받은 정보를 이용하여 장치의 현재 상태와 �
 │  CARD_READING        │
 │  PRINT_RECEIPT       │
 │  DOOR_OPEN           │
+│  DOOR_CLOSE          │
 └──────────┬───────────┘
            │
            │ 처리 결과
@@ -136,7 +139,7 @@ Spring Boot는 전달받은 정보를 이용하여 장치의 현재 상태와 �
 
 SCAC RTOS는 크게 두 가지 통신 흐름을 사용합니다.
 
-### 1. Spring → RTOS → Spring
+### 1. Command 처리: Spring → RTOS → Spring
 
 장치 제어가 필요한 경우 Backend에서 Command를 생성합니다.
 
@@ -227,6 +230,10 @@ PRINT_RECEIPT
 DOOR_OPEN
       │
       └── 출입문 개방 처리
+
+DOOR_CLOSE
+      │
+      └── 출입문 닫힘 처리
 ```
 
 처리 완료 후 결과를 다시 Spring Boot에 전달합니다.
@@ -283,11 +290,12 @@ RTOS Client는 다음 Spring Boot API와 통신합니다.
 
 장치 Command는 다음 상태를 사용합니다.
 
-| Status      | Description    |
-| ----------- | -------------- |
-| `PENDING`   | RTOS 처리 대기 |
-| `COMPLETED` | RTOS 처리 성공 |
-| `FAILED`    | RTOS 처리 실패 |
+| Status       | Description                            |
+| ------------ | -------------------------------------- |
+| `PENDING`    | RTOS 처리 대기                         |
+| `PROCESSING` | RTOS가 조회하여 처리 중인 상태         |
+| `COMPLETED`  | RTOS 처리 성공                         |
+| `FAILED`     | 지원하지 않는 명령 또는 장치 처리 실패 |
 
 예시:
 
@@ -298,11 +306,12 @@ Spring
   ▼
 PENDING
   │
+  │ RTOS가 GET /api/commands/pending 호출
   ▼
-RTOS 처리
+PROCESSING
   │
+  │ RTOS 처리
   ├── 성공 ──▶ COMPLETED
-  │
   └── 실패 ──▶ FAILED
 ```
 
@@ -312,7 +321,7 @@ RTOS 처리
 
 | Category      | Technology          |
 | ------------- | ------------------- |
-| Language      | C                   |
+| Language      | C11                 |
 | RTOS          | FreeRTOS            |
 | Runtime       | FreeRTOS POSIX Port |
 | OS            | Ubuntu / Linux      |
@@ -335,7 +344,7 @@ scac-rtos
 ├── src
 │   ├── main.c
 │   ├── http_client.c
-│   └── ...
+│   └── http_client.h
 │
 ├── CMakeLists.txt
 ├── Makefile
@@ -355,9 +364,9 @@ scac-rtos
 
 ---
 
-# 🚀 Getting Started
+## 🚀 Getting Started
 
-## 1. 실행 환경
+### 1. 실행 환경
 
 `scac-rtos`는 **Windows Git Bash가 아닌 Ubuntu / Linux 환경에서 실행**합니다.
 
@@ -379,7 +388,7 @@ Administrator@DESKTOP MINGW64
 
 ---
 
-## 2. Required Packages
+### 2. Required Packages
 
 Ubuntu Terminal에서 필요한 Build Tool을 설치합니다.
 
@@ -400,7 +409,7 @@ gcc --version
 
 ---
 
-## 3. Project Directory
+### 3. Project Directory
 
 Windows의 프로젝트가 다음 경로에 있다면:
 
@@ -428,7 +437,7 @@ pwd
 
 ---
 
-## 4. FreeRTOS Kernel
+### 4. FreeRTOS Kernel
 
 SCAC RTOS를 Build하려면 FreeRTOS Kernel이 필요합니다.
 
@@ -442,6 +451,12 @@ Kernel 위치를 확인합니다.
 
 ```bash
 ls ~/rtos-kiosk-course/third_party/FreeRTOS-Kernel/CMakeLists.txt
+```
+
+없다면 경로에 FreeRTOS를 설치해줍니다.
+
+```bash
+git clone --depth 1 https://github.com/FreeRTOS/FreeRTOS-Kernel.git
 ```
 
 FreeRTOS Kernel이 다른 위치에 있는 경우 환경변수를 설정합니다.
@@ -458,7 +473,7 @@ export FREERTOS_KERNEL_PATH=~/rtos-kiosk-course/third_party/FreeRTOS-Kernel
 
 ---
 
-## 5. Build
+### 5. Build
 
 기존 Build 파일을 제거합니다.
 
@@ -494,9 +509,9 @@ ls build/day05_rtos
 
 ---
 
-# ▶️ Run
+## ▶️ Run
 
-## Case 1. Spring Boot와 RTOS를 같은 Linux 환경에서 실행
+### Case 1. Spring Boot와 RTOS를 같은 Linux 환경에서 실행
 
 Spring Boot가 동일한 환경의 `8888` Port에서 실행 중이라면:
 
@@ -506,7 +521,7 @@ Spring Boot가 동일한 환경의 `8888` Port에서 실행 중이라면:
 
 ---
 
-## Case 2. Spring Boot는 Windows, RTOS는 WSL
+### Case 2. Spring Boot는 Windows, RTOS는 WSL
 
 Spring Boot를 Windows에서 실행하고 RTOS를 WSL Ubuntu에서 실행하는 경우
 RTOS에서 `localhost:8888`을 사용하면 Spring Boot에 접근하지 못할 수 있습니다.
@@ -525,6 +540,9 @@ echo $WIN_HOST
 ```
 
 먼저 Spring Boot 연결 여부를 확인합니다.
+
+> `/api/commands/pending`는 대기 명령이 존재할 경우 해당 명령을 `PROCESSING`으로 변경합니다.
+> 실제 대기 명령이 없는 상태에서 연결 확인용으로 사용하세요.
 
 ```bash
 curl --connect-timeout 3 -i http://$WIN_HOST:8888/api/commands/pending
@@ -552,7 +570,7 @@ RTOS 실행:
 
 ---
 
-## ⚠️ `make run` 사용 시 주의
+### ⚠️ `make run` 사용 시 주의
 
 Makefile의 `run` Command가 다음처럼 구성된 경우:
 
@@ -573,7 +591,7 @@ WIN_HOST=$(ip route | awk '/default/ {print $3; exit}')
 
 ---
 
-# ✅ 정상 실행 확인
+## ✅ 정상 실행 확인
 
 RTOS와 Spring Boot가 정상적으로 연결되면 다음과 같은 로그를 확인할 수 있습니다.
 
@@ -587,14 +605,14 @@ RTOS와 Spring Boot가 정상적으로 연결되면 다음과 같은 로그를 �
 
 ```text
 [WorkerTask -> Spring]
-id=4, status=COMPLETED, result=card reading completed
+id=4, status=COMPLETED, result=카드 읽기 성공
 ```
 
 ### Receipt
 
 ```text
 [WorkerTask -> Spring]
-id=5, status=COMPLETED
+id=5, status=COMPLETED, result=영수증 출력: PAYMENT-15
 ```
 
 이 상태라면:
@@ -609,9 +627,9 @@ RTOS ↔ Spring Boot
 
 ---
 
-# 🔍 Troubleshooting
+## 🔍 Troubleshooting
 
-## 1. `make: command not found`
+### 1. `make: command not found`
 
 ```text
 bash: make: command not found
@@ -626,7 +644,7 @@ sudo apt install -y build-essential
 
 ---
 
-## 2. `cmake: command not found`
+### 2. `cmake: command not found`
 
 ```text
 bash: cmake: command not found
@@ -647,7 +665,7 @@ cmake --version
 
 ---
 
-## 3. `sudo: command not found`
+### 3. `sudo: command not found`
 
 다음과 같은 Terminal을 사용하고 있는지 확인합니다.
 
@@ -661,7 +679,7 @@ Windows에서 WSL Ubuntu Terminal을 실행한 뒤 다시 진행합니다.
 
 ---
 
-## 4. `localhost:8888 연결 실패: Connection refused`
+### 4. `localhost:8888 연결 실패: Connection refused`
 
 예시:
 
@@ -694,7 +712,7 @@ curl -i http://$WIN_HOST:8888/api/commands/pending
 
 ---
 
-## 5. Spring Boot 8888 Port 확인
+### 5. Spring Boot 8888 Port 확인
 
 Windows에서 Spring Boot가 실제로 `8888` Port를 사용하고 있는지 확인할 수 있습니다.
 
@@ -718,7 +736,7 @@ Tomcat started on port 8888
 
 ---
 
-## 6. `Interrupted system call`
+### 6. `Interrupted system call`
 
 FreeRTOS POSIX 환경에서는 RTOS Tick을 위한 Signal 때문에
 Linux Socket System Call이 `EINTR`로 중단될 수 있습니다.
@@ -745,7 +763,7 @@ retry
 
 ---
 
-## 7. `invalid receipt payload`
+### 7. `invalid receipt payload`
 
 영수증 Command는 구분자를 이용하여 데이터를 전달합니다.
 
@@ -767,11 +785,14 @@ PAYMENT-15|2시간 이용권|-|-|5000
 
 ---
 
-# 🧪 Manual Connection Test
+## 🧪 Manual Connection Test
 
 RTOS를 실행하기 전 Spring Boot API를 직접 확인할 수 있습니다.
 
 ### Pending Command
+
+> 이 API는 가장 오래된 `PENDING` 명령을 조회하면서 `PROCESSING`으로 변경합니다.
+> RTOS 실행 전 수동 호출하면 RTOS가 해당 명령을 다시 조회할 수 없으므로 테스트 데이터에서만 사용하세요.
 
 ```bash
 curl -i http://$WIN_HOST:8888/api/commands/pending
@@ -795,7 +816,7 @@ HTTP `200` 응답이 확인되면 WSL → Spring Boot 통신이 정상입니다.
 
 ---
 
-# 🖨 Device Status
+## 🖨 Device Status
 
 현재 SCAC에서는 다음 장치 유형을 관리합니다.
 
@@ -820,39 +841,59 @@ RTOS Health Check에서는 실제 장치 동작을 표현하기 위해 다음과
 status      = ONLINE
 door        = CLOSE / OPEN
 cardReader  = WAITING
-printer     = READY
+printer     = READY / EMPTY
 ```
 
 Spring Boot에서 해당 정보를 SCAC의 Device 상태로 변환하여 관리합니다.
 
----
+| Health Check 필드 | RTOS 상태                 | Backend Device 상태 |
+| ----------------- | ------------------------- | ------------------- |
+| `status`          | `ONLINE`                  | `NORMAL`            |
+| `door`            | `OPEN`, `CLOSE`, `CLOSED` | `NORMAL`            |
+| `cardReader`      | `WAITING`, `READY`        | `NORMAL`            |
+| `printer`         | `READY`, `EMPTY`          | `NORMAL`            |
+| 모든 장치         | `OFFLINE`                 | `OFFLINE`           |
 
-# 📌 Current Implementation Notes
-
-2026-08-21 기준:
-
-- ✅ FreeRTOS POSIX 기반 RTOS Client Build 및 실행
-- ✅ Spring Boot ↔ RTOS HTTP 통신
-- ✅ Spring Command Polling
-- ✅ `CARD_READING` 명령 처리
-- ✅ 카드 리딩 결과 `COMPLETED` 반환
-- ✅ `PRINT_RECEIPT` 명령 처리
-- ✅ 영수증 정보 Terminal 출력
-- ✅ `DOOR_OPEN` 장치 명령 연동
-- ✅ 5초 주기 Health Check
-- ✅ Printer 상태 조회
-- ✅ 장치 상태 및 마지막 연결 시간 Backend 연동
-- ✅ 관리자 장치관리 화면에서 상태 확인
-- ✅ POSIX Socket `EINTR` 재시도 처리
-- ✅ Windows Spring Boot ↔ WSL RTOS 실행 환경 검증
-- ⚠️ 실제 카드 리더기, 프린터, 출입문 Hardware 대신 POSIX 환경에서 동작을 시뮬레이션
-- ⚠️ Spring Boot의 RTOS Command Store는 현재 In-Memory 방식
-- ⚠️ Backend 재시작 시 저장된 RTOS Command가 초기화될 수 있음
-- ⚠️ WSL의 Windows Host IP는 환경 재시작 후 변경될 수 있음
+RTOS Client는 현재 `/api/devices/1/status`를 조회하여 프린터 상태를 결정합니다.
+조회 결과가 `NORMAL`이면 `READY`, `ERROR`이거나 조회에 실패하면 `EMPTY`로 전송합니다.
 
 ---
 
-# 🔗 Related Projects
+## 📌 Final Implementation Status
+
+2026-08-31 최신 `main` 코드 기준입니다.
+
+### 구현 완료
+
+- FreeRTOS POSIX 기반 RTOS Client Build 및 실행
+- Spring Boot와 HTTP 통신
+- 1초 주기 Command Polling 및 단일 Worker 실행 제어
+- `PENDING → PROCESSING → COMPLETED / FAILED` 상태 전이
+- `CARD_READING` 명령 및 카드 인식 시뮬레이션
+- `PRINT_RECEIPT` 명령 및 영수증 정보 Terminal 출력
+- `DOOR_OPEN` 명령과 5초 후 자동 닫힘 처리
+- `DOOR_CLOSE` 명령 처리
+- 지원하지 않는 taskType의 `FAILED` 결과 반환
+- 완료 또는 실패 결과의 Spring Boot 반환
+- 5초 주기 Health Check
+- 프린터 상태 조회 및 `READY` / `EMPTY` 변환
+- 장치 상태 및 마지막 연결 시간 Backend 연동
+- 관리자 장치관리 화면의 상태 및 로그 조회 연동
+- POSIX Socket `EINTR` 재시도 처리
+- Windows Spring Boot ↔ WSL RTOS 실행 환경 검증
+
+### 기술적 한계 및 향후 개선
+
+- 실제 카드 리더기, 프린터, 출입문 대신 FreeRTOS POSIX 환경에서 장치 동작을 시뮬레이션합니다.
+- Spring Boot의 RTOS Command Store는 In-Memory 방식이므로 Backend 재시작 시 Command가 초기화됩니다.
+- 완료된 commandId를 RTOS에서 별도로 영속화하지 않아 Backend 상태가 다시 `PENDING`으로 변경되면 동일 작업이 재실행될 수 있습니다.
+- 프린터 상태 조회 대상이 현재 `/api/devices/1/status`로 고정되어 있어 환경별 실제 프린터 deviceId 설정이 필요합니다.
+- `ERROR`를 `EMPTY`로 변환해 전송하지만 Backend는 현재 `EMPTY`를 `NORMAL`로 변환하므로, 실제 운영에서는 프린터 오류 상태 매핑 정책을 보완해야 합니다.
+- WSL의 Windows Host IP는 환경 재시작 후 변경될 수 있습니다.
+
+---
+
+## 🔗 Related Projects
 
 ```text
 SCAC
@@ -880,18 +921,25 @@ RTOS Health Check를 통해 전달된 장치 상태와 DeviceLog를 관리자 �
 
 ## 👥 Team
 
-| Name   | Role                                                          |
-| ------ | ------------------------------------------------------------- |
-| 김수영 | 회원 · 인증 · 권한 · DB 설계 및 관리 · 입실 비밀번호 관리     |
-| 장원진 | 좌석 · 예약 · 입실/퇴실 · Git 저장소 및 배포 관리             |
-| 이지현 | 결제 · 이용권 · 관리자 · 장치 관리 · 프로젝트 문서 및 QA 관리 |
+| Name   | RTOS Integration Contribution                                                              |
+| ------ | ------------------------------------------------------------------------------------------ |
+| 장원진 | FreeRTOS POSIX C Client · 장치 Handler · Command Polling · Health Check 구현               |
+| 이지현 | 장치관리 Backend·관리자 화면 · 영수증 Payload · 통신 오류 보완 · 상태 전이 및 중복 처리 QA |
+| 김수영 | 장치 이벤트의 시스템 로그 및 관리자 데이터 연계 지원                                       |
+
+---
+
+## 📅 Development Period
+
+**2026.08.13 ~ 2026.09.02**
 
 ---
 
 ## 📝 Documentation Version
 
-**README v1.0**
-**Last Updated: 2026.08.21**
+**README v1.1**
+
+**Last Updated: 2026.08.31**
 
 ### History
 
@@ -902,9 +950,14 @@ RTOS Health Check를 통해 전달된 장치 상태와 DeviceLog를 관리자 �
   - CARD_READING / PRINT_RECEIPT / DOOR_OPEN Command 정리
   - 5초 주기 Health Check 구조 정리
   - POSIX Socket 및 주요 Troubleshooting 정리
+- README v1.1 — 2026.08.31
+  - `PROCESSING` 상태 전이와 완료·실패 검증 반영
+  - `DOOR_CLOSE` 명령 및 출입문 자동 닫힘 처리 반영
+  - 프린터 상태 변환과 RTOS 중복 실행 한계 현행화
+  - 문서 제목 구조와 최종 구현 상태 정리
 
 ---
 
-## 📄 License
+## 📄 Project Notice
 
-본 프로젝트는 K-Digital Training 교육 및 팀 프로젝트 목적으로 제작되었습니다.
+본 프로젝트는 K-Digital Training 교육과정의 팀 프로젝트로 제작되었습니다.

@@ -19,7 +19,7 @@ SCAC Backend는 사용자 키오스크 `scac-front`, 관리자 웹 `scac-admin`,
 - SOLAPI SMS 연동
 - 공통 응답 및 전역 예외 처리
 - AOP 기반 SystemLog 자동 기록
-- RTOS 장치 명령 및 Health Check 양방향 통신 구현
+- HTTP Polling 기반 RTOS 장치 명령 처리 및 Health Check 연동
 
 ---
 
@@ -106,6 +106,7 @@ SCAC Backend는 사용자 키오스크 `scac-front`, 관리자 웹 `scac-admin`,
 - 사용자 본인 예약 단건 조회
 - 관리자 예약 목록 조회
 - 관리자 예약 취소
+- 동일 스터디룸의 동시 예약 방지를 위한 비관적 락 적용
 - `PENDING_PAYMENT`
 - `CONFIRMED`
 - `IN_USE`
@@ -123,13 +124,15 @@ SCAC Backend는 사용자 키오스크 `scac-front`, 관리자 웹 `scac-admin`,
 - 이용권 관리
 - 좌석 상태 변경
 - 관리자 강제 퇴실
-- 결제 조회 / 취소 / 삭제
+- 결제 조회 / 취소 / 삭제 API
 - 관리자 메모 CRUD
 - 시스템 로그 조회
 - 좌석 로그 조회
 - 장치 등록 / 수정 / 삭제
 - 장치 활성화 / 비활성화
 - 장치 현재 상태 / 로그 조회
+
+> 결제 삭제 API는 구현되어 있지만, 운영 이력 보존을 위해 관리자 화면에서는 삭제 대신 취소 기능을 사용합니다.
 
 ### 🖨 RTOS / 장치 연동
 
@@ -632,7 +635,6 @@ http://localhost:8888
 | ------ | -------------------------------------- | ------------------ |
 | GET    | `/api/admin/devices`                   | 장치 목록          |
 | GET    | `/api/admin/devices/{deviceId}`        | 장치 상세          |
-| GET    | `/api/admin/devices/{deviceId}/logs`   | 장치 로그          |
 | POST   | `/api/admin/devices`                   | 장치 등록          |
 | PUT    | `/api/admin/devices/{deviceId}`        | 장치 수정          |
 | DELETE | `/api/admin/devices/{deviceId}`        | 장치 삭제          |
@@ -798,6 +800,18 @@ SOLAPI_SENDER_NUMBER=
 
 SOLAPI 설정이 없는 개발 환경에서는 회원가입 인증 문자를 Mock Log로 출력합니다.
 
+### Database Prerequisite
+
+현재 JPA 설정은 다음과 같습니다.
+
+```properties
+spring.jpa.hibernate.ddl-auto=none
+```
+
+따라서 애플리케이션 실행 전에 SCAC MySQL Schema와 관리자 결제 조회에 사용하는
+`vw_payment_history` View가 생성되어 있어야 합니다. 이 저장소에는 전체 Schema 생성 SQL이 포함되어 있지 않으므로,
+팀에서 관리하는 최신 DB 명세와 DDL을 기준으로 데이터베이스를 준비해야 합니다.
+
 ---
 
 ## 🚀 Getting Started
@@ -842,44 +856,57 @@ macOS / Linux:
 ./gradlew test
 ```
 
-테스트 실행 시 DB 및 JWT 관련 환경변수가 필요할 수 있습니다.
+테스트 및 애플리케이션 실행 전 다음 환경변수가 필요합니다.
+
+- `DB_URL`
+- `DB_USERNAME`
+- `DB_PASSWORD`
+- `JWT_SECRET`
+
+Toss Payments 및 SOLAPI 관련 환경변수는 해당 외부 연동 기능을 실제로 사용할 때 설정합니다.
 
 ---
 
-## 📌 Current Notes
+## 📌 Final Implementation Status
 
-2026-08-21 코드 기준:
+2026-08-31 최신 `main` 코드 기준입니다.
 
-- ✅ 사용자 / 관리자 JWT 인증 및 Refresh 처리 구현
-- ✅ 관리자 API 권한 분리
-- ✅ `SUPER_ADMIN` 관리자 계정 관리 권한 적용
-- ✅ Payment가 `ticketId` 또는 `reservationId`를 결제 대상으로 처리
-- ✅ 이용권 결제와 스터디룸 예약 결제 통합
-- ✅ 결제 승인 후 이용권 또는 예약 상태 연동
-- ✅ 관리자 결제 목록 MyBatis + `vw_payment_history` 적용
-- ✅ 예약 결제대기 Timeout 5분 적용
-- ✅ SOLAPI 인증 문자 및 이용권 만료 예정 문자 구현
-- ✅ 알림 2회 실패 시 `RETRY_EXHAUSTED`
-- ✅ `/api/commands` RTOS Command API 구현
-- ✅ CARD_READING / PRINT_RECEIPT / DOOR_OPEN 처리 확인
-- ✅ `/api/devices/health` Health Check 구현
-- ✅ Health Check 20초 미수신 시 OFFLINE 처리
-- ✅ 관리자 장치 등록 / 수정 / 삭제 / 활성화 API 구현
-- ✅ 관리자 스터디룸 예약 경로 Security 적용
-- ⚠️ RTOS Command `TaskStore`는 현재 In-Memory 방식으로 Backend 재시작 시 초기화됨
-- ⚠️ 장치 제어는 실제 물리 하드웨어 대신 FreeRTOS POSIX 환경에서 시뮬레이션
-- ⚠️ 시연 환경에서는 CORS Origin을 전체 허용하고 있어 실제 배포 시 제한 필요
-- ⚠️ 관리자 결제 삭제 API는 존재하지만 운영 이력 보존을 고려하면 실제 운영에서는 취소 중심 정책 권장
+### 구현 완료
+
+- 사용자 / 관리자 JWT 인증 및 Refresh Token 처리
+- 관리자 API 권한 분리 및 `SUPER_ADMIN` 전용 계정 관리
+- Payment가 `ticketId` 또는 `reservationId`를 결제 대상으로 처리
+- 이용권 결제와 스터디룸 예약 결제 통합
+- 서버 기준 상품 및 예약 결제금액 재검증
+- 결제 승인·취소 시 이용권 또는 예약 상태 연동
+- 관리자 결제 목록에 MyBatis + `vw_payment_history` 적용
+- 결제대기 예약 5분 초과 자동 취소
+- 동일 스터디룸 동시 예약 방지를 위한 비관적 락 적용
+- 예약 시간 경계값 `24:00` 처리 및 예약 상태 자동 전환
+- SOLAPI 인증 문자 및 이용권 만료 예정 문자 구현
+- 알림 실패 2회 도달 시 `RETRY_EXHAUSTED` 처리
+- `CARD_READING`, `PRINT_RECEIPT`, `DOOR_OPEN`, `DOOR_CLOSE` 명령 처리
+- `/api/devices/health` Health Check 수신
+- Health Check 20초 미수신 시 장치 `OFFLINE` 처리
+- 관리자 장치 등록 / 수정 / 삭제 / 활성화 API 구현
+- 관리자 스터디룸 예약 경로 Security 적용
+
+### 기술적 한계 및 향후 개선
+
+- RTOS Command는 In-Memory `TaskStore`에서 관리되어 Backend 재시작 시 초기화됩니다.
+- 장치 제어는 실제 물리 하드웨어 대신 FreeRTOS POSIX 환경에서 시뮬레이션합니다.
+- 시연 환경에서는 CORS Origin을 전체 허용하므로 실제 배포 시 허용 Origin을 제한해야 합니다.
+- 결제 삭제 API는 존재하지만 실제 운영에서는 이력 보존을 위해 취소 중심 정책을 권장합니다.
 
 ---
 
 ## 👥 Team
 
-| Name   | Role                                                          |
-| ------ | ------------------------------------------------------------- |
-| 김수영 | 회원 · 인증 · 권한 · DB 설계 및 관리 · 입실 비밀번호 관리     |
-| 장원진 | 좌석 · 예약 · 입실/퇴실 · Git 저장소 및 배포 관리             |
-| 이지현 | 결제 · 이용권 · 관리자 · 장치 관리 · 프로젝트 문서 및 QA 관리 |
+| Name   | Role                                                                                                         |
+| ------ | ------------------------------------------------------------------------------------------------------------ |
+| 김수영 | 회원 · 인증 · 권한 · DB · 시스템 로그 · SMS 공통 모듈 및 회원 인증 알림                                      |
+| 장원진 | 좌석 · 입·퇴실 · 스터디룸 예약 · RTOS C Client · 관리자 좌석·예약 화면 · Git 및 배포 관리                    |
+| 이지현 | 결제 · 이용권 · 관리자 주요 화면 · 장치관리 API·화면 연동 · SOLAPI 이용권 만료 알림 및 재시도 정책 · 문서·QA |
 
 ---
 
@@ -891,8 +918,9 @@ macOS / Linux:
 
 ## 📝 Documentation Version
 
-**README v4.0**
-**Last Updated: 2026.08.21**
+**README v4.1**
+
+**Last Updated: 2026.08.31**
 
 ### History
 
@@ -907,9 +935,13 @@ macOS / Linux:
   - 관리자 계정 권한 현행화
   - 예약 결제대기 5분 정책 반영
   - SOLAPI Retry 정책 현행화
+- README v4.1 — 2026.08.31
+  - 스터디룸 동시 예약 방지 및 예약 상태 처리 현행화
+  - RTOS `DOOR_CLOSE` 명령과 최종 연동 상태 반영
+  - 실행 환경, DB 선행 조건 및 기술적 한계 최신화
 
 ---
 
-## 📄 License
+## 📄 Project Notice
 
-본 프로젝트는 K-Digital Training 교육 및 팀 프로젝트 목적으로 제작되었습니다.
+본 프로젝트는 K-Digital Training 교육과정의 팀 프로젝트로 제작되었습니다.

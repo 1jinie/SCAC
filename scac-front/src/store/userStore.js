@@ -28,14 +28,16 @@ export const useUserStore = create((set) => ({
   },
 
   // 입실 비밀번호 변경 (modifyUserPassword 이름으로 제공)
-  modifyUserPassword: async (userId, passwordData) => {
+  modifyUserPassword: async (passwordData) => {
     set({ isLoading: true, errorMessage: '' });
+
     try {
-      await updateUserPassword(userId, passwordData);
+      await updateUserPassword(passwordData);
       return { success: true };
     } catch (error) {
       const message =
         error.response?.data?.message || '비밀번호 변경에 실패했습니다.';
+
       set({ errorMessage: message });
       return { success: false, message };
     } finally {
