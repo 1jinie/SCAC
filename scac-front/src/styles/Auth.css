@@ -177,11 +177,13 @@ body {
   border: 3px solid #707070;
   border-radius: 36px;
   background-color: #ffffff;
-  font-size: 30px;
+  font-size: 25px;
   font-weight: 500;
   color: #000000;
   box-sizing: border-box;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .input_field::placeholder,
@@ -232,7 +234,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
   box-sizing: border-box;
   white-space: nowrap;
 }
